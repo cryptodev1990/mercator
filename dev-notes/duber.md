@@ -36,4 +36,13 @@ We can best choose the locations where your geographies
 Jun 10 2022
 -----------
 
+## Plans / Progress
 
+- [X] Deploy a basic hello world app with fly.io and FastAPI
+  - Why Fly.io? Why not? Easy PaaS with a YC deal.
+  - Why FastAPI? Get free OpenAPI / Swagger bindings for the frontend, seems easy to use
+- [ ] Run a React application out of the app
+
+## Observations
+
+- The docker command to build and run a Dockerfile, ``docker build . -t geox-web && docker run -p 3000:80 geox-web``
