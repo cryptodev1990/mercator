@@ -36,14 +36,20 @@ We can best choose the locations where your geographies
 Jun 10 2022
 -----------
 
-## Plans / Progress
+## Progress
 
 - [X] Deploy a basic hello world app with fly.io and FastAPI
   - Why Fly.io? Why not? Easy PaaS with a YC deal.
   - Why FastAPI? Get free OpenAPI / Swagger bindings for the frontend, seems easy to use
-- [ ] Run a React application out of the app
+- [X] Run a React application out of the app
+
+## Plans
+
+- [ ] Work with advisors to figure out the data model
+- [ ] Figma to figure out what the UX is
 
 ## Observations
 
 - The docker command to build and run a Dockerfile, ``docker build . -t geox-web && docker run -p 3000:80 geox-web``
 - ``fly launch`` builds the project the first time; ``flyctl deploy`` runs the current configuration. ``fly open`` opens the current web URL for fly.
+- Deployed the frontend to Vercel and the backend to Fly
