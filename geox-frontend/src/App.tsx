@@ -4,6 +4,21 @@ import { Counter } from './features/counter/Counter';
 import './App.css';
 
 function App() {
+  const [message, setMessage] = React.useState<String>("");
+  React.useEffect(() => {
+    const url = String(process.env.REACT_APP_BACKEND_URL);
+    fetch(url, {
+         headers: {
+           'Accept': 'application/json'
+         }})
+        .then(x => {
+	    console.log(x);
+            return x.json()
+	})
+        .then(x => {
+            setMessage(JSON.stringify(x))
+	})
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
@@ -50,6 +65,7 @@ function App() {
             React Redux
           </a>
         </span>
+        {message}
       </header>
     </div>
   );
