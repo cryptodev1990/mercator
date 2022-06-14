@@ -1,0 +1,269 @@
+---
+title: "GeoLift Vignette Walkthrough"
+date: 2022-06-13
+output: html_notebook
+---
+
+## Overview
+
+Walking through the vignette for [GeoLift](https://github.com/facebookincubator/GeoLift/blob/main/vignettes/GeoLift_Walkthrough.md).
+I made some notes while working through it about things to look into later.
+
+## Stuff
+
+```{r}
+library("GeoLift")
+```
+
+```{r}
+data("GeoLift_PreTest")
+```
+
+- location
+- date
+- Y (convertsions/KPI in day/location)
+
+```{r}
+GeoLift_PreTest
+```
+
+`GeoDataRead()`: input is a data frame, returns a data frame. Purpose
+is to format data correctly.
+
+**TODO:** How are the covariates in `X` used? 
+
+```{r}
+GeoTestData_PreTest <- GeoDataRead(data = GeoLift_PreTest,
+                                        date_id = "date",
+                                        location_id = "location",
+                                        Y_id = "Y",
+                                        X = c(), #empty list as we have no covariates
+                                        format = "yyyy-mm-dd",
+                                        summary = TRUE)
+```
+
+The `GeoPlot()` 
+
+- trend
+- contribution per location
+- detect any data anomalies before moving on to the data analysis.
+
+```{r}
+GeoPlot(GeoTestData_PreTest,
+        Y_id = "Y",
+        time_id = "time",
+        location_id = "location")
+```
+## Power
+
+- The optimal number of test locations.
+- Best test duration.
+- Select the ideal test and control markets.
+- Get a good estimate of the budget needed to run the test.
+- Determine which is the Minimum Detectable Effect to obtain significant results.
+- Align expectations. 
+
+
+Notes: 
+
+- homogenous treatment
+- lookbacks and method means that different periods of time are included
+- lookbacks are highly correlated
+- Focuses on ATT. However, for MMM need ATE. Includes `Correlations` to get those.
+- Extremely Specialized to marketing / ads experiments. 
+- Does not do multiple responses (augsynth handles that)
+- Could be extended to take MMM existing estimates of 
+- TODO: look more at Robyn MMM models and how they interact with geo-spatial experiments.
+- TODO: look at missing data handling. Could we match on factors instead of Y's? 
+- I like how it uses the budget constraints
+
+
+Notes on the parameters of `Geo
+
+- `data` A data frame containing the historical conversions by geographic unit.
+- `treatment_periods`: Need to specify several number of time period to check
+- `N`: Need to specify the number of of markets to calculate power for
+- `X` names of additional covariates
+- `Y_id`, `location_id`, `time_id`: name of outcome, location, time features in `data`
+- `effect_size`: Effect sizes to simulate (these are relative percent sizes). Default is `seq(0, 0.25, 0.05)`
+- `lookback_window`: Lookback windows - simply moves the tests back 1 week.
+- `include_markets`: Lists of markets that must be in the test group
+- `exclude_markets`: Lists of markets that cannot be in the test group
+- `holdout`: The smallest desirable holdout, the largest desirable holdout. This is the share of markets that won't see an ad campaign.
+- `cpic`: Value indicating the Cost Per Incremental Conversion. CPIC = 1 if no info.
+- `budget`: Max allowable budget
+- `alpha`: Significance level. Uses 90% by default. By default alpha = 0.1 which is equivalent to a 90% confidence level.
+- `model`: Allows a model to augment Augmented Synthetic Control method.
+- `fixed_effects`: Default is `TRUE`. Best if stable.
+- `Correlations`: Correlations = FALSE.
+- `print`: Flag to print the top results
+- `parallel`: 
+- `parallel_setup`
+- `side_of_test`: One or two-sided test. Default is two-sided. Why? Shouldn't it be one-sided? 
+
+```{r market_selections}
+MarketSelections <- GeoLiftMarketSelection(data = GeoTestData_PreTest,
+                                          treatment_periods = c(10,15),
+                                          N = c(2,3,4,5),
+                                          Y_id = "Y",
+                                          location_id = "location",
+                                          time_id = "time",
+                                          effect_size = seq(-0.25, 0.25, 0.05),
+                                          lookback_window = 1, 
+                                          include_markets = c("chicago"),
+                                          exclude_markets = c("honolulu"),
+                                          cpic = 7.50,
+                                          budget = 100000,
+                                          alpha = 0.1,
+                                          Correlations = TRUE,
+                                          fixed_effects = TRUE,
+                                          side_of_test = "one_sided")
+
+```
+
+- What does "well-powered" mean? Based on the plots it uses the 80% power default.
+- What are these sorted by? 
+- `ScaledL2Imbalance` is difficult to interpret
+- `abs_lift_in_zero`
+- what is correlation in relation to?
+- how does it rank them? "Ranking variable that summarizes the `EffectSize`, Power, `AvgScaledL2Imbalance`, `Average_MDE`, and `abs_lift_in_zero` to help you select the best combination of test markets. The ranking variable allows for ties? 
+- What is "deterministic"? 
+
+```{r}
+library("ggplot2")
+market_id = 3
+market_row <- MarketSelections$BestMarkets %>% dplyr::filter(ID == market_id)
+treatment_locations <- stringr::str_split(market_row$location, ", ")[[1]]
+treatment_duration <- market_row$duration
+lookback_window <- 10
+
+power_data <- GeoLiftPower(
+  data = GeoTestData_PreTest,
+  locations = treatment_locations,
+  effect_size = seq(-0.15, 0.15, 0.01),
+  lookback_window = lookback_window,
+  treatment_periods = treatment_duration,
+  cpic = 7.5,
+  side_of_test = "one_sided"
+)
+#> Setting up cluster.
+#> Importing functions into cluster.
+
+plot(power_data, show_mde = TRUE, smoothed_values = FALSE, breaks_x_axis = 5) +
+    labs(caption = unique(power_data$location))
+```
+
+Notes:
+
+- Why is power asymmetric for a specific choice? 
+
+  - Periods are fixed. I thought it had to do with the weird things that happen with differing lookback periods.
+  - Is it just randomness? 
+  
+- Also, power is literally undefined at 0 since $H_0 = H_a$ at that point. Alternatively, it is equivalent to $\alpha$. 
+  If $\alpha = 0.1$, then there should be 10\% significant simulations.
+  
+
+```{r}
+plot(MarketSelections, market_ID = 3, print_summary = TRUE)
+```
+
+
+Notes:
+
+- For comparisons it would be better to show a plot of differences as well as levels.
+- Idea: Could we calculate a value at risk? 
+- Test + Holdout seems to not equal 100% because of 0 weights in SCM
+
+
+## Example: Analyzing the test results
+
+```{r}
+data(GeoLift_Test)
+```
+
+```{r}
+GeoTestData_Test <- GeoDataRead(data = GeoLift_Test,
+                                date_id = "date",
+                                location_id = "location",
+                                Y_id = "Y",
+                                X = c(), #empty list as we have no covariates
+                                format = "yyyy-mm-dd",
+                                summary = TRUE)
+#> ##################################
+#> #####       Summary       #####
+#> ##################################
+#> 
+#> * Raw Number of Locations: 40
+#> * Time Periods: 105
+#> * Final Number of Locations (Complete): 40
+head(GeoTestData_Test)
+#>   location time    Y
+#> 1  atlanta    1 3384
+#> 2  atlanta    2 3904
+#> 3  atlanta    3 5734
+#> 4  atlanta    4 4311
+#> 5  atlanta    5 3686
+#> 6  atlanta    6 3374
+```
+
+
+```{r}
+GeoPlot(GeoTestData_Test,
+        Y_id = "Y",
+        time_id = "time",
+        location_id = "location",
+        treatment_start = 91)
+```
+
+TODO:
+
+- We need to automate the search for outliers
+
+
+```{r}
+GeoTest <- GeoLift(Y_id = "Y",
+                   data = GeoTestData_Test,
+                   locations = c("chicago", "portland"),
+                   treatment_start_time = 91,
+                   treatment_end_time = 105)
+#> Running model with no prognostic function.
+GeoTest
+```
+
+Notes:
+
+- There really should be no two-sided tests. They never make sense.
+
+
+The L2 Imbalance is really a bad metric for eval. It is hard to understand and is too statistical. 
+It should be translated into the scale of the response metric to be useful.
+
+> A small L2 Imbalance score means that our model did a great job replicating our test locations while a large one would indicate a poor fit. However, the L2 Imabalnce metric is scale-dependent, meaning that it can’t be compared between models with different KPIs or number of testing periods. For instance, the L2 Imbalance of a model run on grams of units sold will be significantly larger than a model ran for tons of product sold even if they represent the same basic underlying metric
+
+
+```{r}
+plot(GeoTest, type = "Lift")
+```
+
+```{r}
+plot(GeoTest, type = "ATT")
+```
+
+GeoLift can automatically select between models:
+
+1. Synthetic control only
+2. Ridge augmented
+3. Gsynth augmented
+
+These should always be selected automatically.
+
+```{r}
+GeoTestBest <- GeoLift(Y_id = "Y",
+                       data = GeoTestData_Test,
+                       locations = c("chicago", "portland"),
+                       treatment_start_time = 91,
+                       treatment_end_time = 105,
+                       model = "best")
+```
+
