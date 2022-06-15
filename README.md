@@ -10,6 +10,7 @@
       some random variable
       First is MSAs (eventually ZCTAs and your custom geo)
 - [X] Scaffold an app with Flask or Fast API
+- [ ] Wrapper around GeoLift
 - [ ] Convert ``GeoDataRead`` to a backend API
 - [ ] Convert ``GeoPlot`` to a backend API
 - [ ] Convert ``GeoDataRead`` to a backend API
