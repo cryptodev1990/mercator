@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pygeolift"
+version = "0.1.0"
+description = "Python wrapper for the GeoLift R package"
+authors = ["Jeffrey Arnold <jeffrey.arnold@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+rpy2 = {version = "^3.5.2", extras = ["all"]}
+jupyterlab = "^3.4.3"
+pandera = "^0.11.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+mypy = "^0.961"
+black = "^22.3.0"
+ipython = "^8.4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
