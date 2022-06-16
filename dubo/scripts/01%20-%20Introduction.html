@@ -1,0 +1,169 @@
+
+        <html>
+          <head>
+            <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+             <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+          </head>
+          <body>
+            <py-env>
+pydeck
+pandas
+time</py-env>
+<h1>A brief intro to pydeck</h1>
+<p>The <a href="https://pydeck.gl">pydeck</a> library is made for visualizing data points in 2D or 3D maps. Specifically, it handles</p>
+<ul>
+<li>
+<p>rendering large (&gt;1M points) data sets, like LIDAR point clouds or GPS pings</p>
+</li>
+<li>
+<p>large-scale updates to data points, like plotting points with motion</p>
+</li>
+<li>
+<p>making beautiful maps</p>
+</li>
+</ul>
+<p>Under the hood, it's powered by the <a href="https://github.com/visgl/deck.gl/">deck.gl</a> JavaScript framework.</p>
+<p>pydeck is strongest when used in tandem with <a href="https://pandas.pydata.org/">Pandas</a> but doesn't have to be.</p>
+<p>Please note that <strong>these demo notebooks are best when executed cell-by-cell</strong>, so ideally clone this repo or run it from mybinder.org.</p>
+<py-script>
+import pydeck as pdk
+
+print("Welcome to pydeck version", pdk.__version__)
+</py-script>
+<h1>There are three steps for most pydeck visualizations</h1>
+<p>We'll walk through pydeck using a visualization of vehicle accident data in the United Kingdom.</p>
+<h2>1. Choose your data</h2>
+<p>Here, we'll use the history of accident data throughout the United Kingdom. This data set presents the location of every latitude and longitude of car accidents in the UK in 2014 (<a href="https://data.gov.uk/dataset/053a6529-6c8c-42ac-ae1e-455b2708e535/road-traffic-accidents">source</a>).</p>
+<py-script>
+import pandas as pd
+
+
+
+UK_ACCIDENTS_DATA = 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv'
+
+
+
+pd.read_csv(UK_ACCIDENTS_DATA).head()
+</py-script>
+<h2>2. Configure the visualization: Choose your layer(s) and viewport</h2>
+<p>pydeck's <strong><code>Layer</code></strong> object takes two positional and many keyword arguments:</p>
+<ul>
+<li>
+<p>First, a string specifying the layer type, with our example below using <code>'HexagonLayer'</code></p>
+</li>
+<li>
+<p>Next, a data URL–below you'll see the <code>UK_ACCIDENTS_DATA</code> that we set above, but we could alternately pass a data frame or list of dictionaries</p>
+</li>
+<li>
+<p>Finally, keywords representing that layer's attributes–in our example, this would include <code>elevation_scale</code>, <code>elevation_range</code>, <code>extruded</code>, <code>coverage</code>. <code>pickable=True</code> also allows us to add a tooltip that appears on hover.</p>
+</li>
+</ul>
+<p>```python</p>
+<p>layer = pdk.Layer(</p>
+<pre><code>'HexagonLayer',
+
+UK_ACCIDENTS_DATA,
+
+get_position=['lng', 'lat'],
+
+elevation_scale=50,
+
+pickable=True,
+
+auto_highlight=True,
+
+elevation_range=[0, 3000],
+
+extruded=True,
+
+coverage=1)
+</code></pre>
+<p>```</p>
+<p>There is of course an entire catalog of layers which you're welcome to check out within the <a href="https://deck.gl/#/documentation/deckgl-api-reference/layers/overview">deck.gl documentation</a>.</p>
+<h3>Configure your viewport</h3>
+<p>We also have to specifiy a <strong><code>ViewState</code></strong> object.</p>
+<p>The <strong><code>ViewState</code></strong> object specifies a camera angle relative to the map data. If you don't want to manually specify it, the function <strong><code>pydeck.data_utils.compute_view</code></strong> can take your data and automatically zoom to it.</p>
+<p>pydeck also provides some controls, most of which should be familiar from map applications throughout the web. By default, you can hold out and drag to rotate the map.</p>
+<py-script>
+layer = pdk.Layer(
+
+    'HexagonLayer',
+
+    UK_ACCIDENTS_DATA,
+
+    get_position=['lng', 'lat'],
+
+    auto_highlight=True,
+
+    elevation_scale=50,
+
+    pickable=True,
+
+    elevation_range=[0, 3000],
+
+    extruded=True,                 
+
+    coverage=1)
+
+
+
+# Set the viewport location
+
+view_state = pdk.ViewState(
+
+    longitude=-1.415,
+
+    latitude=52.2323,
+
+    zoom=6,
+
+    min_zoom=5,
+
+    max_zoom=15,
+
+    pitch=40.5,
+
+    bearing=-27.36)
+
+
+
+# Combined all of it and render a viewport
+
+r = pdk.Deck(layers=[layer], initial_view_state=view_state)
+
+r.show()
+</py-script>
+<h2>Render an update to the visualization</h2>
+<p>Execute the cell below and look at the map in the cell above–you'll notice a seamless rendered update on the map</p>
+<py-script>
+layer.elevation_range = [0, 10000]
+
+
+
+r.update()
+</py-script>
+<h2>Support updates over time</h2>
+<p>We can combine any Python function with our work here, of course. Execute the cell below to update our map above over time.</p>
+<py-script>
+import time
+
+r.show()
+</py-script>
+<py-script>
+for i in range(0, 10000, 1000):
+
+    layer.elevation_range = [0, i]
+
+    r.update()
+
+    time.sleep(0.1)
+</py-script>
+<h1>pydeck without Jupyter</h1>
+<p>If you prefer not to use Jupyter or you'd like to export your map to a separate file, you can also write out maps to HTML locally using the <code>.to_html</code> function.</p>
+<py-script>
+r.to_html()
+</py-script>
+          </body>
+        </html>
+        
