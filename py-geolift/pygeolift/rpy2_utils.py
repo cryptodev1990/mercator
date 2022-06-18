@@ -29,9 +29,9 @@ def _vector_to_scalar(func):
     def wrapper(x):
         if len(x) == 0:
             return None
-        if len(x) != 1:
+        if len(x) > 1:
             raise ValueError("Vector must have a length of 1.")
-        return func(x)
+        return func(x[0])
     return wrapper
 
 @vector_to_py_scalar.register(BoolVector)
