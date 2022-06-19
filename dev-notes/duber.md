@@ -59,7 +59,11 @@ Jun 10 2022
 June 18 2022
 ------------
 
-## Plans
+## Plans / Progress
+
+- [X] Get pygeolift into the FastAPI Docker container
+
+## Observations
 
 ```R
 market_selections <- geolift.geo_lift_market_selection(
@@ -96,3 +100,18 @@ for your
 
 We look at your DV across regions
 ```
+
+June 19 2022
+------------
+
+## Plans / Progress
+
+- [X] Deploy FastAPI with a the GeoLift validator for Jeff to approve of
+- [X] Add tests / build commands in a Makefile
+
+## Observations
+
+- The computation for GeoLift takes a bit of time, so we might need a worker queue ([example here](https://testdriven.io/blog/fastapi-and-celery/)).
+- [We might need to move off of Fly, if we need a worker queue.](https://community.fly.io/t/preview-multi-process-apps-get-your-workers-here/2316/13)
+
+

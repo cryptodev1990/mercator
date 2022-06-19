@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from .model import GeoLiftParams
 
 app = FastAPI()
 
@@ -17,6 +18,6 @@ async def health():
     return {"message": "OK"}
 
 
-@app.get("/health")
-async def health():
-    return {"message": "OK"}
+@app.post("/geolift/validate")
+async def validate_params(params: GeoLiftParams):
+    return {**params}
