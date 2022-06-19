@@ -31,4 +31,5 @@ RUN rm -rf py-geolift
 
 EXPOSE 8080
 
+RUN pip install click
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
