@@ -40,6 +40,7 @@ def _vector_to_scalar(func):
         if len(x) > 1:
             raise ValueError("Vector must have a length of 1.")
         return func(x[0])
+
     return wrapper
 
 
@@ -60,6 +61,7 @@ def vector_to_py_scalar_int(x) -> Optional[int]:
 def vector_to_py_scalar_float(x) -> Optional[float]:
     # use is.finite() to convert NaN, Inf, and NA_Real to None
     return float(x) if bool(base.is_finite(x)[0]) else None
+
 
 
 @vector_to_py_scalar.register(StrVector)
