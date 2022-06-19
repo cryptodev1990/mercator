@@ -2,10 +2,10 @@
 import collections.abc
 import warnings
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cached_property, lru_cache
 from locale import normalize
-from typing import Callable, Dict, Optional, Sequence, Tuple, Type, Union
-from textwarp import dedent
+from typing import Callable, Dict, Optional, Sequence, Tuple, Type, Union, Any
+from textwrap import dedent
 
 import numpy as np
 import pandas as pd
@@ -14,15 +14,28 @@ from pandera.typing import DataFrame, Series
 from rpy2 import robjects
 from rpy2.rinterface import ListSexpVector
 from rpy2.robjects import NULL as R_NULL
-from rpy2.robjects import (FloatVector, IntVector, ListVector, StrVector,
-                           default_converter, pandas2ri)
-from rpy2.robjects.conversion import (Converter, NameClassMap, localconverter)
+from rpy2.robjects import (
+    FloatVector,
+    IntVector,
+    ListVector,
+    StrVector,
+    default_converter,
+    pandas2ri,
+)
+from rpy2.robjects.conversion import Converter, NameClassMap, localconverter
 from rpy2.robjects.packages import importr
 
 from .augsynth import AugSynth, AugSynthSummary, augsynth_converter
 from .rpy2_utils import check_rclass, r_df_to_pandas, vector_to_py_scalar
 
-__all__ = ["GEO_LIFT_TARGET_VERSION", "geo_lift", "GeoLiftDataFrameSchema"]
+__all__ = [
+    "GEO_LIFT_TARGET_VERSION",
+    "geo_lift",
+    "GeoLiftDataFrameSchema",
+    "geo_lift_market_selection",
+    "GeoLiftMarketSelection",
+    "GeoLiftSummary",
+]
 
 rpackage = importr("GeoLift", on_conflict="warn")
 """Geo Lift R package"""
@@ -79,6 +92,7 @@ def geo_data_read(
         )
     return df
 
+
 @dataclass
 class GeoLiftMarketSelectionParameters:
     """Parameters used to run `geo_lift_market_selection`."""
@@ -122,7 +136,9 @@ class GeoLiftMarketSelection:
         )
 
     def __str__(self) -> str:
+        """Print description of GeoLiftMarketSelection objects."""
         return str(self.BestMarkets)
+
 
 def r_str_vector(obj: Union[str, Sequence[str]]) -> StrVector:
     if not isinstance(obj, str) and isinstance(obj, collections.abc.Sequence):
@@ -197,22 +213,93 @@ def geo_lift_market_selection(
 
 
 @dataclass
+class GeoLiftInference:
+    ATT: float
+    Perc_Lift: float
+    pvalue: float
+    Lower_Conf_Int: Optional[float]
+    Upper_Conf_Int: Optional[float]
+
+
+@dataclass
+class GeoLiftSummary:
+    """Summary of a GeoLift experiment."""
+
+    ATT_est: float
+    PercLift: float
+    pvalue: float
+    LowerCI: Optional[float]
+    UpperCI: Optional[float]
+    L2Imbalance: float
+    L2ImbalanceScaled: float
+    ATT: float
+    start: int
+    end: int
+    type: str
+    Y_id: str
+    incremental: float
+    bias: Optional[float]
+    weights: float
+    CI: bool
+    alpha: float
+    lower: Optional[float]
+    upper: Optional[float]
+    factor: int
+    progfunc: str
+
+
+    def __str__(self) -> str:
+        """Summarize object."""
+        ci_alpha = (1 - self.alpha) * 100
+        if self.lower is not None and self.upper is not None:
+            ci_values = (self.lower * self.factor, self.upper * self.factor)
+            CI_string = f"{ci_alpha}% Confidence Interval: ({ci_values[0]:.3f}, {ci_values[1]:.3f})"
+        else:
+            CI_string = f"{ci_alpha}% Confidence Interval: Not calculated"
+
+        pct_improvement_balance = (1 - self.L2ImbalanceScaled) * 100
+        bias = f"{self.bias:.3f}" if self.bias is not None else ""
+
+        return dedent(f"""
+        Statistics
+        ----------
+        Average ATT: {self.ATT_est:.3f}
+        Percent Lift: {self.PercLift:.2f}%
+        Incremental {self.Y_id}: {self.incremental:.2f}
+        P-value: {self.pvalue:.2f}
+        {CI_string}
+
+        Balance
+        -------
+        L2 Imbalance: {self.L2Imbalance:.3f}
+        Scaled L2 Imbalance: {self.L2ImbalanceScaled:.4f}
+        Percent improvement from naive model: {pct_improvement_balance:.0f}%
+        Average estimated bias: {bias}
+
+        Model Weights
+        -------------
+        Prognostic function: {self.progfunc}
+
+        """)
+
+
+@dataclass
 class GeoLift:
     """Results of `geo_lift`."""
 
     results: AugSynth
-    inference: pd.DataFrame
-    y_obs: np.array
-    y_hat: np.array
-    ATT: np.array
-    ATT_se: np.array
+    inference: GeoLiftInference
+    y_obs: np.ndarray
+    y_hat: np.ndarray
+    ATT: np.ndarray
+    ATT_se: np.ndarray
     TreatmentStart: int
     TreatmentEnd: int
     test_id: pd.DataFrame
     incremental: float
     Y_id: str
     summary: AugSynthSummary
-    ConfidenceIntervals: Optional[bool]
+    ConfidenceIntervals: bool
     lower_bound: Optional[float]
     upper_bound: Optional[float]
     df_weights: pd.DataFrame
@@ -222,8 +309,12 @@ class GeoLift:
     def rpy2py(cls: Type["GeoLift"], obj: ListVector) -> "GeoLift":
         """Create object from an R object."""
         check_rclass(obj, "GeoLift")
-        data = {}
-        data["inference"] = r_df_to_pandas(obj.rx2("inference"))
+        data: Dict[str, Any] = {}
+        inference_df = r_df_to_pandas(obj.rx2("inference"))
+        inference_df.columns = [c.replace(".", "_") for c in inference_df.columns]
+        data["inference"] = GeoLiftInference(
+            **next(inference_df.itertuples(index=False))._asdict()
+        )
         data["y_obs"] = np.asarray(obj.rx2("y_obs"))
         data["y_hat"] = np.asarray(obj.rx2("y_hat"))
         data["ATT"] = np.asarray(obj.rx2("ATT"))
@@ -242,37 +333,69 @@ class GeoLift:
         data["stat_test"] = vector_to_py_scalar(obj.rx2("lower_bound"))
         return cls(**data)
 
-    def _print(self):
-        test_duration = self.TreatmentStart - self.TreatmentEnd + 1
-        test_markets = ', '.join(list(self.test_id['name']))
-        perc_lift = float(self.inference['Perc.Lift'][0])
-        att = float(self.inference['ATT'][0])
-        pvalue = self.inference.pvalue.ix[0, 0]
+    @property
+    def test_duration(self) -> int:
+        """Test duration."""
+        return self.TreatmentEnd - self.TreatmentStart + 1
 
-        msg = dedent(f"""
+    def __str__(self) -> str:
+        test_markets = ", ".join(list(self.test_id["name"]))
+        perc_lift = float(self.inference.Perc_Lift)
+        att = float(self.inference.ATT)
+        pvalue = self.inference.pvalue
+
+
+        msg = dedent(
+            f"""
         GeoLift Output
 
         Test Info
         ---------
-        Test duration: {test_duration} periods
+        Test duration: {self.test_duration} periods
         Start time: {self.TreatmentStart}
         End time: {self.TreatmentEnd}
         Test markets: {test_markets}
 
         Statistics
         ----------
-        PercentLift: {perc_lift:.3f}
-        Incremental: {self.Y_id}: {self.incremental:.0f}
-        ATT: {att}
-        pvalue: {pvalue}
+        PercentLift: {perc_lift:.3f}%
+        Incremental {self.Y_id}: {self.incremental}
+        ATT: {att:.2f}
+        pvalue: {pvalue:.4f}
 
-        """)
+        """
+        )
         return msg
 
+    def summarize(self) -> GeoLiftSummary:
+        """Return a summary of the GeoLift analysis."""
+        return GeoLiftSummary(
+            ATT_est=self.inference.ATT,
+            PercLift=self.inference.Perc_Lift,
+            pvalue=self.inference.pvalue,
+            LowerCI=self.inference.Lower_Conf_Int,
+            UpperCI=self.inference.Upper_Conf_Int,
+            L2Imbalance=self.summary.l2_imbalance,
+            L2ImbalanceScaled=self.summary.scaled_l2_imbalance,
+            ATT=self.summary.att,
+            start=self.TreatmentStart,
+            end=self.TreatmentEnd,
+            type="single",
+            Y_id=self.Y_id,
+            incremental=self.incremental,
+            bias=float(np.mean(self.summary.bias_est)) if self.summary.bias_est is not None else None,
+            weights=self.df_weights,
+            CI=self.ConfidenceIntervals,
+            alpha=self.summary.alpha,
+            lower=self.lower_bound,
+            upper=self.upper_bound,
+            factor=int(self.results.data.y.shape[0] * self.test_id.shape[0]),
+            progfunc=self.results.progfunc,
+        )
 
 def geo_lift(
     data: DataFrame[GeoLiftDataFrameSchema],
-    locations: Sequence[str],
+    locations: Union[str, Sequence[str]],
     treatment_start_time: int,
     treatment_end_time: int,
     Y_id: str = "Y",
@@ -301,10 +424,10 @@ def geo_lift(
         model=str(model),
         fixed_effects=bool(fixed_effects),
         ConfidenceIntervals=bool(ConfidenceIntervals),
-        stat_test=str(stat_test),
+        stat_test=str(stat_test)
     )
+    # return res
     return GeoLift.rpy2py(res)
-
 
 
 geo_lift_converter = Converter("GeoLiftConverter")
