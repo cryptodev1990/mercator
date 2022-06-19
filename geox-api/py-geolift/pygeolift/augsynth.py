@@ -84,20 +84,6 @@ class AugSynth:
         return cls(**args)
 
 
-[
-    "att",
-    "average_att",
-    "alpha",
-    "t_int",
-    "call",
-    "l2_imbalance",
-    "scaled_l2_imbalance",
-    "bias_est",
-    "inf_type",
-]
-
->>>>>>> 625978e (Add lint)
-
 @dataclass
 class AugSynthSummary:
     """Python class for summary.augsynth."""
