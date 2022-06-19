@@ -24,14 +24,13 @@ RUN pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir poetry \
  && poetry config virtualenvs.create false \
  && cd py-geolift \
- && poetry install --no-dev \
  && poetry build \
- && pip uninstall --yes poetry && \
  && pip install dist/pygeolift-*.tar.gz
 
 RUN rm -rf py-geolift
 
 EXPOSE 8080
 
+# Weird but true, uvicorn fails without click
 RUN pip install click
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

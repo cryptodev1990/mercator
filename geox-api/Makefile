@@ -21,3 +21,6 @@ deploy:
 	flyctl deploy
 test:
 	pytest -x -vvv .
+
+docker-connect:
+	docker run -it geox-web:latest bash
