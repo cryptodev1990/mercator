@@ -4,11 +4,7 @@ import warnings
 from dataclasses import dataclass
 from functools import cached_property, lru_cache
 from locale import normalize
-<<<<<<< HEAD:py-geolift/pygeolift/geolift.py
 from typing import Callable, Dict, Optional, Sequence, Tuple, Type, Union, Any
-=======
-from typing import Callable, Dict, Optional, Sequence, Tuple, Type, Union
->>>>>>> 26c5546 (WIP build for geolift):geox-api/py-geolift/pygeolift/geolift.py
 from textwrap import dedent
 
 import numpy as np
