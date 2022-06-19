@@ -25,7 +25,9 @@ RUN pip install --no-cache-dir --upgrade pip \
  && poetry config virtualenvs.create false \
  && cd py-geolift \
  && poetry install --no-dev \
- && pip uninstall --yes poetry
+ && poetry build \
+ && pip uninstall --yes poetry && \
+ && pip install dist/pygeolift-*.tar.gz
 
 RUN rm -rf py-geolift
 
