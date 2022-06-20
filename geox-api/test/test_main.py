@@ -14,6 +14,10 @@ def test_read_health():
 
 
 def test_run_experiment():
-    response = client.get("/:eolift/validate")
+    response = client.post(
+        "/geolift/validate",
+        # TODO what's the JSON that should go here?
+        json={"id": "bazz", "title": "Bazz", "description": "Drop the bazz"}
+    )
     assert response.status_code == 200
     assert response.json() == {"message": "OK"}
