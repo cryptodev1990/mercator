@@ -18,14 +18,47 @@ augsynth = importr("augsynth")
 
 _base_r = importr("base")
 
+
+@dataclass
+class AugSynthDataSynthData:
+    # Z0: (untreated time periods, num untreated units)
+    # X0: (untreated time periods, num untreated units)
+    # Z1: (untreated time periods, 1)
+    # X1: (untreated time periods, 1)
+    # Y0plot: (all time periods, num untreated)
+    # Y1plot: (all time periods, 1)
+    Z0: np.ndarray
+    Z1: np.ndarray
+    X0: np.ndarray
+    X1: np.ndarray
+    Y0plot: np.ndarray
+    Y1plot: np.ndarray
+
+    @classmethod
+    def rpy2py(
+        cls: Type["AugSynthDataSynthData"], obj: ListVector
+    ) -> "AugSynthDataSynthData":
+        return cls(
+            **{
+                k: np.asarray(obj.rx2(k))
+                for k in ("Z0", "Z1", "Y0plot", "Y1plot", "X0", "X1")
+            }
+        )
+
+
 @dataclass
 class AugSynthData:
     """Stores data used in estimating an AugSynth model."""
 
+    # response metric (num units, num time periods pre-treatment)
     X: np.ndarray
+    # 0/1 if treated. (num units,)
     trt: np.ndarray
+    # response metirc (num units, num time periods post-treatment)
     y: np.ndarray
+    # Integer listing time periods 1...N  (num time periods,)
     time: np.ndarray
+
     synth_data: Dict[str, np.ndarray]
 
     @classmethod
@@ -34,9 +67,7 @@ class AugSynthData:
         data: Dict[str, Any] = {}
         for k in ("X", "trt", "y", "time"):
             data[k] = np.asarray(obj.rx2(k))
-        data["synth_data"] = {}
-        for k in ("Z0", "Z1", "Y0plot", "Y1plot", "X0", "X1"):
-            data["synth_data"][k] = np.asarray(obj.rx2("synth_data").rx2(k))
+        data["synth_data"] = AugSynthDataSynthData.rpy2py(obj.rx2("synth_data"))
         return cls(**data)
 
 
@@ -45,16 +76,20 @@ class AugSynth:
     """Store the results of an AugSynth model."""
 
     data: AugSynthData
+    # weights (num untreated units, 1) #TODO: is there something wrong with how this is esimated?
     weights: np.ndarray
     l2_imbalance: float
     scaled_l2_imbalance: float
+    # (all units, all time periods)
     mhat: np.ndarray
-    lambda_: Optional[np.ndarray]
+    # lambda_: Optional[np.ndarray]
     ridge_mhat: np.ndarray
+    # (num untreated units,)
     synw: np.ndarray
-    lambdas: Optional[np.ndarray]
-    lambdas_errors: Optional[np.ndarray]
-    lambdas_errors_se: Optional[np.ndarray]
+    # Lambdas seem to only relate to multi-cohort assignments
+    # lambdas: Optional[np.ndarray]
+    # lambdas_errors: Optional[np.ndarray]
+    # lambdas_errors_se: Optional[np.ndarray]
     progfunc: str
     scm: bool
     fixedeff: bool
@@ -68,13 +103,14 @@ class AugSynth:
             "weights": np.asarray(obj.rx2("weights")),
             "l2_imbalance": vector_to_py_scalar(obj.rx2("l2_imbalance")),
             "scaled_l2_imbalance": vector_to_py_scalar(obj.rx2("scaled_l2_imbalance")),
+            #
             "mhat": np.asarray(obj.rx2("mhat")),
             "lambda_": np.asarray(obj.rx2("lambda")),
             "ridge_mhat": np.asarray(obj.rx2("ridge_mhat")),
             "synw": np.asarray(obj.rx2("synw")),
-            "lambdas": obj.rx2("lambdas"),
-            "lambdas_errors": obj.rx2("lambdas_errors"),
-            "lambdas_errors_se": obj.rx2("lambdas_errors_se"),
+            # "lambdas": obj.rx2("lambdas"),
+            # "lambdas_errors": obj.rx2("lambdas_errors"),
+            # "lambdas_errors_se": obj.rx2("lambdas_errors_se"),
             "progfunc": vector_to_py_scalar(obj.rx2("progfunc")),
             "scm": vector_to_py_scalar(obj.rx2("scm")),
             "fixedeff": vector_to_py_scalar(obj.rx2("fixedeff")),
@@ -88,7 +124,11 @@ class AugSynth:
 class AugSynthSummary:
     """Python class for summary.augsynth."""
 
+    # row = each time period
+    # Columns: Time(int), Estimate(float), lower_bound(float), upper_bound (float)
     att: pd.DataFrame
+    # only 1 row
+    # Columns: Time(int), Estimate(float), lower_bound(float), upper_bound (float)
     average_att: pd.DataFrame
     alpha: float
     t_int: int
@@ -109,7 +149,9 @@ class AugSynthSummary:
             t_int=vector_to_py_scalar(obj.rx2("t_int")),
             l2_imbalance=vector_to_py_scalar(obj.rx2("l2_imbalance")),
             scaled_l2_imbalance=vector_to_py_scalar(obj.rx2("scaled_l2_imbalance")),
-            bias_est=None if bool(_base_r.all(_base_r.is_na(bias_est_r))) else np.asarray(bias_est_r),
+            bias_est=None
+            if bool(_base_r.all(_base_r.is_na(bias_est_r)))
+            else np.asarray(bias_est_r),
             inf_type=vector_to_py_scalar(obj.rx2("inf_type")),
         )
 

@@ -4,3 +4,4 @@ node_modules/
 .*.swp
 __pycache__/
 .ipynb_checkpoints/
+.Rhistory
