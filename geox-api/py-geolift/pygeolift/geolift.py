@@ -26,7 +26,7 @@ from rpy2.robjects.conversion import Converter, NameClassMap, localconverter
 from rpy2.robjects.packages import importr
 
 from .augsynth import AugSynth, AugSynthSummary, augsynth_converter
-from .rpy2_utils import check_rclass, r_df_to_pandas, vector_to_py_scalar
+from .rpy2_utils import check_rclass, r_df_to_pandas, vector_to_py_scalar, r_str_vector
 
 __all__ = [
     "GEO_LIFT_TARGET_VERSION",
@@ -38,8 +38,7 @@ __all__ = [
 ]
 
 rpackage = importr("GeoLift", on_conflict="warn")
-"""Geo Lift R package"""
-
+"""GeoLift R package."""
 
 GEO_LIFT_TARGET_VERSION = "2.4"
 if (rpackage.__version__ is None) or (
@@ -54,7 +53,7 @@ if (rpackage.__version__ is None) or (
 class GeoLiftDataFrameSchema(pa.SchemaModel):
     """GeoLift data frame schema.
 
-    This is the schema of a data frame after processed by `geo_data_read`.
+    This is the schema of a data frame after processed by :py:func:`geo_data_read`.
     """
 
     location: Series[str] = pa.Field()
@@ -78,7 +77,11 @@ def geo_data_read(
     summary: bool = False,
     keep_unix_time: bool = False,
 ) -> DataFrame[GeoLiftDataFrameSchema]:
-    """Process and clean a data-frame for `geo_lift`."""
+    """Process and clean a data-frame.
+
+    See the documentation for `GeoLift::GeoDataRead <https://rdrr.io/github/facebookincubator/GeoLift/man/GeoLiftMarketSelection.html>`_.
+
+    """
     with localconverter(default_converter + pandas2ri.converter):
         df = rpackage.GeoDataRead(
             data,
@@ -95,7 +98,7 @@ def geo_data_read(
 
 @dataclass
 class GeoLiftMarketSelectionParameters:
-    """Parameters used to run `geo_lift_market_selection`."""
+    """Parameters used to run :py:func:`geo_lift_market_selection`."""
 
     data: pd.DataFrame
     model: str
@@ -119,7 +122,7 @@ class GeoLiftMarketSelectionParameters:
 
 @dataclass
 class GeoLiftMarketSelection:
-    """Results of `geo_lift_market_selection`."""
+    """Result from :py:func:`geo_lift_market_selection`."""
 
     BestMarkets: pd.DataFrame
     PowerCurves: pd.DataFrame
@@ -139,11 +142,6 @@ class GeoLiftMarketSelection:
         """Print description of GeoLiftMarketSelection objects."""
         return str(self.BestMarkets)
 
-
-def r_str_vector(obj: Union[str, Sequence[str]]) -> StrVector:
-    if not isinstance(obj, str) and isinstance(obj, collections.abc.Sequence):
-        return StrVector([str(elem) for elem in obj])
-    return StrVector([str(obj)])
 
 
 def geo_lift_market_selection(
@@ -176,7 +174,10 @@ def geo_lift_market_selection(
     import_augsynth_from="library(augsynth)",
     import_tidyr_from="library(tidyr)",
 ):
-    """Run the R function `GeoLift::GeoLift`."""
+    """Geolift Market Selection algorithm based on a Power Analysis.
+
+    See the documentation for `GeoLift::GeoDataRead <https://rdrr.io/github/facebookincubator/GeoLift/man/GeoLiftMarketSelection.html>`_.
+    """
     with localconverter(default_converter + pandas2ri.converter):
         data_r = robjects.conversion.py2rpy(data)
     res = rpackage.GeoLiftMarketSelection(
@@ -209,7 +210,8 @@ def geo_lift_market_selection(
         import_augsynth_from=str(import_augsynth_from),
         import_tidyr_from=str(import_tidyr_from),
     )
-    return GeoLiftMarketSelection.rpy2py(res)
+    return res
+    # return GeoLiftMarketSelection.rpy2py(res)
 
 
 @dataclass
@@ -285,8 +287,9 @@ class GeoLiftSummary:
 
 @dataclass
 class GeoLift:
-    """Results of `geo_lift`."""
+    """Results from :py:func:`geo_lift`."""
 
+    data: pd.DataFrame
     results: AugSynth
     inference: GeoLiftInference
     y_obs: np.ndarray
@@ -310,6 +313,8 @@ class GeoLift:
         """Create object from an R object."""
         check_rclass(obj, "GeoLift")
         data: Dict[str, Any] = {}
+        # COlumns: location, time, Y, D
+        data["data"] = r_df_to_pandas(obj.rx2("data"))
         inference_df = r_df_to_pandas(obj.rx2("inference"))
         inference_df.columns = [c.replace(".", "_") for c in inference_df.columns]
         data["inference"] = GeoLiftInference(
@@ -321,6 +326,7 @@ class GeoLift:
         data["ATT_se"] = np.asarray(obj.rx2("ATT_se"))
         data["TreatmentStart"] = vector_to_py_scalar(obj.rx2("TreatmentStart"))
         data["TreatmentEnd"] = vector_to_py_scalar(obj.rx2("TreatmentEnd"))
+        # columns: loc_id, name
         data["test_id"] = r_df_to_pandas(obj.rx2("test_id"))
         data["incremental"] = vector_to_py_scalar(obj.rx2("incremental"))
         data["Y_id"] = vector_to_py_scalar(obj.rx2("Y_id"))
@@ -329,6 +335,7 @@ class GeoLift:
         data["ConfidenceIntervals"] = vector_to_py_scalar(obj.rx2("ConfidenceInterval"))
         data["lower_bound"] = vector_to_py_scalar(obj.rx2("lower_bound"))
         data["upper_bound"] = vector_to_py_scalar(obj.rx2("lower_bound"))
+        # columns: location, weight
         data["df_weights"] = r_df_to_pandas(obj.rx2("df_weights"))
         data["stat_test"] = vector_to_py_scalar(obj.rx2("lower_bound"))
         return cls(**data)
@@ -344,9 +351,7 @@ class GeoLift:
         att = float(self.inference.ATT)
         pvalue = self.inference.pvalue
 
-
-        msg = dedent(
-            f"""
+        msg = dedent(f"""
         GeoLift Output
 
         Test Info
@@ -426,8 +431,8 @@ def geo_lift(
         ConfidenceIntervals=bool(ConfidenceIntervals),
         stat_test=str(stat_test)
     )
-    # return res
-    return GeoLift.rpy2py(res)
+    return res
+    #return GeoLift.rpy2py(res)
 
 
 geo_lift_converter = Converter("GeoLiftConverter")
