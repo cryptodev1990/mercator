@@ -1,2 +1,4 @@
 fastapi[all]
+celery[redis]
 click
+redis

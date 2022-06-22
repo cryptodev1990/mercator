@@ -25,10 +25,12 @@ def r_df_to_pandas(df: rpy2.robjects.vectors.DataFrame) -> pd.DataFrame:
     with localconverter(robjects.default_converter + pandas2ri.converter):
         return robjects.conversion.rpy2py(df)
 
+
 def pandas_to_r_df(df: pd.DataFrame) -> rpy2.robjects.vectors.DataFrame:
     """Convert an R dataframe to pandas."""
     with localconverter(robjects.default_converter + pandas2ri.converter):
         return robjects.conversion.py2rpy(df)
+
 
 @singledispatch
 def vector_to_py_scalar(x):
@@ -64,7 +66,6 @@ def vector_to_py_scalar_int(x: IntVector) -> Optional[int]:
 def vector_to_py_scalar_float(x: FloatVector) -> Optional[float]:
     # use is.finite() to convert NaN, Inf, and NA_Real to None
     return float(x) if bool(base.is_finite(x)[0]) else None
-
 
 
 @vector_to_py_scalar.register(StrVector)

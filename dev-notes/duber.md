@@ -115,3 +115,20 @@ June 19 2022
 - [We might need to move off of Fly, if we need a worker queue.](https://community.fly.io/t/preview-multi-process-apps-get-your-workers-here/2316/13)
 
 
+June 21 2022
+-------------
+
+## Plans / Progress
+
+- [ ] Add basic CRUD for experiments
+- [X] Add worker queue
+    - [ ] Worker queue works on Fly / in prod
+    - [X] Worker queue works in local Dockerfile
+    - [X] Worker queue works on local metal
+
+## Observations
+
+- Had to set up Redis on Fly as its own app. Still easier than AWS but if this becomes a frequent pattern it's probably not worth using Fly
+- Eugene recommended using Auth0 and Stripe for user accounts and billing
+- [FastAPI with Auth0 post](https://auth0.com/blog/build-and-secure-fastapi-server-with-auth0/)
+

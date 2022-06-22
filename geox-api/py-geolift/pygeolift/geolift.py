@@ -249,7 +249,6 @@ class GeoLiftSummary:
     factor: int
     progfunc: str
 
-
     def __str__(self) -> str:
         """Summarize object."""
         ci_alpha = (1 - self.alpha) * 100
@@ -262,7 +261,8 @@ class GeoLiftSummary:
         pct_improvement_balance = (1 - self.L2ImbalanceScaled) * 100
         bias = f"{self.bias:.3f}" if self.bias is not None else ""
 
-        return dedent(f"""
+        return dedent(
+            f"""
         Statistics
         ----------
         Average ATT: {self.ATT_est:.3f}
@@ -282,7 +282,8 @@ class GeoLiftSummary:
         -------------
         Prognostic function: {self.progfunc}
 
-        """)
+        """
+        )
 
 
 @dataclass
@@ -388,7 +389,9 @@ class GeoLift:
             type="single",
             Y_id=self.Y_id,
             incremental=self.incremental,
-            bias=float(np.mean(self.summary.bias_est)) if self.summary.bias_est is not None else None,
+            bias=float(np.mean(self.summary.bias_est))
+            if self.summary.bias_est is not None
+            else None,
             weights=self.df_weights,
             CI=self.ConfidenceIntervals,
             alpha=self.summary.alpha,
@@ -397,6 +400,7 @@ class GeoLift:
             factor=int(self.results.data.y.shape[0] * self.test_id.shape[0]),
             progfunc=self.results.progfunc,
         )
+
 
 def geo_lift(
     data: DataFrame[GeoLiftDataFrameSchema],
@@ -429,7 +433,7 @@ def geo_lift(
         model=str(model),
         fixed_effects=bool(fixed_effects),
         ConfidenceIntervals=bool(ConfidenceIntervals),
-        stat_test=str(stat_test)
+        stat_test=str(stat_test),
     )
     return res
     #return GeoLift.rpy2py(res)
