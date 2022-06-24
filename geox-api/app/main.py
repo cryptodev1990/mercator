@@ -1,16 +1,20 @@
 import json
 import os
 
-import redis
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from starlette.requests import Request
+from starlette_authlib.middleware import AuthlibMiddleware as SessionMiddleware
+from starlette.responses import HTMLResponse
 
-from app.tasks import add, celery_app
-from .model import GeoLiftParams
+from .routes import (
+    health,
+    tasks,
+    auth
+)
 
 app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,41 +24,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+secret_key = os.environ['APP_SECRET_KEY']
 
-@app.get("/health")
-async def health():
-    return {"message": "OK"}
-
-
-@app.get("/redis-health")
-async def health():
-    r = redis.Redis.from_url(url=os.getenv("REDIS_CONNECTION"))
-    try:
-        res = r.ping()
-        print(res)
-        return JSONResponse({"message": "OK"})
-    except redis.exceptions.ConnectionError:
-        return JSONResponse({"message": "ERROR"}, status_code=500)
+app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
 
-@app.post("/geolift/validate")
-async def validate_params(params: GeoLiftParams):
-    return json.dumps(params)
+app.include_router(health.router)
+app.include_router(tasks.router)
+app.include_router(auth.router)
 
 
-@app.post("/tasks/add")
-async def run_add_task(a: int, b: int):
-    task = add.delay(a, b)
-    return JSONResponse({"task_id": task.id})
-
-
-@app.get("/tasks/{task_id}")
-def get_status(task_id):
-    task_result = celery_app.AsyncResult(task_id)
-    print(task_result.backend)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result,
-    }
-    return JSONResponse(result)
+@app.get('/')
+async def homepage(request: Request):
+    user = request.session.get('user')
+    if user:
+        data = json.dumps(user)
+        html = (
+            f'<pre>{data}</pre>'
+            '<a href="/logout">logout</a>'
+        )
+        return HTMLResponse(html)
+    return HTMLResponse('<a href="/login">login</a>')

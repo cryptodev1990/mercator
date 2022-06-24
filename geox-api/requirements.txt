@@ -2,3 +2,6 @@ fastapi[all]
 celery[redis]
 click
 redis
+psycopg2
+authlib==1.0.1
+starlette-authlib==0.1.11

@@ -24,8 +24,8 @@ build:
 	cd ..; \
 	brew install overmind
 
-run:
-	overmind start
+dev:
+	export $$(cat .env.local | xargs) && overmind start
 
 lint:
 	# Lint the project
@@ -38,3 +38,16 @@ test:
 
 docker-connect:
 	docker run -it geox-web:latest bash
+
+db-revision:
+	# alembic revision -m "$(msg)"
+	# TODO how should this actually be done?
+	# export $(cat .env.local | xargs) && PYTHONPATH=. alembic revision --autogenerate -m "Add users and shapes"
+	echo See Makefile for command
+
+db-upgrade:
+	export $$(cat .env.local | xargs) && PYTHONPATH=. alembic upgrade head
+
+
+pg:
+	/Applications/Postgres.app/Contents/Versions/14/bin/psql -p5432 "geox"
