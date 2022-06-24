@@ -122,7 +122,7 @@ June 21 2022
 
 - [ ] Add basic CRUD for experiments
 - [X] Add worker queue
-    - [ ] Worker queue works on Fly / in prod
+    - [X] Worker queue works on Fly / in prod
     - [X] Worker queue works in local Dockerfile
     - [X] Worker queue works on local metal
 
@@ -132,3 +132,67 @@ June 21 2022
 - Eugene recommended using Auth0 and Stripe for user accounts and billing
 - [FastAPI with Auth0 post](https://auth0.com/blog/build-and-secure-fastapi-server-with-auth0/)
 
+
+June 24 2022
+------------
+
+## Progress
+
+- [X] Added Auth0 login
+- [X] Added Alembic
+- [X] Added SQLAlchemy
+
+Need to get frontend working with the backend auth.
+
+TODO Can I have api.mercator.tech route to Fly and mercator.tech otherwise be the frontend?
+
+## Plans
+
+- Write a shape drawing frontend. Desired functionality:
+  - User can CRUD manage a database connection, with a target table. Hashicorp Vault for storing this?
+  - Given a database and a target table, the user gets a list of shapes in that table, filtered to the current viewport
+  - The user can draw new shapes by clicking a draw tool, or edit existing shapes by clicking an edit tool
+  - All shapes by default are GeoJSON Features
+  - User flow: Login >> Apps >> Mercator
+
+
+Login
+```
+------------------------
+|
+|   MERCATOR  Geospatial intelligence for Business Operations
+|
+|                  Early Access User Login
+|
+|                  EMAIL_______
+|                  PASSWORD___
+|
+
+```
+
+Apps
+```
+ Imagine this page looks like toolshed.uberinternal.com or Okta
+```
+
+Mercator
+
+````
+HEADER BAR which contains a DB CONNECTIONS DROPDOWN
+
+  TOOL BANK which is fully draggable
+ 
+SIDE BAR with list of shapes in db
+    |
+    |xxxxxxxxxxxxxxxxxxxxxxxxxx
+    |xxxxxx MAP   xxxxxxxxxxxxx
+    |xxxxxxxxxxxxxxxxxxxxxxxxxx
+    |xxxxxxxxxxxxxxxxxxxxxxxxxx
+    |xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+```
+
+## Observations
+
+- Could use [OpenAPI TypeScript CodeGen](https://github.com/ferdikoomen/openapi-typescript-codegen) with FastAPI
