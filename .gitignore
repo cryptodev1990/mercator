@@ -9,3 +9,4 @@ __pycache__/
 .env.local
 .env.docker
 .Rhistory
+.DS_Store
