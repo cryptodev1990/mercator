@@ -19,7 +19,7 @@ function App() {
             setMessage(JSON.stringify(x))
 	})
   }, []);
-  return (
+  const lilapp = (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
@@ -69,6 +69,7 @@ function App() {
       </header>
     </div>
   );
+  return <div>We just got this domain. We'll have something interesting here soon.</div>
 }
 
 export default App;
