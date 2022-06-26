@@ -222,3 +222,21 @@ CNAME | wwww | geox.vercel.app
 TXT | @ | google-site-verification...
 A Record | @ | IP-address-for-vercel
 CNAME | api | restless-rain-538.fly.dev
+
+June 26 2022
+------------
+
+## Progress
+
+- [ ] Write GeoJSON app
+  1) Create a deck container
+  2) Create polygon fixtures
+  3) Add new polygons
+    - "Publish" on add
+  4) Edit existing polygons
+    - "Publish" on edit
+  State to track:
+    - Polygons currently on map
+    - Data source currently being used
+- [ ] 
+
