@@ -196,3 +196,17 @@ SIDE BAR with list of shapes in db
 ## Observations
 
 - Could use [OpenAPI TypeScript CodeGen](https://github.com/ferdikoomen/openapi-typescript-codegen) with FastAPI
+
+June 25 2022
+------------
+
+## Progress
+
+- [X] Set up api.mercator.tech and mercator.tech to pair with fly and vercel
+- [X] Updated the landing page for mercator.tech
+
+## Plans
+
+- [ ] Set up login with current landing page
+- [ ] Write database connector app
+- [ ] Write GeoJSON app on top of database connector
