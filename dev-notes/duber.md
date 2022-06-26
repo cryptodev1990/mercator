@@ -210,3 +210,15 @@ June 25 2022
 - [ ] Set up login with current landing page
 - [ ] Write database connector app
 - [ ] Write GeoJSON app on top of database connector
+
+## Observations
+
+-  ``fly certs --app restless-rain-538 add api.mercator.tech`` let me add certs
+- DNS records look like:
+
+TYPE | HOST | VALUE
+---------------------------------
+CNAME | wwww | geox.vercel.app
+TXT | @ | google-site-verification...
+A Record | @ | IP-address-for-vercel
+CNAME | api | restless-rain-538.fly.dev
