@@ -226,7 +226,24 @@ CNAME | api | restless-rain-538.fly.dev
 June 26 2022
 ------------
 
-## Progress
+## Plans
+
+- [ ] Pass auth token from API to frontend
+  - [ ] Use OpenAPI TypeScript CodeGen on api.mercator
+  - [ ] Ping auth API endpoint from frontend
+  - [ ] Store auth cookie and use on all requests
+  - [ ] Verify that frontend can access authenticated material
+    - [ ] Create a restricted endpoint
+    - [ ] Create a restricted view
+    - [ ] Verify that neither are accessible if logged out
+    - [ ] Verify that both are accessible if logged in
+    - [ ] Verify that accessible assets are unique to the logged-in user (e.g. user A can't see user B's material)
+
+- [ ] Set up database connector
+  - [ ] Web form for connection string info
+  - [ ] Backend endpoint to pass connection string info
+  - [ ] Connect backend to [Hashicorp Vault](https://www.vaultproject.io/api-docs/secret/databases)
+     - Use the [Vault Docker image](https://hub.docker.com/_/vault)?
 
 - [ ] Write GeoJSON app
   1) Create a deck container
@@ -238,5 +255,20 @@ June 26 2022
   State to track:
     - Polygons currently on map
     - Data source currently being used
-- [ ] 
+    - Live database connection
+    - User logged in or not
 
+June 27 2022
+------------
+
+- [ ] Finish landing page globe
+- [ ] Pass auth token from API to frontend
+  - [ ] Use OpenAPI TypeScript CodeGen on api.mercator
+  - [ ] Ping auth API endpoint from frontend
+  - [ ] Store auth cookie and use on all requests
+  - [ ] Verify that frontend can access authenticated material
+    - [ ] Create a restricted endpoint
+    - [ ] Create a restricted view
+    - [ ] Verify that neither are accessible if logged out
+    - [ ] Verify that both are accessible if logged in
+    - [ ] Verify that accessible assets are unique to the logged-in user (e.g. user A can't see user B's material)

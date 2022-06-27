@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@danmarshall/deckgl-typings": "^4.9.24",
+    "@deck.gl/core": "^8.7.12",
+    "@deck.gl/layers": "^8.7.12",
+    "@deck.gl/react": "^8.7.12",
     "@reduxjs/toolkit": "^1.8.2",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",

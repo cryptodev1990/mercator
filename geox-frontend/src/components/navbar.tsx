@@ -2,7 +2,7 @@ import logo from "./mercator-logo.svg";
 
 const Navbar: React.FC = () => {
   const css =
-    "relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-24 font-semibold text-sm text-white";
+    "relative bg-red z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-24 font-semibold text-sm text-white";
   return (
     <header className={css}>
       <nav aria-label="Logo menu" className="relative z-50 flex">
@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
 
         <a
           href="/login"
-          className="text-base sm:text-sm px-6 button lg:button-sm bg-ublue hover:bg-violet-600 text-white font-bold transition-all p-2"
+          className="text-base sm:text-sm px-6 button lg:button-sm bg-ublue hover:bg-violet-600 text-white font-bold transition-all p-2 rounded"
           data-turbolinks="false"
         >
           Login
