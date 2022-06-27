@@ -35,6 +35,7 @@ const Globe = () => {
       initialViewState={initialViewState}
       controller={false}
       parameters={{ cull: true }}
+      getCursor={() => "inherit"}
       layers={[
         new GeoJsonLayer({
           data: countries,
