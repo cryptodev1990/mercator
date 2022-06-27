@@ -2,7 +2,7 @@ import logo from "./mercator-logo.svg";
 
 const Navbar: React.FC = () => {
   const css =
-    "relative bg-red z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-24 font-semibold text-sm text-white";
+    "relative max-w-5xl bg-red z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-24 font-semibold text-sm text-white";
   return (
     <header className={css}>
       <nav aria-label="Logo menu" className="relative z-50 flex">
