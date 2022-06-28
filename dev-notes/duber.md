@@ -261,7 +261,7 @@ June 26 2022
 June 27 2022
 ------------
 
-- [ ] Finish landing page globe
+- [X] Finish landing page globe
 - [ ] Pass auth token from API to frontend
   - [ ] Use OpenAPI TypeScript CodeGen on api.mercator
   - [ ] Ping auth API endpoint from frontend
