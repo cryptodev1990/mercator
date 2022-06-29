@@ -10,6 +10,14 @@ import { useEffect, useState } from "react";
 const countries =
   "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_scale_rank.geojson";
 
+interface ViewStateArgs {
+  longitude: number;
+  latitude: number;
+  zoom: number;
+  minZoom: number;
+  maxZoom: number;
+}
+
 const Globe = () => {
   const [initialViewState, setInitialViewState] = useState({
     longitude: 2.27,
@@ -19,7 +27,12 @@ const Globe = () => {
     maxZoom: 0,
   });
 
+  const [rotate, setRotate] = useState(true);
+
   useEffect(() => {
+    if (!rotate) {
+      return;
+    }
     const intervalId = setInterval(() => {
       setInitialViewState({
         ...initialViewState,
@@ -30,32 +43,44 @@ const Globe = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [initialViewState]);
+  }, [initialViewState, rotate]);
 
   return (
-    <DeckGL
-      initialViewState={initialViewState}
-      controller={false}
-      parameters={{ cull: true }}
-      getCursor={() => "inherit"}
-      layers={[
-        new GeoJsonLayer({
-          data: countries,
-          getLineColor: [255, 255, 255],
-          getFillColor: [255, 255, 255],
-          stroked: false,
-          filled: true,
-        }),
-      ]}
-      views={[new GlobeView()]}
-    ></DeckGL>
+    <div onMouseLeave={() => setRotate(true)}>
+      <DeckGL
+        initialViewState={initialViewState}
+        controller={true}
+        onDragStart={() => {
+          setRotate(false);
+        }}
+        onDragEnd={(args: any) => {
+          const { viewport } = args;
+          setInitialViewState({
+            ...initialViewState,
+            latitude: viewport.latitude,
+            longitude: viewport.longitude,
+          } as ViewStateArgs);
+        }}
+        parameters={{ cull: true }}
+        layers={[
+          new GeoJsonLayer({
+            data: countries,
+            getLineColor: [255, 255, 255],
+            getFillColor: [255, 255, 255],
+            stroked: false,
+            filled: true,
+          }),
+        ]}
+        views={[new GlobeView()]}
+      ></DeckGL>
+    </div>
   );
 };
 
 const LandingPage = () => {
   return (
     <main
-      className="max-w-full h-screen bg-gradient-to-br from-ublue to-swiss-coffee"
+      className="grid grid-flow-row max-w-full h-screen bg-gradient-to-br from-ublue to-chestnut-rose relative overflow-hidden"
       role="main"
     >
       <section className="">
@@ -82,6 +107,11 @@ const LandingPage = () => {
             <Globe />
           </div>
         </div>
+      </section>
+      <section className="relative max-w-5xl container mx-auto px-5 invisible sm:visible flex h-24 font-semibold text-sm text-white">
+        <footer className="absolute bottom-0 right-0">
+          Copyright © 2022 Mercator HQ
+        </footer>
       </section>
     </main>
   );
