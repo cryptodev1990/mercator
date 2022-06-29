@@ -13,7 +13,6 @@ celery_app = Celery(
     "tasks", broker=REDIS_CONNECTION, backend=REDIS_CONNECTION
 )
 
-
 @celery_app.task
 def run_market_selection(input: MarketSelectionInput) -> MarketSelectionResult:
     """Select locations for a geo-lift experiment."""
@@ -71,4 +70,3 @@ def run_market_selection(input: MarketSelectionInput) -> MarketSelectionResult:
         output.append(d)
     # TODO: Should the original parameters be included in the results
     return MarketSelectionResult(__root__=output)
-

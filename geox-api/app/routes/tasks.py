@@ -1,15 +1,16 @@
-from ..tasks import add, celery_app
+from asyncio.log import logger
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
+from app.tasks import run_market_selection
+from app.model import MarketSelectionInput
 
 router = APIRouter()
 
-
-@router.post("/tasks/add")
-async def run_add_task(a: int, b: int):
-    task = add.delay(a, b)
+@router.post("/tasks/market_selection")
+async def run_market_selection(input: MarketSelectionInput):
+    task = run_market_selection()
     return JSONResponse({"task_id": task.id})
 
 
