@@ -1,11 +1,10 @@
-import json
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette_authlib.middleware import AuthlibMiddleware as SessionMiddleware
-from starlette.responses import HTMLResponse
+from fastapi.responses import RedirectResponse
 
 from .routes import (
     health,
@@ -35,13 +34,6 @@ app.include_router(auth.router)
 
 
 @app.get('/')
-async def homepage(request: Request):
-    user = request.session.get('user')
-    if user:
-        data = json.dumps(user)
-        html = (
-            f'<pre>{data}</pre>'
-            '<a href="/logout">logout</a>'
-        )
-        return HTMLResponse(html)
-    return HTMLResponse('<a href="/login">login</a>')
+async def home(request: Request):
+    # user = request.session.get('user')
+    return RedirectResponse(url=os.environ['FRONTEND_URL'])

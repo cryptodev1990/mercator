@@ -1,11 +1,15 @@
 import datetime
-import os
+from urllib.parse import quote_plus, urlencode
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Response, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.security import HTTPBearer
 
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth, OAuthError
+
+
+from .auth_decorators import VerifyToken
 
 from fastapi.responses import RedirectResponse
 
@@ -14,30 +18,24 @@ from ..crud import create_user, get_user_by_email, update_user_by_email
 from ..models import SessionLocal, User
 
 router = APIRouter()
-
-
 oauth = OAuth()
+token_auth_scheme = HTTPBearer()
 
 
-oauth.register(
-    "auth0",
-    client_id=os.environ["AUTH0_CLIENT_ID"],
-    client_secret=os.environ["AUTH0_CLIENT_SECRET"],
-    client_kwargs={
-        "scope": "openid profile email",
-    },
-    server_metadata_url=f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/openid-configuration'
-)
 
 
-@router.get('/login')
-async def login(request: Request):
-    redirect_uri = request.url_for('auth')
-    return await oauth.auth0.authorize_redirect(request, redirect_uri)
+@router.get('/verify_jwt')
+async def verify_jwt(response: Response, token = Depends(token_auth_scheme)):
+    result = VerifyToken(token.credentials).verify()
+    if result.get("status"):
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return result
+    return {"msg": "OK"}
 
 
 @router.get('/auth')
 async def auth(request: Request):
+    redirect_url = request.query_params.get("redirect")
     try:
         token = await oauth.auth0.authorize_access_token(request)
     except OAuthError as error:
@@ -68,11 +66,4 @@ async def auth(request: Request):
                     last_login_at=now
                 ))
             request.session['user'] = user
-    return RedirectResponse(url='/')
-
-
-@router.get('/logout')
-async def logout(request: Request):
-    request.session.pop('user', None)
-    print(request.session)
-    return RedirectResponse(url='/')
+    return RedirectResponse(url=redirect_url)

@@ -1,7 +1,9 @@
 import { Navbar } from "../../components/navbar";
 
+// @ts-ignore
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { GlobeView } from "./globe-view";
+// @ts-ignore
 import DeckGL from "@deck.gl/react";
 import { useEffect, useState } from "react";
 
@@ -58,7 +60,7 @@ const LandingPage = () => {
     >
       <section className="">
         <Navbar />
-        <div className="grid max-w-5xl lg:grid-cols-2 grid-rows-2 gap-10 items-baseline container mx-auto px-4 sm:px-6 lg:px-8 pt-9 pb-20 md:pt-16 md:pb-28 lg:pt-24 lg:pb-36 xl:pt-40 xl:pb-48 text-white">
+        <div className="grid max-w-5xl lg:grid-cols-2 grid-rows-2 gap-10 items-baseline container mx-auto px-4 sm:px-6 lg:px-8 pt-9 md:pt-16 lg:pt-24 xl:pt-40 text-white">
           <div className="relative max-w-none xl:max-w-md">
             <h1 className="font-heading mb-5 text-4xl leading-tight lg:leading-tight xl:text-5xl xl:leading-tight">
               <strong className="text-white">Geospatial analytics</strong>
