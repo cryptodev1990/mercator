@@ -110,7 +110,7 @@ const LandingPage = () => {
       </section>
       <section className="relative max-w-5xl container mx-auto px-5 invisible sm:visible flex h-24 font-semibold text-sm text-white">
         <footer className="absolute bottom-0 right-0">
-          Copyright © 2022 Mercator HQ
+          {/* Copyright © 2022 Mercator HQ */}
         </footer>
       </section>
     </main>
