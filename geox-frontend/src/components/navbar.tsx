@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
           {isLoading && (
             <ReactLoading type={"spin"} height={"1rem"} width={"1rem"} />
           )}
-          {isAuthenticated ? "Log Out" : "Login"}
+          {!isLoading && isAuthenticated ? "Log Out" : "Login"}
         </button>
       </nav>
     </header>
