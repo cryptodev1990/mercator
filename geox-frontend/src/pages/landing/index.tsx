@@ -80,7 +80,7 @@ const Globe = () => {
 const LandingPage = () => {
   return (
     <main
-      className="grid grid-flow-row max-w-full h-screen bg-gradient-to-br from-ublue to-chestnut-rose relative overflow-hidden"
+      className="max-w-full h-screen bg-gradient-to-br from-ublue to-chestnut-rose relative overflow-hidden"
       role="main"
     >
       <section className="">
@@ -107,11 +107,6 @@ const LandingPage = () => {
             <Globe />
           </div>
         </div>
-      </section>
-      <section className="relative max-w-5xl container mx-auto px-5 invisible sm:visible flex h-24 font-semibold text-sm text-white">
-        <footer className="absolute bottom-0 right-0">
-          {/* Copyright © 2022 Mercator HQ */}
-        </footer>
       </section>
     </main>
   );
