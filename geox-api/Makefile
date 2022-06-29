@@ -1,19 +1,41 @@
-.PHONY: test
+# Makefile to build and run Mercator GeoX app
+#
+# This is a self-documenting makefile. See
+# Self documenting makefile https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
-setup:
-	# Set up for local development
+SHELL := bash
+.DEFAULT_GOAL := help
+
+PSQL_BIN ?= psql
+
+.PHONY: help
+help:  ## Display available tasks
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: docker-build
+docker-build: setup ## Build docker container
+	DOCKER_BUILDKIT=0 docker build . -t geox-web:latest
+
+
+.PHONY: docker-run
+docker-run: docker-build ## Run docker container
+	# Run the production container
+	docker run -p 8080:8080 --env-file .env.docker geox-web:latest
+
+.PHONY: docker-connect
+docker-connect: ## Connect to local docker
+	docker run -it geox-web:latest bash
+
+.PHONY: setup
+setup: ## Set up for local development
 	python3 -m venv env; \
 	pip install -r requirements.txt; \
 	pip install -r requirements-dev.txt; \
 	test `command -v docker` || (echo "\033[31m Please install docker" && exit -1); \
-	test `command -v flyctl` || (echo "\033[31m Please install flyctl from fly.io" && exit -1);
-docker-run:
-	# Run the production container
-	docker run -p 8080:8080 --env-file .env.docker geox-web:latest
-docker-build:
-	# Build the production container
-	DOCKER_BUILDKIT=0 docker build . -t geox-web:latest
-build:
+
+
+.PHONY: build
+build: setup ## Build app for local development
 	pip install -r requirements.txt; \
 	pip install -r requirements-dev.txt; \
         cd py-geolift; \
@@ -24,30 +46,35 @@ build:
 	cd ..; \
 	brew install overmind
 
-dev:
+.PHONY: dev
+dev:  ## Run app locally
 	export $$(cat .env.local | xargs) && overmind start
 
-lint:
+.PHONY: lint
+lint: ## Lint the project
 	# Lint the project
 	black .
-deploy:
-	# Deploy the project
+
+.PHONY: deploy
+deploy: ## Deploy the project to flyctl
+	test `command -v flyctl` || (echo "\033[31m Please install flyctl from fly.io" && exit -1);
 	flyctl deploy
-test:
+
+.PHONY: test
+test: ## Run tests
 	pytest -x -vvv .
 
-docker-connect:
-	docker run -it geox-web:latest bash
-
-db-revision:
+.PHONY: db-revision
+db-revision: ## Revise database with alembic
 	# alembic revision -m "$(msg)"
 	# TODO how should this actually be done?
 	# export $(cat .env.local | xargs) && PYTHONPATH=. alembic revision --autogenerate -m "Add users and shapes"
 	echo See Makefile for command
 
-db-upgrade:
+.PHONY: db-upgrade
+db-upgrade:  ## Upgrade database schema with alembic
 	export $$(cat .env.local | xargs) && PYTHONPATH=. alembic upgrade head
 
-
-pg:
-	/Applications/Postgres.app/Contents/Versions/14/bin/psql -p5432 "geox"
+.PHONY: pg
+pg: ## Connect to running local postgres database
+	$(PSQL) -p5432 "geox"
