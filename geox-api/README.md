@@ -53,5 +53,15 @@ Loaded: ✔
 Schedulable: ✘
 ```
 
-Which `make` commands need to run?
+This make command should install the necessary dependencies.
 
+```shell
+make dev-install
+```
+
+
+Copy the `.env.template` file to `.env.local` and fill in the values
+
+```shell
+cp .env.template .env.local
+```

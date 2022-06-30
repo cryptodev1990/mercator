@@ -26,8 +26,8 @@ docker-run: docker-build ## Run docker container
 docker-connect: ## Connect to local docker
 	docker run -it geox-web:latest bash
 
-.PHONY: install
-install:  ## Install dependencies for local development
+.PHONY: dev-install
+dev-install:  ## Install dependencies for local development
 	./bin/install-dependencies-local.sh
 
 .PHONY: dev
