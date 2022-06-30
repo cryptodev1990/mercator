@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 interface UseApiOptions {
   headers?: HeadersInit;
+  method?: string;
 }
 
 type ErrorWithMessage = {
@@ -25,18 +26,19 @@ export const useApi = (url: string, fetchOptions: UseApiOptions = {}) => {
     loading: true,
     data: null,
   });
-  const [refreshIndex, setRefreshIndex] = useState(0);
 
   useEffect(() => {
     (async () => {
       try {
-        const accessToken = await getAccessTokenSilently({
+        const token = await getAccessTokenSilently({
           audience: process.env.REACT_APP_AUTH0_API_AUDIENCE,
+          ignoreCache: true,
+          detailedResponse: true,
         });
         const headers = {
           ...fetchOptions.headers,
           // Add the Authorization header to the existing headers
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token.id_token}`,
         };
 
         const res = await window.fetch(url, {
@@ -59,10 +61,9 @@ export const useApi = (url: string, fetchOptions: UseApiOptions = {}) => {
         });
       }
     })();
-  }, [refreshIndex]);
+  }, [url]);
 
   return {
     ...state,
-    refresh: () => setRefreshIndex(refreshIndex + 1),
   };
 };

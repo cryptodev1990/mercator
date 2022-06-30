@@ -9,6 +9,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     # All from Auth0
+    sub_id: str
     given_name: str
     family_name: str
     nickname: str
@@ -22,6 +23,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
+    sub_id: str
     given_name: str
     family_name: str
     nickname: str

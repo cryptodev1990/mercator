@@ -62,7 +62,7 @@ deploy: ## Deploy the project to flyctl
 
 .PHONY: test
 test: ## Run tests
-	pytest -x -vvv .
+	export $$(cat .env.local | xargs) && pytest -x -vvv .
 
 .PHONY: db-revision
 db-revision: ## Revise database with alembic
@@ -77,4 +77,4 @@ db-upgrade:  ## Upgrade database schema with alembic
 
 .PHONY: pg
 pg: ## Connect to running local postgres database
-	$(PSQL) -p5432 "geox"
+	$$(PSQL) -p5432 "geox"

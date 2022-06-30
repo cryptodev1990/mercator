@@ -14,6 +14,11 @@ async def health():
     return {"message": "OK"}
 
 
+@router.get("/protected_health")
+async def protected_health():
+    return {"message": "OK"}
+
+
 @router.get("/redis-health")
 async def redis_health():
     r = redis.Redis.from_url(url=str(os.getenv("REDIS_CONNECTION")))

@@ -1,6 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import logo from "./mercator-logo.svg";
 import ReactLoading from "react-loading";
+import { useApi } from "../hooks/use-api";
+import { convertCompilerOptionsFromJson } from "typescript";
 // import { useApi } from "../hooks/use-api";
 
 const Navbar: React.FC = () => {
@@ -11,6 +13,8 @@ const Navbar: React.FC = () => {
     logout,
     // getAccessTokenSilently,
   } = useAuth0();
+  const { data } = useApi("http://localhost:8080/protected_health");
+  console.log(data);
 
   // const [authToken, setAuthToken] = useState<string>("");
 
@@ -25,7 +29,10 @@ const Navbar: React.FC = () => {
   //   }
   // }, [getAccessTokenSilently, isAuthenticated]);
 
-  // useApi("http://localhost:8080/verify_jwt");
+  let loginText = "";
+  if (!isLoading) {
+    loginText = isAuthenticated ? "Logout" : "Login";
+  }
 
   const css =
     "relative max-w-5xl bg-red z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-24 font-semibold text-sm text-white";
@@ -49,7 +56,7 @@ const Navbar: React.FC = () => {
           {isLoading && (
             <ReactLoading type={"spin"} height={"1rem"} width={"1rem"} />
           )}
-          {!isLoading && isAuthenticated ? "Log Out" : "Login"}
+          {loginText}
         </button>
       </nav>
     </header>
