@@ -210,8 +210,7 @@ def geo_lift_market_selection(
         import_augsynth_from=str(import_augsynth_from),
         import_tidyr_from=str(import_tidyr_from),
     )
-    return res
-    # return GeoLiftMarketSelection.rpy2py(res)
+    return GeoLiftMarketSelection.rpy2py(res)
 
 
 @dataclass
@@ -435,8 +434,7 @@ def geo_lift(
         ConfidenceIntervals=bool(ConfidenceIntervals),
         stat_test=str(stat_test),
     )
-    return res
-    #return GeoLift.rpy2py(res)
+    return GeoLift.rpy2py(res)
 
 
 geo_lift_converter = Converter("GeoLiftConverter")
