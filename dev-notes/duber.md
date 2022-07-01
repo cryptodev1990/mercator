@@ -171,27 +171,8 @@ Login
 ```
 
 Apps
-```
  Imagine this page looks like toolshed.uberinternal.com or Okta
-```
 
-Mercator
-
-````
-HEADER BAR which contains a DB CONNECTIONS DROPDOWN
-
-  TOOL BANK which is fully draggable
- 
-SIDE BAR with list of shapes in db
-    |
-    |xxxxxxxxxxxxxxxxxxxxxxxxxx
-    |xxxxxx MAP   xxxxxxxxxxxxx
-    |xxxxxxxxxxxxxxxxxxxxxxxxxx
-    |xxxxxxxxxxxxxxxxxxxxxxxxxx
-    |xxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
-```
 
 ## Observations
 
