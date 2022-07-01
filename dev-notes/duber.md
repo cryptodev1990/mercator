@@ -289,4 +289,63 @@ June 30 2022
 
 July 1 2022
 -------------
-- [ ] Make the post login page
+- [X] Make the post login page
+
+
+July 2 2022
+-------------
+- [ ] Draw geofences
+
+### Dare we PAMstack?
+
+Roles:
+  - Anon. Can write notebooks but not save them (unless signed in). Can read any public notebook.
+  - Author. Can save notebooks + anon permissions. Can view/edit own notebooks that are private.
+      Can edit own notebooks.
+      Can "fork" other notebooks.
+
+Usage:
+
+0. The modes
+  - Edit mode. Locked down to the author.
+  - Read mode. Allowed for anyone
+  - Sharing.
+  	- Public
+	- Private
+	- User-specific
+1. The cells
+  - A + creates a new cell
+  - A garbage can icon deletes
+  - Cells are draggable / droppable
+  - Cell modes:
+    - Markdown
+    - Rich text editor
+    - Python
+2. Notebook config
+  - Read modes
+    - Show code
+    - Hide code
+3. API Keys
+  - Keep in mind these keys are shared with your client.
+    Never put a key here that is essential for security.
+    There are keys shared on clients all the time (e.g. Google Maps API keys
+    or keys for the backend Firebase)
+
+Python syscalls to patch
+
+What's a syscall? A syscall is a "system call" to the operating system--any I/O is here, for example.
+All programming languages support this.
+
+Example syscall issues:
+
+`os.environ` -- reading an environment variable (no OS kernel the browser)
+`open('filename.txt')` -- reading a file (no file system in the browser)
+
+Q: Yikes are we the first to do this?
+A: No. And keep in mind someone did this for JavaScript in the other direction -- made the browser language of JS run
+  as Node on your machine.
+
+Other issues:
+
+- Disable multiprocessing (since there's only one OS process for the browser...for now...)
+- Disable threading (for now, though we can add webworkers in for this later)
