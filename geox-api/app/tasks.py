@@ -1,11 +1,13 @@
 import os
+from typing import List, Optional
 
 import pandas as pd
 from celery import Celery
 from pandas import DataFrame
-from app.model import MarketSelectionInput, MarketSelectionResult
-
+from pydantic import BaseModel, Field
 from pygeolift.geolift import geo_data_read, geo_lift_market_selection
+
+from app.model import MarketSelectionInput
 
 REDIS_CONNECTION = os.getenv("REDIS_CONNECTION", "redis://localhost:6379/0")
 
@@ -13,8 +15,61 @@ celery_app = Celery(
     "tasks", broker=REDIS_CONNECTION, backend=REDIS_CONNECTION
 )
 
+
+class PowerCurveValue(BaseModel):
+    """Power curve value in the market selection API results."""
+
+    location: str = Field(..., description="Location id")
+    duration: int = Field(..., description="Length of experiment assignment (in days)")
+    Effect_size: float = Field(
+        ...,
+        description="Effect size used in the simulation. The treatmente values in the simulation are `(1 + EffectSize) * Y`.",
+    )
+    power: float = Field(..., description="Power (proportion of stat sig simulations)")
+    Investment: float = Field(..., description="Investment, equal to `CPIC * Y`)")
+    AvgATT: float = Field(
+        ..., description="Average treatment effect for the treated units."
+    )
+    AvgDetectedLift: float = Field(..., description="Average detected lift.")
+
+
+class LocationAssignment(BaseModel):
+
+    location: List[str] = Field(..., description="Sorted list of location identifiers.")
+    duration: int = Field(..., description="Length of experiment assignment (in days).")
+    EffectSize: float = Field(
+        ...,
+        description="Smallest effect size for that (location combination, duration) where power is at least 80%.",
+    )
+    Power: float = Field(..., description="Power at the smallest effect size.")
+    AvgScaledL2Imbalance: float = Field(..., description="Average scaled L2 imbalance.")
+    Investment: float = Field(..., description="Estimated marketing budget for this.")
+    AvgATT: float = Field(..., description="Average ATT estimate in simulations.")
+    Average_MDE: float = Field(..., description="Average MDE in simulations.")
+    ProportionTotal_Y: float = Field(..., description="Proportion of total Y.")
+    abs_lift_in_zero: float = Field(
+        ...,
+        description="Estimated lift when there is no treatment effect. This should be close to 0.",
+    )
+    Holdout: float = Field(...)
+    rank: int = Field(
+        ...,
+        description="Ranking of best designs. This the average rank of the ranks of (TODO).",
+    )
+    correlation: Optional[float] = Field(None)
+    power_curve: List[PowerCurveValue] = Field(
+        ...,
+        description="A data frame with the results for all effect sizes that were estimated",
+    )
+
+class MarketSelectionResult(BaseModel):
+    __root__: List[LocationAssignment] = Field(
+        ..., description="List of assignments and information about those assignments."
+    )
+
+
 @celery_app.task
-def run_market_selection(input: MarketSelectionInput) -> MarketSelectionResult:
+def run_market_selection_task(input: MarketSelectionInput):
     """Select locations for a geo-lift experiment."""
     df = pd.DataFrame.from_records([row.dict() for row in input.data])
     df["date"] = [d.strftime("%Y-%m-%d") for d in df["date"]]
