@@ -41,10 +41,13 @@ export const useApi = (url: string, fetchOptions: UseApiOptions = {}) => {
           Authorization: `Bearer ${token.id_token}`,
         };
 
-        const res = await window.fetch(url, {
-          ...fetchOptions,
-          headers,
-        });
+        const res = await window.fetch(
+          process.env.REACT_APP_BACKEND_URL + url,
+          {
+            ...fetchOptions,
+            headers,
+          }
+        );
         setState({
           ...state,
           data: await res.json(),

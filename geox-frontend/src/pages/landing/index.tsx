@@ -83,7 +83,7 @@ const LandingPage = () => {
       className="max-w-full h-screen bg-gradient-to-br from-ublue to-chestnut-rose relative overflow-hidden"
       role="main"
     >
-      <section className="">
+      <section className="m-10">
         <Navbar />
         <div className="grid max-w-5xl lg:grid-cols-2 grid-rows-2 gap-10 items-baseline container mx-auto px-4 sm:px-6 lg:px-8 pt-9 md:pt-16 lg:pt-24 xl:pt-40 text-white">
           <div className="relative max-w-none xl:max-w-md">

@@ -1,12 +1,20 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Navigate, useLocation } from "react-router";
+import Loading from "react-loading";
+import { Navigate, useLocation } from "react-router-dom";
 
-const RequireAuth = () => {
-  const { isAuthenticated } = useAuth0();
-  const location = useLocation();
+function RequireAuth({ children }: { children: JSX.Element }) {
+  let { isAuthenticated, isLoading } = useAuth0();
+  let location = useLocation();
+
+  if (isLoading) {
+    return <Loading></Loading>;
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-};
+
+  return children;
+}
 
 export default RequireAuth;

@@ -279,8 +279,14 @@ June 28 2022 & June 29 2022
 - [X] Test client bearer token against API
   The access token sent to the client works for the API...huge.
 - [X] Construct bearer token flow. Frontend calls Auth0, receives bearer token, uses bearer token with backend.
-- [ ] Use /auth callback creating user profiles
-  - [ ] Configure redirect in https://manage.auth0.com/dashboard/us/dev-w40e3mxg/applications/qjRNVRmw9ZIkDWDAkubz6iXxUIhwh5AO/settings
+- [ ] ~~Use /auth callback creating user profiles~~
+  - [ ] ~~Configure redirect in https://manage.auth0.com/dashboard/us/dev-w40e3mxg/applications/qjRNVRmw9ZIkDWDAkubz6iXxUIhwh5AO/settings~~
 
 June 30 2022
 -------------
+- [X] Wrote middleware to protect routes
+- [X] Wrote middleware to pull user out of JWT
+
+July 1 2022
+-------------
+- [ ] Make the post login page
