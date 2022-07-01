@@ -7,6 +7,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 
 PSQL_BIN ?= psql
+RSCRIPT ?= RScript
 
 .PHONY: help
 help:  ## Display available tasks
@@ -15,7 +16,6 @@ help:  ## Display available tasks
 .PHONY: docker-build
 docker-build: setup ## Build docker container
 	DOCKER_BUILDKIT=0 docker build . -t geox-web:latest
-
 
 .PHONY: docker-run
 docker-run: docker-build ## Run docker container
@@ -26,25 +26,9 @@ docker-run: docker-build ## Run docker container
 docker-connect: ## Connect to local docker
 	docker run -it geox-web:latest bash
 
-.PHONY: setup
-setup: ## Set up for local development
-	python3 -m venv env; \
-	pip install -r requirements.txt; \
-	pip install -r requirements-dev.txt; \
-	test `command -v docker` || (echo "\033[31m Please install docker" && exit -1); \
-
-
-.PHONY: build
-build: setup ## Build app for local development
-	pip install -r requirements.txt; \
-	pip install -r requirements-dev.txt; \
-        cd py-geolift; \
-	Rscript --verbose dependencies.R; \
-	poetry config virtualenvs.create false; \
-    	poetry build; \
-    	pip install dist/pygeolift-*.tar.gz; \
-	cd ..; \
-	brew install overmind
+.PHONY: dev-install
+dev-install:  ## Install dependencies for local development
+	./bin/install-dependencies-local.sh
 
 .PHONY: dev
 dev:  ## Run app locally
@@ -53,7 +37,7 @@ dev:  ## Run app locally
 .PHONY: lint
 lint: ## Lint the project
 	# Lint the project
-	black .
+	black . --exclude py-geolift --exclude env
 
 .PHONY: deploy
 deploy: ## Deploy the project to flyctl
