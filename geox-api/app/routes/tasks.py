@@ -1,25 +1,40 @@
-from ..tasks import add, celery_app
+from asyncio.log import logger
+from typing import Any, Optional, List
+import datetime
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
+from app.tasks import celery_app, run_market_selection_task, MarketSelectionResult
+from app.model import MarketSelectionInput
 
 router = APIRouter()
 
+class CeleryTaskRunResponse(BaseModel):
+    """Response from submitting a celery task."""
+    task_id: Any
 
-@router.post("/tasks/add")
-async def run_add_task(a: int, b: int):
-    task = add.delay(a, b)
-    return JSONResponse({"task_id": task.id})
+class MarketSelectionTaskResult(BaseModel):
+    task_id: Any = Field(..., description="Task id")
+    task_status: str = Field(..., description="Task status.")
+    task_result: Optional[MarketSelectionResult] = Field(..., description="Market selection results.")
 
 
-@router.get("/tasks/{task_id}")
+@router.post("/tasks/market_selection", response_model=CeleryTaskRunResponse)
+async def run_market_selection(input: MarketSelectionInput):
+    """Submit a market selection task."""
+    task = run_market_selection_task()
+    return CeleryTaskRunResponse(task_id=task.id)
+
+
+@router.get("/tasks/{task_id}", response_model=MarketSelectionTaskResult)
 def get_status(task_id):
+    """Retrieve results of a market selection task."""
     task_result = celery_app.AsyncResult(task_id)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result,
-    }
-    return JSONResponse(result)
-
+    result = MarketSelectionTaskResult(
+         task_id = task_id,
+         task_status = task_result.status,
+         task_result = task_result.result
+    )
+    return result
