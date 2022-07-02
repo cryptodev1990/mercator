@@ -15,7 +15,12 @@
     "dubo": "./src/"
   },
   "scripts": {
+<<<<<<< Updated upstream
     "dev": "parcel index.html"
+=======
+    "dev": "parcel index.html",
+    "build": "parcel build index.html"
+>>>>>>> Stashed changes
   },
   "dependencies": {
     "react": "^18.1.0",
