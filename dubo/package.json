@@ -15,15 +15,25 @@
     "dubo": "./src/"
   },
   "scripts": {
+<<<<<<< HEAD
 <<<<<<< Updated upstream
     "dev": "parcel index.html"
 =======
     "dev": "parcel index.html",
     "build": "parcel build index.html"
 >>>>>>> Stashed changes
+=======
+    "dev": "parcel index.html",
+    "build": "parcel build index.html",
+    "install": "yarn install"
+>>>>>>> eda4bf10f5b1a3e7152adbf60ee75b238a26c920
   },
   "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "babel-plugin-root-import": "^6.6.0",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0"
   }
 }
