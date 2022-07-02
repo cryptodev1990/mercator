@@ -1,3 +1,4 @@
 import { HomePage } from './home';
+import { NotebookPage } from './notebook';
 
-export { HomePage };
+export { HomePage, NotebookPage };
