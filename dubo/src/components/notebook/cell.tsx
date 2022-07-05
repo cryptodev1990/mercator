@@ -1,55 +1,38 @@
 import React, { useState } from 'react';
 
+/* @ts-ignore */
+import { markdown } from 'markdown';
+import { CodeEditor } from './editor';
+
+type Nullable<T> = T | null;
+
 // @ts-ignore
 let initPyodide = window.loadPyodide({
-  indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/'
+  indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/',
+  stdout: (text: string) => console.log('GOVERNED', text),
+  stderr: (text: string) => console.error(text)
 });
 
-function generateGuid(): string {
-  var result, i, j;
-  result = '';
-  for (j = 0; j < 32; j++) {
-    if (j == 8 || j == 12 || j == 16 || j == 20) result = result + '-';
-    i = Math.floor(Math.random() * 16)
-      .toString(16)
-      .toUpperCase();
-    result = result + i;
-  }
-  return result;
-}
-
-async function execPy(kw: string, code: string): Promise<string> {
+async function execPy(code: string): Promise<string> {
   let pyodide = await initPyodide;
-  pyodide.globals.set('mikw', kw);
   await pyodide.loadPackage('micropip');
   await pyodide.loadPackage(['matplotlib', 'numpy', 'pandas']);
   const result = await pyodide.runPythonAsync(code);
-  console.log(result);
   return result;
 }
 
-const InputCell = () => {
-  const [code, setCode] = useState<string>(`
-import pandas as pd
-# Patch urlopen to work with pyodide
-import pyodide
-url = "https://raw.githubusercontent.com/selva86/datasets/master/mtcars.csv"
-# pd.io.common.urlopen = pyodide.open_url
-df = pd.read_csv(pyodide.open_url(url))
-df.to_html() 
-  `);
-  const [output, setOutput] = useState<string>('');
-  const [evaluating, setEvaluating] = useState<boolean>(false);
+interface InputCell {
+  input: Nullable<string>;
+  inputType: CellInputType;
+  handleOutput: (output: Nullable<string>) => void;
+}
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCode(e.target.value);
-  };
+const InputCell = ({ input, inputType, handleOutput }: InputCell) => {
+  const [code, setCode] = useState<string>(input || '');
+  const [evaluating, setEvaluating] = useState<boolean>(false);
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && e.ctrlKey) {
-      e.target.style.height = 'inherit';
-      e.target.style.height = `${e.target.scrollHeight}px`;
-
       e.preventDefault();
       setEvaluating(true);
       onRun();
@@ -57,49 +40,93 @@ df.to_html()
   };
 
   const onRun = async () => {
-    const result = await execPy(generateGuid(), code);
-    setEvaluating(false);
-    setOutput(result);
+    switch (inputType) {
+      case CellInputType.Python:
+        const result = await execPy(code);
+        setEvaluating(false);
+        handleOutput(result);
+        break;
+      case CellInputType.Markdown:
+        let html = markdown.toHTML(code) as string;
+        setEvaluating(false);
+        handleOutput(html);
+        break;
+      case CellInputType.Html:
+        handleOutput(code);
+        break;
+      case CellInputType.JavaScript:
+        alert('Not implemented - check back later');
+        break;
+    }
   };
 
   return (
     <>
-      <label
-        htmlFor="message"
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">
-        Notebook cell (Ctrl+Enter to run) {evaluating ? '...' : ''}
-      </label>
-      <textarea
-        id="message"
-        rows={4}
-        value={code}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        className="block font-mono p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        placeholder="Your code..."></textarea>
-      <OutputCell data={output} />
+      <div>
+        <label
+          htmlFor="message"
+          className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">
+          Notebook cell (Ctrl+Enter to run) {evaluating ? '...' : ''}
+        </label>
+        <CodeEditor code={code} setCode={setCode} handleKeyDown={handleKeyDown}></CodeEditor>
+      </div>
     </>
   );
 };
 
 interface OutputCellProps {
-  data?: string;
+  output?: string;
 }
 
-const OutputCell = ({ data }: OutputCellProps) => {
-  if (!data) {
+const OutputCell = (props: OutputCellProps) => {
+  if (!props.output) {
     return <></>;
   }
-  return <div dangerouslySetInnerHTML={{ __html: data }}></div>;
+  return <div dangerouslySetInnerHTML={{ __html: props.output }}></div>;
 };
 
-const Cell = () => {
+enum CellInputType {
+  Python,
+  Markdown,
+  Html,
+  JavaScript
+}
+
+interface NotebookCell {
+  input: Nullable<string>;
+  inputType: CellInputType;
+  output: Nullable<string>;
+}
+
+const Cell: React.FC<NotebookCell> = ({ input, inputType, output }) => {
+  const [data, setData] = useState<NotebookCell>({
+    input: input || '',
+    inputType: inputType || CellInputType.Python,
+    output: output || ''
+  });
+  function handleOutput(output: Nullable<string>) {
+    setData({ ...data, output });
+  }
   return (
-    <>
-      <InputCell></InputCell>
-      <OutputCell></OutputCell>
-    </>
+    <section>
+      <InputCell input={data.input} inputType={data.inputType} handleOutput={handleOutput} />
+      <OutputCell output={data.output || ''} />
+    </section>
   );
 };
 
-export { InputCell };
+const NotebookCells = (props: { cells: NotebookCell[] }) => {
+  const [cellList, setCellList] = useState<Array<NotebookCell>>(props.cells);
+  if (!cellList) {
+    return null;
+  }
+  let cellComponents: Array<JSX.Element> = [];
+  for (const cell of props.cells) {
+    cellComponents.push(
+      <Cell input={cell.input} inputType={cell.inputType} output={cell.output}></Cell>
+    );
+  }
+  return <main>{cellComponents}</main>;
+};
+
+export { InputCell, NotebookCells };
