@@ -143,7 +143,6 @@ class GeoLiftMarketSelection:
         return str(self.BestMarkets)
 
 
-
 def geo_lift_market_selection(
     data: DataFrame[GeoLiftDataFrameSchema],
     treatment_periods: Sequence[int],
@@ -351,7 +350,8 @@ class GeoLift:
         att = float(self.inference.ATT)
         pvalue = self.inference.pvalue
 
-        msg = dedent(f"""
+        msg = dedent(
+            f"""
         GeoLift Output
 
         Test Info

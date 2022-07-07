@@ -6,14 +6,17 @@ def set_up():
     config = {
         "DOMAIN": os.environ["AUTH0_DOMAIN"],
         # Note that we have two audiences her,
-        "API_AUDIENCE": [os.environ["AUTH0_CLIENT_ID"], os.environ["AUTH0_API_AUDIENCE"]],
-        "ISSUER": 'https://' + os.environ["AUTH0_DOMAIN"] +'/',
+        "API_AUDIENCE": [
+            os.environ["AUTH0_CLIENT_ID"],
+            os.environ["AUTH0_API_AUDIENCE"],
+        ],
+        "ISSUER": "https://" + os.environ["AUTH0_DOMAIN"] + "/",
         "ALGORITHMS": os.getenv("ALGORITHMS", "RS256"),
     }
     return config
 
 
-class VerifyToken():
+class VerifyToken:
     """Does all the token verification using PyJWT"""
 
     def __init__(self, token, permissions=None, scopes=None):
@@ -30,15 +33,13 @@ class VerifyToken():
     def verify(self):
         # This gets the 'kid' from the passed token
         try:
-            self.signing_key = self.jwks_client.get_signing_key_from_jwt(
-                self.token
-            ).key
+            self.signing_key = self.jwks_client.get_signing_key_from_jwt(self.token).key
         except jwt.exceptions.PyJWKClientError as error:
             return {"status": "error", "msg": error.__str__()}
         except jwt.exceptions.DecodeError as error:
             return {"status": "error", "msg": error.__str__()}
 
-        try: 
+        try:
             payload = jwt.decode(
                 self.token,
                 self.signing_key,
@@ -50,12 +51,12 @@ class VerifyToken():
             return {"status": "error", "message": str(e)}
 
         if self.scopes:
-            result = self._check_claims(payload, 'scope', str, self.scopes.split(' '))
+            result = self._check_claims(payload, "scope", str, self.scopes.split(" "))
             if result.get("error"):
                 return result
 
         if self.permissions:
-            result = self._check_claims(payload, 'permissions', list, self.permissions)
+            result = self._check_claims(payload, "permissions", list, self.permissions)
             if result.get("error"):
                 return result
 
@@ -76,8 +77,8 @@ class VerifyToken():
             result["msg"] = f"No claim '{claim_name}' found in token."
             return result
 
-        if claim_name == 'scope':
-            payload_claim = payload[claim_name].split(' ')
+        if claim_name == "scope":
+            payload_claim = payload[claim_name].split(" ")
 
         for value in expected_value:
             if value not in payload_claim:
@@ -85,7 +86,9 @@ class VerifyToken():
                 result["status_code"] = 403
 
                 result["code"] = f"insufficient_{claim_name}"
-                result["msg"] = (f"Insufficient {claim_name} ({value}). You don't have "
-                                  "access to this resource")
+                result["msg"] = (
+                    f"Insufficient {claim_name} ({value}). You don't have "
+                    "access to this resource"
+                )
                 return result
         return result

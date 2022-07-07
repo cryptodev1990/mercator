@@ -330,3 +330,20 @@ Other issues:
 
 - Disable multiprocessing (since there's only one OS process for the browser...for now...)
 - Disable threading (for now, though we can add webworkers in for this later)
+
+
+July 6 2022
+-----------
+
+### Plans
+- [ ] Generate OpenAPI backend for drawing geofences
+
+### Observations
+- Email whitelist link: https://manage.auth0.com/dashboard/us/dev-w40e3mxg/rules/rul_ENuEAhENBhP7OB1R
+
+
+July 7 2022
+-----------
+
+### Plans
+- [X] Write test for shape CRUD

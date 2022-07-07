@@ -1,0 +1,17 @@
+{
+  "type": "Feature",
+  "properties": {
+    "name": "edited test shape"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-122.433701, 37.748535],
+        [-122.423701, 37.758535],
+        [-122.423701, 37.748535],
+        [-122.433701, 37.748535]
+      ]
+    ]
+  }
+}

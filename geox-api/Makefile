@@ -6,7 +6,6 @@
 SHELL := bash
 .DEFAULT_GOAL := help
 
-PSQL_BIN ?= psql
 RSCRIPT ?= RScript
 
 .PHONY: help
@@ -61,4 +60,8 @@ db-upgrade:  ## Upgrade database schema with alembic
 
 .PHONY: pg
 pg: ## Connect to running local postgres database
-	$$(PSQL) -p5432 "geox"
+	psql -p5432 "geox"
+
+.PHONY: shell
+shell:  ## Run an interactive shell for the project
+	export $$(cat .env.local | xargs) && PYTHONPATH=. ipython

@@ -17,6 +17,7 @@
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
     "@types/react-router-dom": "^5.3.3",
+    "axios": "^0.27.2",
     "http-proxy-middleware": "^2.0.6",
     "markdown": "^0.5.0",
     "react": "^18.1.0",
@@ -33,6 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "generate-client": "openapi --input http://localhost:8080/openapi.json --output ./src/client --client axios",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -56,6 +58,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
+    "openapi-typescript-codegen": "^0.23.0",
     "postcss": "^8.4.14",
     "tailwindcss": "^3.1.4"
   }

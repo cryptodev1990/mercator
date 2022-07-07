@@ -14,8 +14,13 @@ from rpy2.robjects.robject import RObjectMixin
 from rpy2.robjects.vectors import BoolVector, FloatVector, IntVector, StrVector
 from soupsieve import match
 
-__all__ = ["r_df_to_pandas", "vector_to_py_scalar", "pandas_to_r_df",
-           "r_str_vector", "check_rclass"]
+__all__ = [
+    "r_df_to_pandas",
+    "vector_to_py_scalar",
+    "pandas_to_r_df",
+    "r_str_vector",
+    "check_rclass",
+]
 
 base = importr("base")
 
@@ -103,6 +108,7 @@ def check_rclass(obj: RObjectMixin, cls: Union[str, Sequence[str]]) -> List[str]
     if not len(matched_rclasses):
         raise RClassValueException
     return matched_rclasses
+
 
 def r_str_vector(obj: Union[str, Sequence[str]]) -> StrVector:
     """Convert Python strings or a sequence of strings to an R String vector."""

@@ -1,8 +1,9 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.sql import func
+import datetime
+import uuid
 
-from sqlalchemy_json import mutable_json_type
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, null
+from sqlalchemy.dialects.postgresql import JSON, UUID
+from sqlalchemy.sql import func
 
 from .db import Base
 
@@ -10,10 +11,14 @@ from .db import Base
 class Shape(Base):
     __tablename__ = "shapes"
 
-    id = Column(Integer, primary_key=True, index=True)
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=lambda _: str(uuid.uuid4()))
     name = Column(String, index=True)
     created_at = Column(DateTime, default=func.now())
     created_by_user_id = Column(Integer, ForeignKey("users.id"))
-    edited_at = Column(DateTime, default=func.now())
-    edited_by_user_id = Column(Integer, ForeignKey("users.id"))
-    shape = Column(mutable_json_type(dbtype=JSONB, nested=True))
+    updated_at = Column(DateTime, default=func.now(), onupdate=datetime.datetime.now)
+    updated_by_user_id = Column(Integer, ForeignKey("users.id"))
+    deleted_at = Column(DateTime, nullable=True)
+    deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    geojson = Column(JSON, nullable=False)
+
+    __mapper_args__ = {"eager_defaults": True}

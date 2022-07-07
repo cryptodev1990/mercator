@@ -1,9 +1,9 @@
 import os
+import time
 from typing import List, Optional
 
 import pandas as pd
 from celery import Celery
-from pandas import DataFrame
 from pydantic import BaseModel, Field
 from pygeolift.geolift import geo_data_read, geo_lift_market_selection
 
@@ -11,9 +11,7 @@ from app.model import MarketSelectionInput
 
 REDIS_CONNECTION = os.getenv("REDIS_CONNECTION", "redis://localhost:6379/0")
 
-celery_app = Celery(
-    "tasks", broker=REDIS_CONNECTION, backend=REDIS_CONNECTION
-)
+celery_app = Celery("tasks", broker=REDIS_CONNECTION, backend=REDIS_CONNECTION)
 
 
 class PowerCurveValue(BaseModel):
@@ -61,6 +59,7 @@ class LocationAssignment(BaseModel):
         ...,
         description="A data frame with the results for all effect sizes that were estimated",
     )
+
 
 class MarketSelectionResult(BaseModel):
     __root__: List[LocationAssignment] = Field(
@@ -125,3 +124,10 @@ def run_market_selection_task(input: MarketSelectionInput):
         output.append(d)
     # TODO: Should the original parameters be included in the results
     return MarketSelectionResult(__root__=output)
+
+
+@celery_app.task
+def add(x: int, y: int):
+    """Dummy task to add two numbers in a Celery worker"""
+    time.sleep(2)
+    return x + y
