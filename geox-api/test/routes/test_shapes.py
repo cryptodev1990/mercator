@@ -1,16 +1,26 @@
+from typing import Callable
 import json
 import os
 import pathlib
 
+from fastapi import status
 from fastapi.testclient import TestClient
+
 from app.crud.shape import create_shape
 from app.crud.user import create_user, get_user_by_email
-
-from app.main import app
-from app.lib.access_token import get_access_token
-from app.models.db import SessionLocal, engine
-from app.schemas import GeoShapeCreate, UserCreate
 from app.lib import config
+from app.lib.access_token import get_access_token
+from app.main import app
+from app.models.db import SessionLocal, engine
+from app.models import Shape
+from app.schemas import GeoShapeCreate, UserCreate
+
+def ymd(x):
+    return x.strftime('%Y-%m-%dT%H:%M:%S.%f')
+
+
+def assert_ok(response):
+    assert response.status_code == status.HTTP_200_OK, "Status should be ok"
 
 
 access_token = get_access_token()
@@ -24,9 +34,8 @@ here = pathlib.Path(__file__).parent.resolve()
 geojson = json.loads(
     open(os.path.join(here, "../fixtures/bbox.geojson")).read())
 
-
 def setup_shape():
-    cleanup(config.machine_account_email)
+    cleanup()
     with SessionLocal() as db_session:
         obj = GeoShapeCreate(name="test shape", geojson=geojson)
         create_user(db_session, UserCreate(
@@ -47,7 +56,8 @@ def setup_shape():
         return user, shape
 
 
-def cleanup(email):
+def cleanup():
+    email = config.machine_account_email
     engine.execute(
         """
         BEGIN TRANSACTION;
@@ -55,6 +65,14 @@ def cleanup(email):
           DELETE FROM users WHERE email = %s;
         END TRANSACTION;
         """, (email, email))
+
+
+def run_shape_test(test_func: Callable[[Shape], None]):
+    _, shape = setup_shape()
+    try:
+        test_func(shape)
+    finally:
+        cleanup()
 
 
 def test_auth_for_geofencer():
@@ -75,7 +93,7 @@ def test_bounce_for_bad_bearer_token():
 def test_404_with_auth():
     try:
         response = client.get(
-            "/geofencer/shapes/",
+            "/geofencer/shapesa/",
             headers=headers
         )
         assert response.status_code == 404
@@ -84,7 +102,7 @@ def test_404_with_auth():
             assert user.id
             assert user.email == config.machine_account_email
     finally:
-        cleanup(config.machine_account_email)
+        cleanup()
 
 
 def test_create_shape():
@@ -94,32 +112,30 @@ def test_create_shape():
             json={"name": "test shape", "geojson": geojson},
             headers=headers
         )
-        assert response.status_code == 200
-        assert response.json().get("uuid")
-        assert response.json().get("created_at")
-        assert response.json().get("geojson")[
+        assert_ok(response)
+        body = response.json()
+
+        assert body.get("uuid")
+        assert body.get("created_at")
+        assert body.get("geojson")[
             "geometry"] == geojson["geometry"]
-        assert response.json().get("geojson")["type"] == "Feature"
+        assert body.get("geojson")["type"] == "Feature"
     finally:
-        cleanup(config.machine_account_email)
+        cleanup()
 
 
 def test_read_shape():
-    _, shape = setup_shape()
-    # Setup
-    try:
-        # Test body
+    def _test(shape: Shape):
         response = client.get(
             "/geofencer/shapes/" + str(shape.uuid),
             json={"name": "test shape", "geojson": geojson},
             headers=headers
         )
-        assert response.json().get("uuid") == shape.uuid
-        assert response.json().get(
-            "created_at") == shape.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f')
-        assert response.json().get("geojson") == shape.geojson
-    finally:
-        cleanup(config.machine_account_email)
+        body = response.json()
+        assert body.get("uuid") == str(shape.uuid)
+        assert body.get("created_at") == ymd(shape.created_at)
+        assert body.get("geojson") == shape.geojson
+    run_shape_test(_test)
 
 
 def test_read_no_shape():
@@ -130,53 +146,74 @@ def test_read_no_shape():
             json={"name": "test shape", "geojson": geojson},
             headers=headers
         )
-        assert response.json().get("uuid") == None
-        assert response.json().get("created_at") == None
-        assert response.json().get("geojson") == None
+        body = response.json()
+        assert body.get("uuid") == None
+        assert body.get("created_at") == None
+        assert body.get("geojson") == None
     finally:
-        cleanup(config.machine_account_email)
+        cleanup()
 
 
 def test_update_shape():
-    _, shape = setup_shape()
-    edited_geojson = json.loads(
-        open(os.path.join(here, "../fixtures/edited-bbox.geojson")).read())
-
-    try:
+    def _test(shape: Shape):
+        edited_geojson = json.loads(
+            open(os.path.join(here, "../fixtures/edited-bbox.geojson")).read())
         response = client.put(
             f"/geofencer/shapes/",
             json={"uuid": str(shape.uuid), "name": "edited test shape",
                   "geojson": edited_geojson},
             headers=headers
         )
-        assert response.status_code == 200
-        assert response.json().get("name") == "edited test shape", "Name should be updated"
-        assert response.json().get("geojson")["geometry"] == edited_geojson["geometry"], "GeoJSON should be updated"
-        assert response.json().get("geojson")["geometry"] != geojson["geometry"], "GeoJSON should be updated"
-        assert shape.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f') == response.json().get(
+
+        body = response.json()
+        geom = body.get("geojson")["geometry"]
+        assert_ok(response)
+        assert body.get(
+            "name") == "edited test shape", "Name should be updated"
+        assert geom == edited_geojson["geometry"], "GeoJSON should be updated"
+        assert geom != geojson["geometry"], "GeoJSON should be updated"
+        assert ymd(shape.created_at) == body.get(
             "created_at"), "created_at should be the same"
-        assert shape.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%f') < response.json().get(
+        assert ymd(shape.updated_at) < body.get(
             "updated_at"), "updated_at should be updated"
-    finally:
-        cleanup(config.machine_account_email)
+    run_shape_test(_test)
 
 
 def test_soft_delete_update_shape():
-    _, shape = setup_shape()
-    edited_geojson = json.loads(
-        open(os.path.join(here, "../fixtures/edited-bbox.geojson")).read())
-
-    try:
+    def _test(shape: Shape):
         response = client.put(
-            f"/geofencer/shapes/",
-            json={"uuid": shape.uuid, "should_delete": True},
+            f"/geofencer/shapes/" + str(shape.uuid),
+            json={"should_delete": True},
             headers=headers
         )
-        assert response.status_code == 200
-        assert response.json().get("name") == "edited test shape", "Name should be updated"
-        assert response.json().get("geojson")["geometry"] == edited_geojson["geometry"], "GeoJSON should be updated"
-        assert shape.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f') == response.json().get(
-            "created_at"), "created_at should be the same"
-        assert shape.updated_at < response.json().get("updated_at"), "updated_at should be updated"
-    finally:
-        cleanup(config.machine_account_email)
+        assert_ok(response)
+        body = response.json()
+        assert not body
+    run_shape_test(_test)
+
+
+def test_get_all_shapes_email_domain():
+    def _test(shape: Shape):
+        response = client.get(
+            f"/geofencer/shapes?rtype=domain",
+            headers=headers
+        )
+        print(response.text)
+        assert_ok(response)
+        body = response.json()
+        assert len(body) == 1
+        assert body[0].get("uuid") == str(shape.uuid)
+    run_shape_test(_test)
+
+def test_get_all_shapes_user():
+    def _test(shape: Shape):
+        response = client.get(
+            f"/geofencer/shapes?rtype=user",
+            headers=headers
+        )
+        print(response.text)
+        assert_ok(response)
+        body = response.json()
+        assert len(body) == 1
+        assert body[0].get("uuid") == str(shape.uuid)
+    run_shape_test(_test)

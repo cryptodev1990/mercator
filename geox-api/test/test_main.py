@@ -57,7 +57,7 @@ def test_worker():
 def test_invalid_jwt_auth():
     with open(os.path.join(here, "fixtures/fake-jwt.txt"), "r") as f:
         fake_jwt = f.read()
-        client.post(
+        client.get(
             "/protected_health", headers={"Authorization": f"Bearer {fake_jwt}"}
         )
         response = client.get("/protected_health")
@@ -66,14 +66,13 @@ def test_invalid_jwt_auth():
 
 # TODO this is an integration test and should be in its own module
 def test_missing_bearer_auth():
-    client.post("/protected_health")
+    client.get("/protected_health")
     response = client.get("/protected_health")
     assert response.status_code == 403
 
 
 # TODO this is an integration test and should be in its own module
 def test_bearer_auth():
-    client.post("/protected_health", headers={"Authorization": f"Bearer {access_token}"})
-    response = client.get("/protected_health")
+    response = client.get("/protected_health", headers={"Authorization": f"Bearer {access_token}"})
     assert response.status_code == 200
     assert response.json() == {"message": "OK"}

@@ -335,15 +335,39 @@ Other issues:
 July 6 2022
 -----------
 
-### Plans
-- [ ] Generate OpenAPI backend for drawing geofences
+### Plans / Progress
+- [X] Generate OpenAPI backend for drawing geofences
+- [X] Write shapes CRUD
 
 ### Observations
-- Email whitelist link: https://manage.auth0.com/dashboard/us/dev-w40e3mxg/rules/rul_ENuEAhENBhP7OB1R
+- Email whitelist link: `https://manage.auth0.com/dashboard/us/dev-w40e3mxg/rules/rul_ENuEAhENBhP7OB1R`
 
 
 July 7 2022
 -----------
 
-### Plans
+### Progress
 - [X] Write test for shape CRUD
+
+### Plans
+- [ ] Test backend / frontend connection
+
+### Observations
+- Need to figure out how to pass bearer token in the api.mercator.tech/docs 
+- Need CI tests still. We're fine now but that won't last.
+- Need to verify this all works in prod. But to start with let's just get it working locally.
+- Need to add a concept of user groups or organizations, as well as who's allowed to do what
+- Versioning would be nice-to-have
+
+
+July 8 2022
+-----------
+
+### Progress
+- [ ] Test backend / frontend connection
+- [ ] Finish tests
+- [ ] Add bearer token to the function signature and therefore redocs/docs
+
+### Plans
+
+### Observations

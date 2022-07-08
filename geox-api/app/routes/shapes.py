@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional, List
 
 from fastapi import APIRouter, Request
@@ -12,6 +13,11 @@ from ..crud import shape as crud
 router = APIRouter(tags=["geofencer"])
 
 
+class GetAllShapesRequestType(str, Enum):
+    domain = "domain"
+    user = "user"
+
+
 @router.get("/geofencer/shapes/{uuid}")
 def get_shape(uuid: UUID4) -> Optional[GeoShape]:
     with SessionLocal() as db_session:
@@ -19,13 +25,13 @@ def get_shape(uuid: UUID4) -> Optional[GeoShape]:
 
 
 @router.get("/geofencer/shapes")
-def get_all_shapes(type: str, request: Request) -> Optional[List[GeoShape]]:
+def get_all_shapes(request: Request, rtype: GetAllShapesRequestType) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
-        if type == "user":
-            return crud.get_all_shapes_by_user(db_session, User(**user))
-        elif type == "email_domain":
+        if rtype == GetAllShapesRequestType.user:
+            return crud.get_all_shapes_by_user(db_session, User(**user.__dict__))
+        elif rtype == GetAllShapesRequestType.domain:
             email_domain = user.email.split("@")[1]
             return crud.get_all_shapes_by_email_domain(db_session, email_domain)
 
@@ -38,11 +44,9 @@ def create_shape(request: Request, geoshape: GeoShapeCreate) -> Optional[List[Ge
         return crud.create_shape(db_session, geoshape, user_id=user.id)
 
 
-@router.put("/geofencer/shapes/")
-def update_shape(request: Request, geoshape: GeoShapeUpdate) -> Optional[List[GeoShape]]:
+@router.put("/geofencer/shapes/{uuid}")
+def update_shape(request: Request, geoshape: GeoShapeUpdate) -> Optional[GeoShape]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
-    if geoshape.should_delete:
-        geoshape.deleted_by_user_id = user.id
     with SessionLocal() as db_session:
-        return crud.update_shape(db_session, geoshape)
+        return crud.update_shape(db_session, geoshape, user.id)
