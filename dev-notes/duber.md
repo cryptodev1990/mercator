@@ -367,7 +367,7 @@ July 8 2022
 
 - [X] Finish tests
 - [X] Add bearer token to the function signature and therefore redocs/docs/OpenAPI codegen
-- [ ] Generate latest OpenAPI codegen  for drawing geofences
+- [X] Generate latest OpenAPI codegen for drawing geofences
 - [ ] Test backend / frontend connection with clients from OpenAPI
 
 ### Plans
