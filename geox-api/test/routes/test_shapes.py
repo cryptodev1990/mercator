@@ -159,7 +159,7 @@ def test_update_shape():
         edited_geojson = json.loads(
             open(os.path.join(here, "../fixtures/edited-bbox.geojson")).read())
         response = client.put(
-            f"/geofencer/shapes/",
+            f"/geofencer/shapes/" + str(shape.uuid),
             json={"uuid": str(shape.uuid), "name": "edited test shape",
                   "geojson": edited_geojson},
             headers=headers
@@ -183,7 +183,7 @@ def test_soft_delete_update_shape():
     def _test(shape: Shape):
         response = client.put(
             f"/geofencer/shapes/" + str(shape.uuid),
-            json={"should_delete": True},
+            json={"should_delete": True, "uuid": str(shape.uuid)},
             headers=headers
         )
         assert_ok(response)
@@ -198,7 +198,6 @@ def test_get_all_shapes_email_domain():
             f"/geofencer/shapes?rtype=domain",
             headers=headers
         )
-        print(response.text)
         assert_ok(response)
         body = response.json()
         assert len(body) == 1
@@ -211,7 +210,6 @@ def test_get_all_shapes_user():
             f"/geofencer/shapes?rtype=user",
             headers=headers
         )
-        print(response.text)
         assert_ok(response)
         body = response.json()
         assert len(body) == 1

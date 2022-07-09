@@ -1,13 +1,15 @@
 from enum import Enum
 from typing import Optional, List
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Security
+from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
 
 from app.schemas import GeoShape, GeoShapeRead, GeoShapeUpdate, User, GeoShapeCreate
 
 from ..models import SessionLocal
 from ..crud import shape as crud
+from .common import security
 
 
 router = APIRouter(tags=["geofencer"])
@@ -19,13 +21,13 @@ class GetAllShapesRequestType(str, Enum):
 
 
 @router.get("/geofencer/shapes/{uuid}")
-def get_shape(uuid: UUID4) -> Optional[GeoShape]:
+def get_shape(uuid: UUID4, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
     with SessionLocal() as db_session:
         return crud.get_shape(db_session, GeoShapeRead(uuid=uuid))
 
 
 @router.get("/geofencer/shapes")
-def get_all_shapes(request: Request, rtype: GetAllShapesRequestType) -> Optional[List[GeoShape]]:
+def get_all_shapes(request: Request, rtype: GetAllShapesRequestType, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
@@ -37,7 +39,7 @@ def get_all_shapes(request: Request, rtype: GetAllShapesRequestType) -> Optional
 
 
 @router.post("/geofencer/shapes")
-def create_shape(request: Request, geoshape: GeoShapeCreate) -> Optional[List[GeoShape]]:
+def create_shape(request: Request, geoshape: GeoShapeCreate, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
@@ -45,7 +47,7 @@ def create_shape(request: Request, geoshape: GeoShapeCreate) -> Optional[List[Ge
 
 
 @router.put("/geofencer/shapes/{uuid}")
-def update_shape(request: Request, geoshape: GeoShapeUpdate) -> Optional[GeoShape]:
+def update_shape(request: Request, geoshape: GeoShapeUpdate, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:

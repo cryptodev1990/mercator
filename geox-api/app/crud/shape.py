@@ -1,6 +1,7 @@
 import datetime
 import json
 from typing import List, Union, Optional
+
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
@@ -74,12 +75,12 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) ->
     db_shape = get_shape(db, schemas.GeoShapeRead(uuid=geoshape.uuid))
     if db_shape is None:
         raise Exception(f"Shape {geoshape.uuid} not found")
-    db_shape.geojson = json.loads(
-        geoshape.geojson.json()) if geoshape.geojson else db_shape.geojson
+    db_shape.geojson = json.loads(geoshape.geojson.json()) if geoshape.geojson else db_shape.geojson
     db_shape.name = geoshape.name or db_shape.name
     deleted_at, deleted_at_by_user_id = None, None
     if geoshape.should_delete:
         deleted_at_by_user_id = user_id
+        deleted_at = datetime.datetime.now()
 
     res = db.execute("""
     UPDATE shapes
@@ -87,7 +88,7 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) ->
       , name = :name
       , updated_at = NOW()
       , updated_by_user_id = :updated_by_user_id
-      , deleted_at = NOW()
+      , deleted_at = :deleted_at
       , deleted_at_by_user_id = :deleted_at_by_user_id
       WHERE 1=1
         AND uuid = :uuid
@@ -95,9 +96,10 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) ->
     """, {
         "uuid": db_shape.uuid,
         # TODO This is needlessly slow
-        "geojson": db_shape.geojson.json(),
+        "geojson": json.dumps(db_shape.geojson if type(db_shape.geojson) is dict else db_shape.geojson.json()),
         "name": db_shape.name,
         "updated_by_user_id": user_id,
+        "deleted_at": deleted_at,
         "deleted_at_by_user_id": deleted_at_by_user_id
     })
     if geoshape.should_delete:

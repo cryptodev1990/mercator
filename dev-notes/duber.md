@@ -364,10 +364,20 @@ July 8 2022
 -----------
 
 ### Progress
-- [ ] Test backend / frontend connection
-- [ ] Finish tests
-- [ ] Add bearer token to the function signature and therefore redocs/docs
+
+- [X] Finish tests
+- [ ] Add bearer token to the function signature and therefore redocs/docs/OpenAPI codegen
+- [ ] Generate latest OpenAPI codegen  for drawing geofences
+- [ ] Test backend / frontend connection with clients from OpenAPI
 
 ### Plans
 
 ### Observations
+
+July 9 2022
+-----------
+
+### Progress
+
+- [ ] Add create flow
+  - [ ] Let a user draw a geofence
