@@ -6,6 +6,6 @@
  * Response from submitting a celery task.
  */
 export type CeleryTaskRunResponse = {
-    task_id?: any;
+    task_id: string;
 };
 
