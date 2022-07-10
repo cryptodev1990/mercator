@@ -370,13 +370,13 @@ July 8 2022
 - [X] Generate latest OpenAPI codegen for drawing geofences
 - [X] Test backend / frontend connection with clients from OpenAPI
   - [X] plan to use react-query. Line 6 in pages/admin/index.tsx
-- [ ] Incorporate types in react query
+- [X] Incorporate types in react query
 
 ### Plans
 
 ### Observations
 
-July 9 2022
+July 9/10 2022
 -----------
 
 ### Progress
