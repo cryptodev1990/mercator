@@ -6,7 +6,7 @@
  * LineString Model
  */
 export type LineString = {
-    coordinates: Array<>;
+    coordinates: Array<Number>;
     type?: string;
 };
 

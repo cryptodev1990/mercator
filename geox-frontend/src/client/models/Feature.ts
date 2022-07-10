@@ -18,6 +18,6 @@ export type Feature = {
     geometry?: (Point | MultiPoint | LineString | MultiLineString | Polygon | MultiPolygon | GeometryCollection);
     properties?: any;
     id?: string;
-    bbox?: ;
+    bbox?: Array<Number>;
 };
 

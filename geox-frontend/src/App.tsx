@@ -1,8 +1,7 @@
-import React from "react";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/landing";
 import DashboardPage from "./pages/dashboard";
+import AdminPage from "./pages/admin";
 import RequireAuth from "./components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -33,31 +32,21 @@ function RoutesIndex() {
 
         <Route
           path="/dashboard"
-          element={
-            <RequireAuth>
-              <DashboardPage />
-            </RequireAuth>
-          }
+          element={<RequireAuth page={<DashboardPage />} />}
         />
-        <Route
-          path="/logout"
-          element={
-            <RequireAuth>
-              <Logout />
-            </RequireAuth>
-          }
-        />
+        <Route path="/logout" element={<RequireAuth page={<Logout />} />} />
         <Route path="/health" element={<HealthRedirect />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={<RequireAuth page={<AdminPage />} adminOnly={true} />}
+        />
       </Routes>
     </BrowserRouter>
   );
 }
 
 function App() {
-  React.useEffect(() => {
-    // const url = String(process.env.REACT_APP_BACKEND_URL);
-  }, []);
   return <RoutesIndex />;
 }
 

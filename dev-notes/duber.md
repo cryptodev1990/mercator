@@ -368,7 +368,9 @@ July 8 2022
 - [X] Finish tests
 - [X] Add bearer token to the function signature and therefore redocs/docs/OpenAPI codegen
 - [X] Generate latest OpenAPI codegen for drawing geofences
-- [ ] Test backend / frontend connection with clients from OpenAPI
+- [X] Test backend / frontend connection with clients from OpenAPI
+  - [X] plan to use react-query. Line 6 in pages/admin/index.tsx
+- [ ] Incorporate types in react query
 
 ### Plans
 
@@ -379,5 +381,13 @@ July 9 2022
 
 ### Progress
 
+- [ ] Basic map UI
 - [ ] Add create flow
   - [ ] Let a user draw a geofence
+
+### Observations
+
+- **TODO** Need to add a ``created_at`` field to the ``users`` table, somehow missing
+- **TODO** Need a 404 page
+- **TODO** Need a 500 page
+- **TODO** Need an error snackbar

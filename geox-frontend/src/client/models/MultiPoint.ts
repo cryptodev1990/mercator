@@ -6,7 +6,7 @@
  * MultiPoint Model
  */
 export type MultiPoint = {
-    coordinates: Array<>;
+    coordinates: Array<Number>;
     type?: string;
 };
 
