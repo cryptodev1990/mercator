@@ -381,9 +381,10 @@ July 9/10 2022
 
 ### Progress
 
-- [ ] Basic map UI
+- [X] Basic map UI
+- [ ] Add read flow - open up page and read polygons for current user
 - [ ] Add create flow
-  - [ ] Let a user draw a geofence
+  - [ ] Let a user draw a geofence and publish it to the backend
 
 ### Observations
 
@@ -391,3 +392,19 @@ July 9/10 2022
 - **TODO** Need a 404 page
 - **TODO** Need a 500 page
 - **TODO** Need an error snackbar
+- [EditableGeoJsonLayer docs contain mention of](https://nebula.gl/docs/api-reference/layers/editable-geojson-layer) of GeoJSON that can be snapped to
+
+July 11 2022
+-------------
+
+### Progress
+
+- [X] Add read flow
+- [X] Add create flow
+
+### Plans
+
+- Edit: Transform
+- Edit: Remove points
+- Read: See list of active shapes in the UI
+- Edit: Edit names of shapes in the UI

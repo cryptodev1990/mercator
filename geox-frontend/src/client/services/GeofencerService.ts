@@ -1,7 +1,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { GeoShape } from '../models/GeoShape';
 import type { GeoShapeCreate } from '../models/GeoShapeCreate';
+import type { GeoShapeRead } from '../models/GeoShapeRead';
 import type { GeoShapeUpdate } from '../models/GeoShapeUpdate';
 import type { GetAllShapesRequestType } from '../models/GetAllShapesRequestType';
 
@@ -13,19 +15,18 @@ export class GeofencerService {
 
     /**
      * Get Shape
-     * @param uuid
-     * @returns any Successful Response
+     * @param requestBody
+     * @returns GeoShape Successful Response
      * @throws ApiError
      */
     public static getShapeGeofencerShapesUuidGet(
-        uuid: string,
-    ): CancelablePromise<any> {
+        requestBody: GeoShapeRead,
+    ): CancelablePromise<GeoShape> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/geofencer/shapes/{uuid}',
-            path: {
-                'uuid': uuid,
-            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: `Validation Error`,
             },
@@ -35,12 +36,12 @@ export class GeofencerService {
     /**
      * Update Shape
      * @param requestBody
-     * @returns any Successful Response
+     * @returns GeoShape Successful Response
      * @throws ApiError
      */
     public static updateShapeGeofencerShapesUuidPut(
         requestBody: GeoShapeUpdate,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<GeoShape> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/geofencer/shapes/{uuid}',
@@ -55,12 +56,12 @@ export class GeofencerService {
     /**
      * Get All Shapes
      * @param rtype
-     * @returns any Successful Response
+     * @returns GeoShape Successful Response
      * @throws ApiError
      */
     public static getAllShapesGeofencerShapesGet(
         rtype: GetAllShapesRequestType,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<Array<GeoShape>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/geofencer/shapes',
@@ -76,12 +77,12 @@ export class GeofencerService {
     /**
      * Create Shape
      * @param requestBody
-     * @returns any Successful Response
+     * @returns GeoShape Successful Response
      * @throws ApiError
      */
     public static createShapeGeofencerShapesPost(
         requestBody: GeoShapeCreate,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<Array<GeoShape>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/geofencer/shapes',

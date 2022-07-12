@@ -32,7 +32,7 @@ export const useApi = (url: string, fetchOptions: UseApiOptions = {}) => {
       try {
         const token = await getAccessTokenSilently({
           audience: process.env.REACT_APP_AUTH0_API_AUDIENCE,
-          ignoreCache: true,
+          ignoreCache: false,
           detailedResponse: true,
         });
         const headers = {

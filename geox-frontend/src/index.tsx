@@ -20,6 +20,7 @@ root.render(
         domain={process.env.REACT_APP_AUTH0_DOMAIN!}
         clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
         useRefreshTokens={true}
+        cacheLocation="localstorage"
         redirectUri={window.location.origin}
       >
         <Provider store={store}>

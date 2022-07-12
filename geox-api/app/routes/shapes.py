@@ -20,35 +20,50 @@ class GetAllShapesRequestType(str, Enum):
     user = "user"
 
 
-@router.get("/geofencer/shapes/{uuid}")
-def get_shape(uuid: UUID4, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
+@router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
+def get_shape(
+        uuid: UUID4,
+        credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
     with SessionLocal() as db_session:
         return crud.get_shape(db_session, GeoShapeRead(uuid=uuid))
 
 
-@router.get("/geofencer/shapes")
-def get_all_shapes(request: Request, rtype: GetAllShapesRequestType, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[List[GeoShape]]:
+@router.get("/geofencer/shapes", response_model=List[GeoShape])
+def get_all_shapes(
+        request: Request,
+        rtype: GetAllShapesRequestType,
+        credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
+        shapes = []
         if rtype == GetAllShapesRequestType.user:
-            return crud.get_all_shapes_by_user(db_session, User(**user.__dict__))
+            shapes = crud.get_all_shapes_by_user(db_session, User(**user.__dict__))
         elif rtype == GetAllShapesRequestType.domain:
             email_domain = user.email.split("@")[1]
-            return crud.get_all_shapes_by_email_domain(db_session, email_domain)
+            shapes = crud.get_all_shapes_by_email_domain(db_session, email_domain)
+        return shapes
 
 
-@router.post("/geofencer/shapes")
-def create_shape(request: Request, geoshape: GeoShapeCreate, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[List[GeoShape]]:
+@router.post("/geofencer/shapes", response_model=GeoShape)
+def create_shape(
+        request: Request,
+        geoshape: GeoShapeCreate,
+        credentials: HTTPAuthorizationCredentials = Security(security)) -> GeoShape:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
-        return crud.create_shape(db_session, geoshape, user_id=user.id)
+        shape = crud.create_shape(db_session, geoshape, user_id=user.id)
+        return shape
 
 
-@router.put("/geofencer/shapes/{uuid}")
-def update_shape(request: Request, geoshape: GeoShapeUpdate, credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
+@router.put("/geofencer/shapes/{uuid}", response_model=GeoShape)
+def update_shape(
+        request: Request,
+        geoshape: GeoShapeUpdate,
+        credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
-        return crud.update_shape(db_session, geoshape, user.id)
+        shape = crud.update_shape(db_session, geoshape, user.id)
+        return shape

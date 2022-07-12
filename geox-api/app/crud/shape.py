@@ -29,10 +29,24 @@ def get_shape(
 
 
 def get_all_shapes_by_user(db: Session, user: schemas.User) -> List[schemas.GeoShape]:
-    return (
-        db.query(models.Shape).filter(
-            models.Shape.created_by_user_id == user.id, models.Shape.deleted_at.is_(None)).all()
+    res = db.execute(
+        """
+        SELECT shapes.uuid::VARCHAR AS uuid
+        , shapes.name
+        , shapes.geojson
+        , shapes.created_at
+        , shapes.created_by_user_id
+        FROM shapes
+        JOIN users
+        ON users.id = shapes.created_by_user_id
+          AND users.id = :user_id
+        WHERE 1=1
+          AND shapes.deleted_at IS NULL
+        """,
+        {"user_id": user.id},
     )
+    rows = res.mappings().all()
+    return [schemas.GeoShape(**row) for row in rows] if len(rows) > 0 else []
 
 
 def get_all_shapes_by_email_domain(
@@ -40,7 +54,7 @@ def get_all_shapes_by_email_domain(
 ) -> List[schemas.GeoShape]:
     res = db.execute(
         """
-        SELECT shapes.uuid
+        SELECT shapes.uuid::VARCHAR AS uuid
         , shapes.name
         , shapes.geojson
         , shapes.created_at
@@ -58,17 +72,26 @@ def get_all_shapes_by_email_domain(
     return [schemas.GeoShape(**row) for row in rows] if len(rows) > 0 else []
 
 
-def create_shape(db: Session, geoshape: schemas.GeoShapeCreate, user_id: int):
-    db_shape = models.Shape(
+def create_shape(db: Session, geoshape: schemas.GeoShapeCreate, user_id: int) -> schemas.GeoShape:
+    now = datetime.datetime.now()
+    res = db.execute("""
+    INSERT INTO shapes (uuid, name, geojson, created_at, created_by_user_id)
+        VALUES (GEN_RANDOM_UUID(), :name, :geojson, :now, :created_by_user_id)
+        RETURNING uuid;
+    """, {
         # TODO This is needlessly slow
-        geojson=json.loads(geoshape.geojson.json()),
-        name=geoshape.name,
-        created_by_user_id=user_id
-    )
-    db.add(db_shape)
+        "geojson": geoshape.geojson.json(),
+        "name": geoshape.name,
+        "created_by_user_id": user_id,
+        "now": now
+    })
     db.commit()
-    db.refresh(db_shape)
-    return db_shape
+    rows = res.mappings().all()
+    uuid = rows[0]["uuid"]
+    new_shape = schemas.GeoShape(uuid=uuid, geojson=geoshape.geojson, created_by_user_id=user_id, created_at=now)
+    return new_shape
+
+
 
 
 def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) -> Optional[schemas.GeoShape]:
@@ -102,6 +125,7 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) ->
         "deleted_at": deleted_at,
         "deleted_at_by_user_id": deleted_at_by_user_id
     })
+    db.commit()
     if geoshape.should_delete:
         return None
     rows = res.mappings().all()
