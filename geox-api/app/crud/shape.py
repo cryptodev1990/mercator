@@ -75,8 +75,8 @@ def get_all_shapes_by_email_domain(
 def create_shape(db: Session, geoshape: schemas.GeoShapeCreate, user_id: int) -> schemas.GeoShape:
     now = datetime.datetime.now()
     res = db.execute("""
-    INSERT INTO shapes (uuid, name, geojson, created_at, created_by_user_id)
-        VALUES (GEN_RANDOM_UUID(), :name, :geojson, :now, :created_by_user_id)
+    INSERT INTO shapes (uuid, name, geojson, created_at, created_by_user_id, updated_at, updated_by_user_id)
+        VALUES (GEN_RANDOM_UUID(), :name, :geojson, :now, :created_by_user_id, :now, :created_by_user_id)
         RETURNING uuid;
     """, {
         # TODO This is needlessly slow
@@ -88,17 +88,17 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate, user_id: int) ->
     db.commit()
     rows = res.mappings().all()
     uuid = rows[0]["uuid"]
-    new_shape = schemas.GeoShape(uuid=uuid, geojson=geoshape.geojson, created_by_user_id=user_id, created_at=now)
+    new_shape = schemas.GeoShape(name=geoshape.name, uuid=uuid, geojson=geoshape.geojson,
+                                 created_by_user_id=user_id, created_at=now, updated_at=now, updated_by_user_id=user_id)
     return new_shape
-
-
 
 
 def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) -> Optional[schemas.GeoShape]:
     db_shape = get_shape(db, schemas.GeoShapeRead(uuid=geoshape.uuid))
     if db_shape is None:
         raise Exception(f"Shape {geoshape.uuid} not found")
-    db_shape.geojson = json.loads(geoshape.geojson.json()) if geoshape.geojson else db_shape.geojson
+    db_shape.geojson = json.loads(
+        geoshape.geojson.json()) if geoshape.geojson else db_shape.geojson
     db_shape.name = geoshape.name or db_shape.name
     deleted_at, deleted_at_by_user_id = None, None
     if geoshape.should_delete:

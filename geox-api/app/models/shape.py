@@ -21,4 +21,9 @@ class Shape(Base):
     deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     geojson = Column(JSON, nullable=False)
 
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
     __mapper_args__ = {"eager_defaults": True}

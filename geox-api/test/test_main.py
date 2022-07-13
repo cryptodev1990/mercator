@@ -35,6 +35,7 @@ def test_run_experiment():
 
 
 # TODO this is an integration test and should be in its own module
+@pytest.mark.skipif(True, reason="Not using Celery yet")
 def test_worker():
     response = client.post("/tasks/add?a=1&b=2")
     response = response.json()

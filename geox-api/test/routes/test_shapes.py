@@ -15,6 +15,7 @@ from app.models.db import SessionLocal, engine
 from app.models import Shape
 from app.schemas import GeoShapeCreate, UserCreate
 
+
 def ymd(x):
     return x.strftime('%Y-%m-%dT%H:%M:%S.%f')
 
@@ -33,6 +34,7 @@ here = pathlib.Path(__file__).parent.resolve()
 
 geojson = json.loads(
     open(os.path.join(here, "../fixtures/bbox.geojson")).read())
+
 
 def setup_shape():
     cleanup()
@@ -134,7 +136,7 @@ def test_read_shape():
         body = response.json()
         assert body.get("uuid") == str(shape.uuid)
         assert body.get("created_at") == ymd(shape.created_at)
-        assert body.get("geojson") == shape.geojson
+        assert json.dumps(body.get("geojson")) == shape.geojson.json()
     run_shape_test(_test)
 
 
@@ -200,9 +202,12 @@ def test_get_all_shapes_email_domain():
         )
         assert_ok(response)
         body = response.json()
-        assert len(body) == 1
-        assert body[0].get("uuid") == str(shape.uuid)
+        # TODO the test user has the same email domain as the machine account
+        # so any dev work I do contributes results to this test.
+        assert len(body) >= 1
+        assert any([r.get("uuid") == str(shape.uuid) for r in body])
     run_shape_test(_test)
+
 
 def test_get_all_shapes_user():
     def _test(shape: Shape):
