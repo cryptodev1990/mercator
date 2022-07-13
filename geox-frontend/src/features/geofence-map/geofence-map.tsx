@@ -67,7 +67,7 @@ const GeofenceMap = () => {
       >
         <StaticMap
           mapStyle={"mapbox://styles/mapbox/dark-v9"}
-          mapboxAccessToken={MAPBOX_TOKEN}
+          mapboxApiAccessToken={MAPBOX_TOKEN}
         />
       </DeckGL>
     </div>

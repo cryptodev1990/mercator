@@ -15,14 +15,11 @@ export type { GeoShapeUpdate } from './models/GeoShapeUpdate';
 export { GetAllShapesRequestType } from './models/GetAllShapesRequestType';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { LineString } from './models/LineString';
-export type { LocationAssignment } from './models/LocationAssignment';
 export type { MultiLineString } from './models/MultiLineString';
 export type { MultiPoint } from './models/MultiPoint';
 export type { MultiPolygon } from './models/MultiPolygon';
 export type { Point } from './models/Point';
 export type { Polygon } from './models/Polygon';
-export type { PowerCurveValue } from './models/PowerCurveValue';
-export { TestSidedness } from './models/TestSidedness';
 export type { ValidationError } from './models/ValidationError';
 
 export { DefaultService } from './services/DefaultService';
