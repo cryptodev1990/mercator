@@ -42,8 +42,7 @@ class User(UserBase):
 
 class GeoShapeCreate(BaseModel):
     name: Optional[str] = Field(None, description="Name of the shape")
-    geojson: Feature = Field(...,
-                             description="GeoJSON representation of the shape")
+    geojson: Feature = Field(..., description="GeoJSON representation of the shape")
 
 
 class GeoShapeRead(BaseModel):
@@ -54,13 +53,16 @@ class GeoShapeUpdate(GeoShapeRead):
     name: Optional[str]
     geojson: Optional[Feature]
     should_delete: Optional[bool] = Field(
-        False, description="If true, deletes the shape")
+        False, description="If true, deletes the shape"
+    )
 
 
 class GeoShape(GeoShapeRead, GeoShapeCreate):
     created_by_user_id: int = Field(..., description="User ID of the creator")
-    created_at: datetime.datetime = Field(...,
-                                          description="Date and time of creation")
-    updated_by_user_id: Optional[int] = Field(None,
-                                    description="User ID of the most recent updater")
-    updated_at: Optional[datetime.datetime] = Field(None, description="Date and time of most recent updater")
+    created_at: datetime.datetime = Field(..., description="Date and time of creation")
+    updated_by_user_id: Optional[int] = Field(
+        None, description="User ID of the most recent updater"
+    )
+    updated_at: Optional[datetime.datetime] = Field(
+        None, description="Date and time of most recent updater"
+    )

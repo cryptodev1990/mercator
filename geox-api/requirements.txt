@@ -1,7 +1,7 @@
 fastapi[all]
 celery[redis]
-click
 redis
+geojson-pydantic==0.4.2
 authlib==1.0.1
 starlette-authlib==0.1.11
 SQLAlchemy==1.4.37
@@ -10,4 +10,3 @@ psycopg2==2.9.3
 httpx==0.23.0
 PyJWT==2.4.0
 wheel
-rpy2

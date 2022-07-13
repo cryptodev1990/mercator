@@ -1,16 +1,12 @@
-from fastapi.security import HTTPAuthorizationCredentials
-
-from fastapi import Security
-
 import os
 
 import redis
-from fastapi import APIRouter
+from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPAuthorizationCredentials
 
 from ..models.db import engine
 from .common import security
-
 
 router = APIRouter()
 
@@ -21,7 +17,9 @@ async def health():
 
 
 @router.get("/protected_health", tags=["health"])
-async def protected_health(credentials: HTTPAuthorizationCredentials = Security(security)):
+async def protected_health(
+    credentials: HTTPAuthorizationCredentials = Security(security),
+):
     return {"message": "OK"}
 
 

@@ -11,7 +11,9 @@ from .db import Base
 class Shape(Base):
     __tablename__ = "shapes"
 
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=lambda _: str(uuid.uuid4()))
+    uuid = Column(
+        UUID(as_uuid=True), primary_key=True, default=lambda _: str(uuid.uuid4())
+    )
     name = Column(String, index=True)
     created_at = Column(DateTime, default=func.now())
     created_by_user_id = Column(Integer, ForeignKey("users.id"))
@@ -21,9 +23,7 @@ class Shape(Base):
     deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     geojson = Column(JSON, nullable=False)
 
-
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
     __mapper_args__ = {"eager_defaults": True}

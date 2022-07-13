@@ -18,7 +18,8 @@ def test_create_user():
                 updated_at=None,
                 sub_id="test",
                 given_name="Test",
-                family_name="User")
+                family_name="User",
+            )
             new_user = create_user(db=db_session, user=user)
             user_id = new_user.id
             assert new_user.id
@@ -26,4 +27,3 @@ def test_create_user():
         finally:
             if user_id:
                 engine.execute("DELETE FROM users WHERE id = %s", user_id)
-            

@@ -22,17 +22,18 @@ class GetAllShapesRequestType(str, Enum):
 
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def get_shape(
-        uuid: UUID4,
-        credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
+    uuid: UUID4, credentials: HTTPAuthorizationCredentials = Security(security)
+) -> Optional[GeoShape]:
     with SessionLocal() as db_session:
         return crud.get_shape(db_session, GeoShapeRead(uuid=uuid))
 
 
 @router.get("/geofencer/shapes", response_model=List[GeoShape])
 def get_all_shapes(
-        request: Request,
-        rtype: GetAllShapesRequestType,
-        credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[List[GeoShape]]:
+    request: Request,
+    rtype: GetAllShapesRequestType,
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
@@ -47,9 +48,10 @@ def get_all_shapes(
 
 @router.post("/geofencer/shapes", response_model=GeoShape)
 def create_shape(
-        request: Request,
-        geoshape: GeoShapeCreate,
-        credentials: HTTPAuthorizationCredentials = Security(security)) -> GeoShape:
+    request: Request,
+    geoshape: GeoShapeCreate,
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> GeoShape:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:
@@ -59,9 +61,10 @@ def create_shape(
 
 @router.put("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def update_shape(
-        request: Request,
-        geoshape: GeoShapeUpdate,
-        credentials: HTTPAuthorizationCredentials = Security(security)) -> Optional[GeoShape]:
+    request: Request,
+    geoshape: GeoShapeUpdate,
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> Optional[GeoShape]:
     # Set by ProtectedRoutesMiddleware
     user = request.state.user
     with SessionLocal() as db_session:

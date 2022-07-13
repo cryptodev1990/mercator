@@ -83,7 +83,9 @@ def is_management(user: dict) -> bool:
     return user["sub"] == config.machine_account_sub_id
 
 
-def create_or_update_user_from_bearer_data(db: Session, auth_jwt_payload: dict) -> schemas.User:
+def create_or_update_user_from_bearer_data(
+    db: Session, auth_jwt_payload: dict
+) -> schemas.User:
     user = dict(auth_jwt_payload)
     existing_user = get_user_by_sub_id(db, user["sub"])
     now = datetime.datetime.utcnow()

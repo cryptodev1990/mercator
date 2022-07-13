@@ -3,18 +3,6 @@
 # Exit on error
 set -e
 
-# Install pygeolift dependencies
-if ! command -v Rscript &> /dev/null
-then
-    echo "R is not installed!"
-    exit1
-fi
-Rscript --verbose py-geolift/dependencies.R
-
-# Build the pygeolift package
-make -C py-geolift build
-
-
 # Install redis
 if ! command -v redis &> /dev/null
 then
@@ -30,7 +18,6 @@ createdb geox || true
 source env/bin/activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
-pip install ./py-geolift/dist/pygeolift-*-py3-none-any.whl
 deactivate
 
 if ! command -v overmind &> /dev/null

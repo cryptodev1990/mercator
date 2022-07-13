@@ -1,1 +1,0 @@
-"""A python GeoLift package."""
