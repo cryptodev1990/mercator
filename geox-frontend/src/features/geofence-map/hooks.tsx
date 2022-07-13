@@ -24,14 +24,12 @@ export const useAddShapeMutation = () => {
   });
 };
 
-export const useGetAllShapesQuery = () => {
+export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
   const { isTokenSet } = useTokenInOpenApi();
   return useQuery<GeoShape[]>(
     ["geofencer"],
     () => {
-      return GeofencerService.getAllShapesGeofencerShapesGet(
-        GetAllShapesRequestType.USER
-      );
+      return GeofencerService.getAllShapesGeofencerShapesGet(queryType);
     },
     {
       enabled: isTokenSet,

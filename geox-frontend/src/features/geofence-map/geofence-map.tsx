@@ -9,6 +9,7 @@ import {
   useEditMode,
   useGetAllShapesQuery,
 } from "./hooks";
+import { GetAllShapesRequestType } from "../../client";
 
 const initialViewState = {
   longitude: -73.986022,
@@ -24,7 +25,7 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const GeofenceMap = () => {
   const { editMode } = useEditMode();
   const { mutate: addShape } = useAddShapeMutation();
-  const { data: shapes } = useGetAllShapesQuery();
+  const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
 
   // EditableGeojsonLayer function
   function onEdit({

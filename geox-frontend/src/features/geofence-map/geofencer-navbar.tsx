@@ -38,7 +38,7 @@ const GeofencerNavbar = () => {
         </div>
       </nav>
       <nav aria-label="Main menu" className="grid grid-flow-col gap-5">
-        {user && <div>Hello, {user?.name}</div>}
+        {user && <div>Hello, {user?.email}</div>}
         <button
           className="transition ease-in-out delay-150 bg-transparent hover:-translate-1 hover:rotate-180 hover:text-porsche duration-300"
           data-tip="Settings"

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BsPencil } from "react-icons/bs";
 
 import { MdDelete, MdOutlineArrowBackIos } from "react-icons/md";
-import { GeoShape } from "../../client";
+import { GeoShape, GetAllShapesRequestType } from "../../client";
 import { useGetAllShapesQuery } from "./hooks";
 
 const ArrowBox = ({
@@ -49,7 +49,7 @@ const toUnix = (dt: string) => Math.floor(new Date(dt).getTime() / 1000);
 
 const GeofenceSidebar = () => {
   const [hidden, setHidden] = useState(false);
-  const { data: shapes } = useGetAllShapesQuery();
+  const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
 
   if (hidden) {
     return (

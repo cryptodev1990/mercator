@@ -24,7 +24,7 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
     <div
       onClick={() => navigate(props.navlink)}
       tabIndex={props.tabindex}
-      className="max-w-sm rounded overflow-hidden shadow-lg bg-swiss-coffee focus:shadow-none"
+      className="max-w-sm cursor-pointer rounded overflow-hidden shadow-lg bg-swiss-coffee focus:shadow-none"
     >
       <div className="bg-porsche">
         <img src={props.svg} alt="logo" />
@@ -39,7 +39,6 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
 
 const DashboardPage = () => {
   const { user } = useAuth0();
-  console.log(user);
   return (
     <main
       className="max-w-full h-screen bg-gray-200 overflow-scroll"
