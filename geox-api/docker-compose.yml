@@ -1,11 +1,12 @@
 version: "3.3"
 services:
 
-    db:
-      image: postgres:14
-      volumes:
-        - app-db-data:/var/lib/postgresql/data/pgdata
-      env_file:
-        - .env.dockerfile
-      environment:
-        - PGDATA=/var/lib/postgresql/data/pgdata
+  # Backend app
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run
+    env_file: ./.env.docker
+    ports:
+      - "8080:8080"
