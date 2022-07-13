@@ -1,6 +1,4 @@
 fastapi[all]
-celery[redis]
-redis
 geojson-pydantic==0.4.2
 authlib==1.0.1
 starlette-authlib==0.1.11

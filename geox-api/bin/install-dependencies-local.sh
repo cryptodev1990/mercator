@@ -3,12 +3,6 @@
 # Exit on error
 set -e
 
-# Install redis
-if ! command -v redis &> /dev/null
-then
-    brew install redis
-fi
-
 # Install Postgres
 brew install postgresql
 # Create geox database
