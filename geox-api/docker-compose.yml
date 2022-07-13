@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+
+    db:
+      image: postgres:14
+      volumes:
+        - app-db-data:/var/lib/postgresql/data/pgdata
+      env_file:
+        - .env.dockerfile
+      environment:
+        - PGDATA=/var/lib/postgresql/data/pgdata
