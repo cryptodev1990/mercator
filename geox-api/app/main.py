@@ -9,13 +9,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
 from .middleware import ProtectedRoutesMiddleware
-
-from .routes import (
-    health,
-    shapes,
-    tasks,
-)
-
+from .routes import health, shapes
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -58,7 +52,6 @@ async def log_requests(request: Request, call_next):
 
 
 app.include_router(health.router)
-app.include_router(tasks.router)
 app.include_router(shapes.router)
 
 

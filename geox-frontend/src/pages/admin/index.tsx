@@ -2,31 +2,12 @@
 // that I don't yet know how to get working.
 
 import {
-  CeleryAddTaskResult,
-  CeleryTaskRunResponse,
   HealthService,
   OpenAPI,
-  TasksService,
 } from "../../client";
 
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-
-const AddTaskComponent = ({ taskId }: { taskId: string }) => {
-  const { isLoading, isError, data, error } = useQuery<CeleryAddTaskResult>(
-    ["celery"],
-    () => {
-      return TasksService.getStatusTasksTaskIdGet(taskId);
-    },
-    {
-      refetchInterval: 1000,
-    }
-  );
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  return <div>Data is {JSON.stringify(data)}</div>;
-};
 
 const AuthComponent = () => {
   const { isLoading, isError, data, error } = useQuery(
@@ -48,12 +29,6 @@ const AuthComponent = () => {
 
 // TODO get this working
 const AdminPage = () => {
-  // const { isLoading, isError, data, error } = useQuery<CeleryTaskRunResponse>(
-  //   ["celery"],
-  //   () => {
-  //     return TasksService.runAddTaskTasksAddPost(1, 3);
-  //   }
-  // );
 
   // if (isLoading) {
   //   return <div>We have posted {data}</div>;
@@ -67,7 +42,6 @@ const AdminPage = () => {
     <div className="text-white">
       <p>React Query Take the Wheel:</p>
       <AuthComponent />
-      {/* <AddTaskComponent taskId={data?.task_id} /> */}
     </div>
   );
 };

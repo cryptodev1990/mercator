@@ -1,2 +1,1 @@
 web-server: uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
-worker-queue: celery --app app.tasks worker --loglevel=info --pool=solo

@@ -35,26 +35,6 @@ def test_run_experiment():
 
 
 # TODO this is an integration test and should be in its own module
-@pytest.mark.skipif(True, reason="Not using Celery yet")
-def test_worker():
-    response = client.post("/tasks/add?a=1&b=2")
-    response = response.json()
-    assert response["task_id"]
-    task_id = response["task_id"]
-    response = client.get(f"/tasks/{task_id}").json()
-    poll_count = 0
-    while response["task_status"] != "SUCCESS":
-        response = client.get(f"/tasks/{task_id}").json()
-        task_id = response["task_id"]
-        time.sleep(1)
-        # Timeout test
-        poll_count += 1
-        if poll_count > 10:
-            assert False, "Timeout"
-    assert response["task_result"] == 3
-
-
-# TODO this is an integration test and should be in its own module
 def test_invalid_jwt_auth():
     with open(os.path.join(here, "fixtures/fake-jwt.txt"), "r") as f:
         fake_jwt = f.read()
