@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+
+  # Backend app
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ".:/webapp"

@@ -7,6 +7,7 @@ WORKDIR /webapp
 
 COPY ./requirements.txt /webapp/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
+# RUN pip install --no-cache-dir --upgrade -r /webapp/requirements-dev.txt
 
 COPY ./app /webapp/app
 
