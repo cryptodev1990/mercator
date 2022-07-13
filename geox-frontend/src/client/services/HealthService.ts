@@ -32,18 +32,6 @@ export class HealthService {
     }
 
     /**
-     * Redis Health
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static redisHealthRedisHealthGet(): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/redis-health',
-        });
-    }
-
-    /**
      * Db Health
      * @returns any Successful Response
      * @throws ApiError
