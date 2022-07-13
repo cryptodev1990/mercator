@@ -408,3 +408,22 @@ July 11 2022
 - Edit: Remove points
 - Read: See list of active shapes in the UI
 - Edit: Edit names of shapes in the UI
+- Use MVTLayer to snap points to objects?
+
+July 12 2022
+------------
+
+- [X] Add list of active shapes in the UI
+- [X] Add header that includes Geofencer logo and current user
+
+   - [ ] Settings button provide a dropdown that supports logout
+
+### Observations
+
+- Will need to upgrade to the latest nebula.gl and at least deck 8.6 to support shape cancellations. See [here](https://github.com/uber/nebula.gl/blob/master/CHANGELOG.md)
+
+- User interview for Yummy
+  - Population in those areas
+    - Enrichment for this data (e.g. who's here?)
+  - [Overlapping](https://stackoverflow.com/questions/71738629/expand-polygons-in-geopandas-so-that-they-do-not-overlap-each-other)
+  - Polygon area

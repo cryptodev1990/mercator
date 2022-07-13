@@ -1,11 +1,14 @@
 import DeckGL from "@deck.gl/react";
 import { mvtLayer } from "./instantiated-layers";
-import { DrawPolygonMode } from "@nebula.gl/edit-modes";
 
 import StaticMap from "react-map-gl";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { geoShapesToFeatureCollection } from "./utils";
-import { useAddShapeMutation, useGetAllShapesQuery } from "./hooks";
+import {
+  useAddShapeMutation,
+  useEditMode,
+  useGetAllShapesQuery,
+} from "./hooks";
 
 const initialViewState = {
   longitude: -73.986022,
@@ -19,6 +22,7 @@ const clingToVector = false;
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const GeofenceMap = () => {
+  const { editMode } = useEditMode();
   const { mutate: addShape } = useAddShapeMutation();
   const { data: shapes } = useGetAllShapesQuery();
 
@@ -42,11 +46,12 @@ const GeofenceMap = () => {
     clingToVector ? mvtLayer : null,
     new EditableGeoJsonLayer({
       id: "geojson",
+      pickable: true,
       data: geoShapesToFeatureCollection(shapes),
       // @ts-ignore
       selectedFeatureIndexes,
       // @ts-ignore
-      mode: DrawPolygonMode,
+      mode: editMode,
       onEdit,
     }),
   ];
@@ -56,6 +61,7 @@ const GeofenceMap = () => {
       <DeckGL
         initialViewState={initialViewState}
         controller={true}
+        useDevicePixels={false}
         // @ts-ignore
         layers={layers}
       >

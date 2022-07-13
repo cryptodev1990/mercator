@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import logo from "./mercator-logo.svg";
-import smallLogo from "./small-logo.svg";
+import smallLogo from "../common/assets/small-logo.svg";
+import logo from "../common/assets/mercator-logo.svg";
 import ReactLoading from "react-loading";
 import { useApi } from "../hooks/use-api";
 import { useNavigate, useMatch } from "react-router-dom";
@@ -17,19 +17,6 @@ const Navbar: React.FC = () => {
 
   useApi("/protected_health");
 
-  // const [authToken, setAuthToken] = useState<string>("");
-
-  // useEffect(() => {
-  //   async function getToken() {
-  //     const token = await getAccessTokenSilently({
-  //       ignoreCache: true,
-  //       audience: process.env.REACT_APP_AUTH0_API_AUDIENCE,
-  //       detailedResponse: true,
-  //     });
-  //     setAuthToken(token.access_token);
-  //   }
-  // }, [getAccessTokenSilently, isAuthenticated]);
-
   let loginText = "";
   if (!isLoading) {
     loginText = isAuthenticated
@@ -40,7 +27,7 @@ const Navbar: React.FC = () => {
   }
 
   const css =
-    "relative max-w-5xl bg-red z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between font-semibold text-sm text-white";
+    "relative max-w-5xl z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between font-semibold text-sm text-white";
   return (
     <header className={css}>
       <nav aria-label="Logo menu" className="relative z-50 flex">

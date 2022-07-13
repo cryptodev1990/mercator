@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 import {
   GeofencerService,
   GeoShape,
@@ -38,4 +40,24 @@ export const useGetAllShapesQuery = () => {
       },
     }
   );
+};
+
+export const useEditMode = () => {
+  const [editMode, setEditMode] = useState<any>(() => DrawPolygonMode);
+
+  function escFunction(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      setEditMode(() => () => ViewMode);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", escFunction, false);
+
+    return () => {
+      document.removeEventListener("keydown", escFunction, false);
+    };
+  }, []);
+
+  return { editMode, setEditMode };
 };
