@@ -13,22 +13,6 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY py-geolift/dependencies.R .
-RUN apt-get install -y r-base
-RUN Rscript --verbose dependencies.R
-
-# Install py-geolift
-ADD py-geolift /webapp/py-geolift/
-
-RUN pip install --no-cache-dir --upgrade pip \
-  && pip install --no-cache-dir poetry \
-  && cd py-geolift \
-  && poetry config virtualenvs.create false \
-  && poetry build \
-  && pip install dist/pygeolift-*.tar.gz
-
-RUN rm -rf py-geolift
-
 # Install overmind to run two processes at once
 RUN apt-get install -y tmux
 RUN wget https://github.com/DarthSim/overmind/releases/download/v2.2.2/overmind-v2.2.2-linux-amd64.gz \
