@@ -27,42 +27,26 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
 
     FRONTEND_URL: AnyHttpUrl = Field(..., description="URL that the frontend uses.")
-
-    POSTGRES_SERVER: str = Field("localhost")
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: Optional[str]
-    POSTGRES_DB: str = Field("geox")
-    POSTGRES_PORT: int = Field(5432)
-    POSTGRES_CONNECTION: Optional[PostgresDsn] = None
-
-    @validator("POSTGRES_CONNECTION", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        """Create valid sqlalchemy URI from components if none specified."""
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
-            scheme="postgresql+psycopg2",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD" or ""),
-            host=values.get("POSTGRES_SERVER"),
-            port=values.get("POSTGES_PORT"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
-        )
+    POSTGRES_CONNECTION: PostgresDsn
 
     class Config: # noqa
         env_file = '.env'
         case_sensitive = True
 
 @lru_cache()
-def _get_settings(env_file: str, env_file_hash: str) -> Settings:
+def _get_settings(env_file: Optional[str], env_file_hash: str) -> Settings:
     return Settings(_env_file=env_file)
 
 def get_settings() -> Settings:
     """Return the app settings object."""
     # This allows specifying the source of environment variables via an env file
     # See https://pydantic-docs.helpmanual.io/usage/settings/#dotenv-env-support
-    env_file = os.environ.get('ENV_FILE', '.env')
-    env_file_hash = hashlib.md5(open(env_file,'rb').read())
+    env_file: Optional[str] = os.environ.get('ENV_FILE', '.env')
+    if env_file and os.path.isfile(env_file):
+        env_file_hash = hashlib.md5(open(env_file,'rb').read()) if os.path.isfile(env_file) else ''
+    else:
+        env_file_hash = ''
+        env_file = None
     # Using an inner function will cache on the *contents* of the settings file,
     # so it will update if that changes. This may be unnecessary - but I think it makes sense.
     return _get_settings(env_file, env_file_hash)

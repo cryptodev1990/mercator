@@ -11,7 +11,7 @@ def _set_up():
             settings.AUTH0_CLIENT_ID,
             settings.AUTH0_API_AUDIENCE
         ],
-        "ISSUER": f"https://{settings.AUTH0_DOMAN}/",
+        "ISSUER": f"https://{settings.AUTH0_DOMAIN}/",
         "ALGORITHMS": settings.AUTH0_ALGORITHMS
     }
     return config
