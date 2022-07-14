@@ -1,5 +1,5 @@
 from app.crud.user import create_user
-from app.models.db import SessionLocal, engine
+from app.db.session import SessionLocal, engine
 from app.schemas import UserCreate
 
 

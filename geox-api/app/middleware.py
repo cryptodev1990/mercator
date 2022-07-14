@@ -1,16 +1,13 @@
 import re
-
-from fastapi import Request
-from starlette.responses import JSONResponse
-from .models import SessionLocal
-from .crud.user import create_or_update_user_from_bearer_data
-
-from starlette.middleware.base import BaseHTTPMiddleware
-
-
 from typing import List
 
-from app.core.verify_token import VerifyToken
+from fastapi import Request
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+
+from .crud.user import create_or_update_user_from_bearer_data
+from .db.session import SessionLocal
+from .verify_token import VerifyToken
 
 
 def strip_bearer(s: str) -> str:
