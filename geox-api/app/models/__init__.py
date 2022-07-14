@@ -1,3 +1,4 @@
-from .db import Base, engine, SessionLocal
+"""App Database models."""
+
 from .user import User
 from .shape import Shape

@@ -1,3 +1,5 @@
+"""SQLAlchemy session objects and functions."""
+
 import os
 
 from sqlalchemy import create_engine
@@ -11,4 +13,5 @@ SQLALCHEMY_DATABASE_URI = get_settings().sqlalchemy_database_uri
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+"""SQLALchemy session to use in the app."""
