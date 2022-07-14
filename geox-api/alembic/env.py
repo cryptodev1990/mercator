@@ -1,8 +1,10 @@
-import os
+from logging.config import fileConfig
+
+from app.core.config import get_settings
+from app.models import Base  # noqa
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
-from logging.config import fileConfig
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,8 +21,6 @@ fileConfig(config.config_file_name)
 # target_metadata = None
 
 
-from app.models import Base  # noqa
-
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -29,12 +29,14 @@ target_metadata = Base.metadata
 # ... etc.
 
 
-def get_url():
-    uri = os.environ['POSTGRES_CONNECTION']
+def get_url() -> str:
+    """Return the database URL."""
+    settings = get_settings()
+    uri = settings.POSTGRES_CONNECTION
     return uri
 
 
-def run_migrations_offline():
+def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
     This configures the context with just a URL
     and not an Engine, though an Engine is acceptable
@@ -52,7 +54,7 @@ def run_migrations_offline():
         context.run_migrations()
 
 
-def run_migrations_online():
+def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
     In this scenario we need to create an Engine
     and associate a connection with the context.
@@ -60,7 +62,9 @@ def run_migrations_online():
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
+        configuration,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:

@@ -23,17 +23,6 @@ def test_read_health():
     assert response.json() == {"message": "OK"}
 
 
-@pytest.mark.skipif(True, reason="Test is not complete")
-def test_run_experiment():
-    response = client.post(
-        "/geolift/validate",
-        # TODO what's the JSON that should go here?
-        json={"id": "bazz", "title": "Bazz", "description": "Drop the bazz"},
-    )
-    assert response.status_code == 200
-    assert response.json() == {"message": "OK"}
-
-
 # TODO this is an integration test and should be in its own module
 def test_invalid_jwt_auth():
     with open(os.path.join(here, "fixtures/fake-jwt.txt"), "r") as f:
