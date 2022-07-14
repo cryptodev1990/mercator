@@ -31,7 +31,7 @@ dev-install:  ## Install dependencies for local development
 
 .PHONY: dev
 dev:  ## Run app locally
-	export $$(cat .env.local | xargs) && overmind start
+	export $$(cat .env.local | xargs) && export ENV_FILE=.env.local && overmind start
 
 .PHONY: lint
 lint: ## Lint the project

@@ -1,17 +1,18 @@
 import os
 import jwt
+from app.core.config import get_settings
 
-
-def set_up():
+def _set_up():
+    settings = get_settings()
     config = {
-        "DOMAIN": os.environ["AUTH0_DOMAIN"],
+        "DOMAIN": settings.AUTH0_DOMAIN,
         # Note that we have two audiences her,
         "API_AUDIENCE": [
-            os.environ["AUTH0_CLIENT_ID"],
-            os.environ["AUTH0_API_AUDIENCE"],
+            settings.AUTH0_CLIENT_ID,
+            settings.AUTH0_API_AUDIENCE
         ],
-        "ISSUER": "https://" + os.environ["AUTH0_DOMAIN"] + "/",
-        "ALGORITHMS": os.getenv("ALGORITHMS", "RS256"),
+        "ISSUER": f"https://{settings.AUTH0_DOMAN}/",
+        "ALGORITHMS": settings.AUTH0_ALGORITHMS
     }
     return config
 
@@ -23,7 +24,7 @@ class VerifyToken:
         self.token = token
         self.permissions = permissions
         self.scopes = scopes
-        self.config = set_up()
+        self.config = _set_up()
 
         # This gets the JWKS from a given URL and does processing so you can use any of
         # the keys available
