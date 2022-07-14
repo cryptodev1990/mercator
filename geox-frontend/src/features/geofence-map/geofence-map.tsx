@@ -8,6 +8,7 @@ import {
   useAddShapeMutation,
   useEditMode,
   useGetAllShapesQuery,
+  useSelectedShapes,
 } from "./hooks";
 import { GetAllShapesRequestType } from "../../client";
 
@@ -25,7 +26,17 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const GeofenceMap = () => {
   const { editMode } = useEditMode();
   const { mutate: addShape } = useAddShapeMutation();
+
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
+  const { appendSelected, removeAllSelections, removeSelection, isSelected } =
+    useSelectedShapes();
+
+  function getFillColorFunc(datum: any) {
+    if (isSelected(datum.properties.uuid)) {
+      return [255, 0, 0];
+    }
+    return [255, 255, 0];
+  }
 
   // EditableGeojsonLayer function
   function onEdit({
@@ -50,7 +61,12 @@ const GeofenceMap = () => {
       pickable: true,
       data: geoShapesToFeatureCollection(shapes),
       // @ts-ignore
+      getFillColor: getFillColorFunc,
+      // @ts-ignore
       selectedFeatureIndexes,
+      // onHover: (info: any) => {
+      //   console.log(info);
+      // },
       // @ts-ignore
       mode: editMode,
       onEdit,

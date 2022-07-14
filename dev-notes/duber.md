@@ -415,8 +415,8 @@ July 12 2022
 
 - [X] Add list of active shapes in the UI
 - [X] Add header that includes Geofencer logo and current user
-
    - [ ] Settings button provide a dropdown that supports logout
+- [X] Delete shapes
 
 ### Observations
 
@@ -427,3 +427,7 @@ July 12 2022
     - Enrichment for this data (e.g. who's here?)
   - [Overlapping](https://stackoverflow.com/questions/71738629/expand-polygons-in-geopandas-so-that-they-do-not-overlap-each-other)
   - Polygon area
+
+- More PAMstack thoughts:
+  - The real sell: This is the easiest-to-deploy Jupyter notebook there could possibly be
+  - The risk, people use it as a proof of concept for notebooks internally then churn
