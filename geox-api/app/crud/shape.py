@@ -107,7 +107,7 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) ->
     UPDATE shapes
       SET geojson = :geojson
       , name = :name
-      , updated_at = NOW()
+      , updated_at = :now
       , updated_by_user_id = :updated_by_user_id
       , deleted_at = :deleted_at
       , deleted_at_by_user_id = :deleted_at_by_user_id
@@ -119,15 +119,13 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate, user_id: int) ->
         # TODO This is needlessly slow
         "geojson": json.dumps(db_shape.geojson if type(db_shape.geojson) is dict else db_shape.geojson.json()),
         "name": db_shape.name,
+        "now": datetime.datetime.utcnow(),
         "updated_by_user_id": user_id,
         "deleted_at": deleted_at,
         "deleted_at_by_user_id": deleted_at_by_user_id
     })
     db.commit()
-    print('did we get here?')
-    print('did we get here?', geoshape)
     if geoshape.should_delete:
-        print('what about here?')
         return None
     rows = res.mappings().all()
     return schemas.GeoShape(**rows[0])
