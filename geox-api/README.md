@@ -40,21 +40,46 @@ Copy the `.env.template` file to `.env.local` and fill in the values
 cp .env.template .env.local
 ```
 
-
-Docker Install
----------------
+Docker Install (WIP)
+--------------------
 
 Define the relevant ENV variables in `.env.docker`.
 
 For dev work, this will start the app running on `localhost:8080`.
-```
+
+```shell
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+To connect to app container
+
+```shell
+docker exec -ti geox-api-app-dev /bin/bash
+```
+
+To initialize the tables in the database
+
+```shell
+docker exec geox-api-app-dev /usr/bin/env PYTHONPATH=. ./prestart.sh
+```
+
+To connect to DB container:
+
+```shell
+docker exec geox-api-app-dev /bin/bash
+```
+
+To connect to the DB container within the database
+
+```shell
+docker exec geox-api-app-dev /bin/env psql -U postgres geox
 ```
 
 Changes made to files in the directory will be reloaded.
 However, if new python requirements are added, the image needs to be rebuilt.
 
 For prod, this will start the app:
-```
+
+```shell
 docker-compose -f docker-compose.yml up
 ```

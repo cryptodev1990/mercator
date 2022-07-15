@@ -6,8 +6,8 @@ FROM python:${PYTHON_VERSION}
 WORKDIR /webapp
 
 COPY ./requirements.txt /webapp/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
-# RUN pip install --no-cache-dir --upgrade -r /webapp/requirements-dev.txt
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
 
 COPY ./app /webapp/app
 
