@@ -90,7 +90,7 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def _get_settings(env_file: Optional[str], env_file_hash: str) -> Settings:
-    return Settings(_env_file=env_file)
+    return Settings(_env_file=env_file)  # type: ignore
 
 
 def get_settings() -> Settings:
