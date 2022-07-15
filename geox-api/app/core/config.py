@@ -69,10 +69,11 @@ class Settings(BaseSettings):
     # These are named so that the same environment variables can be used between the postgres docker container
     # and the app without changes
     postgres_db: Optional[str] = Field(None)
-    postgres_user: str
-    postgres_server: str
+    postgres_user: Optional[str] = Field(None)
+    postgres_server: Optional[str] = Field(None)
     postgres_password: Optional[str] = Field(None)
     postgres_port: int = Field(5432)
+    # If provided POSTGRES_CONNECTION will be override the individual postgres components
     sqlalchemy_database_uri: Optional[PostgresDsn] = Field(
         None, env="POSTGRES_CONNECTION"
     )
