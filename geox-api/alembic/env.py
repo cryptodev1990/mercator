@@ -32,7 +32,7 @@ target_metadata = Base.metadata
 def get_url() -> str:
     """Return the database URL."""
     settings = get_settings()
-    uri = settings.POSTGRES_CONNECTION
+    uri = settings.sqlalchemy_database_uri
     return uri
 
 
