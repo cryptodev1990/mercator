@@ -1,32 +1,10 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
+import { useContext, useMemo } from "react";
 import { GeoShape } from "../../../client";
 import { GeofencerContext } from "../geofencer-view";
 
 export const useEditModal = () => {
   const { shapeForEdit, setShapeForEdit } = useContext(GeofencerContext);
   return { shapeForEdit, setShapeForEdit };
-};
-
-export const useEditMode = () => {
-  // TODO need to update nebula.gl to get this to work
-  const [editMode, setEditMode] = useState<any>(() => DrawPolygonMode);
-
-  function escFunction(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      setEditMode(() => () => ViewMode);
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("keydown", escFunction, false);
-
-    return () => {
-      document.removeEventListener("keydown", escFunction, false);
-    };
-  }, []);
-
-  return { editMode, setEditMode };
 };
 
 export const useSelectedShapes = () => {

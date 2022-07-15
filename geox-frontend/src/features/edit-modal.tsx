@@ -1,8 +1,9 @@
 import { GeoShape } from "../client";
 import { useForm } from "react-hook-form";
-import { useEditModal } from "./geofence-map/hooks/ui-hooks";
-import { useUpdateShapeMutation } from "./geofence-map/hooks";
+import { useEditModal } from "./geofence-map/metadata-editor/hooks";
+
 import { useEffect } from "react";
+import { useUpdateShapeMutation } from "./geofence-map/hooks/openapi-hooks";
 
 function View(props: any) {
   return (

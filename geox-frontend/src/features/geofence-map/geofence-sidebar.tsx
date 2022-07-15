@@ -1,16 +1,9 @@
-import { useEffect, useState } from "react";
-import { BsPencil } from "react-icons/bs";
+import { useState } from "react";
 
-import { MdDelete, MdOutlineArrowBackIos } from "react-icons/md";
-import Loading from "react-loading";
-import { GeoShape, GetAllShapesRequestType } from "../../client";
-import { EditModal } from "../edit-modal";
-import {
-  useGetAllShapesQuery,
-  useSelectedShapes,
-  useUpdateShapeMutation,
-} from "./hooks";
-import { useEditModal } from "./hooks/ui-hooks";
+import { MdOutlineArrowBackIos } from "react-icons/md";
+import { GetAllShapesRequestType } from "../../client";
+import { useGetAllShapesQuery } from "./hooks/openapi-hooks";
+import { ShapeCard } from "./shape-card";
 
 const ArrowBox = ({
   handleClick,
@@ -28,58 +21,6 @@ const ArrowBox = ({
       }
     >
       <MdOutlineArrowBackIos size={30} />
-    </div>
-  );
-};
-
-const Button = (props: any) => {
-  const { children, ...rest } = props;
-  return (
-    <button
-      {...rest}
-      className="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    >
-      {props.children ? props.children : "Save"}
-    </button>
-  );
-};
-
-const ShapeCard = ({ shape }: { shape: GeoShape }) => {
-  const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
-  const { selectOne, removeAllSelections, isSelected } = useSelectedShapes();
-  const { shapeForEdit, setShapeForEdit } = useEditModal();
-  const selectionBg = isSelected(shape.uuid) ? "bg-slate-600" : "bg-slate-800";
-  return (
-    <div
-      onMouseOver={() => {
-        console.log(shape.uuid + " selected");
-        selectOne(shape);
-      }}
-      onMouseLeave={() => {
-        removeAllSelections();
-      }}
-      className={`p-6 max-w-sm relative snap-start bg-slate-600 rounded-lg border border-gray-200 shadow-md ${selectionBg}`}
-      style={{}}
-    >
-      <h5 className="mb-2 text-2xl font-bold tracking-tight text-white">
-        {shape.name}
-      </h5>
-      <div className="flex flex-row justify-start space-x-2">
-        <Button
-          onClick={() => {
-            setShapeForEdit(shape);
-          }}
-        >
-          <span className="mx-1">Edit</span>
-          <BsPencil />
-        </Button>
-        <Button
-          onClick={() => updateShape({ uuid: shape.uuid, should_delete: true })}
-        >
-          <span className="mx-1">Delete</span>
-          {isLoading ? <Loading height={8} width={8} /> : <MdDelete />}
-        </Button>
-      </div>
     </div>
   );
 };

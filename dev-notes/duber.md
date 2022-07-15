@@ -431,3 +431,20 @@ July 12 2022
 - More PAMstack thoughts:
   - The real sell: This is the easiest-to-deploy Jupyter notebook there could possibly be
   - The risk, people use it as a proof of concept for notebooks internally then churn
+  - "Do your best work"
+
+
+July 15 2022
+-------------
+
+### Plans
+
+- [ ] Add a button for changing edit modes
+
+### Progress
+
+- [ ] Add a button for changing edit modes
+
+### Problems
+
+- [ ] Cut the overflow on the page

@@ -26,13 +26,15 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
       tabIndex={props.tabindex}
       className="max-w-sm cursor-pointer rounded overflow-hidden shadow-lg bg-swiss-coffee focus:shadow-none"
     >
-      <div className="bg-porsche">
-        <img src={props.svg} alt="logo" />
-      </div>
-      <div className="px-6 py-4 bg-swiss-coffee overflow-hidden">
-        <div className="font-bold text-xl pb-2">{props.name}</div>
-        <p className="text-gray-700 text-base">{props.description}</p>
-      </div>
+      <a>
+        <div className="bg-porsche">
+          <img src={props.svg} alt="logo" />
+        </div>
+        <div className="px-6 py-4 bg-swiss-coffee overflow-hidden">
+          <div className="font-bold text-xl pb-2">{props.name}</div>
+          <p className="text-gray-700 text-base">{props.description}</p>
+        </div>
+      </a>
     </div>
   );
 };

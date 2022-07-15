@@ -1,16 +1,27 @@
 import DeckGL from "@deck.gl/react";
 import { mvtLayer } from "./instantiated-layers";
 
+import { featureCollection, intersect } from "@turf/turf";
+
 import StaticMap from "react-map-gl";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import {
+  ViewMode,
+  DrawPolygonMode,
+  DrawPolygonByDraggingMode,
+  TranslateMode,
+} from "@nebula.gl/edit-modes";
 import { geoShapesToFeatureCollection } from "./utils";
 import {
   useAddShapeMutation,
-  useEditMode,
   useGetAllShapesQuery,
-  useSelectedShapes,
-} from "./hooks";
+} from "./hooks/openapi-hooks";
+
+import { useEditableMode } from "./tool-button-bank/hooks";
+
 import { GetAllShapesRequestType } from "../../client";
+import { useSelectedShapes } from "./metadata-editor/hooks";
+import { MODES } from "./tool-button-bank/modes";
 
 const initialViewState = {
   longitude: -73.986022,
@@ -24,12 +35,11 @@ const clingToVector = false;
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const GeofenceMap = () => {
-  const { editMode } = useEditMode();
-  const { mutate: addShape } = useAddShapeMutation();
+  const { editableMode } = useEditableMode();
+  const { isSelected } = useSelectedShapes();
 
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
-  const { appendSelected, removeAllSelections, removeSelection, isSelected } =
-    useSelectedShapes();
+  const { mutate: addShape } = useAddShapeMutation();
 
   function getFillColorFunc(datum: any) {
     if (isSelected(datum.properties.uuid)) {
@@ -47,6 +57,10 @@ const GeofenceMap = () => {
     editType: string;
   }) {
     if (editType !== "addFeature") {
+      if (updatedData) {
+        // use turf to check for an interaction with the existing feature collection
+        featureCollection(updatedData);
+      }
       return;
     }
     const mostRecentShape =
@@ -56,31 +70,93 @@ const GeofenceMap = () => {
 
   const layers = [
     clingToVector ? mvtLayer : null,
-    new EditableGeoJsonLayer({
-      id: "geojson",
-      pickable: true,
-      data: geoShapesToFeatureCollection(shapes),
-      // @ts-ignore
-      getFillColor: getFillColorFunc,
-      // @ts-ignore
-      selectedFeatureIndexes,
-      // onHover: (info: any) => {
-      //   console.log(info);
-      // },
-      // @ts-ignore
-      mode: editMode,
-      onEdit,
-    }),
+    editableMode === MODES.ViewMode &&
+      new EditableGeoJsonLayer({
+        id: "geojson",
+        pickable: true,
+        data: geoShapesToFeatureCollection(shapes),
+        // @ts-ignore
+        getFillColor: getFillColorFunc,
+        // @ts-ignore
+        selectedFeatureIndexes,
+        // onHover: (info: any) => {
+        //   console.log(info);
+        // },
+        // @ts-ignore
+        mode: ViewMode,
+        onEdit,
+      }),
+    editableMode === MODES.EditMode &&
+      new EditableGeoJsonLayer({
+        id: "geojson",
+        pickable: true,
+        data: geoShapesToFeatureCollection(shapes),
+        // @ts-ignore
+        getFillColor: getFillColorFunc,
+        // @ts-ignore
+        selectedFeatureIndexes,
+        // onHover: (info: any) => {
+        //   console.log(info);
+        // },
+        // @ts-ignore
+        mode: DrawPolygonMode,
+        onEdit,
+      }),
+    editableMode === MODES.LassoMode &&
+      new EditableGeoJsonLayer({
+        id: "geojson",
+        pickable: true,
+        data: geoShapesToFeatureCollection(shapes),
+        // @ts-ignore
+        getFillColor: getFillColorFunc,
+        // @ts-ignore
+        selectedFeatureIndexes,
+        // onHover: (info: any) => {
+        //   console.log(info);
+        // },
+        // @ts-ignore
+        mode: DrawPolygonByDraggingMode,
+        onEdit: (e: any) => console.log(e),
+      }),
+    editableMode === MODES.TranslateMode &&
+      new EditableGeoJsonLayer({
+        id: "geojson",
+        pickable: true,
+        data: geoShapesToFeatureCollection(shapes),
+        // @ts-ignore
+        getFillColor: getFillColorFunc,
+        // @ts-ignore
+        selectedFeatureIndexes,
+        // onHover: (info: any) => {
+        //   console.log(info);
+        // },
+        // @ts-ignore
+        mode: TranslateMode,
+        onEdit: (e: any) => console.log(e),
+      }),
   ];
+
+  const getTooltip = (info: any) => {
+    if (!info.object) {
+      return null;
+    }
+    if (editableMode === MODES.ViewMode) {
+      return `${info.object.properties.name}`;
+    }
+    return null;
+  };
 
   return (
     <div>
       <DeckGL
         initialViewState={initialViewState}
-        controller={true}
+        controller={{
+          doubleClickZoom: false,
+        }}
         useDevicePixels={false}
         // @ts-ignore
         layers={layers}
+        getTooltip={getTooltip}
       >
         <StaticMap
           mapStyle={"mapbox://styles/mapbox/dark-v9"}

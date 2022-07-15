@@ -4,12 +4,15 @@ import { GeofenceSidebar } from "../../features/geofence-map/geofence-sidebar";
 import { useState, createContext } from "react";
 import { GeoShape } from "../../client";
 import { EditModal } from "../edit-modal";
+import { MODES } from "./tool-button-bank/modes";
 
 interface GeofencerContextState {
   selectedShapes: GeoShape[];
   setSelectedShapes: (shapes: GeoShape[]) => void;
   shapeForEdit: GeoShape | null | undefined;
   setShapeForEdit: (shape: GeoShape | null | undefined) => void;
+  editableMode: string;
+  setEditableMode: (mode: string) => void;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -17,6 +20,8 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setSelectedShapes: () => {},
   shapeForEdit: null,
   setShapeForEdit: () => {},
+  editableMode: "",
+  setEditableMode: () => {},
 });
 
 const GeofencerView = () => {
@@ -24,6 +29,7 @@ const GeofencerView = () => {
   const [shapeForEdit, setShapeForEdit] = useState<
     GeoShape | null | undefined
   >();
+  const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
 
   return (
     <GeofencerContext.Provider
@@ -33,6 +39,8 @@ const GeofencerView = () => {
         shapeForEdit,
         setShapeForEdit: (shape: GeoShape | null | undefined) =>
           setShapeForEdit(shape),
+        editableMode,
+        setEditableMode: (mode: string) => setEditableMode(mode),
       }}
     >
       <div className="text-white">
