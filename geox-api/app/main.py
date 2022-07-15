@@ -1,5 +1,5 @@
+"""Main module of the app."""
 import logging
-import os
 import random
 import string
 import time
@@ -8,23 +8,20 @@ from fastapi import FastAPI, Request
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from .core.config import get_settings
-from .middleware import ProtectedRoutesMiddleware
-from .routes import health, shapes
+from app.core.config import get_settings
+from app.middleware import ProtectedRoutesMiddleware
+from app.routes import health, shapes
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-
 settings = get_settings()
-
-secret_key = settings.APP_SECRET_KEY
 
 app = FastAPI(
     middleware=[
         Middleware(
             CORSMiddleware,
-            allow_origins=["*"],
+            allow_origins=settings.backend_cors_origins,
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],

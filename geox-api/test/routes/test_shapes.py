@@ -8,8 +8,8 @@ from fastapi.testclient import TestClient
 
 from app.crud.shape import create_shape
 from app.crud.user import create_user, get_user_by_email
-from app.lib import config
-from app.lib.access_token import get_access_token
+from app.core.access_token import get_access_token
+from app.core.config import get_settings
 from app.main import app
 from app.models.db import SessionLocal, engine
 from app.models import Shape
@@ -34,6 +34,7 @@ here = pathlib.Path(__file__).parent.resolve()
 
 geojson = json.loads(open(os.path.join(here, "../fixtures/bbox.geojson")).read())
 
+settings = get_settings()
 
 def setup_shape():
     cleanup()
@@ -42,8 +43,8 @@ def setup_shape():
         create_user(
             db_session,
             UserCreate(
-                sub_id=config.machine_account_sub_id,
-                email=config.machine_account_email,
+                sub_id=settings.machine_account_sub_id,
+                email=settings.machine_account_email,
                 given_name="Test",
                 family_name="User",
                 nickname="",
@@ -55,13 +56,13 @@ def setup_shape():
                 iss="",
             ),
         )
-        user = get_user_by_email(db_session, config.machine_account_email)
+        user = get_user_by_email(db_session, settings.machine_account_email)
         shape = create_shape(db_session, obj, user_id=user.id)
         return user, shape
 
 
 def cleanup():
-    email = config.machine_account_email
+    email = settings.machine_account_email
     engine.execute(
         """
         BEGIN TRANSACTION;
@@ -100,9 +101,9 @@ def test_404_with_auth():
         response = client.get("/geofencer/shapesa/", headers=headers)
         assert response.status_code == 404
         with SessionLocal() as db_session:
-            user = get_user_by_email(db_session, config.machine_account_email)
+            user = get_user_by_email(db_session, settings.machine_account_email)
             assert user.id
-            assert user.email == config.machine_account_email
+            assert user.email == settings.machine_account_email
     finally:
         cleanup()
 

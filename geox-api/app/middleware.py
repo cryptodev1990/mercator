@@ -10,7 +10,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from typing import List
 
-from .verify_token import VerifyToken
+from app.core.verify_token import VerifyToken
 
 
 def strip_bearer(s: str) -> str:

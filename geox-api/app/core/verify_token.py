@@ -1,30 +1,33 @@
-import os
+"""Functions to verify auth tokens."""
 import jwt
 from app.core.config import get_settings
 
-def _set_up():
-    settings = get_settings()
-    config = {
-        "DOMAIN": settings.AUTH0_DOMAIN,
-        # Note that we have two audiences her,
-        "API_AUDIENCE": [
-            settings.AUTH0_CLIENT_ID,
-            settings.AUTH0_API_AUDIENCE
-        ],
-        "ISSUER": f"https://{settings.AUTH0_DOMAIN}/",
-        "ALGORITHMS": settings.AUTH0_ALGORITHMS
-    }
-    return config
-
 
 class VerifyToken:
-    """Does all the token verification using PyJWT"""
+    """Verify token.
+
+    Does all the token verification using PyJWT.
+    """
+
+    def _set_up(self):
+        settings = get_settings()
+        config = {
+            "DOMAIN": settings.auth_domain,
+            # Note that we have two audiences her,
+            "API_AUDIENCE": [
+                settings.auth_client_id,
+                settings.auth_audience
+            ],
+            "ISSUER": f"https://{settings.auth_domain}/",
+            "ALGORITHMS": settings.auth_algorithms
+        }
+        return config
 
     def __init__(self, token, permissions=None, scopes=None):
         self.token = token
         self.permissions = permissions
         self.scopes = scopes
-        self.config = _set_up()
+        self.config = self._set_up()
 
         # This gets the JWKS from a given URL and does processing so you can use any of
         # the keys available
