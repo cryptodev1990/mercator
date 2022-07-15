@@ -17,7 +17,6 @@ def get_access_token() -> str:
         "client_secret": settings.management_client_secret,
         "audience": settings.auth_audience,
     }
-    print(payload)
     response = requests.post(
         f"https://{settings.auth_domain}/oauth/token", json=payload, headers=headers
     )

@@ -74,7 +74,6 @@ class Settings(BaseSettings):
     @property
     def sqlalchemy_database_uri(self) -> PostgresDsn:
         """Return the SQLAlchemy database URI."""
-        print(self.postgres_port)
         return PostgresDsn.build(
             scheme="postgresql+psycopg2",
             user=self.postgres_user,
