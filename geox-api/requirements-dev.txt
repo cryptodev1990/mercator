@@ -1,3 +1,7 @@
-black
-pytest
 alembic
+black
+mypy
+pydocstyle
+pytest
+sqlalchemy-stubs
+types-requests

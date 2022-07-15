@@ -2,8 +2,8 @@ import datetime
 
 from sqlalchemy.orm import Session
 
-from .. import models, schemas
-from ..lib import config
+from app import models, schemas
+from app.core.config import get_settings
 
 
 def get_user(db: Session, user_id: int):
@@ -80,7 +80,7 @@ def handle_management_api_account(user, db):
 
 
 def is_management(user: dict) -> bool:
-    return user["sub"] == config.machine_account_sub_id
+    return user["sub"] == get_settings().machine_account_sub_id
 
 
 def create_or_update_user_from_bearer_data(

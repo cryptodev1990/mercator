@@ -1,9 +1,7 @@
 import os
 import pathlib
-import pytest
-import time
 from fastapi.testclient import TestClient
-from app.lib.access_token import get_access_token
+from app.core.access_token import get_access_token
 
 from app.main import app
 
