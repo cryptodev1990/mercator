@@ -2,7 +2,7 @@
 import hashlib
 import os
 from functools import lru_cache
-from typing import Optional, List, Union, Literal
+from typing import Optional, List, Union, Literal, Dict, Any
 
 from pydantic import AnyHttpUrl, BaseSettings, Field, PostgresDsn, EmailStr, validator
 from sqlalchemy import desc
@@ -14,6 +14,7 @@ DEFAULT_MACHINE_ACCOUNT_EMAIL = f"duber+ManagementApi@{DEFAULT_DOMAIN}"
 AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""
 # used in CORS types
+
 
 class Settings(BaseSettings):
     """Config settings."""
@@ -42,7 +43,9 @@ class Settings(BaseSettings):
         """Machine account sub id."""
         return "{self.management_client_id}@clients"
 
-    backend_cors_origins: List[AnyHttpURLorAsterisk] = Field(["*"], description="Valid CORS origin domains.")
+    backend_cors_origins: List[AnyHttpURLorAsterisk] = Field(
+        ["*"], description="Valid CORS origin domains."
+    )
 
     @validator("backend_cors_origins", pre=True)
     def _assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -70,18 +73,25 @@ class Settings(BaseSettings):
     postgres_server: str
     postgres_password: Optional[str] = Field(None)
     postgres_port: int = Field(5432)
+    sqlalchemy_database_uri: Optional[PostgresDsn] = Field(
+        None, env="POSTGRES_CONNECTION"
+    )
 
-    @property
-    def sqlalchemy_database_uri(self) -> PostgresDsn:
+    @validator("sqlalchemy_database_uri", pre=True)
+    def _validate_sqlalchemy_database_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         """Return the SQLAlchemy database URI."""
+        if isinstance(v, str):
+            return v
         return PostgresDsn.build(
             scheme="postgresql+psycopg2",
-            user=self.postgres_user,
-            password=self.postgres_password,
-            host=self.postgres_server,
-            port=str(self.postgres_port),
-            path=f"/{self.postgres_db or ''}"
+            user=values.get("postgres_user"),
+            password=values.get("postgres_password"),
+            host=values.get("postgres_server"),
+            port=str(values.get("postgres_port")),
+            path=f"/{values.get('postgres_db', '')}",
         )
+    # validateion is done in the order fields are defined. sqlalchemy_database_uri
+    # needs to be defined after everything
 
     class Config:  # noqa
         env_file = ".env"
