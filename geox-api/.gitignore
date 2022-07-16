@@ -2,3 +2,4 @@
 dump.rdb
 *.whl
 *.tar.gz
+*.pyc

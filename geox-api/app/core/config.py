@@ -59,10 +59,6 @@ class Settings(BaseSettings):
 
     app_secret_key: str
 
-    ## TODO: are these used in the backend?
-    google_client_id: str  # TODO: these are not used anywhere in backend
-    google_client_secret: str  # TODO: these are not used anywhere in backend
-
     frontend_url: AnyHttpUrl = Field(..., description="URL that the frontend uses.")
 
     # db connection info
