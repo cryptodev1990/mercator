@@ -59,8 +59,6 @@ class Settings(BaseSettings):
 
     app_secret_key: str
 
-    frontend_url: AnyHttpUrl = Field(..., description="URL that the frontend uses.")
-
     # db connection info
     # These are named so that the same environment variables can be used between the postgres docker container
     # and the app without changes
