@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 set -e
-PYTHONPATH=.
 
 # Let the DB start
 python -m app.backend_pre_start

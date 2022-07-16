@@ -10,6 +10,9 @@ services:
     volumes:
       - ".:/webapp"
       - geox-app-db-data-dev:/var/lib/postgresql/data/pgdata
+    environment:
+      APP_ENV: dev
+      APP_HOST: localhost
 
   db:
     container_name: geox-api-db-dev

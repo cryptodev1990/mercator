@@ -83,3 +83,16 @@ For prod, this will start the app:
 ```shell
 docker-compose -f docker-compose.yml up
 ```
+
+Linting
+-------
+
+```
+bin/lint-shell.sh
+```
+
+References
+----------
+
+- https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
+- https://github.com/tiangolo/uvicorn-gunicorn-docker
