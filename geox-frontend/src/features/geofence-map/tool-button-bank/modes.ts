@@ -5,9 +5,8 @@ export const MODES = {
   EditMode: "EditMode",
   // Modify an existing polygon, corresponds to ModifyMode in nebula
   ModifyMode: "ModifyMode",
-  // Select a group of polygons.
-  // This is PolygonEditMode + a new layer in Nebula, combined with deck.
-  // The area at the intersection of the lasso and the existing features is selected.
+  // Select a group of polygons, using nebula selection layer
   LassoMode: "LassoMode",
+  LassoDrawMode: "LassoDrawMode",
   TranslateMode: "TranslateMode",
 };

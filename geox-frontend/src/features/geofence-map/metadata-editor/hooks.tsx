@@ -27,8 +27,12 @@ export const useSelectedShapes = () => {
     setSelectedShapes([shape]);
   }
 
-  function appendSelected(shapes: GeoShape[]) {
-    setSelectedShapes([...selectedShapes, ...shapes]);
+  function appendSelected(shapes: GeoShape[], clobber: boolean = false) {
+    if (clobber) {
+      setSelectedShapes([...shapes]);
+    } else {
+      setSelectedShapes([...selectedShapes, ...shapes]);
+    }
   }
 
   function removeAllSelections() {

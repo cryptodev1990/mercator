@@ -5,6 +5,7 @@ import { useState, createContext } from "react";
 import { GeoShape } from "../../client";
 import { EditModal } from "../edit-modal";
 import { MODES } from "./tool-button-bank/modes";
+import { CommandPalette } from "../command-palette/component";
 
 interface GeofencerContextState {
   selectedShapes: GeoShape[];
@@ -13,6 +14,8 @@ interface GeofencerContextState {
   setShapeForEdit: (shape: GeoShape | null | undefined) => void;
   editableMode: string;
   setEditableMode: (mode: string) => void;
+  viewport: any;
+  setViewport: (viewport: any) => void;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -22,6 +25,8 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setShapeForEdit: () => {},
   editableMode: "",
   setEditableMode: () => {},
+  viewport: {},
+  setViewport: () => {},
 });
 
 const GeofencerView = () => {
@@ -30,6 +35,13 @@ const GeofencerView = () => {
     GeoShape | null | undefined
   >();
   const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
+  const [viewport, setViewport] = useState<any>({
+    // TODO how to choose a default viewport?
+    longitude: -73.986022,
+    maxZoom: 20,
+    latitude: 40.730743,
+    zoom: 12,
+  });
 
   return (
     <GeofencerContext.Provider
@@ -41,14 +53,21 @@ const GeofencerView = () => {
           setShapeForEdit(shape),
         editableMode,
         setEditableMode: (mode: string) => setEditableMode(mode),
+        viewport,
+        setViewport: (viewport: any) => setViewport(viewport),
       }}
     >
-      <div className="text-white">
+      <CommandPalette
+        onNominatim={(res: any) => {
+          setViewport(res);
+        }}
+      />
+      <div className="text-white h-screen relative flex flex-col">
         {shapeForEdit && <EditModal shape={shapeForEdit} />}
         <div className="h-fit w-screen p-4 bg-gradient-to-r from-slate-800 to-slate-900">
           <GeofencerNavbar />
         </div>
-        <div className="h-screen w-screen relative">
+        <div className="flex-auto w-screen relative">
           <div className="h-[90%] px-5 py-5 flex flex-row relative">
             <GeofenceSidebar />
           </div>

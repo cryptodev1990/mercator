@@ -1,14 +1,13 @@
 import DeckGL from "@deck.gl/react";
-import { mvtLayer } from "./instantiated-layers";
 
-import { featureCollection, intersect } from "@turf/turf";
+import { featureCollection } from "@turf/turf";
 
 import StaticMap from "react-map-gl";
-import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import { GeoJsonLayer } from "@deck.gl/layers";
+import { EditableGeoJsonLayer, SelectionLayer } from "@nebula.gl/layers";
 import {
   ViewMode,
   DrawPolygonMode,
-  DrawPolygonByDraggingMode,
   TranslateMode,
 } from "@nebula.gl/edit-modes";
 import { geoShapesToFeatureCollection } from "./utils";
@@ -22,21 +21,16 @@ import { useEditableMode } from "./tool-button-bank/hooks";
 import { GetAllShapesRequestType } from "../../client";
 import { useSelectedShapes } from "./metadata-editor/hooks";
 import { MODES } from "./tool-button-bank/modes";
-
-const initialViewState = {
-  longitude: -73.986022,
-  maxZoom: 20,
-  latitude: 40.730743,
-  zoom: 12,
-};
+import { useContext } from "react";
+import { GeofencerContext } from "./geofencer-view";
 
 const selectedFeatureIndexes: any[] = [];
-const clingToVector = false;
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const GeofenceMap = () => {
+  const { viewport } = useContext(GeofencerContext);
   const { editableMode } = useEditableMode();
-  const { isSelected } = useSelectedShapes();
+  const { isSelected, appendSelected } = useSelectedShapes();
 
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
   const { mutate: addShape } = useAddShapeMutation();
@@ -69,7 +63,6 @@ const GeofenceMap = () => {
   }
 
   const layers = [
-    clingToVector ? mvtLayer : null,
     editableMode === MODES.ViewMode &&
       new EditableGeoJsonLayer({
         id: "geojson",
@@ -86,7 +79,7 @@ const GeofenceMap = () => {
         mode: ViewMode,
         onEdit,
       }),
-    editableMode === MODES.EditMode &&
+    [MODES.EditMode, MODES.LassoDrawMode].includes(editableMode) &&
       new EditableGeoJsonLayer({
         id: "geojson",
         pickable: true,
@@ -103,21 +96,33 @@ const GeofenceMap = () => {
         onEdit,
       }),
     editableMode === MODES.LassoMode &&
-      new EditableGeoJsonLayer({
-        id: "geojson",
-        pickable: true,
+      new SelectionLayer({
+        id: "selection",
+        // @ts-ignore
+        selectionType: "rectangle",
+        onSelect: ({ pickingInfos }: { pickingInfos: any }) => {
+          const uuids = pickingInfos.map((x: any) => {
+            return { uuid: x.object.properties.uuid };
+          });
+          appendSelected(uuids, true);
+        },
+        layerIds: ["geojson-read"],
+        getTentativeFillColor: () => [255, 0, 255, 100],
+        getTentativeLineColor: () => [0, 0, 255, 255],
+        getTentativeLineDashArray: () => [0, 0],
+        lineWidthMinPixels: 3,
+      }),
+    editableMode === MODES.LassoMode &&
+      new GeoJsonLayer({
+        id: "geojson-read",
+        // @ts-ignore
         data: geoShapesToFeatureCollection(shapes),
+        pickable: true,
         // @ts-ignore
         getFillColor: getFillColorFunc,
-        // @ts-ignore
-        selectedFeatureIndexes,
-        // onHover: (info: any) => {
-        //   console.log(info);
-        // },
-        // @ts-ignore
-        mode: DrawPolygonByDraggingMode,
-        onEdit: (e: any) => console.log(e),
+        lineWidthMinPixels: 3,
       }),
+
     editableMode === MODES.TranslateMode &&
       new EditableGeoJsonLayer({
         id: "geojson",
@@ -132,7 +137,7 @@ const GeofenceMap = () => {
         // },
         // @ts-ignore
         mode: TranslateMode,
-        onEdit: (e: any) => console.log(e),
+        // onEdit: (e: any) => console.log(e),
       }),
   ];
 
@@ -149,7 +154,7 @@ const GeofenceMap = () => {
   return (
     <div>
       <DeckGL
-        initialViewState={initialViewState}
+        initialViewState={viewport}
         controller={{
           doubleClickZoom: false,
         }}

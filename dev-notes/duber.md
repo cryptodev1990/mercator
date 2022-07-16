@@ -439,7 +439,8 @@ July 15 2022
 
 ### Plans
 
-- [ ] Add a button for changing edit modes
+- [X] Add a button for changing edit modes
+- [ ] Draw shapes by routing API
 
 ### Progress
 

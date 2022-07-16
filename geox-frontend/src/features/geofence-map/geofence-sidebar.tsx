@@ -49,8 +49,23 @@ const GeofenceSidebar = () => {
             <ShapeCard shape={shape} />
           ))}
         {shapes?.length === 0 && (
-          <div className="p-5">
-            Start adding polygons by clicking on the map.
+          <div className="p-5 bg-slate-600">
+            <p>
+              Welcome to{" "}
+              <strong
+                className="
+                  bg-gradient-to-r bg-clip-text  text-transparent 
+                  from-white via-porsche to-white
+                  animate-text"
+              >
+                Geofencer
+              </strong>
+              ! You're part of our private beta.
+            </p>
+            <br />
+            <p>
+              Start adding polygons by clicking on the button bank on the right
+            </p>
           </div>
         )}
       </div>
