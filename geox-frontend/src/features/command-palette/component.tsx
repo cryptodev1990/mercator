@@ -20,12 +20,14 @@ export const CommandPalette = ({ onNominatim }: { onNominatim: any }) => {
         // cleanup
         setValue("");
         setError(null);
+        setHidden(true);
         return res.data.length > 0
           ? onNominatim({
               zoom,
               latitude: +latitude,
               longitude: +longitude,
               bearing: 0,
+              pitch: 0,
             })
           : setError("No results");
       } else {
@@ -62,10 +64,8 @@ export const CommandPalette = ({ onNominatim }: { onNominatim: any }) => {
         error ? "border-red-400" : ""
       }`}
     >
-      <div className="flex">
+      <div className="fixed p-3 px-4 mr-5 border z-[100] top-[11%] right-[37%] rounded width-screen bg-blue-400 height-[300px]">
         <input
-          name="command-palette"
-          placeholder="Command palette..."
           onBlur={() => {
             setHidden(true);
             setError(null);

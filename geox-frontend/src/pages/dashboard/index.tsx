@@ -1,4 +1,4 @@
-import { Navbar } from "../../components/navbar";
+import { Navbar } from "../../common/components/navbar";
 import geofencer from "./icons/geofencer-logo.svg";
 import blank from "./icons/dbconfig-logo.svg";
 import { useNavigate } from "react-router-dom";

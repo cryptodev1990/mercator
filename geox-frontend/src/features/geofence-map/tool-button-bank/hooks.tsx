@@ -1,9 +1,8 @@
 import { useContext, useEffect } from "react";
-import { GeofencerContext } from "../geofencer-view";
+import { GeofencerContext } from "../context";
 import { MODES } from "./modes";
 
 export const useEditableMode = () => {
-  // TODO need to update nebula.gl to get this to work
   const { editableMode, setEditableMode } = useContext(GeofencerContext);
 
   function escFunction(event: KeyboardEvent) {

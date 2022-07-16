@@ -7,6 +7,8 @@ export const MODES = {
   ModifyMode: "ModifyMode",
   // Select a group of polygons, using nebula selection layer
   LassoMode: "LassoMode",
+  // Draws a polygon using a lasso
   LassoDrawMode: "LassoDrawMode",
   TranslateMode: "TranslateMode",
+  DrawPolygonFromRouteMode: "DrawPolygonFromRoute",
 };

@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "react-loading";
 import { Navigate, useLocation } from "react-router-dom";
-import { isAdmin } from "../common";
+import { isAdmin } from "../../common";
 
 function RequireAuth({
   page,

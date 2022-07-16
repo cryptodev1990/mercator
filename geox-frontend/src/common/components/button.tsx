@@ -9,3 +9,15 @@ export const Button = (props: any) => {
     </button>
   );
 };
+
+export const FlashButton = (props: any) => {
+  const { children, ...rest } = props;
+  return (
+    <button
+      {...rest}
+      className="text-base sm:text-sm px-6 button lg:button-sm bg-ublue hover:bg-violet-600 text-white font-bold transition-all p-2 rounded"
+    >
+      {props.children}
+    </button>
+  );
+};

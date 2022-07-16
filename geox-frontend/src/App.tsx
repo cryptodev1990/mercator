@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/landing";
 import DashboardPage from "./pages/dashboard";
 import AdminPage from "./pages/admin";
-import RequireAuth from "./components/require-auth";
+import RequireAuth from "./common/components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
 import { useTokenInOpenApi } from "./hooks/use-token-in-openapi";

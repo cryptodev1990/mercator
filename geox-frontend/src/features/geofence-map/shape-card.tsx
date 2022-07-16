@@ -1,7 +1,7 @@
 import { MdDelete } from "react-icons/md";
 import Loading from "react-loading";
 import { GeoShape } from "../../client";
-import { Button } from "../../components/button";
+import { Button } from "../../common/components/button";
 import { useUpdateShapeMutation } from "./hooks/openapi-hooks";
 import { MetadataEditButton } from "./metadata-editor/edit-button";
 import { useSelectedShapes } from "./metadata-editor/hooks";

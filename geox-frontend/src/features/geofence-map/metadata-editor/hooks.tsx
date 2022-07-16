@@ -1,6 +1,6 @@
 import { useContext, useMemo } from "react";
 import { GeoShape } from "../../../client";
-import { GeofencerContext } from "../geofencer-view";
+import { GeofencerContext } from "../context";
 
 export const useEditModal = () => {
   const { shapeForEdit, setShapeForEdit } = useContext(GeofencerContext);

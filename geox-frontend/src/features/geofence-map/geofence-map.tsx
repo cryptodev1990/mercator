@@ -8,7 +8,9 @@ import { EditableGeoJsonLayer, SelectionLayer } from "@nebula.gl/layers";
 import {
   ViewMode,
   DrawPolygonMode,
+  DrawPolygonByDraggingMode,
   TranslateMode,
+  DrawLineStringMode,
 } from "@nebula.gl/edit-modes";
 import { geoShapesToFeatureCollection } from "./utils";
 import {
@@ -17,12 +19,15 @@ import {
 } from "./hooks/openapi-hooks";
 
 import { useEditableMode } from "./tool-button-bank/hooks";
+import { lineToPolygon } from "@turf/turf";
 
-import { GetAllShapesRequestType } from "../../client";
+import { Feature, GetAllShapesRequestType } from "../../client";
 import { useSelectedShapes } from "./metadata-editor/hooks";
 import { MODES } from "./tool-button-bank/modes";
-import { useContext } from "react";
-import { GeofencerContext } from "./geofencer-view";
+import { useContext, useEffect, useState } from "react";
+import { GeofencerContext } from "./context";
+import { useDebounce } from "../../hooks/use-debounce";
+import { mapMatch } from "./hooks/gis-hooks";
 
 const selectedFeatureIndexes: any[] = [];
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -31,15 +36,31 @@ const GeofenceMap = () => {
   const { viewport } = useContext(GeofencerContext);
   const { editableMode } = useEditableMode();
   const { isSelected, appendSelected } = useSelectedShapes();
+  const [mapmatch, setMapMatch] = useState([]);
+  const debouncedMapMatch = useDebounce(mapmatch, 1000);
 
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
   const { mutate: addShape } = useAddShapeMutation();
 
+  useEffect(() => {
+    mapMatch(debouncedMapMatch).then((linestring: any) => {
+      const newPoly = lineToPolygon({
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: linestring.coordinates,
+        },
+        properties: {},
+      }) as Feature;
+      addShape({ geojson: newPoly, name: "Map matched polygon" });
+    });
+  }, [debouncedMapMatch]);
+
   function getFillColorFunc(datum: any) {
     if (isSelected(datum.properties.uuid)) {
-      return [255, 0, 0];
+      return [255, 0, 0, 150];
     }
-    return [255, 255, 0];
+    return [255, 255, 0, 150];
   }
 
   // EditableGeojsonLayer function
@@ -70,14 +91,7 @@ const GeofenceMap = () => {
         data: geoShapesToFeatureCollection(shapes),
         // @ts-ignore
         getFillColor: getFillColorFunc,
-        // @ts-ignore
-        selectedFeatureIndexes,
-        // onHover: (info: any) => {
-        //   console.log(info);
-        // },
-        // @ts-ignore
         mode: ViewMode,
-        onEdit,
       }),
     [MODES.EditMode, MODES.LassoDrawMode].includes(editableMode) &&
       new EditableGeoJsonLayer({
@@ -88,11 +102,13 @@ const GeofenceMap = () => {
         getFillColor: getFillColorFunc,
         // @ts-ignore
         selectedFeatureIndexes,
-        // onHover: (info: any) => {
-        //   console.log(info);
-        // },
-        // @ts-ignore
-        mode: DrawPolygonMode,
+        modeConfig: {
+          enableSnapping: true,
+        },
+        mode:
+          editableMode === MODES.EditMode
+            ? DrawPolygonMode
+            : DrawPolygonByDraggingMode,
         onEdit,
       }),
     editableMode === MODES.LassoMode &&
@@ -122,7 +138,6 @@ const GeofenceMap = () => {
         getFillColor: getFillColorFunc,
         lineWidthMinPixels: 3,
       }),
-
     editableMode === MODES.TranslateMode &&
       new EditableGeoJsonLayer({
         id: "geojson",
@@ -132,12 +147,57 @@ const GeofenceMap = () => {
         getFillColor: getFillColorFunc,
         // @ts-ignore
         selectedFeatureIndexes,
-        // onHover: (info: any) => {
-        //   console.log(info);
-        // },
         // @ts-ignore
         mode: TranslateMode,
-        // onEdit: (e: any) => console.log(e),
+      }),
+    editableMode === MODES.DrawPolygonFromRouteMode &&
+      new EditableGeoJsonLayer({
+        id: "geojson",
+        pickable: true,
+        data: geoShapesToFeatureCollection(shapes),
+        // @ts-ignore
+        getFillColor: getFillColorFunc,
+        // @ts-ignore
+        selectedFeatureIndexes,
+        // @ts-ignore
+        mode: DrawLineStringMode,
+        _subLayerProps: {
+          // guides: {
+          //   getLineColor: (guide: any) => {
+          //     if (guide.properties.guideType === "tentative") {
+          //       return [255, 0, 200, 0];
+          //     } else if (guide.properties.editHandleType === "existing") {
+          //       return [255, 0, 150, 255];
+          //     }
+          //     return [0, 0, 250, 255];
+          //   },
+          //   getPointRadius: (guide: any) => {
+          //     if (guide.properties.guideType === "tentative") {
+          //       return 100;
+          //     }
+          //   },
+          // },
+        },
+
+        onEdit: ({
+          updatedData,
+          editType,
+        }: {
+          updatedData: any;
+          editType: string;
+        }) => {
+          // TODO click one point, set it.
+          // TODO start generating routes between the current point
+          // and the prospective second point
+          // TODO on click, add this polyline to a shape
+          // TODO, if the shape gets clicked, close it
+          // see docs https://nebula.gl/docs/api-reference/modes/overview#DrawLineStringMode
+          console.log(editType);
+          if (editType === "addFeature") {
+            setMapMatch(updatedData.features[updatedData.features.length - 1]);
+            return;
+          }
+        },
       }),
   ];
 

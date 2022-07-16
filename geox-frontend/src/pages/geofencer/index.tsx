@@ -1,7 +1,7 @@
-import { GeofencerView } from "../../features/geofence-map/geofencer-view";
+import { GeofencerApp } from "../../features/geofence-map/geofencer-app";
 
 const GeofencerPage = () => {
-  return <GeofencerView />;
+  return <GeofencerApp />;
 };
 
 export default GeofencerPage;

@@ -1,4 +1,4 @@
-import { Navbar } from "../../components/navbar";
+import { Navbar } from "../../common/components/navbar";
 
 // @ts-ignore
 import { GeoJsonLayer } from "@deck.gl/layers";

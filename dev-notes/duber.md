@@ -444,8 +444,20 @@ July 15 2022
 
 ### Progress
 
-- [ ] Add a button for changing edit modes
+- [X] Add a button for changing edit modes
 
 ### Problems
 
-- [ ] Cut the overflow on the page
+- [X] Cut the overflow on the page
+
+July 16 2022
+------------
+
+### Plans
+
+- [X] Draw shapes by routing API
+    - [ ] Can we get lasso working?
+
+## Observations
+
+- The sidebar could use an animation: https://tailwindui.com/components/application-ui/overlays/slide-overs 

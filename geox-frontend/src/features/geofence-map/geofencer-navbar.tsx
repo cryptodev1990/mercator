@@ -1,37 +1,32 @@
 import { NamespaceListBox } from "./namespace-list-box";
 import { ToolButtonBank } from "./tool-button-bank/component";
-import { BsFillGearFill } from "react-icons/bs";
-
-const FENCE_EMOJI = "🏔";
+import Dropdown from "../../common/components/dropdown";
+import smallLogo from "../../common/assets/small-logo.svg";
 
 const GeofencerNavbar = () => {
   const css =
-    "relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between font-semibold text-sm text-white";
+    "z-10 flex items-center justify-between font-semibold text-sm text-white";
   return (
     <div>
       <header className={css}>
-        <nav aria-label="Logo menu" className="relative z-50 flex ">
-          <div>
-            <a href="/dashboard">
-              <strong>Geofencer</strong>
-              {FENCE_EMOJI}
-            </a>
-          </div>
+        <nav
+          aria-label="Logo menu"
+          className="relative flex flex-row fit-content items-center"
+        >
+          <a href="/dashboard">
+            <img src={smallLogo} alt="logo" className="h-10" />
+          </a>
+          <p className="ml-3 font-extrabold text-lg">GEOFENCER</p>
         </nav>
         <nav
           aria-label="Main menu"
           className="grid grid-flow-col gap-5 items-center"
         >
           <NamespaceListBox />
-          <button
-            className="transition ease-in-out delay-150 bg-transparent hover:-translate-1 hover:rotate-180 hover:text-porsche duration-300"
-            data-tip="Settings"
-          >
-            <BsFillGearFill size={23} />
-          </button>
+          <Dropdown />
         </nav>
       </header>
-      <div className="absolute top-[100px] z-50 mx-5 right-0">
+      <div className="absolute top-[100px] z-30 mx-5 right-0">
         <ToolButtonBank />
       </div>
     </div>

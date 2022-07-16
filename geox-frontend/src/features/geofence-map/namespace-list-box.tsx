@@ -1,8 +1,9 @@
-import { Fragment, useEffect, useState } from "react";
-import { Listbox, Transition } from "@headlessui/react";
+import { useEffect, useState } from "react";
+import { Listbox } from "@headlessui/react";
 import { BsCheck } from "react-icons/bs";
 import { HiSelector } from "react-icons/hi";
 import { useAuth0 } from "@auth0/auth0-react";
+import { SmoothTransition } from "../../common/components/smooth-transition";
 
 export function NamespaceListBox() {
   const { user } = useAuth0();
@@ -19,10 +20,7 @@ export function NamespaceListBox() {
   }, [user]);
 
   return (
-    <div className="text-white ">
-      <label htmlFor="listbox" className="text-gray-400 select-none">
-        Namespace
-      </label>
+    <div className="text-white z-40">
       <Listbox value={namespace} onChange={setNamespace}>
         <input name="listbox" className="hidden"></input>
         <div className="relative w-[13rem]">
@@ -35,13 +33,10 @@ export function NamespaceListBox() {
               />
             </span>
           </Listbox.Button>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+          <SmoothTransition>
             <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <p className="text-slate-500 px-3 py-1">Namespaces</p>
+              <hr />
               {options.map((namespace, i) => (
                 <Listbox.Option
                   key={i}
@@ -71,7 +66,7 @@ export function NamespaceListBox() {
                 </Listbox.Option>
               ))}
             </Listbox.Options>
-          </Transition>
+          </SmoothTransition>
         </div>
       </Listbox>
     </div>

@@ -1,10 +1,11 @@
-import { MdEdit } from "react-icons/md";
 import { useEditableMode } from "./hooks";
 import { MODES } from "./modes";
-import { BsArrowsMove, BsSquare } from "react-icons/bs";
-import { TbLasso } from "react-icons/tb";
+import { BsArrowsMove } from "react-icons/bs";
+import { TbHandGrab, TbLasso, TbShape3 } from "react-icons/tb";
 import { useTooltip } from "../../../hooks/use-tooltip";
 import ReactTooltip from "react-tooltip";
+import { BiGlasses } from "react-icons/bi";
+import { MdOutlineDraw } from "react-icons/md";
 
 export const ToolButtonBank = () => {
   const { editableMode, setEditableMode } = useEditableMode();
@@ -15,30 +16,44 @@ export const ToolButtonBank = () => {
   const modes = [
     {
       name: "View",
-      icon: <BsSquare />,
+      icon: <BiGlasses />,
       onClick: () => setEditableMode(MODES.ViewMode),
       dataTip: "Read-only view of existing geofences",
       active: editableMode === MODES.ViewMode,
     },
     {
       name: "Edit",
-      icon: <MdEdit />,
+      icon: <TbShape3 />,
       onClick: () => setEditableMode(MODES.EditMode),
       dataTip: "Draw new or edit existing geofences",
       active: editableMode === MODES.EditMode,
     },
     {
       name: "Lasso",
-      icon: <TbLasso />,
+      icon: <TbHandGrab />,
       onClick: () => setEditableMode(MODES.LassoMode),
       dataTip: "Select a group of elements for editing",
       active: editableMode === MODES.LassoMode,
+    },
+    {
+      name: "Polygon Lasso",
+      icon: <TbLasso />,
+      onClick: () => setEditableMode(MODES.LassoDrawMode),
+      dataTip: "Freely draw a polygon",
+      active: editableMode === MODES.LassoDrawMode,
     },
     {
       name: "Translate",
       icon: <BsArrowsMove />,
       onClick: () => setEditableMode(MODES.TranslateMode),
       dataTip: "Moves an existing shape",
+      active: editableMode === MODES.TranslateMode,
+    },
+    {
+      name: "Polygon from Route",
+      icon: <MdOutlineDraw />,
+      onClick: () => setEditableMode(MODES.DrawPolygonFromRouteMode),
+      dataTip: "Draws a polygon from a route",
       active: editableMode === MODES.TranslateMode,
     },
   ];
