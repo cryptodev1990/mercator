@@ -35,7 +35,7 @@ else
 fi
 
 # Start Uvicorn with live reload
-if [ "$APP_ENV" -eq "dev" ]; then
+if [ "$APP_ENV" = "dev" ]; then
     RELOAD="--reload"
 else
     RELOAD=""
