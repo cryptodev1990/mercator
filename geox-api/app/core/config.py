@@ -69,7 +69,7 @@ class Settings(BaseSettings):
     postgres_port: int = Field(5432)
     # If provided POSTGRES_CONNECTION will be override the individual postgres components
     sqlalchemy_database_uri: Optional[PostgresDsn] = Field(
-        None, env="DATABASE_URL"
+        None, env="POSTGRES_CONNECTION"
     )
 
     @validator("sqlalchemy_database_uri", pre=True)
