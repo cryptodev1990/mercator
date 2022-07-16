@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     @property
     def machine_account_sub_id(self) -> str:
         """Machine account sub id."""
-        return "{self.management_client_id}@clients"
+        return f"{self.management_client_id}@clients"
 
     backend_cors_origins: List[AnyHttpURLorAsterisk] = Field(
         ["*"], description="Valid CORS origin domains."
