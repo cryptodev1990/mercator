@@ -7,6 +7,7 @@
 #
 # run-with-env env
 # ENV_FILE=.env.docker run-with-env env
+set -e
 export ENV_FILE=${ENV_FILE:-.env}
 if [ ! -f "$ENV_FILE" ]; then
     export $(grep -v '^#' $ENV_FILE | xargs)
