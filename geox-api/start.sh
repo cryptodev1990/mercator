@@ -22,17 +22,21 @@ APP_HOST=${APPHOST:-0.0.0.0}
 APP_PORT=${APP_PORT:-8080}
 APP_LOG_LEVEL=${APP_LOG_LEVEL:-info}
 
-# If there's a prestart.sh script in the /app directory or other path specified, run it before starting
-PRE_START_PATH=${PRE_START_PATH:-./prestart.sh}
-echo "Checking for script in $PRE_START_PATH"
-if [ -f $PRE_START_PATH ] ; then
-    echo "Running script $PRE_START_PATH"
-    . "$PRE_START_PATH"
-else
-    echo "There is no script $PRE_START_PATH"
-fi
+__prestart_app() {
+    # Put all pre-start logic in a function - easier to comment out or make conditional if needed
+    # Let the DB start
+    python -m app.backend_pre_start
 
-# Start Uvicorn with live reload
+    # Run migrations
+    alembic upgrade head
+
+    # Create initial data in DB
+    python -m app.initial_data
+}
+
+__prestart_app
+
+# Start Uvicorn with live reload if run as dev
 if [ "$APP_ENV" = "dev" ]; then
     RELOAD="--reload"
 else

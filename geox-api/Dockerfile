@@ -12,7 +12,6 @@ RUN python -m pip install --upgrade pip && \
 COPY ./app /webapp/app
 COPY ./alembic /webapp/alembic
 COPY start.sh ./start.sh
-COPY prestart.sh ./prestart.sh
 COPY alembic.ini ./alembic.ini
 COPY tests-start.sh ./tests-start.sh
 RUN mkdir -p /webapp/bin

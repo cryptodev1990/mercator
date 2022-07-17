@@ -1,14 +1,24 @@
 GeoX API
 =========
 
-The Makefile is the documentation for now. Check the Makefile.
+The Makefile is the documentation for tasks for now. Check the Makefile by running
 
-Deploys are on fly.io.
+```shell
+make
+```
 
-Frontend is in a sibling directory to this one.
+- Deploys are on fly.io.
+- Frontend is in a sibling directory to this one.
+- ``app`` is the FastAPI web app.
 
-``py-geolift`` is a Python module
-``app`` is the FastAPI web app.
+
+Build and Running Cases
+-----------------------
+
+1. Build and deploy to fly.io with Docker
+2. Develop locally on MacOS
+3. Develop locally with Docker
+4. Test on GitHub
 
 Local Install
 -------------
@@ -32,7 +42,6 @@ This make command should install the necessary dependencies.
 ```shell
 make dev-install
 ```
-
 
 Copy the `.env.template` file to `.env.local` and fill in the values
 
@@ -96,3 +105,8 @@ References
 
 - https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
 - https://github.com/tiangolo/uvicorn-gunicorn-docker
+
+Organization
+------------
+
+- `start.sh`: Starts the app
