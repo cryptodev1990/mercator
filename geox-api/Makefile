@@ -51,11 +51,11 @@ test: ## Run tests
 
 .PHONY: db-revision
 db-revision: ## Revise database with alembic
-	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh PYTHONPATH=. alembic revision --autogenerate -m "Add users and shapes"
+	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh alembic revision --autogenerate -m "Add users and shapes"
 
 .PHONY: db-upgrade
 db-upgrade:  ## Upgrade database schema with alembic
-	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh PYTHONPATH=. alembic upgrade head
+	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh alembic upgrade head
 
 .PHONY: pg
 pg: ## Connect to running local postgres database

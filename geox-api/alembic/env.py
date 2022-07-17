@@ -1,6 +1,12 @@
 from logging.config import fileConfig
 from multiprocessing.sharedctypes import Value
 
+# Ensure that the app module can be reached
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parent.parent.resolve()))
+
 from app.core.config import get_settings
 from app.db.base_class import Base  # noqa
 from sqlalchemy import engine_from_config, pool
