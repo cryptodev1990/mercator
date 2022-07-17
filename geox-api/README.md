@@ -23,30 +23,32 @@ Build and Running Cases
 Local Install
 -------------
 
-On MacOS, install Postgresql and create the `geox` database.
+Local install and development only supported for MacOS.
+
+This assumes that you have [brew](https://brew.sh/) installed.
+
+Install dependencies and setup environment by running this script in this directory.
 
 ```shell
-brew install postgresql
-brew services start postgresql
-createdb geox
+make dev install
 ```
+
+This will:
+
+- Install dependencies (e.g. Postgres, Overmind)
+- Create a Postgres database `geox`
+- Create a Python environment at `./env` and install packages there
+- Create the env file `.env.local`.
+
+After this you will need to do the additional manual steps:
+
+- Fill in all the environment variables in `./.env.local`
+- Ensure the postgres server is running `brew services start postgres`
 
 Check that you can connect to the `geox` database.
 
 ```shell
 psql geox
-```
-
-This make command should install the necessary dependencies.
-
-```shell
-make dev-install
-```
-
-Copy the `.env.template` file to `.env.local` and fill in the values
-
-```shell
-cp .env.template .env.local
 ```
 
 Docker Install (WIP)
