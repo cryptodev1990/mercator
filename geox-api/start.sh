@@ -23,6 +23,10 @@ APP_PORT=${APP_PORT:-8080}
 APP_LOG_LEVEL=${APP_LOG_LEVEL:-info}
 
 __prestart_app() {
+    if [ "$(uname -s)" = "Darwin" ]; then
+        brew services start postgres 1>/dev/null
+    fi
+
     # Put all pre-start logic in a function - easier to comment out or make conditional if needed
     # Let the DB start
     python -m app.backend_pre_start
