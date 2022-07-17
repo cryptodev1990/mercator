@@ -14,13 +14,11 @@ set -x
 
 # TODO: added this to avoid ModuleNotFoundError: No module named 'app'
 # this is probably indicative of some other problems in specifications
-export PYTHONPATH=.
-
 MODULE_NAME=${MODULE_NAME:-app.main}
 VARIABLE_NAME=${VARIABLE_NAME:-app}
 export APP_MODULE=${APP_MODULE:-"$MODULE_NAME:$VARIABLE_NAME"}
 
-APP_HOST=${APPHOST:-localhost}
+APP_HOST=${APPHOST:-0.0.0.0}
 APP_PORT=${APP_PORT:-8080}
 APP_LOG_LEVEL=${APP_LOG_LEVEL:-info}
 

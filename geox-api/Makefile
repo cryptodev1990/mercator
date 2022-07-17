@@ -70,7 +70,6 @@ access-token:  ## Get access token for Auth0 API, useful for using the Swagger d
 	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh python -c "from app.core.access_token import get_access_token; print(get_access_token())" | pbcopy;
 	@echo Access token copied to clipboard
 
-
 .PHONY: ssh
 ssh:  ## Run an interactive shell for the project
 	fly ssh console

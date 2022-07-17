@@ -13,4 +13,4 @@ fi
 
 docker-compose build
 docker-compose up -d
-docker-compose exec -T app bash ./tests-start.sh "$@"
+docker-compose exec -T app bash /webapp/tests-start.sh "$@"
