@@ -11,7 +11,6 @@ make
 - Frontend is in a sibling directory to this one.
 - ``app`` is the FastAPI web app.
 
-
 Build and Running Cases
 -----------------------
 
@@ -51,64 +50,43 @@ Check that you can connect to the `geox` database.
 psql geox
 ```
 
-Docker Install (WIP)
+Docker
 --------------------
+
+There are three Docker images defined in these Dockeriles:
+
+- `Dockerfile`: Build app for deployment
+- `Dockerfile.dev`: Develop app with Docker. This uses the local filesystem.
+- `Dockerfile.ci`: Similar to `Dockerfile`, but the build includes files and dependencies used for development and testing.
 
 Define the relevant ENV variables in `.env.docker`.
 
-For dev work, this will start the app running on `localhost:8080`.
+There are three associated workflows to build and use Docker containers.
+
+Build and containers similar to deployment. This uses a containerized postgres database, and includes app source code in the image.
 
 ```shell
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker-compose -f docker-compose.yml build
+docker-compose -f docker-compose.yml up -d
 ```
 
-To connect to app container
+When developing with Docker, use this:
 
 ```shell
-docker exec -ti geox-api-app-dev /bin/bash
+docker-compose build
+docker-compose up -d
 ```
 
-To initialize the tables in the database
+This workflow also containerized postgres database, but uses the app host files so that source changes made while the app is running will be used in the app.
+
+To run CI tests with docker,
 
 ```shell
-docker exec geox-api-app-dev /usr/bin/env PYTHONPATH=. ./prestart.sh
-```
-
-To connect to DB container:
-
-```shell
-docker exec geox-api-app-dev /bin/bash
-```
-
-To connect to the DB container within the database
-
-```shell
-docker exec geox-api-app-dev /bin/env psql -U postgres geox
-```
-
-Changes made to files in the directory will be reloaded.
-However, if new python requirements are added, the image needs to be rebuilt.
-
-For prod, this will start the app:
-
-```shell
-docker-compose -f docker-compose.yml up
-```
-
-Linting
--------
-
-```
-bin/lint-shell.sh
+./bin/test-ci.sh
 ```
 
 References
 ----------
 
-- https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
-- https://github.com/tiangolo/uvicorn-gunicorn-docker
-
-Organization
-------------
-
-- `start.sh`: Starts the app
+- <https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker>
+- <https://github.com/tiangolo/uvicorn-gunicorn-docker>

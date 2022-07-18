@@ -21,7 +21,6 @@ services:
     # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run
     env_file: ./.env.docker
     environment:
-      ENV_FILE: ./.env.docker
       APP_ENV: prod
       # Internally the hostname is set to service name
       POSTGRES_SERVER: db

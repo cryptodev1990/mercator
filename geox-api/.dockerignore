@@ -1,3 +1,9 @@
 # Ignore generated files
 **/*.pyc
 **/__pycache__
+.dockerignore
+docker-compose*
+Dockerfile*
+Procfile
+.gitignore
+fly.toml

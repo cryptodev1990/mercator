@@ -29,6 +29,8 @@ __prestart_app() {
 
     # Put all pre-start logic in a function - easier to comment out or make conditional if needed
     # Let the DB start
+    echo $PYTHONPATH
+    echo $PWD
     python -m app.backend_pre_start
 
     # Run migrations
@@ -40,10 +42,10 @@ __prestart_app() {
 
 __prestart_app
 
-# Start Uvicorn with live reload if run as dev
-if [ "$APP_ENV" = "dev" ]; then
-    RELOAD="--reload"
-else
-    RELOAD=""
+# Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false
+RELOAD_OPT=
+app_reload=$(echo "$APP_RELOAD" | tr '[:upper:]' '[:lower:]')
+if [ "$app_reload" == "1" ] && [ "$app_reload" != "true" ]; then
+    RELOAD_OPT="--reload"
 fi;
-exec uvicorn $RELOAD --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"
+exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"

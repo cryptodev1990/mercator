@@ -33,7 +33,7 @@ dev-install:  ## Install dependencies for local development
 
 .PHONY: dev
 dev:  ## Run app locally
-	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh overmind start
+	ENV_FILE=$(LOCAL_ENV_FILE) APP_RELOAD=1 ./bin/run-with-env.sh overmind start
 
 .PHONY: lint
 lint: ## Lint the project

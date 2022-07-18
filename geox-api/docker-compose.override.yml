@@ -9,10 +9,9 @@ services:
       dockerfile: ./Dockerfile.dev
     volumes:
       - ".:/webapp"
-      - geox-app-db-data-dev:/var/lib/postgresql/data/pgdata
+      - "geox-app-db-data-dev:/var/lib/postgresql/data/pgdata"
     environment:
-      APP_ENV: dev
-      APP_HOST: localhost
+      - "APP_RELOAD=1"
 
   db:
     container_name: geox-api-db-dev
