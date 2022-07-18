@@ -16,16 +16,16 @@ help:  ## Display available tasks
 
 .PHONY: docker-build
 docker-build: ## Build docker container
-	DOCKER_BUILDKIT=0 docker build . -t geox-web:latest
+	docker-compose build
 
 .PHONY: docker-run
 docker-run: docker-build ## Run docker container
 	# Run the production container
-	docker run -p 8080:8080 --env-file $(DOCKER_ENV_FILE) geox-web:latest
+	docker-compose up
 
 .PHONY: docker-connect
 docker-connect: ## Connect to local docker
-	docker run -it geox-web:latest bash
+	docker-compose exec app bash
 
 .PHONY: dev-install
 dev-install:  ## Install dependencies for local development
