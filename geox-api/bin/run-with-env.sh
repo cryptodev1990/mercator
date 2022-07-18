@@ -10,6 +10,7 @@
 set -e
 export ENV_FILE=${ENV_FILE:-.env}
 if [ -f "$ENV_FILE" ]; then
+    # shellcheck disable=SC2046
     export $(grep -v '^#' $ENV_FILE | xargs)
 fi
 exec "$@"
