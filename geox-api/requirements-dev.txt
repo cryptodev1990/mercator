@@ -1,8 +1,9 @@
 alembic
 black
+isort
 mypy
 pydocstyle
 pytest
 sqlalchemy-stubs
 types-requests
-isort
+yamllint
