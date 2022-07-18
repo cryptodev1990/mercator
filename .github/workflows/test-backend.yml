@@ -37,7 +37,7 @@ jobs:
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "geox"
       POSTGRES_HOST_AUTH_METHOD: "trust"
-      POSTGRES_SERVER: "db"
+      POSTGRES_SERVER: "localhost"
       POSTGRES_PORT: 5432
     # Service containers to run with `container-job`
     services:
@@ -45,6 +45,9 @@ jobs:
         # Docker Hub image
         image: postgis/postgis:14-3.2-alpine
         # Provide the password for postgres
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - "5432:{{ env.POSTGRES_PORT }}"
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
