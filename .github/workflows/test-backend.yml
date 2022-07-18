@@ -4,6 +4,7 @@ on: [push]
 jobs:
   Lint-Code:
     runs-on: ubuntu-latest
+    environment: geox-api-ci
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -25,6 +26,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Test-Code:
     runs-on: ubuntu-latest
+    environment: geox-api-ci
     # Service containers to run with `container-job`
     services:
       db:
