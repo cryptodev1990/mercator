@@ -1,0 +1,58 @@
+name: Test-Backend-App
+on: [push]
+
+jobs:
+  Lint-Code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: Install dependencies
+        name: sudo apt-get install -y shellcheck
+      - name: Install python requirements
+        run: pip install -r ./geox-api/requirements.txt
+      - name: Install python dev requirements
+        run: pip install -r ./geox-api/requirements-dev.txt
+      - run: ./bin/lint-python.sh
+        working-directory: geox-api
+        name: Run python lint tests
+      - run: ./bin/lint.sh
+        working-directory: geox-api
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+  Test-Code:
+    runs-on: ubuntu-latest
+    # Service containers to run with `container-job`
+    services:
+      db:
+        # Docker Hub image
+        image: postgis/postgis:14-3.2-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r ./geox-api/requirements.txt
+      - run: pip install -r ./geox-api/requirements-dev.txt
+      - run: ./tests-start.sh
+        working-directory: geox-api
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  Test-Code-with-Docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: ./bin/test-ci.sh
+        working-directory: geox-api
+      - run: echo "🍏 This job's status is ${{ job.status }}."

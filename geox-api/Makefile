@@ -37,8 +37,7 @@ dev:  ## Run app locally
 
 .PHONY: lint
 lint: ## Lint the project
-	./bin/lint-python.sh
-	./bin/lint-shell.sh
+	./bin/lint.sh
 
 .PHONY: deploy
 deploy: ## Deploy the project to flyctl
