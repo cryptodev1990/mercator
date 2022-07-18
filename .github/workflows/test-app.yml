@@ -39,4 +39,6 @@ jobs:
           cache: 'pip'
       - run: pip install -r ./geox-api/requirements.txt
       - run: pip install -r ./geox-api/requirements-dev.txt
+      - run: ./tests-start.sh
+        working-directory: geox-api
       - run: echo "🍏 This job's status is ${{ job.status }}."
