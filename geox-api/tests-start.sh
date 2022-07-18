@@ -3,4 +3,5 @@
 set -e
 
 python -m app.tests_pre_start
+alembic upgrade head
 bash ./bin/test.sh "$@"
