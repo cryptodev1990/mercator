@@ -17,7 +17,9 @@ _lint_shell() {
 
 # Lint yaml with https://github.com/adrienverge/yamllint
 _lint_yaml() {
-    yamllint ./*.yml
+    # Relaxed is less strict about some things
+    # See https://yamllint.readthedocs.io/en/stable/configuration.html#default-configuration
+    yamllint -c yamllint.yml ./*.yml
 }
 
 # TODO: could customize which are run
