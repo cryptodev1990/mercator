@@ -2,59 +2,73 @@ name: Test-Backend-App
 on: [push]
 
 jobs:
-  Lint-Code:
+  Testing:
     runs-on: ubuntu-latest
     environment: geox-api-ci
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-      - run: Install dependencies
-        name: sudo apt-get install -y shellcheck
-      - name: Install python requirements
-        run: pip install -r ./geox-api/requirements.txt
-      - name: Install python dev requirements
-        run: pip install -r ./geox-api/requirements-dev.txt
-      - run: ./bin/lint-python.sh
-        working-directory: geox-api
-        name: Run python lint tests
-      - run: ./bin/lint.sh
-        working-directory: geox-api
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-  Test-Code:
-    runs-on: ubuntu-latest
-    environment: geox-api-ci
-    # Service containers to run with `container-job`
-    services:
-      db:
-        # Docker Hub image
-        image: postgis/postgis:14-3.2-alpine
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
+      - name: R
+    env:
+      super_secret: ${{ secrets.SuperSecret }}
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+      AUTH0_API_AUDIENCE: ${{ secrets.AUTH0_API_AUDIENCE }}
+      APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
+      AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
+      AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
+  # Lint-Code:
+  #   runs-on: ubuntu-latest
+  #   # environment: geox-api-ci
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.9'
+  #         cache: 'pip'
+  #     - run: Install dependencies
+  #       name: sudo apt-get install -y shellcheck
+  #     - name: Install python requirements
+  #       run: pip install -r ./geox-api/requirements.txt
+  #     - name: Install python dev requirements
+  #       run: pip install -r ./geox-api/requirements-dev.txt
+  #     - run: ./bin/lint-python.sh
+  #       working-directory: geox-api
+  #       name: Run python lint tests
+  #     - run: ./bin/lint.sh
+  #       working-directory: geox-api
+  #     - run: echo "🍏 This job's status is ${{ job.status }}."
+  # Test-Code:
+  #   runs-on: ubuntu-latest
+  #   environment: geox-api-ci
+  #   # Service containers to run with `container-job`
+  #   services:
+  #     db:
+  #       # Docker Hub image
+  #       image: postgis/postgis:14-3.2-alpine
+  #       # Provide the password for postgres
+  #       env:
+  #         POSTGRES_PASSWORD: postgres
 
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-      - run: pip install -r ./geox-api/requirements.txt
-      - run: pip install -r ./geox-api/requirements-dev.txt
-      - run: ./tests-start.sh
-        working-directory: geox-api
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.9'
+  #         cache: 'pip'
+  #     - run: pip install -r ./geox-api/requirements.txt
+  #     - run: pip install -r ./geox-api/requirements-dev.txt
+  #     - run: ./tests-start.sh
+  #       working-directory: geox-api
+  #     - run: echo "🍏 This job's status is ${{ job.status }}."
 
-  Test-Code-with-Docker:
-    runs-on: ubuntu-latest
+  # Test-Code-with-Docker:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: ./bin/test-ci.sh
-        working-directory: geox-api
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+  #     - run: ./bin/test-ci.sh
+  #       working-directory: geox-api
+  #     - run: echo "🍏 This job's status is ${{ job.status }}."
