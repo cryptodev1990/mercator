@@ -10,31 +10,6 @@ env:
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
   PGUSER: postgres
 jobs:
-  # Label of the runner job
-  runner-job:
-    # You must use a Linux environment when using service containers or container jobs
-    runs-on: ubuntu-latest
-
-    # Service containers to run with `runner-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-    steps:
-      - run: docker ps --all
 
   # Lint-Code:
   #   runs-on: ubuntu-latest
@@ -58,36 +33,50 @@ jobs:
   #     - name: Run all linting
   #       run: ./bin/lint.sh
   #       working-directory: geox-api
-  # Test-Code:
-  #   runs-on: ubuntu-latest
-  #   environment: geox-api-ci
-  #   env:
-  #     POSTGRES_USER: "postgres"
-  #     POSTGRES_DB: "geox"
-  #     POSTGRES_SERVER: "localhost"
-  #     POSTGRES_PASSWORD: "postgres"
-  #   # Service containers to run with `container-job`
-  #   services:
-  #     postgres:
-  #       # Docker Hub image
-  #       image: postgres
-  #       ports:
-  #         - 5432:5432
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.9'
-  #         cache: 'pip'
-  #     - name: Install python requirements
-  #       run: python -m pip install --upgrade wheel pip
-  #     - name: Install python requirements
-  #       run: pip install -r ./geox-api/requirements.txt
-  #     - name: Install python dev requirements
-  #       run: pip install -r ./geox-api/requirements-dev.txt
-  #     - run: ./tests-start.sh
-  #       working-directory: geox-api
+  Test-Code:
+    # You must use a Linux environment when using service containers or container jobs
+    runs-on: ubuntu-latest
+    environment: geox-api-ci
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "geox"
+      POSTGRES_SERVER: "localhost"
+      POSTGRES_PASSWORD: "postgres"
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - name: Install python requirements
+        run: python -m pip install --upgrade wheel pip
+      - name: Install python requirements
+        run: pip install -r ./geox-api/requirements.txt
+      - name: Install python dev requirements
+        run: pip install -r ./geox-api/requirements-dev.txt
+      - run: ./tests-start.sh
+        working-directory: geox-api
+        env:
+          POSTGRES_CONNECTION: "postgresql+psycopg2://postgres@localhost:postgres/geox"
 
   # Test-Code-with-Docker:
   #   runs-on: ubuntu-latest
