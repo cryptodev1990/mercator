@@ -8,6 +8,7 @@ env:
   APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
   AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
+  PGUSER: postgres
 jobs:
   # Label of the runner job
   runner-job:
