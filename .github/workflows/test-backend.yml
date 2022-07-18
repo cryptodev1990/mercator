@@ -25,10 +25,8 @@ jobs:
         run: pip install -r ./geox-api/requirements.txt
       - name: Install python dev requirements
         run: pip install -r ./geox-api/requirements-dev.txt
-      - run: ./bin/lint-python.sh
-        working-directory: geox-api
-        name: Run python lint tests
-      - run: ./bin/lint.sh
+      - name: Run all tests
+        run: ./bin/lint.sh
         working-directory: geox-api
   # Test-Code:
   #   runs-on: ubuntu-latest
