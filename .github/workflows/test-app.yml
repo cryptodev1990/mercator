@@ -19,3 +19,24 @@ jobs:
       - run: ./bin/lint-shell.sh
         working-directory: geox-api
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  Test-Code:
+    runs-on: ubuntu-latest
+    # Service containers to run with `container-job`
+    services:
+      db:
+        # Docker Hub image
+        image: postgis/postgis:14-3.2-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r ./geox-api/requirements.txt
+      - run: pip install -r ./geox-api/requirements-dev.txt
+      - run: echo "🍏 This job's status is ${{ job.status }}."
