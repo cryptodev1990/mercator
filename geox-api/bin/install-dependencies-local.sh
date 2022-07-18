@@ -3,8 +3,6 @@
 # Exit on error
 set -e
 
-APP_DB="geox"
-
 _install_db() {
     # Install Postgres
     echo "installing postgres"
