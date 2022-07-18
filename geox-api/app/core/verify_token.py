@@ -1,12 +1,13 @@
 """Functions to verify auth tokens."""
 import jwt
 from app.core.config import get_settings
+from typing import Dict, Any
 
 
 class VerifyToken:
-    """Verify token.
+    """Verify Auth0 token.
 
-    Does all the token verification using PyJWT.
+    Does all the token verification using `PyJWT <https://pyjwt.readthedocs.io/en/stable/>`__.
     """
 
     def _set_up(self):
@@ -23,7 +24,7 @@ class VerifyToken:
         }
         return config
 
-    def __init__(self, token, permissions=None, scopes=None):
+    def __init__(self, token, permissions=None, scopes=None) -> None:
         self.token = token
         self.permissions = permissions
         self.scopes = scopes
@@ -66,7 +67,7 @@ class VerifyToken:
 
         return payload
 
-    def _check_claims(self, payload, claim_name, claim_type, expected_value):
+    def _check_claims(self, payload, claim_name, claim_type, expected_value) -> Dict[str, Any]:
 
         instance_check = isinstance(payload[claim_name], claim_type)
         result = {"status": "success", "status_code": 200}

@@ -7,7 +7,7 @@ FROM python:${PYTHON_VERSION}
 WORKDIR /webapp
 
 COPY ./requirements.txt /webapp/requirements.txt
-RUN python -m pip install --upgrade pip && \
+RUN python -m pip install --no-cache-dir --upgrade pip==22.1.2 && \
     pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
 
 COPY ./app /webapp/app

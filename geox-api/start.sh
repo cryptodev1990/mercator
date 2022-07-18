@@ -10,7 +10,7 @@
 set -e
 set -x
 
-# Copied from https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/docker-images/start-reload.sh
+# Derived from https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/docker-images/start-reload.sh
 
 # TODO: added this to avoid ModuleNotFoundError: No module named 'app'
 # this is probably indicative of some other problems in specifications
@@ -45,7 +45,7 @@ __prestart_app
 # Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false
 RELOAD_OPT=
 app_reload=$(echo "$APP_RELOAD" | tr '[:upper:]' '[:lower:]')
-if [ "$app_reload" == "1" ] && [ "$app_reload" != "true" ]; then
+if [ "$app_reload" = "1" ] && [ "$app_reload" != "true" ]; then
     RELOAD_OPT="--reload"
 fi;
 exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"

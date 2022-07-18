@@ -4,8 +4,15 @@ import os
 from functools import lru_cache
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import (AnyHttpUrl, BaseSettings, EmailStr, Field, PostgresDsn,
-                      SecretStr, validator)
+from pydantic import (
+    AnyHttpUrl,
+    BaseSettings,
+    EmailStr,
+    Field,
+    PostgresDsn,
+    SecretStr,
+    validator,
+)
 from sqlalchemy import desc
 
 DEFAULT_DOMAIN = "mercator.tech"
@@ -62,9 +69,9 @@ class Settings(BaseSettings):
     # db connection info
     # These are named so that the same environment variables can be used between the postgres docker container
     # and the app without changes
-    postgres_db: Optional[str] = Field(None)
-    postgres_user: Optional[str] = Field(None)
-    postgres_server: Optional[str] = Field(None)
+    postgres_db: Optional[str] = Field("geox")
+    postgres_user: Optional[str] = Field("postgres")
+    postgres_server: Optional[str] = Field("localhost")
     postgres_password: Optional[SecretStr] = Field(None)
     postgres_port: int = Field(5432)
     # If provided POSTGRES_CONNECTION will be override the individual postgres components
@@ -73,18 +80,22 @@ class Settings(BaseSettings):
     )
 
     @validator("sqlalchemy_database_uri", pre=True)
-    def _validate_sqlalchemy_database_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def _validate_sqlalchemy_database_uri(
+        cls, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:
         """Return the SQLAlchemy database URI."""
         if isinstance(v, str):
             return v
+        print(values["postgres_user"], values["postgres_password"], values["postgres_server"], values["postgres_db"])
         return PostgresDsn.build(
             scheme="postgresql+psycopg2",
             user=values.get("postgres_user"),
-            password=values.get("postgres_password"),
+            password=str(values.get("postgres_password", "")),
             host=values.get("postgres_server"),
             port=str(values.get("postgres_port")),
             path=f"/{values.get('postgres_db', '')}",
         )
+
     # validateion is done in the order fields are defined. sqlalchemy_database_uri
     # needs to be defined after everything
 
