@@ -9,29 +9,27 @@ env:
   AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
 jobs:
-
-  # Lint-Code:
-  #   runs-on: ubuntu-latest
-  #   environment: geox-api-ci
-
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.9'
-  #         cache: 'pip'
-  #     - name: Install dependencies
-  #       run: sudo apt-get install -y shellcheck
-  #     - name: Install python requirements
-  #       run: python -m pip install --upgrade wheel pip
-  #     - name: Install python requirements
-  #       run: pip install -r ./geox-api/requirements.txt
-  #     - name: Install python dev requirements
-  #       run: pip install -r ./geox-api/requirements-dev.txt
-  #     - name: Run all linting
-  #       run: ./bin/lint.sh
-  #       working-directory: geox-api
+  Lint-Code:
+    runs-on: ubuntu-latest
+    environment: geox-api-ci
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - name: Install dependencies
+        run: sudo apt-get install -y shellcheck
+      - name: Install python requirements
+        run: python -m pip install --upgrade wheel pip
+      - name: Install python requirements
+        run: pip install -r ./geox-api/requirements.txt
+      - name: Install python dev requirements
+        run: pip install -r ./geox-api/requirements-dev.txt
+      - name: Run all linting
+        run: ./bin/lint.sh
+        working-directory: geox-api
   Test-Code:
     # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
@@ -46,7 +44,7 @@ jobs:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgis/postgis
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
