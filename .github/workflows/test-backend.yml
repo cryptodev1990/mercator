@@ -12,6 +12,12 @@ jobs:
   Lint-Code:
     runs-on: ubuntu-latest
     environment: geox-api-ci
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "geox"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_HOST: "db"
+      POSTGRES_PORT: 5432
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -37,13 +43,6 @@ jobs:
         # Docker Hub image
         image: postgis/postgis:14-3.2-alpine
         # Provide the password for postgres
-        env:
-          POSTGRES_USER: "postgres"
-          POSTGRES_DB: "geox"
-          POSTGRES_HOST_AUTH_METHOD: "trust"
-          POSTGRES_HOST: "db"
-          POSTGRES_PORT: 5432
-
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
