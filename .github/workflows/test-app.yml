@@ -1,10 +1,6 @@
 name: Test-Backend-App
 on: [push]
 
-defaults:
-  run:
-    working-directory: geox-api
-
 jobs:
   Lint-Code:
     runs-on: ubuntu-latest
