@@ -90,7 +90,7 @@ class Settings(BaseSettings):
         return PostgresDsn.build(
             scheme="postgresql+psycopg2",
             user=values.get("postgres_user"),
-            password=values.get("postgres_password", ""),
+            password=str(values.get("postgres_password", "")),
             host=values.get("postgres_server"),
             port=str(values.get("postgres_port")),
             path=f"/{values.get('postgres_db', '')}",
