@@ -461,3 +461,23 @@ July 16 2022
 ## Observations
 
 - The sidebar could use an animation: https://tailwindui.com/components/application-ui/overlays/slide-overs 
+
+
+July 18 2022
+-------------
+
+### Plans
+
+- [ ] Build a demo for Lily
+  - [ ] Draw a GPS trace
+  - [ ] Run the mapmatch API on it
+
+- [ ] Get the post-add flow working
+  - [ ] Add a shape
+  - [ ] Open the metadata editor box
+  - [ ] Let the user save the metadata
+  - [ ] Select multiple shapes and bulk edit their metadata
+
+### Observations
+
+
