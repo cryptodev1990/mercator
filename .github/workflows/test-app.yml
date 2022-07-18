@@ -7,16 +7,11 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Change directory to geox-api
-        run: |
-          cd geox-api
-      - name: List files in the repository
-        run: |
-            echo $PWD
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           cache: 'pip'
-      - run: pip install -r requirements.txt
-      - run: pip install -r requirements-dev.txt
+      - run: apt-get install -y shellcheck
+      - run: pip install -r ./geox-api/requirements.txt
+      - run: pip install -r ./geox-api/requirements-dev.txt
       - run: echo "🍏 This job's status is ${{ job.status }}."
