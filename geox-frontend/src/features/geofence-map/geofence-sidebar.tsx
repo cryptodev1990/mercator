@@ -69,14 +69,14 @@ export const GeofenceSidebar = () => {
   if (shapes?.length === 0) {
     return (
       <GeofenceSidebarView hidden={hidden} setHidden={setHidden}>
-        <NewUserMessage />;
+        <NewUserMessage />
       </GeofenceSidebarView>
     );
   }
 
   const shapeCards = shapes
     ?.sort((a, b) => toUnix(a.created_at) - toUnix(b.created_at))
-    .map((shape) => <ShapeCard shape={shape} />);
+    .map((shape, i) => <ShapeCard shape={shape} key={i} />);
 
   return (
     <GeofenceSidebarView hidden={hidden} setHidden={setHidden}>

@@ -2113,6 +2113,18 @@
   dependencies:
     "@babel/runtime" "^7.0.0"
 
+"@rayyamhk/complex@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@rayyamhk/complex/-/complex-1.0.10.tgz#6daa9c1bf4b6a86b2e1414a6aa8a1f32ef6a8ace"
+  integrity sha512-0HGH6SDcOd34zQVO97pfnIU6ul/qu0WkShZdupLLS3e5IEyNSkaX7mgVsDcWLpFNxLRs5RL2wS7iIYbsEp9MZg==
+
+"@rayyamhk/matrix@^1.0.5":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@rayyamhk/matrix/-/matrix-1.0.8.tgz#207649294a59bedf302fc714cd393abfe67e9bf9"
+  integrity sha512-EIvEnmcL4q5FMb/g20/FxoZnewkbiiSY4S0+TWu+jkAKF4E/p8ocUN3CET0AXUVJwaA7t8drtBwGNFE8qAgAxg==
+  dependencies:
+    "@rayyamhk/complex" "1.0.10"
+
 "@reduxjs/toolkit@^1.8.2":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.8.2.tgz#352fd17bc858af51d21ce8d28183a930cab9e638"
@@ -8338,6 +8350,14 @@ jsonpointer@^5.0.0:
     array-includes "^3.1.5"
     object.assign "^4.1.2"
 
+kalman-filter@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/kalman-filter/-/kalman-filter-1.10.1.tgz#273c592a6f43d5399023e06be8460f4656685b07"
+  integrity sha512-UxzHwcgkyPlUDIYsTla+vBI7laapY1e+Ph5N1WTdb6V6L8jfxUY3MGwf5TFw1KlDbfUwBLFQm2GnDageHoiCzA==
+  dependencies:
+    "@rayyamhk/matrix" "^1.0.5"
+    matrix-inverse "^2.0.0"
+
 kdbush@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/kdbush/-/kdbush-3.0.0.tgz#f8484794d47004cc2d85ed3a79353dbe0abc2bf0"
@@ -8648,6 +8668,11 @@ math.gl@^3.5.4:
   integrity sha512-dIAc4VPZ0zsJBJpP8W+Eha2/HQMZSOfEZXuNF4fFVE/8FshTyj0NkzNPtegteRmZGf/sROpzH2d5G3m+PRFrbw==
   dependencies:
     "@math.gl/core" "3.6.1"
+
+matrix-inverse@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/matrix-inverse/-/matrix-inverse-2.0.0.tgz#2e8db33f8b977bd5e3b03f31d2fae89c2278203b"
+  integrity sha512-iUZfjmnAEDah54qLlj63PYFnZvcCwW+mhfYgf3KrtDn1ruyVE5vFrEeJ77RfsHaqMN/L3ZLnP+5/O2E7bgKEvQ==
 
 mdn-data@2.0.14:
   version "2.0.14"

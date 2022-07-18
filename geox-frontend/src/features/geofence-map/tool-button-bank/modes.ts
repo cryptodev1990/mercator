@@ -11,4 +11,6 @@ export const MODES = {
   LassoDrawMode: "LassoDrawMode",
   TranslateMode: "TranslateMode",
   DrawPolygonFromRouteMode: "DrawPolygonFromRoute",
+  // IC DEMO
+  InstacartDemoMode: "InstacartDemoMode",
 };

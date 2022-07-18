@@ -26,7 +26,10 @@ export async function mapMatch(datum: any) {
       .get(
         "https://api.mapbox.com/matching/v5/mapbox/driving/" +
           points.map((d: any) => `${d[0]},${d[1]}`).join(";") +
-          "?&geometries=geojson&ignore=access,oneways,restrictions&access_token=" +
+          "?&" +
+          "radiuses=" +
+          points.map((d: any) => `50`).join(";") +
+          "&geometries=geojson&steps=true&tidy=true&ignore=restrictions&access_token=" +
           process.env.REACT_APP_MAPBOX_TOKEN
       )
       .then((res) => {
@@ -34,8 +37,26 @@ export async function mapMatch(datum: any) {
         if (res.data.code === "NoMatch") {
           throw new Error("no match");
         }
-        const topMatch = res.data.matchings[0];
-        return topMatch.geometry;
+        // const lineStringTracepoints = res.data.tracepoints.map(
+        //   (x: any, i: number) => {
+        //     console.log(x);
+        //     if (x === null) {
+        //       return points[i];
+        //     }
+        //     return x.location;
+        //   }
+        // );
+        const coordinates = res.data.matchings
+          .map((x: any) => x.geometry.coordinates)
+          .flat();
+        return {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates,
+          },
+          properties: {},
+        };
       });
   } catch (error) {
     console.log(error);

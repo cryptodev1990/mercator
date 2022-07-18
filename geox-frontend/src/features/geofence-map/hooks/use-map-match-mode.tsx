@@ -24,6 +24,9 @@ export const useMapMatchMode = ({
   const debouncedMapMatch = useDebounce(mapmatch, 1000);
 
   useEffect(() => {
+    if (!debouncedMapMatch.length) {
+      return;
+    }
     mapMatch(debouncedMapMatch).then((linestring: any) => {
       const newPoly = lineToPolygon({
         type: "Feature",

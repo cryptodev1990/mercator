@@ -15,11 +15,11 @@ const GeofencerApp = () => {
   >();
   const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
   const [viewport, setViewport] = useState<any>({
-    // TODO how to choose a default viewport?
-    longitude: -73.986022,
-    maxZoom: 20,
-    latitude: 40.730743,
-    zoom: 12,
+    latitude: 37.762673511727435,
+    longitude: -122.40111919656555,
+    bearing: 0,
+    pitch: 0,
+    zoom: 11.363205994378514,
   });
 
   return (

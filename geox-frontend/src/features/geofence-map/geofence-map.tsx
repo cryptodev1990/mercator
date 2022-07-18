@@ -25,6 +25,7 @@ import { MODES } from "./tool-button-bank/modes";
 import { useContext } from "react";
 import { GeofencerContext } from "./context";
 import { useMapMatchMode } from "./hooks/use-map-match-mode";
+import { useIcDemoMode } from "./hooks/use-ic-demo-mode";
 
 const selectedFeatureIndexes: any[] = [];
 
@@ -43,10 +44,12 @@ const GeofenceMap = () => {
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
   const { mutate: addShape } = useAddShapeMutation();
 
-  const { layer: mapMatchModeLayer } = useMapMatchMode({
+  const modeArgs = {
     getFillColorFunc,
     selectedFeatureIndexes,
-  });
+  };
+  const { layer: mapMatchModeLayer } = useMapMatchMode(modeArgs);
+  const { getLayers: getIcDemoLayers } = useIcDemoMode(modeArgs);
 
   // EditableGeojsonLayer function
   function onEdit({
@@ -136,6 +139,7 @@ const GeofenceMap = () => {
         mode: TranslateMode,
       }),
     editableMode === MODES.DrawPolygonFromRouteMode && mapMatchModeLayer,
+    ...getIcDemoLayers(editableMode === MODES.InstacartDemoMode),
   ];
 
   const getTooltip = (info: any) => {

@@ -4,8 +4,9 @@ import { BsArrowsMove } from "react-icons/bs";
 import { TbHandGrab, TbLasso, TbShape3 } from "react-icons/tb";
 import { useTooltip } from "../../../hooks/use-tooltip";
 import ReactTooltip from "react-tooltip";
-import { BiGlasses } from "react-icons/bi";
+import { BiCart, BiGlasses } from "react-icons/bi";
 import { MdOutlineDraw } from "react-icons/md";
+import { useEffect } from "react";
 
 export const ToolButtonBank = () => {
   const { editableMode, setEditableMode } = useEditableMode();
@@ -54,9 +55,25 @@ export const ToolButtonBank = () => {
       icon: <MdOutlineDraw />,
       onClick: () => setEditableMode(MODES.DrawPolygonFromRouteMode),
       dataTip: "Draws a polygon from a route",
-      active: editableMode === MODES.TranslateMode,
+      active: editableMode === MODES.DrawPolygonFromRouteMode,
     },
   ];
+
+  useEffect(() => {
+    if (window.location.hash === "#ic-demo") {
+      setEditableMode(MODES.InstacartDemoMode);
+    }
+  }, []);
+
+  if (window.location.hash === "#ic-demo") {
+    modes.push({
+      name: "Instacart demo",
+      icon: <BiCart />,
+      onClick: () => setEditableMode(MODES.InstacartDemoMode),
+      dataTip: "Prop 22 - Instacart demo",
+      active: editableMode === MODES.InstacartDemoMode,
+    });
+  }
 
   return (
     <div className="grid grid-flow-row gap-0">
@@ -64,6 +81,8 @@ export const ToolButtonBank = () => {
         let classes = buttonCss;
         if (mode.active) {
           classes += " bg-blue-500";
+        } else if (mode.name === "Instacart demo") {
+          classes += " bg-red-700";
         }
         return (
           <button
