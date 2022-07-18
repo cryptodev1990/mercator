@@ -61,15 +61,6 @@ There are three Docker images defined in these Dockeriles:
 
 Define the relevant ENV variables in `.env.docker`.
 
-There are three associated workflows to build and use Docker containers.
-
-Build and containers similar to deployment. This uses a containerized postgres database, and includes app source code in the image.
-
-```shell
-docker-compose -f docker-compose.yml build
-docker-compose -f docker-compose.yml up -d
-```
-
 When developing with Docker, use this:
 
 ```shell
@@ -78,6 +69,22 @@ docker-compose up -d
 ```
 
 This workflow also containerized postgres database, but uses the app host files so that source changes made while the app is running will be used in the app.
+
+These make targets can also be used to build, run, and connect to the app running in Docker containers.
+
+```shell
+make docker-build
+make docker-run
+make docker-connect
+```
+
+Build and containers similar to deployment. This uses a containerized postgres database, and includes app source code in the image.
+
+```shell
+docker-compose -f docker-compose.yml build
+docker-compose -f docker-compose.yml up -d
+```
+
 
 To run CI tests with docker,
 
