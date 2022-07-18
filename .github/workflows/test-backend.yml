@@ -10,26 +10,26 @@ env:
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
 jobs:
 
-  Lint-Code:
-    runs-on: ubuntu-latest
-    environment: geox-api-ci
+  # Lint-Code:
+  #   runs-on: ubuntu-latest
+  #   environment: geox-api-ci
 
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-      - name: Install dependencies
-        run: sudo apt-get install -y shellcheck
-      - name: Install python requirements
-        run: pip install -r ./geox-api/requirements.txt
-      - name: Install python dev requirements
-        run: pip install -r ./geox-api/requirements-dev.txt
-      - name: Run all linting
-        run: ./bin/lint.sh
-        working-directory: geox-api
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.9'
+  #         cache: 'pip'
+  #     - name: Install dependencies
+  #       run: sudo apt-get install -y shellcheck
+  #     - name: Install python requirements
+  #       run: pip install -r ./geox-api/requirements.txt
+  #     - name: Install python dev requirements
+  #       run: pip install -r ./geox-api/requirements-dev.txt
+  #     - name: Run all linting
+  #       run: ./bin/lint.sh
+  #       working-directory: geox-api
   Test-Code:
     runs-on: ubuntu-latest
     environment: geox-api-ci
@@ -42,7 +42,7 @@ jobs:
     services:
       postgres:
         # Docker Hub image
-        image: postgres/postgres:14
+        image: postgres
         ports:
           - 5432:5432
     steps:
