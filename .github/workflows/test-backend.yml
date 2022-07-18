@@ -8,7 +8,6 @@ env:
   APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
   AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
-  PGUSER: postgres
 jobs:
 
   # Lint-Code:
@@ -48,15 +47,18 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        env:
+          POSTGRES_USER: "postgres"
+          POSTGRES_DB: "geox"
+          POSTGRES_SERVER: "localhost"
+          POSTGRES_PASSWORD: "postgres"
+          PGUSER: "postgres"
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
