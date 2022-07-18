@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+
+  # Backend app
+  app:
+    container_name: geox-api-app-ci
+    build:
+      context: .
+      dockerfile: ./Dockerfile.ci
+    environment:
+      - "APP_RELOAD="
+      - "PYTHONPATH=/webapp/"
+
+  db:
+    container_name: geox-api-db-ci
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"

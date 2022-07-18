@@ -2,7 +2,7 @@ from fastapi import APIRouter, Security
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials
 
-from ..models.db import engine
+from app.db.session import engine
 from .common import security
 
 router = APIRouter()

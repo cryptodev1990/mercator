@@ -1,4 +1,5 @@
 # Builds App for local development
+
 ARG PYTHON_VERSION=3.9
 FROM python:${PYTHON_VERSION}
 
@@ -8,6 +9,7 @@ VOLUME /webapp
 # Derived from https://fastapi.tiangolo.com/deployment/docker/?h=containers
 
 # TODO: find better way to share code between dev and prod containers
+
 WORKDIR /code
 COPY ./requirements.txt ./requirements-dev.txt /code/
 RUN python -m pip install --no-cache-dir --upgrade pip && \
@@ -16,6 +18,8 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 
 WORKDIR /webapp
 
+COPY . /webapp/
+
 EXPOSE 8080
-ENV APP_RELOAD=1
+ENV PYTHONPATH=/webapp APP_RELOAD=0
 CMD ["./start.sh"]

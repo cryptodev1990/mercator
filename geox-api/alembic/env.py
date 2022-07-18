@@ -1,7 +1,15 @@
+"""Alembic configuration."""
 from logging.config import fileConfig
+from multiprocessing.sharedctypes import Value
+
+# Ensure that the app module can be reached
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parent.parent.resolve()))
 
 from app.core.config import get_settings
-from app.models import Base  # noqa
+from app.db.base_class import Base  # noqa
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
@@ -12,7 +20,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+fileConfig(config.config_file_name) # type: ignore
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -32,7 +40,9 @@ target_metadata = Base.metadata
 def get_url() -> str:
     """Return the database URL."""
     settings = get_settings()
-    uri = settings.sqlalchemy_database_uri
+    if settings.sqlalchemy_database_uri is None:
+        raise ValueError("Databse URI is None")
+    uri = str(settings.sqlalchemy_database_uri)
     return uri
 
 
@@ -44,7 +54,8 @@ def run_migrations_offline() -> None:
     here as well.  By skipping the Engine creation
     we don't even need a DBAPI to be available.
     Calls to context.execute() here emit the given string to the
-    script output."""
+    script output.
+    """
     url = get_url()
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True
@@ -61,6 +72,8 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
     """
     configuration = config.get_section(config.config_ini_section)
+    if configuration is None:
+        raise ValueError("Missing config_ini_section.")
     configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
         configuration,

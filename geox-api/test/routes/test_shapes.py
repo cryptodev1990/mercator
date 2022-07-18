@@ -11,7 +11,7 @@ from app.crud.user import create_user, get_user_by_email
 from app.core.access_token import get_access_token
 from app.core.config import get_settings
 from app.main import app
-from app.models.db import SessionLocal, engine
+from app.db.session import SessionLocal, engine
 from app.models import Shape
 from app.schemas import GeoShapeCreate, UserCreate
 

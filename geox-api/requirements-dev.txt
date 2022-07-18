@@ -5,3 +5,4 @@ pydocstyle
 pytest
 sqlalchemy-stubs
 types-requests
+isort

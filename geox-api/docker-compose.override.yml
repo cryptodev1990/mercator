@@ -1,0 +1,22 @@
+version: "3.3"
+services:
+
+  # Backend app
+  app:
+    container_name: geox-api-app-dev
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ".:/webapp"
+      - "geox-app-db-data-dev:/var/lib/postgresql/data/pgdata"
+    environment:
+      - "APP_RELOAD=1"
+
+  db:
+    container_name: geox-api-db-dev
+    environment:
+    - POSTGRES_HOST_AUTH_METHOD=trust
+
+volumes:
+  geox-app-db-data-dev:

@@ -1,3 +1,4 @@
+"""Shape model."""
 import datetime
 import uuid
 
@@ -5,7 +6,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, null
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.sql import func
 
-from .db import Base
+from app.db.base_class import Base
 
 
 class Shape(Base):

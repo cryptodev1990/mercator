@@ -1,5 +1,8 @@
-
 dump.rdb
 *.whl
 *.tar.gz
 *.pyc
+.mypy_cache
+.coverage
+htmlcov
+docker-stack.yml

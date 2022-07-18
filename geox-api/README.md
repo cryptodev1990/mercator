@@ -1,25 +1,48 @@
 GeoX API
 =========
 
-The Makefile is the documentation for now. Check the Makefile.
+The Makefile is the documentation for tasks for now. Check the Makefile by running
 
-Deploys are on fly.io.
+```shell
+make
+```
 
-Frontend is in a sibling directory to this one.
+- Deploys are on fly.io.
+- Frontend is in a sibling directory to this one.
+- ``app`` is the FastAPI web app.
 
-``py-geolift`` is a Python module
-``app`` is the FastAPI web app.
+Build and Running Cases
+-----------------------
+
+1. Build and deploy to fly.io with Docker
+2. Develop locally on MacOS
+3. Develop locally with Docker
+4. Test on GitHub
 
 Local Install
 -------------
 
-On MacOS, install Postgresql and create the `geox` database.
+Local install and development only supported for MacOS.
+
+This assumes that you have [brew](https://brew.sh/) installed.
+
+Install dependencies and setup environment by running this script in this directory.
 
 ```shell
-brew install postgresql
-brew services start postgresql
-createdb geox
+make dev install
 ```
+
+This will:
+
+- Install dependencies (e.g. Postgres, Overmind)
+- Create a Postgres database `geox`
+- Create a Python environment at `./env` and install packages there
+- Create the env file `.env.local`.
+
+After this you will need to do the additional manual steps:
+
+- Fill in all the environment variables in `./.env.local`
+- Ensure the postgres server is running `brew services start postgres`
 
 Check that you can connect to the `geox` database.
 
@@ -27,34 +50,50 @@ Check that you can connect to the `geox` database.
 psql geox
 ```
 
-This make command should install the necessary dependencies.
+Docker
+--------------------
 
-```shell
-make dev-install
-```
+There are three Docker images defined in these Dockeriles:
 
-
-Copy the `.env.template` file to `.env.local` and fill in the values
-
-```shell
-cp .env.template .env.local
-```
-
-
-Docker Install
----------------
+- `Dockerfile`: Build app for deployment
+- `Dockerfile.dev`: Develop app with Docker. This uses the local filesystem.
+- `Dockerfile.ci`: Similar to `Dockerfile`, but the build includes files and dependencies used for development and testing.
 
 Define the relevant ENV variables in `.env.docker`.
 
-For dev work, this will start the app running on `localhost:8080`.
-```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+When developing with Docker, use this:
+
+```shell
+docker-compose build
+docker-compose up -d
 ```
 
-Changes made to files in the directory will be reloaded.
-However, if new python requirements are added, the image needs to be rebuilt.
+This workflow also containerized postgres database, but uses the app host files so that source changes made while the app is running will be used in the app.
 
-For prod, this will start the app:
+These make targets can also be used to build, run, and connect to the app running in Docker containers.
+
+```shell
+make docker-build
+make docker-run
+make docker-connect
 ```
-docker-compose -f docker-compose.yml up
+
+Build and containers similar to deployment. This uses a containerized postgres database, and includes app source code in the image.
+
+```shell
+docker-compose -f docker-compose.yml build
+docker-compose -f docker-compose.yml up -d
 ```
+
+
+To run CI tests with docker,
+
+```shell
+./bin/test-ci.sh
+```
+
+References
+----------
+
+- <https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker>
+- <https://github.com/tiangolo/uvicorn-gunicorn-docker>

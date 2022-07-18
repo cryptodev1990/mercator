@@ -1,6 +1,7 @@
+"""User model."""
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
-from .db import Base
+from app.db.base_class import Base
 
 
 class User(Base):

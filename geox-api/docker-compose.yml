@@ -1,14 +1,31 @@
 version: "3.3"
 services:
 
+  db:
+    image: "postgis/postgis:14-3.2-alpine"
+    env_file: ./.env.docker
+    container_name: geox-api-app
+    volumes:
+      - geox-app-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
   # Backend app
   app:
     build:
       context: .
       dockerfile: ./Dockerfile
+    container_name: geox-api-db
+    depends_on:
+      - db
     # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run
     env_file: ./.env.docker
     environment:
-        ENV_FILE: ./.env.docker
+      APP_ENV: prod
+      # Internally the hostname is set to service name
+      POSTGRES_SERVER: db
     ports:
       - "8080:8080"
+
+volumes:
+  geox-app-db-data:
