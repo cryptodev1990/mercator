@@ -16,7 +16,7 @@ jobs:
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "geox"
       POSTGRES_HOST_AUTH_METHOD: "trust"
-      POSTGRES_HOST: "db"
+      POSTGRES_SERVER: "db"
       POSTGRES_PORT: 5432
     steps:
       - name: Check out repository code
