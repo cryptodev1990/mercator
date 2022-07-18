@@ -45,7 +45,7 @@ __prestart_app
 # Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false
 RELOAD_OPT=
 app_reload=$(echo "$APP_RELOAD" | tr '[:upper:]' '[:lower:]')
-if [ "$app_reload" == "1" ] && [ "$app_reload" != "true" ]; then
+if [ "$app_reload" = "1" ] && [ "$app_reload" != "true" ]; then
     RELOAD_OPT="--reload"
 fi;
 exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"
