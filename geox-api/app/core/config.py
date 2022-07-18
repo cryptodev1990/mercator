@@ -86,10 +86,11 @@ class Settings(BaseSettings):
         """Return the SQLAlchemy database URI."""
         if isinstance(v, str):
             return v
+        print(values["postgres_user"], values["postgres_password"], values["postgres_server"], values["postgres_db"])
         return PostgresDsn.build(
             scheme="postgresql+psycopg2",
             user=values.get("postgres_user"),
-            password=values.get("postgres_password" or ""),
+            password=values.get("postgres_password", ""),
             host=values.get("postgres_server"),
             port=str(values.get("postgres_port")),
             path=f"/{values.get('postgres_db', '')}",
