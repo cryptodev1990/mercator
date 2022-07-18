@@ -1,12 +1,12 @@
 """Shape model."""
 import datetime
 import uuid
-
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, null
-from sqlalchemy.dialects.postgresql import JSON, UUID
-from sqlalchemy.sql import func
+from typing import Any, Dict
 
 from app.db.base_class import Base
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, null
+from sqlalchemy.dialects.postgresql import JSON, UUID
+from sqlalchemy.sql import func
 
 
 class Shape(Base):
@@ -24,7 +24,9 @@ class Shape(Base):
     deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     geojson = Column(JSON, nullable=False)
 
-    def as_dict(self):
+    # TODO: If Pydantic basemodel was used, then dict is already used. See https://pydantic-docs.helpmanual.io/usage/models/
+    def as_dict(self) -> Dict[str, Any]:
+        """Return dict."""
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     __mapper_args__ = {"eager_defaults": True}
