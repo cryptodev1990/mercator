@@ -1,6 +1,13 @@
 name: Test-Backend-App
 on: [push]
-
+env:
+  AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+  AUTH0_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+  AUTH0_API_AUDIENCE: ${{ secrets.AUTH0_API_AUDIENCE }}
+  APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
+  AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
+  AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
 jobs:
   Testing:
     runs-on: ubuntu-latest
@@ -8,14 +15,7 @@ jobs:
     steps:
       - run: |
           [ -n "$AUTH0_CLIENT_ID" ]
-    env:
-      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-      AUTH0_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-      AUTH0_API_AUDIENCE: ${{ secrets.AUTH0_API_AUDIENCE }}
-      APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
-      AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
-      AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
+
   # Lint-Code:
   #   runs-on: ubuntu-latest
   #   # environment: geox-api-ci
