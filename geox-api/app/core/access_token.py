@@ -14,7 +14,7 @@ def get_access_token() -> str:
     payload = {
         "grant_type": "client_credentials",
         "client_id": settings.management_client_id,
-        "client_secret": settings.management_client_secret,
+        "client_secret": settings.management_client_secret.get_secret_value(),
         "audience": settings.auth_audience,
     }
     response = requests.post(
