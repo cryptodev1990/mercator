@@ -36,18 +36,24 @@ jobs:
     env:
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "geox"
-      POSTGRES_HOST_AUTH_METHOD: "trust"
       POSTGRES_SERVER: "localhost"
+      POSTGRES_PASSWORD: "postgres"
       POSTGRES_PORT: 5432
     # Service containers to run with `container-job`
     services:
-      db:
+      postgres:
         # Docker Hub image
         image: postgis/postgis:14-3.2-alpine
         # Provide the password for postgres
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -55,8 +61,6 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip'
-      - name: Install dependencies
-        run: sudo apt-get install -y shellcheck
       - name: Install python requirements
         run: pip install -r ./geox-api/requirements.txt
       - name: Install python dev requirements
