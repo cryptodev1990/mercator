@@ -76,7 +76,7 @@ jobs:
       - run: ./tests-start.sh
         working-directory: geox-api
         env:
-          POSTGRES_CONNECTION: "postgresql+psycopg2://postgres@localhost:postgres/geox"
+          POSTGRES_CONNECTION: "postgresql+psycopg2://postgres@localhost:5432/geox"
 
   # Test-Code-with-Docker:
   #   runs-on: ubuntu-latest
