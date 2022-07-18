@@ -47,7 +47,7 @@ jobs:
         # Provide the password for postgres
         ports:
           # Maps tcp port 5432 on service container to the host
-          - "5432:{{ env.POSTGRES_PORT }}"
+          - "5432:${{ env.POSTGRES_PORT }}"
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
