@@ -2,11 +2,11 @@
 import hashlib
 import os
 from functools import lru_cache
-from typing import Optional, List, Union, Literal, Dict, Any
+from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, Field, PostgresDsn, EmailStr, validator
+from pydantic import (AnyHttpUrl, BaseSettings, EmailStr, Field, PostgresDsn,
+                      SecretStr, validator)
 from sqlalchemy import desc
-
 
 DEFAULT_DOMAIN = "mercator.tech"
 DEFAULT_MACHINE_ACCOUNT_EMAIL = f"duber+ManagementApi@{DEFAULT_DOMAIN}"
@@ -19,12 +19,14 @@ AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 class Settings(BaseSettings):
     """Config settings."""
 
+    app_secret_key: SecretStr
+
     # Auth For JWT
     # These proporties are confusing because the env variable name != property names
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
-    auth_client_secret: str = Field(..., env="AUTH0_CLIENT_SECRET")
+    auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: str = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
@@ -57,15 +59,13 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    app_secret_key: str
-
     # db connection info
     # These are named so that the same environment variables can be used between the postgres docker container
     # and the app without changes
     postgres_db: Optional[str] = Field(None)
     postgres_user: Optional[str] = Field(None)
     postgres_server: Optional[str] = Field(None)
-    postgres_password: Optional[str] = Field(None)
+    postgres_password: Optional[SecretStr] = Field(None)
     postgres_port: int = Field(5432)
     # If provided POSTGRES_CONNECTION will be override the individual postgres components
     sqlalchemy_database_uri: Optional[PostgresDsn] = Field(
