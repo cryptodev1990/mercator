@@ -9,15 +9,11 @@ env:
   AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
 jobs:
+
   Lint-Code:
     runs-on: ubuntu-latest
     environment: geox-api-ci
-    env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_DB: "geox"
-      POSTGRES_HOST_AUTH_METHOD: "trust"
-      POSTGRES_SERVER: "db"
-      POSTGRES_PORT: 5432
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -37,6 +33,12 @@ jobs:
   Test-Code:
     runs-on: ubuntu-latest
     environment: geox-api-ci
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "geox"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_SERVER: "db"
+      POSTGRES_PORT: 5432
     # Service containers to run with `container-job`
     services:
       db:
