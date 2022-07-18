@@ -25,33 +25,40 @@ jobs:
         run: pip install -r ./geox-api/requirements.txt
       - name: Install python dev requirements
         run: pip install -r ./geox-api/requirements-dev.txt
-      - name: Run all tests
+      - name: Run all linting
         run: ./bin/lint.sh
         working-directory: geox-api
-  # Test-Code:
-  #   runs-on: ubuntu-latest
-  #   environment: geox-api-ci
-  #   # Service containers to run with `container-job`
-  #   services:
-  #     db:
-  #       # Docker Hub image
-  #       image: postgis/postgis:14-3.2-alpine
-  #       # Provide the password for postgres
-  #       env:
-  #         POSTGRES_PASSWORD: postgres
+  Test-Code:
+    runs-on: ubuntu-latest
+    environment: geox-api-ci
+    # Service containers to run with `container-job`
+    services:
+      db:
+        # Docker Hub image
+        image: postgis/postgis:14-3.2-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: "postgres"
+          POSTGRES_DB: "geox"
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+          POSTGRES_HOST: "db"
+          POSTGRES_PORT: 5432
 
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v3
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.9'
-  #         cache: 'pip'
-  #     - run: pip install -r ./geox-api/requirements.txt
-  #     - run: pip install -r ./geox-api/requirements-dev.txt
-  #     - run: ./tests-start.sh
-  #       working-directory: geox-api
-  #     - run: echo "🍏 This job's status is ${{ job.status }}."
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - name: Install dependencies
+        run: sudo apt-get install -y shellcheck
+      - name: Install python requirements
+        run: pip install -r ./geox-api/requirements.txt
+      - name: Install python dev requirements
+        run: pip install -r ./geox-api/requirements-dev.txt
+      - run: ./tests-start.sh
+        working-directory: geox-api
 
   # Test-Code-with-Docker:
   #   runs-on: ubuntu-latest
