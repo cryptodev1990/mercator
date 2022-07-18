@@ -11,7 +11,11 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip'
-      - run: sudo apt-get install -y shellcheck
       - run: pip install -r ./geox-api/requirements.txt
       - run: pip install -r ./geox-api/requirements-dev.txt
+      - run: ./bin/lint-python.sh
+        working-directory: geox-api
+      - run: sudo apt-get install -y shellcheck
+      - run: ./bin/lint-shell.sh
+        working-directory: geox-api
       - run: echo "🍏 This job's status is ${{ job.status }}."
