@@ -1,10 +1,10 @@
 import os
 import pathlib
+
 from fastapi.testclient import TestClient
+
 from app.core.access_token import get_access_token
-
 from app.main import app
-
 
 access_token = get_access_token()
 

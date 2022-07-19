@@ -1,17 +1,17 @@
-from typing import Callable
 import json
 import os
 import pathlib
+from typing import Callable
 
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.crud.shape import create_shape
-from app.crud.user import create_user, get_user_by_email
 from app.core.access_token import get_access_token
 from app.core.config import get_settings
-from app.main import app
+from app.crud.shape import create_shape
+from app.crud.user import create_user, get_user_by_email
 from app.db.session import SessionLocal, engine
+from app.main import app
 from app.models import Shape
 from app.schemas import GeoShapeCreate, UserCreate
 
@@ -35,6 +35,7 @@ here = pathlib.Path(__file__).parent.resolve()
 geojson = json.loads(open(os.path.join(here, "../fixtures/bbox.geojson")).read())
 
 settings = get_settings()
+
 
 def setup_shape():
     cleanup()

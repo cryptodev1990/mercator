@@ -1,5 +1,6 @@
 """Alembic configuration."""
 import pathlib
+
 # Ensure that the app module can be reached
 import sys
 from logging.config import fileConfig
