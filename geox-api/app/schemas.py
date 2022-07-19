@@ -1,9 +1,8 @@
-from typing import Optional
-from geojson_pydantic import Feature
-
-from pydantic import BaseModel, UUID4, Field
-
 import datetime
+from typing import Optional
+
+from geojson_pydantic import Feature
+from pydantic import UUID4, BaseModel, Field
 
 
 class UserBase(BaseModel):

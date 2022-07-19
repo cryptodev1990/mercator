@@ -5,9 +5,9 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
+from app.core.verify_token import VerifyToken
 from app.crud.user import create_or_update_user_from_bearer_data
 from app.db.session import SessionLocal
-from app.core.verify_token import VerifyToken
 
 
 def strip_bearer(s: str) -> str:

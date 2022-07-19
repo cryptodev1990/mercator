@@ -1,15 +1,17 @@
 """Initialize the app database."""
 
+from sqlalchemy.orm import Session
+
 from app import crud, schemas
 from app.core.config import get_settings
 
 # Copied from https://github.com/tiangolo/full-stack-fastapi-postgresql/blob/master/%7B%7Bcookiecutter.project_slug%7D%7D/backend/app/app/db/init_db.py
 from app.db import base  # noqa: F401
-from sqlalchemy.orm import Session
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
 # otherwise, SQL Alchemy might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
+
 
 def init_db(db: Session) -> None:
     """Initialize the app database."""

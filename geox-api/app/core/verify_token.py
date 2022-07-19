@@ -1,7 +1,9 @@
 """Functions to verify auth tokens."""
+from typing import Any, Dict
+
 import jwt
+
 from app.core.config import get_settings
-from typing import Dict, Any
 
 
 class VerifyToken:
@@ -15,12 +17,9 @@ class VerifyToken:
         config = {
             "DOMAIN": settings.auth_domain,
             # Note that we have two audiences her,
-            "API_AUDIENCE": [
-                settings.auth_client_id,
-                settings.auth_audience
-            ],
+            "API_AUDIENCE": [settings.auth_client_id, settings.auth_audience],
             "ISSUER": f"https://{settings.auth_domain}/",
-            "ALGORITHMS": settings.auth_algorithms
+            "ALGORITHMS": settings.auth_algorithms,
         }
         return config
 
@@ -67,7 +66,9 @@ class VerifyToken:
 
         return payload
 
-    def _check_claims(self, payload, claim_name, claim_type, expected_value) -> Dict[str, Any]:
+    def _check_claims(
+        self, payload, claim_name, claim_type, expected_value
+    ) -> Dict[str, Any]:
 
         instance_check = isinstance(payload[claim_name], claim_type)
         result = {"status": "success", "status_code": 200}

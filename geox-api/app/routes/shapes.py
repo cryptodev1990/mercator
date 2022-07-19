@@ -1,13 +1,13 @@
 from enum import Enum
 from typing import List, Optional
 
-from app.crud import shape as crud
-from app.db.session import SessionLocal
-from app.schemas import (GeoShape, GeoShapeCreate, GeoShapeRead,
-                         GeoShapeUpdate, User)
 from fastapi import APIRouter, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
+
+from app.crud import shape as crud
+from app.db.session import SessionLocal
+from app.schemas import GeoShape, GeoShapeCreate, GeoShapeRead, GeoShapeUpdate, User
 
 from .common import security
 
