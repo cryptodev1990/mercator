@@ -1,6 +1,6 @@
 import DeckGL from "@deck.gl/react";
 
-import { featureCollection } from "@turf/turf";
+import { difference } from "@turf/turf";
 
 import StaticMap from "react-map-gl";
 import { GeoJsonLayer } from "@deck.gl/layers";
@@ -11,28 +11,41 @@ import {
   DrawPolygonByDraggingMode,
   TranslateMode,
 } from "@nebula.gl/edit-modes";
-import { geoShapesToFeatureCollection } from "./utils";
 import {
-  useAddShapeMutation,
-  useGetAllShapesQuery,
-} from "./hooks/openapi-hooks";
+  featureToFeatureCollection,
+  geoShapesToFeatureCollection,
+} from "./utils";
+import { useGetAllShapesQuery } from "./hooks/openapi-hooks";
 
 import { useEditableMode } from "./tool-button-bank/hooks";
 
-import { GetAllShapesRequestType } from "../../client";
-import { useSelectedShapes } from "./metadata-editor/hooks";
+import { Feature, GetAllShapesRequestType } from "../../client";
+import {
+  useMetadataEditModal,
+  useSelectedShapes,
+} from "./metadata-editor/hooks";
 import { MODES } from "./tool-button-bank/modes";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GeofencerContext } from "./context";
 import { useMapMatchMode } from "./hooks/use-map-match-mode";
 import { useIcDemoMode } from "./hooks/use-ic-demo-mode";
+import { PathStyleExtension } from "@deck.gl/extensions";
 
 const selectedFeatureIndexes: any[] = [];
 
 const GeofenceMap = () => {
   const { viewport } = useContext(GeofencerContext);
-  const { editableMode } = useEditableMode();
+  const { editableMode, options: editOptions } = useEditableMode();
   const { isSelected, appendSelected } = useSelectedShapes();
+
+  const [tentativeShape, setTentativeShape] = useState<Feature | null>(null);
+  const { shapeForEdit, setShapeForEdit } = useMetadataEditModal();
+
+  useEffect(() => {
+    if (!shapeForEdit) {
+      setTentativeShape(null);
+    }
+  }, [shapeForEdit]);
 
   function getFillColorFunc(datum: any) {
     if (isSelected(datum.properties.uuid)) {
@@ -42,7 +55,6 @@ const GeofenceMap = () => {
   }
 
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
-  const { mutate: addShape } = useAddShapeMutation();
 
   const modeArgs = {
     getFillColorFunc,
@@ -60,18 +72,42 @@ const GeofenceMap = () => {
     editType: string;
   }) {
     if (editType !== "addFeature") {
-      if (updatedData) {
-        // use turf to check for an interaction with the existing feature collection
-        featureCollection(updatedData);
-      }
       return;
     }
-    const mostRecentShape =
-      updatedData.features[updatedData.features.length - 1];
-    addShape({ geojson: mostRecentShape, name: "test" });
+
+    let mostRecentShape = updatedData.features[updatedData.features.length - 1];
+
+    if (editOptions.denyOverlap && shapes) {
+      for (const shape of shapes) {
+        if (shape.uuid === mostRecentShape.properties.uuid) {
+          continue;
+        }
+        mostRecentShape = difference(
+          mostRecentShape,
+          shape.geojson.geometry as any
+        );
+      }
+    }
+
+    setShapeForEdit({ geojson: mostRecentShape, name: "test" });
+    setTentativeShape(mostRecentShape);
   }
 
   const layers = [
+    tentativeShape &&
+      new GeoJsonLayer({
+        id: "tentative-shape",
+        data: featureToFeatureCollection([tentativeShape]),
+        getDashArray: [3, 2],
+        dashJustified: true,
+        dashGapPickable: true,
+        stroked: true,
+        filled: true,
+        getFillColor: [255, 0, 0, 150],
+        getLineColor: [100, 100, 100, 150],
+        lineWidthMinPixels: 4,
+        extensions: [new PathStyleExtension({ dash: true })],
+      }),
     editableMode === MODES.ViewMode &&
       new EditableGeoJsonLayer({
         id: "geojson",
@@ -165,7 +201,7 @@ const GeofenceMap = () => {
         getTooltip={getTooltip}
       >
         <StaticMap
-          mapStyle={"mapbox://styles/mapbox/dark-v9"}
+          mapStyle={"mapbox://styles/mapbox/light-v9"}
           mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         />
       </DeckGL>

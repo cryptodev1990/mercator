@@ -466,17 +466,25 @@ July 16 2022
 July 18 2022
 -------------
 
+### Progress
+
+- [X] Build a demo for Lily
+  - [X] Draw a GPS trace
+  - [X] Run the mapmatch API on it
+
+- [X] Get the post-add flow working
+  - [X] Add a shape
+  - [X] Open the metadata editor box
+  - [X] Let the user save the metadata
+
+
 ### Plans
 
-- [ ] Build a demo for Lily
-  - [ ] Draw a GPS trace
-  - [ ] Run the mapmatch API on it
-
-- [ ] Get the post-add flow working
-  - [ ] Add a shape
-  - [ ] Open the metadata editor box
-  - [ ] Let the user save the metadata
-  - [ ] Select multiple shapes and bulk edit their metadata
+- [ ] Support adding multiple properties
+- [ ] Select multiple shapes and bulk edit their metadata
+- [ ] Isochrone flow
+- [ ] Select from OSM or Wikipedia, then draw isochrones or buffers around them
+- [ ] Celestial/Heaven still needs a demo
 
 ### Observations
 

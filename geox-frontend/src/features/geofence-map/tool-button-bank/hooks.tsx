@@ -3,7 +3,8 @@ import { GeofencerContext } from "../context";
 import { MODES } from "./modes";
 
 export const useEditableMode = () => {
-  const { editableMode, setEditableMode } = useContext(GeofencerContext);
+  const { editableMode, setEditableMode, options } =
+    useContext(GeofencerContext);
 
   function escFunction(event: KeyboardEvent) {
     if (event.key === "Escape") {
@@ -19,5 +20,5 @@ export const useEditableMode = () => {
     };
   }, []);
 
-  return { editableMode, setEditableMode };
+  return { editableMode, setEditableMode, options };
 };

@@ -16,7 +16,6 @@ export function NamespaceListBox() {
     if (user?.email) {
       setNamespace(user.email);
     }
-    console.log(user);
   }, [user]);
 
   return (

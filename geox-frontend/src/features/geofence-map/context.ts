@@ -1,15 +1,24 @@
 import { createContext } from "react";
-import { GeoShape } from "../../client";
+import { GeoShape, GeoShapeCreate } from "../../client";
+
+export interface MapEditOptions {
+  /**
+   * denyOverlap - Block shapes from overlapping with each other
+   */
+  denyOverlap?: boolean;
+}
 
 interface GeofencerContextState {
   selectedShapes: GeoShape[];
   setSelectedShapes: (shapes: GeoShape[]) => void;
-  shapeForEdit: GeoShape | null | undefined;
-  setShapeForEdit: (shape: GeoShape | null | undefined) => void;
+  shapeForEdit: GeoShapeCreate | null | undefined;
+  setShapeForEdit: (shape: GeoShapeCreate | null | undefined) => void;
   editableMode: string;
   setEditableMode: (mode: string) => void;
   viewport: any;
   setViewport: (viewport: any) => void;
+  options: MapEditOptions;
+  setOptions: (options: MapEditOptions) => void;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -21,4 +30,6 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setEditableMode: () => {},
   viewport: {},
   setViewport: () => {},
+  options: {},
+  setOptions: () => {},
 });

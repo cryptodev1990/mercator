@@ -1,11 +1,13 @@
 import { useEditableMode } from "./hooks";
 import { MODES } from "./modes";
 import { BsArrowsMove } from "react-icons/bs";
-import { TbHandGrab, TbLasso, TbShape3 } from "react-icons/tb";
+import { TbLasso } from "react-icons/tb";
+import { RiCursorLine } from "react-icons/ri";
+import { FaDrawPolygon } from "react-icons/fa";
 import { useTooltip } from "../../../hooks/use-tooltip";
 import ReactTooltip from "react-tooltip";
-import { BiCart, BiGlasses } from "react-icons/bi";
-import { MdOutlineDraw } from "react-icons/md";
+import { BiCart } from "react-icons/bi";
+import { MdOutlineDraw, MdOutlineEditRoad } from "react-icons/md";
 import { useEffect } from "react";
 
 export const ToolButtonBank = () => {
@@ -17,21 +19,21 @@ export const ToolButtonBank = () => {
   const modes = [
     {
       name: "View",
-      icon: <BiGlasses />,
+      icon: <RiCursorLine />,
       onClick: () => setEditableMode(MODES.ViewMode),
       dataTip: "Read-only view of existing geofences",
       active: editableMode === MODES.ViewMode,
     },
     {
       name: "Edit",
-      icon: <TbShape3 />,
+      icon: <FaDrawPolygon />,
       onClick: () => setEditableMode(MODES.EditMode),
       dataTip: "Draw new or edit existing geofences",
       active: editableMode === MODES.EditMode,
     },
     {
       name: "Lasso",
-      icon: <TbHandGrab />,
+      icon: <MdOutlineEditRoad />,
       onClick: () => setEditableMode(MODES.LassoMode),
       dataTip: "Select a group of elements for editing",
       active: editableMode === MODES.LassoMode,

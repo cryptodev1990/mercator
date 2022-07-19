@@ -1,4 +1,4 @@
-import { GeoShape } from "../../client";
+import { Feature, GeoShape } from "../../client";
 
 export function geoShapesToFeatureCollection(shapes: GeoShape[] | undefined) {
   /**
@@ -22,6 +22,21 @@ export function geoShapesToFeatureCollection(shapes: GeoShape[] | undefined) {
             },
           };
         }),
+  };
+}
+
+export function featureToFeatureCollection(
+  features: Feature[] | null | undefined
+) {
+  /**
+   * Converts GeoShapes to GeoJSON FeatureCollection
+   */
+  if (!features) {
+    return { type: "FeatureCollection", features: [] };
+  }
+  return {
+    type: "FeatureCollection",
+    features,
   };
 }
 

@@ -2,7 +2,7 @@ import { useContext, useMemo } from "react";
 import { GeoShape } from "../../../client";
 import { GeofencerContext } from "../context";
 
-export const useEditModal = () => {
+export const useMetadataEditModal = () => {
   const { shapeForEdit, setShapeForEdit } = useContext(GeofencerContext);
   return { shapeForEdit, setShapeForEdit };
 };

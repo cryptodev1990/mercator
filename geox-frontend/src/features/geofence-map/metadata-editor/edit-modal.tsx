@@ -1,11 +1,13 @@
-import { GeoShape } from "../client";
-import { useForm } from "react-hook-form";
-import { useEditModal } from "./geofence-map/metadata-editor/hooks";
+import { GeoShape, GeoShapeCreate, GeoShapeUpdate } from "../../../client";
+import { useMetadataEditModal } from "./hooks";
 
-import { useEffect } from "react";
-import { useUpdateShapeMutation } from "./geofence-map/hooks/openapi-hooks";
+import React, { useEffect, useRef } from "react";
+import {
+  useAddShapeMutation,
+  useUpdateShapeMutation,
+} from "../hooks/openapi-hooks";
 
-function View(props: any) {
+const View = (props: any) => {
   return (
     <div
       className="modal fade absolute z-40 w-100 left-10"
@@ -30,36 +32,58 @@ function View(props: any) {
       </div>
     </div>
   );
-}
+};
 
-export const EditModal = ({ shape }: { shape: GeoShape }) => {
-  const { setShapeForEdit } = useEditModal();
-  const { mutate: updateShape, isSuccess } = useUpdateShapeMutation();
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm();
+export const EditModal = ({
+  shape,
+}: {
+  shape: GeoShape | GeoShapeCreate | GeoShapeUpdate;
+}) => {
+  const { shapeForEdit, setShapeForEdit } = useMetadataEditModal();
+  const { mutate: addShape, isSuccess: addSuccess } = useAddShapeMutation();
+  const { mutate: updateShape, isSuccess: updateSuccess } =
+    useUpdateShapeMutation();
+  const inputRef: any = useRef(null);
 
-  function onSubmit(data: any) {
-    updateShape({
-      name: data.name || shape.name,
-      uuid: shape.uuid,
-      should_delete: false,
-    });
-  }
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const { name } = (event.target as any).elements;
+    if ((shape as GeoShape).uuid) {
+      updateShape({
+        name: name.value || shape.name,
+        uuid: (shape as GeoShape).uuid,
+        should_delete: false,
+      });
+    } else {
+      addShape({
+        name: name.value,
+        geojson: (shapeForEdit as GeoShapeCreate).geojson,
+      });
+    }
+  };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (inputRef.current) {
+      console.log("ref!");
+      inputRef.current.focus();
+    }
+  }, [shapeForEdit]);
+
+  useEffect(() => {
+    if (updateSuccess || addSuccess) {
       setShapeForEdit(null);
     }
-  }, [isSuccess]);
+  }, [updateSuccess, addSuccess]);
 
   return (
     <View>
-      <form onSubmit={handleSubmit(onSubmit)} className="text-black">
-        {/* register your input into the hook by invoking the "register" function */}
-        <input defaultValue="test" {...register("name")} />
+      <form className="text-black" onSubmit={handleSubmit}>
+        <input
+          name="name"
+          type="text"
+          placeholder="Shape name"
+          ref={inputRef}
+        />
         <input
           type="submit"
           className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out ml-1"
