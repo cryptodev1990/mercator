@@ -18,11 +18,11 @@ function _mypy() {
 }
 
 function _black() {
-    black ./app --check
+    black --check .
 }
 
 function _isort() {
-    isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --check-only ./app ./alembic/env.py
+    isort -q --check-only .
 }
 
 # Lint shell scripts (*.sh)
