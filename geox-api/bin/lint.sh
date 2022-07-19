@@ -14,7 +14,7 @@ function check_status {
 
 # Lint python files
 function _mypy() {
-    mypy ./app
+    mypy .
 }
 
 function _black() {
