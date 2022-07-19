@@ -1,18 +1,17 @@
 """Alembic configuration."""
+import pathlib
+# Ensure that the app module can be reached
+import sys
 from logging.config import fileConfig
 from multiprocessing.sharedctypes import Value
 
-# Ensure that the app module can be reached
-import sys
-import pathlib
-
 sys.path.append(str(pathlib.Path(__file__).parent.parent.resolve()))
 
-from app.core.config import get_settings
-from app.db.base_class import Base  # noqa
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from app.core.config import get_settings
+from app.db.base_class import Base  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -20,7 +19,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name) # type: ignore
+fileConfig(config.config_file_name)  # type: ignore
 
 # add your model's MetaData object here
 # for 'autogenerate' support

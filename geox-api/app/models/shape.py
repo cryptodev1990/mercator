@@ -3,10 +3,11 @@ import datetime
 import uuid
 from typing import Any, Dict
 
-from app.db.base_class import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, null
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.sql import func
+
+from app.db.base_class import Base
 
 
 class Shape(Base):

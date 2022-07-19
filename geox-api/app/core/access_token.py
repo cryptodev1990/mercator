@@ -1,6 +1,6 @@
-
 """Functions to generate an auth tokens."""
 import requests
+
 from app.core.config import get_settings
 
 
