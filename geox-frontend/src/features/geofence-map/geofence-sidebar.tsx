@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 
 import { MdOutlineArrowBackIos } from "react-icons/md";
 import { GetAllShapesRequestType } from "../../client";
+import { Tabs } from "../../common/components/tabs";
 import { useGetAllShapesQuery } from "./hooks/openapi-hooks";
+import { EditModal } from "./metadata-editor/edit-modal";
+import { useMetadataEditModal } from "./metadata-editor/hooks";
 import { ShapeCard } from "./shape-card";
 
 const NewUserMessage = () => {
@@ -51,6 +54,12 @@ const toUnix = (dt: string) => Math.floor(new Date(dt).getTime() / 1000);
 export const GeofenceSidebar = () => {
   const [hidden, setHidden] = useState(false);
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
+  const { shapeForEdit, setShapeForEdit } = useMetadataEditModal();
+
+  let editModal = <p>Select a shape to edit its metadata</p>;
+  if (shapeForEdit) {
+    editModal = <EditModal shape={shapeForEdit} />;
+  }
 
   useEffect(() => {
     async function shortkey(event: KeyboardEvent) {
@@ -66,21 +75,19 @@ export const GeofenceSidebar = () => {
     };
   }, []);
 
-  if (shapes?.length === 0) {
-    return (
-      <GeofenceSidebarView hidden={hidden} setHidden={setHidden}>
-        <NewUserMessage />
-      </GeofenceSidebarView>
-    );
-  }
-
   const shapeCards = shapes
     ?.sort((a, b) => toUnix(a.created_at) - toUnix(b.created_at))
     .map((shape, i) => <ShapeCard shape={shape} key={i} />);
 
   return (
     <GeofenceSidebarView hidden={hidden} setHidden={setHidden}>
-      {shapeCards}
+      <Tabs
+        children={[
+          shapes?.length !== 0 ? <div>{shapeCards}</div> : <NewUserMessage />,
+          <>{editModal}</>,
+        ]}
+        tabnames={["🌐", "📙"]}
+      />
     </GeofenceSidebarView>
   );
 };

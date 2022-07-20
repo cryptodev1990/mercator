@@ -2,13 +2,7 @@ import { GeofencerNavbar } from "./geofencer-navbar";
 import { GeofenceMap } from "./geofence-map";
 import { GeofenceSidebar } from "./geofence-sidebar";
 import { useState } from "react";
-import {
-  GeoShape,
-  GeoShapeCreate,
-  GeoShapeRead,
-  GeoShapeUpdate,
-} from "../../client";
-import { EditModal } from "./metadata-editor/edit-modal";
+import { GeoShape, GeoShapeCreate } from "../../client";
 import { MODES } from "./tool-button-bank/modes";
 import { CommandPalette } from "../command-palette/component";
 import { GeofencerContext, MapEditOptions } from "./context";
@@ -19,7 +13,10 @@ const GeofencerApp = () => {
   const [shapeForEdit, setShapeForEdit] = useState<
     GeoShapeCreate | null | undefined
   >();
-  const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
+  // TODO change back
+  const [editableMode, setEditableMode] = useState<string>(MODES.LassoDrawMode);
+  // TODO change back
+  // const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
   const [viewport, setViewport] = useState<ViewState>({
     latitude: 37.762673511727435,
     longitude: -122.40111919656555,
@@ -52,7 +49,6 @@ const GeofencerApp = () => {
         }}
       />
       <div className="text-white h-screen relative flex flex-col">
-        {shapeForEdit && <EditModal shape={shapeForEdit} />}
         <div className="h-fit min-w-[400px] p-5 bg-gradient-to-r from-slate-800 to-slate-900">
           <GeofencerNavbar />
         </div>

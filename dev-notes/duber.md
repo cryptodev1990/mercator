@@ -486,9 +486,17 @@ July 18 2022
 - [ ] Select from OSM or Wikipedia, then draw isochrones or buffers around them
 - [ ] Celestial/Heaven still needs a demo
 
+## July 19 2022
+
+### Progress
+
+- [ ] Provide a way to edit the properties field for metadata edits
+
 ### Observations
 
-- Examples from React Hook Form are powerful
+- [ ] Might be useful to learn about Formik: https://youtu.be/vJtyp1YmOpc
+- [ ] TODO need to support publishing versions of shapes
+- Lean on examples from React Hook Form
 
 July 21-22 2022
 ------------

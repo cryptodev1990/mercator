@@ -19,7 +19,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
       onMouseLeave={() => {
         removeAllSelections();
       }}
-      className={`p-6 max-w-sm relative snap-start bg-slate-600 rounded-lg border border-gray-200 shadow-md ${selectionBg}`}
+      className={`p-6 max-w-sm relative snap-start bg-slate-600 first-child:rounded-none last-child:rounded-none rounded-lg border border-gray-200 shadow-md ${selectionBg}`}
     >
       <h5 className="mb-2 text-2xl font-bold tracking-tight text-white">
         {shape.name}
