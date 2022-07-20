@@ -488,4 +488,15 @@ July 18 2022
 
 ### Observations
 
+- Examples from React Hook Form are powerful
 
+July 21-22 2022
+------------
+
+### Progress
+
+- [X] Support adding multiple properties
+
+### Plans
+
+- [ ] Heaven
