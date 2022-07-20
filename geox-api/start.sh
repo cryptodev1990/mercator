@@ -8,7 +8,6 @@
 # - APP_LOG_LEVEL: default info
 # - PRE_START_PATH: path to a pre-start script
 set -e
-set -x
 
 # Derived from https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/docker-images/start-reload.sh
 
@@ -44,8 +43,8 @@ __prestart_app
 
 # Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false
 RELOAD_OPT=
-app_reload=$(echo "$APP_RELOAD" | tr '[:upper:]' '[:lower:]')
-if [ "$app_reload" = "1" ] && [ "$app_reload" != "true" ]; then
+APP_RELOAD=$(echo "$APP_RELOAD" | tr '[:upper:]' '[:lower:]')
+if [ "$APP_RELOAD" = "1" ] && [ "$APP_RELOAD" != "true" ]; then
     RELOAD_OPT="--reload"
 fi;
 exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"
