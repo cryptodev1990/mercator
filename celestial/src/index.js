@@ -29,7 +29,7 @@ import { determineStatus, fake } from "./fake";
 import length from "@turf/length";
 import { DriverTable } from "./table";
 
-const MAX_ROWS = 500;
+const MAX_ROWS = 249;
 
 const r = () => Math.round(Math.random() * 255);
 
