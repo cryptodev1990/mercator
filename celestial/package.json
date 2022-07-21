@@ -6,6 +6,7 @@
     "@babel/core": "^7.12.0",
     "autoprefixer": "^10.4.7",
     "buffer": "^6.0.3",
+    "events": "^3.3.0",
     "parcel": "^2.6.2",
     "postcss": "^8.4.14",
     "process": "^0.11.10",
@@ -17,16 +18,27 @@
   },
   "scripts": {
     "dev": "parcel index.html",
+    "start": "parcel index.html",
     "build": "parcel build index.html"
   },
   "dependencies": {
     "@loaders.gl/core": "^3.2.5",
     "@loaders.gl/csv": "^3.2.5",
+    "@mapbox/polyline": "^1.1.1",
+    "@nebula.gl/layers": "^1.0.3",
+    "@turf/along": "^6.5.0",
+    "@turf/length": "^6.5.0",
+    "@turf/line-slice": "^6.5.0",
+    "@turf/line-slice-along": "^6.5.0",
+    "@turf/rhumb-bearing": "^6.5.0",
     "babel-plugin-root-import": "^6.6.0",
+    "daisyui": "^2.19.1",
     "deck.gl": "8.5",
     "mapbox-gl": "^2.9.1",
+    "nebula.gl": "^1.0.3",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-map-gl": "^7.0.17"
+    "react-map-gl": "^7.0.17",
+    "react-toastify": "^9.0.7"
   }
 }
