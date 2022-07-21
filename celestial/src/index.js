@@ -280,7 +280,7 @@ const MapContainer = ({ parentData }) => {
                 return [255, 0, 0, 150];
               }
               if (d.state === "delivered") {
-                return [0, 255, 255, 150];
+                return [255, 255, 0, 150];
               }
               return [0, 0, 0, 0];
             },
