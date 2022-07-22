@@ -1,4 +1,4 @@
-fastapi[all]
+fastapi[all]==0.78.*
 geojson-pydantic==0.4.2
 authlib==1.0.1
 starlette-authlib==0.1.11
@@ -10,3 +10,5 @@ PyJWT==2.4.0
 tenacity==8.0.*
 alembic==1.8.*
 wheel
+celery[redis]==5.2.*
+
