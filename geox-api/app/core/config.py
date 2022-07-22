@@ -10,6 +10,7 @@ from pydantic import (
     EmailStr,
     Field,
     PostgresDsn,
+    RedisDsn,
     SecretStr,
     validator,
 )
@@ -97,6 +98,10 @@ class Settings(BaseSettings):
 
     # validateion is done in the order fields are defined. sqlalchemy_database_uri
     # needs to be defined after everything
+
+    redis_connection: RedisDsn = Field(
+        "redis://localhost:6379/0", description="Redis DSN to use for celery"
+    )
 
     class Config:  # noqa
         env_file = ".env"
