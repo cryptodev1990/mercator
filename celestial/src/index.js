@@ -372,8 +372,8 @@ const DriverCard = ({ driver, unselect, status }) => {
         <h2 className="card-title">
           <a className="link link-primary" href="#">
             {fake(driver, "name")}
-          </a>
-          , for{" "}
+          </a>{" "}
+          for{" "}
           <a className="link link-primary" href="#">
             {fake(driver, "shipping")}
           </a>
