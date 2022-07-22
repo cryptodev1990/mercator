@@ -23,7 +23,8 @@ APP_LOG_LEVEL=${APP_LOG_LEVEL:-info}
 
 __prestart_app() {
     if [ "$(uname -s)" = "Darwin" ]; then
-        brew services start postgres 1>/dev/null
+        # brew services start postgres 1>/dev/null
+        echo skipping brew postgres
     fi
 
     # Put all pre-start logic in a function - easier to comment out or make conditional if needed

@@ -68,6 +68,7 @@ def get_all_shapes_by_email_domain(
           AND users.email LIKE :email_domain_wildcard
         WHERE 1=1
           AND shapes.deleted_at IS NULL
+        ORDER BY created_at DESC
         """,
         {"email_domain_wildcard": f"%@{email_domain}"},
     )

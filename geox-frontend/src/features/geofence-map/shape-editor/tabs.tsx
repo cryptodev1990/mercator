@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { Tab } from "@headlessui/react";
-import { useMetadataEditModal } from "../../features/geofence-map/metadata-editor/hooks";
 import { useEffect } from "react";
+import { useEditableShape } from "./hooks";
 
 export function Tabs({
   children,
   tabnames,
+  active,
 }: {
   children: any;
   tabnames: string[];
+  active: number;
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { shapeForEdit } = useMetadataEditModal();
+  const { setShapeForEdit } = useEditableShape();
 
   useEffect(() => {
-    if (shapeForEdit) {
-      setSelectedIndex(1);
-    } else {
-      setSelectedIndex(0);
+    setSelectedIndex(active);
+  }, [active]);
+
+  useEffect(() => {
+    if (active !== selectedIndex) {
+      setShapeForEdit(null);
     }
-    return () => {};
-  }, [shapeForEdit]);
+  }, [selectedIndex]);
 
   return (
     <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>

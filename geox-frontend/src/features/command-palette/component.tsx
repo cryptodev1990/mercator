@@ -42,7 +42,11 @@ export const CommandPalette = ({ onNominatim }: { onNominatim: any }) => {
 
   useEffect(() => {
     async function shortkey(event: KeyboardEvent) {
-      if (event.ctrlKey && event.shiftKey && event.key === "P") {
+      if (
+        (event.ctrlKey || event.key === "Meta") &&
+        event.shiftKey &&
+        event.key === "P"
+      ) {
         setHidden((oldState) => !oldState);
       }
     }

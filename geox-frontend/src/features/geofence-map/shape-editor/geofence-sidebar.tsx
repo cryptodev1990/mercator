@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { MdOutlineArrowBackIos } from "react-icons/md";
-import { GetAllShapesRequestType } from "../../client";
-import { Tabs } from "../../common/components/tabs";
-import { useGetAllShapesQuery } from "./hooks/openapi-hooks";
-import { EditModal } from "./metadata-editor/edit-modal";
-import { useMetadataEditModal } from "./metadata-editor/hooks";
+import { GetAllShapesRequestType } from "../../../client";
+import { Tabs } from "./tabs";
+import { useGetAllShapesQuery } from "../hooks/openapi-hooks";
+import { ShapeEditor } from "./shape-editor";
+import { useEditableShape } from "./hooks";
 import { ShapeCard } from "./shape-card";
 
 const NewUserMessage = () => {
@@ -49,43 +49,38 @@ const ArrowBox = ({
   );
 };
 
-const toUnix = (dt: string) => Math.floor(new Date(dt).getTime() / 1000);
-
 export const GeofenceSidebar = () => {
   const [hidden, setHidden] = useState(false);
   const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
-  const { shapeForEdit, setShapeForEdit } = useMetadataEditModal();
 
-  let editModal = <p>Select a shape to edit its metadata</p>;
-  if (shapeForEdit) {
-    editModal = <EditModal shape={shapeForEdit} />;
-  }
-
+  // Feature: Hide sidebar with shortkey
   useEffect(() => {
     async function shortkey(event: KeyboardEvent) {
       if (event.ctrlKey && event.key === "b") {
         setHidden((oldState) => !oldState);
       }
     }
-
     document.body.addEventListener("keydown", shortkey, false);
-
     return () => {
       document.body.removeEventListener("keydown", shortkey, false);
     };
   }, []);
 
-  const shapeCards = shapes
-    ?.sort((a, b) => toUnix(a.created_at) - toUnix(b.created_at))
-    .map((shape, i) => <ShapeCard shape={shape} key={i} />);
+  const { shapeForEdit } = useEditableShape();
+
+  // Feature: Display card for each shape in the namespace
+  const shapeCards = shapes?.map((shape, i) => (
+    <ShapeCard shape={shape} key={i} />
+  ));
 
   return (
     <GeofenceSidebarView hidden={hidden} setHidden={setHidden}>
       <Tabs
         children={[
           shapes?.length !== 0 ? <div>{shapeCards}</div> : <NewUserMessage />,
-          <>{editModal}</>,
+          <ShapeEditor />,
         ]}
+        active={shapeForEdit ? 1 : 0}
         tabnames={["🌐", "📙"]}
       />
     </GeofenceSidebarView>

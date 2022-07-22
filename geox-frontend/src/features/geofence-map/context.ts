@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { GeoShape, GeoShapeCreate } from "../../client";
+import { GeoShape, GeoShapeUpdate } from "../../client";
 
 export interface MapEditOptions {
   /**
@@ -11,8 +11,8 @@ export interface MapEditOptions {
 interface GeofencerContextState {
   selectedShapes: GeoShape[];
   setSelectedShapes: (shapes: GeoShape[]) => void;
-  shapeForEdit: GeoShapeCreate | null | undefined;
-  setShapeForEdit: (shape: GeoShapeCreate | null | undefined) => void;
+  shapeForEdit: GeoShapeUpdate | null | undefined;
+  setShapeForEdit: (shape: GeoShapeUpdate | null | undefined) => void;
   editableMode: string;
   setEditableMode: (mode: string) => void;
   viewport: any;

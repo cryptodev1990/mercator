@@ -1,17 +1,18 @@
 import { GeofencerNavbar } from "./geofencer-navbar";
 import { GeofenceMap } from "./geofence-map";
-import { GeofenceSidebar } from "./geofence-sidebar";
+import { GeofenceSidebar } from "./shape-editor/geofence-sidebar";
 import { useState } from "react";
-import { GeoShape, GeoShapeCreate } from "../../client";
+import { GeoShape, GeoShapeUpdate } from "../../client";
 import { MODES } from "./tool-button-bank/modes";
 import { CommandPalette } from "../command-palette/component";
 import { GeofencerContext, MapEditOptions } from "./context";
 import { ViewState } from "react-map-gl";
+import { ShapeEditor } from "./shape-editor/shape-editor";
 
 const GeofencerApp = () => {
   const [selectedShapes, setSelectedShapes] = useState<GeoShape[]>([]);
   const [shapeForEdit, setShapeForEdit] = useState<
-    GeoShapeCreate | null | undefined
+    GeoShapeUpdate | null | undefined
   >();
   // TODO change back
   const [editableMode, setEditableMode] = useState<string>(MODES.LassoDrawMode);
@@ -33,7 +34,7 @@ const GeofencerApp = () => {
         selectedShapes,
         setSelectedShapes: (shapes: GeoShape[]) => setSelectedShapes(shapes),
         shapeForEdit,
-        setShapeForEdit: (shape: GeoShapeCreate | null | undefined) =>
+        setShapeForEdit: (shape: GeoShapeUpdate | null | undefined) =>
           setShapeForEdit(shape),
         editableMode,
         setEditableMode: (mode: string) => setEditableMode(mode),

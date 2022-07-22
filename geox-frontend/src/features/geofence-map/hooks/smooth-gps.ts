@@ -1,6 +1,5 @@
 // @ts-ignore
 import { KalmanFilter } from "kalman-filter";
-import { length } from "@turf/turf";
 
 function deg2rad(deg: any) {
   return deg * (Math.PI / 180);

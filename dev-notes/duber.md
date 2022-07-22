@@ -498,7 +498,7 @@ July 18 2022
 - [ ] TODO need to support publishing versions of shapes
 - Lean on examples from React Hook Form
 
-July 21-22 2022
+July 20-21 2022
 ------------
 
 ### Progress
@@ -507,4 +507,18 @@ July 21-22 2022
 
 ### Plans
 
-- [ ] Heaven
+- [X] Heaven
+
+July 22 2022
+------------
+
+### Progress
+
+- [X] Cleanup code in frontend
+  - [X] Add style to JSON editor
+- [ ] OSM data -> buffer
+  - [ ] Command palette: "Pull OSM parks and draw a 10m meter buffer around them"
+  - [ ] Set up a FastAPI endpoint that grabs OSM demo data
+  - [ ] Render that data in the UI
+  - [ ] Add a one of those deck.gl demo option panel to set a radius
+- [ ] Export shapes to a FeatureCollection file

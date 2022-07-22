@@ -1,7 +1,5 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
-import { store } from "./app/store";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
@@ -23,11 +21,9 @@ root.render(
         cacheLocation="localstorage"
         redirectUri={window.location.origin}
       >
-        <Provider store={store}>
-          <div className="h-full relative w-full bg-[#090A14] antialiased text-gray-600">
-            <App />
-          </div>
-        </Provider>
+        <div className="h-full relative w-full bg-[#090A14] antialiased text-gray-600">
+          <App />
+        </div>
       </Auth0Provider>
     </QueryClientProvider>
   </React.StrictMode>

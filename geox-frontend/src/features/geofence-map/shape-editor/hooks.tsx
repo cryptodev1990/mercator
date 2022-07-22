@@ -2,7 +2,10 @@ import { useContext, useMemo } from "react";
 import { GeoShape } from "../../../client";
 import { GeofencerContext } from "../context";
 
-export const useMetadataEditModal = () => {
+export const useEditableShape = () => {
+  /**
+   * Shape currently able to be edited
+   */
   const { shapeForEdit, setShapeForEdit } = useContext(GeofencerContext);
   return { shapeForEdit, setShapeForEdit };
 };
@@ -52,6 +55,7 @@ export const useSelectedShapes = () => {
   return {
     isSelected,
     selectOne,
+    selectedShapes,
     appendSelected,
     removeAllSelections,
     removeSelection,

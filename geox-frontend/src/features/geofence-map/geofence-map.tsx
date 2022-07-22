@@ -15,15 +15,20 @@ import {
   featureToFeatureCollection,
   geoShapesToFeatureCollection,
 } from "./utils";
-import { useGetAllShapesQuery } from "./hooks/openapi-hooks";
+import {
+  useAddShapeMutation,
+  useGetAllShapesQuery,
+} from "./hooks/openapi-hooks";
 
 import { useEditableMode } from "./tool-button-bank/hooks";
 
-import { Feature, GetAllShapesRequestType } from "../../client";
 import {
-  useMetadataEditModal,
-  useSelectedShapes,
-} from "./metadata-editor/hooks";
+  Feature,
+  GeoShape,
+  GetAllShapesRequestType,
+  Polygon,
+} from "../../client";
+import { useEditableShape, useSelectedShapes } from "./shape-editor/hooks";
 import { MODES } from "./tool-button-bank/modes";
 import { useContext, useEffect, useState } from "react";
 import { GeofencerContext } from "./context";
@@ -38,14 +43,8 @@ const GeofenceMap = () => {
   const { editableMode, options: editOptions } = useEditableMode();
   const { isSelected, appendSelected } = useSelectedShapes();
 
-  const [tentativeShape, setTentativeShape] = useState<Feature | null>(null);
-  const { shapeForEdit, setShapeForEdit } = useMetadataEditModal();
-
-  useEffect(() => {
-    if (!shapeForEdit) {
-      setTentativeShape(null);
-    }
-  }, [shapeForEdit]);
+  const { setShapeForEdit } = useEditableShape();
+  const { mutate: addShape } = useAddShapeMutation();
 
   function getFillColorFunc(datum: any) {
     if (isSelected(datum.properties.uuid)) {
@@ -75,39 +74,36 @@ const GeofenceMap = () => {
       return;
     }
 
-    let mostRecentShape = updatedData.features[updatedData.features.length - 1];
+    let mostRecentShape: Feature =
+      updatedData.features[updatedData.features.length - 1];
 
     if (editOptions.denyOverlap && shapes) {
       for (const shape of shapes) {
         if (shape.uuid === mostRecentShape.properties.uuid) {
           continue;
         }
-        mostRecentShape = difference(
-          mostRecentShape,
+        const diffShape = difference(
+          mostRecentShape as any,
           shape.geojson.geometry as any
         );
+        if (diffShape === null) {
+          return;
+        }
+        mostRecentShape = diffShape as Feature;
       }
     }
-
-    setShapeForEdit({ geojson: mostRecentShape, name: "test" });
-    setTentativeShape(mostRecentShape);
+    const newShape = {
+      geojson: mostRecentShape,
+      name: "New shape",
+    };
+    addShape(newShape, {
+      onSuccess: (data: any) => {
+        setShapeForEdit(data as GeoShape);
+      },
+    });
   }
 
   const layers = [
-    tentativeShape &&
-      new GeoJsonLayer({
-        id: "tentative-shape",
-        data: featureToFeatureCollection([tentativeShape]),
-        getDashArray: [3, 2],
-        dashJustified: true,
-        dashGapPickable: true,
-        stroked: true,
-        filled: true,
-        getFillColor: [255, 0, 0, 150],
-        getLineColor: [100, 100, 100, 150],
-        lineWidthMinPixels: 4,
-        extensions: [new PathStyleExtension({ dash: true })],
-      }),
     editableMode === MODES.ViewMode &&
       new EditableGeoJsonLayer({
         id: "geojson",
