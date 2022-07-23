@@ -516,7 +516,7 @@ July 22 2022
 
 - [X] Cleanup code in frontend
   - [X] Add style to JSON editor
-- [ ] OSM data -> buffer
+- [X] OSM data -> buffer
   - [X] Command palette: "Pull OSM parks and draw a 10m meter buffer around them"
   - [X] Set up a FastAPI endpoint that grabs OSM demo data
   - [X] Render that data in the UI
@@ -528,5 +528,5 @@ July 23 2022
 ------------
 
 - [ ] Export shapes to a FeatureCollection file
-- [ ] Bulk delete / bulk add
+- [X] Bulk delete / bulk add
 
