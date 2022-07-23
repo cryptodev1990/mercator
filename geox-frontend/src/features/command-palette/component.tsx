@@ -1,10 +1,22 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
+import { Feature } from "../../client";
 import { bboxToZoom } from "../geofence-map/utils";
 import { getNominatimData } from "./nominatim-api";
+import { getOSMData } from "./osm-api";
 
-export const CommandPalette = ({ onNominatim }: { onNominatim: any }) => {
+export const CommandPalette = ({
+  onNominatim,
+  onOSM,
+  onBuffer,
+  onPublish,
+}: {
+  onNominatim: any;
+  onOSM: any;
+  onBuffer: any;
+  onPublish: any;
+}) => {
   const [hidden, setHidden] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -18,10 +30,7 @@ export const CommandPalette = ({ onNominatim }: { onNominatim: any }) => {
         const { lat: latitude, lon: longitude } = datum;
         const zoom = bboxToZoom(datum.boundingbox);
         // cleanup
-        setValue("");
-        setError(null);
-        setHidden(true);
-        return res.data.length > 0
+        res.data.length > 0
           ? onNominatim({
               zoom,
               latitude: +latitude,
@@ -30,10 +39,21 @@ export const CommandPalette = ({ onNominatim }: { onNominatim: any }) => {
               pitch: 0,
             })
           : setError("No results");
+      } else if (value.startsWith("get ")) {
+        const res = await getOSMData(value.replace("get ", ""));
+        const features = res.data.features as Feature[];
+        onOSM(features);
+      } else if (value.startsWith("draw ")) {
+        onBuffer(500, "meters");
+      } else if (value.startsWith("publish")) {
+        onPublish();
       } else {
         console.error("Not valid");
         setError("Not valid");
       }
+      setValue("");
+      setError(null);
+      setHidden(true);
       // success
     } catch (e: any) {
       setError(e);

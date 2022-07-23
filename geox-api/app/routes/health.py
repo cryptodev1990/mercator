@@ -28,5 +28,4 @@ async def db_health():
         assert res.first()[0] == 1
         return JSONResponse({"message": "OK"})
     except Exception as e:
-        print(e)
         return JSONResponse({"message": "ERROR"}, status_code=500)

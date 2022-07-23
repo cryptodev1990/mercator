@@ -35,11 +35,12 @@ import { GeofencerContext } from "./context";
 import { useMapMatchMode } from "./hooks/use-map-match-mode";
 import { useIcDemoMode } from "./hooks/use-ic-demo-mode";
 import { PathStyleExtension } from "@deck.gl/extensions";
+import { RGBAColor } from "deck.gl";
 
 const selectedFeatureIndexes: any[] = [];
 
 const GeofenceMap = () => {
-  const { viewport } = useContext(GeofencerContext);
+  const { viewport, tentativeShapes } = useContext(GeofencerContext);
   const { editableMode, options: editOptions } = useEditableMode();
   const { isSelected, appendSelected } = useSelectedShapes();
 
@@ -104,6 +105,21 @@ const GeofenceMap = () => {
   }
 
   const layers = [
+    tentativeShapes &&
+      tentativeShapes.length > 0 &&
+      new GeoJsonLayer({
+        id: "geojson-i",
+        pickable: true,
+        // @ts-ignore
+        getFillColor: [0, 0, 255, 100],
+        stroked: true,
+        filled: true,
+        data: {
+          type: "FeatureCollection",
+          features: tentativeShapes.map((x) => x.geojson),
+        },
+        mode: ViewMode,
+      }),
     editableMode === MODES.ViewMode &&
       new EditableGeoJsonLayer({
         id: "geojson",

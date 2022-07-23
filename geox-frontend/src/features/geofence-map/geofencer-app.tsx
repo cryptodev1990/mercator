@@ -2,22 +2,26 @@ import { GeofencerNavbar } from "./geofencer-navbar";
 import { GeofenceMap } from "./geofence-map";
 import { GeofenceSidebar } from "./shape-editor/geofence-sidebar";
 import { useState } from "react";
-import { GeoShape, GeoShapeUpdate } from "../../client";
+import {
+  Feature,
+  GeoShape,
+  GeoShapeCreate,
+  GeoShapeUpdate,
+} from "../../client";
 import { MODES } from "./tool-button-bank/modes";
 import { CommandPalette } from "../command-palette/component";
 import { GeofencerContext, MapEditOptions } from "./context";
+import buffer from "@turf/buffer";
 import { ViewState } from "react-map-gl";
-import { ShapeEditor } from "./shape-editor/shape-editor";
+import { useAddShapeMutation } from "./hooks/openapi-hooks";
 
 const GeofencerApp = () => {
   const [selectedShapes, setSelectedShapes] = useState<GeoShape[]>([]);
+  const [tentativeShapes, setTentativeShapes] = useState<GeoShapeCreate[]>([]);
   const [shapeForEdit, setShapeForEdit] = useState<
     GeoShapeUpdate | null | undefined
   >();
-  // TODO change back
-  const [editableMode, setEditableMode] = useState<string>(MODES.LassoDrawMode);
-  // TODO change back
-  // const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
+  const [editableMode, setEditableMode] = useState<string>(MODES.ViewMode);
   const [viewport, setViewport] = useState<ViewState>({
     latitude: 37.762673511727435,
     longitude: -122.40111919656555,
@@ -27,12 +31,16 @@ const GeofencerApp = () => {
   });
 
   const [options, setOptions] = useState<MapEditOptions>({ denyOverlap: true });
+  const { mutate: addShape } = useAddShapeMutation();
 
   return (
     <GeofencerContext.Provider
       value={{
         selectedShapes,
         setSelectedShapes: (shapes: GeoShape[]) => setSelectedShapes(shapes),
+        tentativeShapes,
+        setTentativeShapes: (shapes: GeoShapeCreate[]) =>
+          setTentativeShapes(shapes),
         shapeForEdit,
         setShapeForEdit: (shape: GeoShapeUpdate | null | undefined) =>
           setShapeForEdit(shape),
@@ -47,6 +55,33 @@ const GeofencerApp = () => {
       <CommandPalette
         onNominatim={(res: any) => {
           setViewport(res);
+        }}
+        onPublish={() => {
+          for (const shape of tentativeShapes) {
+            addShape(shape);
+          }
+        }}
+        onOSM={(res: Feature[]) => {
+          const geoshapes = res.map((f: Feature) => {
+            return { name: f.properties.name as string, geojson: f };
+          });
+          setTentativeShapes(geoshapes);
+        }}
+        onBuffer={(bufferSize: number, bufferUnits: string) => {
+          const bufferedShapes = [];
+
+          for (const shape of tentativeShapes) {
+            const bufferedGeom = buffer(shape.geojson as any, bufferSize, {
+              units: bufferUnits as any,
+            });
+
+            bufferedShapes.push({
+              name: shape.name,
+              geojson: bufferedGeom as Feature,
+            });
+          }
+
+          setTentativeShapes(bufferedShapes);
         }}
       />
       <div className="text-white h-screen relative flex flex-col">

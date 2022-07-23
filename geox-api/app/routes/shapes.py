@@ -7,7 +7,7 @@ from pydantic import UUID4
 
 from app.crud import shape as crud
 from app.db.session import SessionLocal
-from app.schemas import GeoShape, GeoShapeCreate, GeoShapeRead, GeoShapeUpdate, User
+from app.schemas import GeoShape, GeoShapeCreate, GeoShapeRead, GeoShapeUpdate, User, ShapeCountResponse, BulkGeoShapeCreate
 
 from .common import security
 
@@ -17,6 +17,7 @@ router = APIRouter(tags=["geofencer"])
 class GetAllShapesRequestType(str, Enum):
     domain = "domain"
     user = "user"
+
 
 
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
@@ -69,3 +70,29 @@ def update_shape(
     with SessionLocal() as db_session:
         shape = crud.update_shape(db_session, geoshape, user.id)
         return shape
+
+
+@router.delete("/geofencer/shapes")
+def bulk_soft_delete_shapes(
+    request: Request,
+    shape_uuids: List[UUID4],
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> ShapeCountResponse:
+    # Set by ProtectedRoutesMiddleware
+    user = request.state.user
+    with SessionLocal() as db_session:
+        shape_count = crud.bulk_soft_delete_shapes(db_session, shape_uuids, user.id)
+        return shape_count
+
+
+@router.post("/geofencer/shapes/bulk")
+def bulk_create_shapes(
+    request: Request,
+    geoshapes: List[GeoShapeCreate],
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> ShapeCountResponse:
+    # Set by ProtectedRoutesMiddleware
+    user = request.state.user
+    with SessionLocal() as db_session:
+        num_shapes_created = crud.bulk_create_shapes(db_session, geoshapes, user.id)
+        return num_shapes_created

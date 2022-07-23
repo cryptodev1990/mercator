@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import Optional, List
 
 from geojson_pydantic import Feature
 from pydantic import UUID4, BaseModel, Field
@@ -65,3 +65,11 @@ class GeoShape(GeoShapeRead, GeoShapeCreate):
     updated_at: Optional[datetime.datetime] = Field(
         None, description="Date and time of most recent updater"
     )
+
+
+class ShapeCountResponse(BaseModel):
+    num_shapes: int = Field(..., description="Number of shapes affected by transaction")
+
+
+class BulkGeoShapeCreate(BaseModel):
+    shapes: List[GeoShapeCreate] = Field(..., description="List of GeoShapeCreate objects")

@@ -21,7 +21,7 @@ def ymd(x):
 
 
 def assert_ok(response):
-    assert response.status_code == status.HTTP_200_OK, "Status should be ok"
+    assert response.status_code == status.HTTP_200_OK, "Not OK, got " + response.text
 
 
 access_token = get_access_token()
@@ -37,26 +37,28 @@ geojson = json.loads(open(os.path.join(here, "../fixtures/bbox.geojson")).read()
 settings = get_settings()
 
 
-def setup_shape():
-    cleanup()
+def setup_shape(should_cleanup=True, should_create_test_user=True):
+    if should_cleanup:
+        cleanup()
     with SessionLocal() as db_session:
         obj = GeoShapeCreate(name="test shape", geojson=geojson)
-        create_user(
-            db_session,
-            UserCreate(
-                sub_id=settings.machine_account_sub_id,
-                email=settings.machine_account_email,
-                given_name="Test",
-                family_name="User",
-                nickname="",
-                name="",
-                picture="",
-                locale="en-US",
-                updated_at=None,
-                email_verified=False,
-                iss="",
-            ),
-        )
+        if should_create_test_user:
+            create_user(
+                db_session,
+                UserCreate(
+                    sub_id=settings.machine_account_sub_id,
+                    email=settings.machine_account_email,
+                    given_name="Test",
+                    family_name="User",
+                    nickname="",
+                    name="",
+                    picture="",
+                    locale="en-US",
+                    updated_at=None,
+                    email_verified=False,
+                    iss="",
+                ),
+            )
         user = get_user_by_email(db_session, settings.machine_account_email)
         shape = create_shape(db_session, obj, user_id=user.id)
         return user, shape
@@ -225,3 +227,38 @@ def test_get_all_shapes_user():
         assert body[0].get("uuid") == str(shape.uuid)
 
     run_shape_test(_test)
+
+
+def test_bulk_delete_shapes():
+    try:
+        _, shape1 = setup_shape()
+        _, shape2 = setup_shape(should_cleanup=False, should_create_test_user=False)
+        _, shape3 = setup_shape(should_cleanup=False, should_create_test_user=False)
+        response = client.get(f"/geofencer/shapes?rtype=user", headers=headers)
+        body = response.json()
+        assert len(body) == 3
+        response = client.delete(f"/geofencer/shapes", json=[
+            str(shape1.uuid), str(shape2.uuid), str(shape3.uuid)
+        ], headers=headers)
+        assert_ok(response)
+        body = response.json()
+        assert body == {"num_shapes": 3}
+    finally:
+        cleanup()
+
+
+def test_bulk_create_shapes():
+    try:
+        payload = [{"name": f"test shape {i}", "geojson": geojson} for i in range(0, 3)]
+        response = client.post(f"/geofencer/shapes/bulk", 
+            json=payload,
+            headers=headers)
+        assert_ok(response)
+        body = response.json()
+        assert body == {"num_shapes": 3}
+        response = client.get(f"/geofencer/shapes?rtype=user", headers=headers)
+        assert_ok(response)
+        body = response.json()
+        assert [shape['name'] == f"test shape {i}" for i, shape in enumerate(body)]
+    finally:
+        cleanup()
