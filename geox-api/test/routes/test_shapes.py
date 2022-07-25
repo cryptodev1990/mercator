@@ -237,9 +237,11 @@ def test_bulk_delete_shapes():
         response = client.get(f"/geofencer/shapes?rtype=user", headers=headers)
         body = response.json()
         assert len(body) == 3
-        response = client.delete(f"/geofencer/shapes", json=[
-            str(shape1.uuid), str(shape2.uuid), str(shape3.uuid)
-        ], headers=headers)
+        response = client.delete(
+            f"/geofencer/shapes",
+            json=[str(shape1.uuid), str(shape2.uuid), str(shape3.uuid)],
+            headers=headers,
+        )
         assert_ok(response)
         body = response.json()
         assert body == {"num_shapes": 3}
@@ -250,15 +252,13 @@ def test_bulk_delete_shapes():
 def test_bulk_create_shapes():
     try:
         payload = [{"name": f"test shape {i}", "geojson": geojson} for i in range(0, 3)]
-        response = client.post(f"/geofencer/shapes/bulk", 
-            json=payload,
-            headers=headers)
+        response = client.post(f"/geofencer/shapes/bulk", json=payload, headers=headers)
         assert_ok(response)
         body = response.json()
         assert body == {"num_shapes": 3}
         response = client.get(f"/geofencer/shapes?rtype=user", headers=headers)
         assert_ok(response)
         body = response.json()
-        assert [shape['name'] == f"test shape {i}" for i, shape in enumerate(body)]
+        assert [shape["name"] == f"test shape {i}" for i, shape in enumerate(body)]
     finally:
         cleanup()

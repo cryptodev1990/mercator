@@ -1,15 +1,11 @@
-
 from fastapi import APIRouter, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
 
+from app.core.celery_app import celery_app
 from app.crud import shape as crud
 from app.db.session import SessionLocal
-from app.schemas import (
-    CeleryTaskResult,
-    CeleryTaskResponse
-)
-from app.core.celery_app import celery_app
+from app.schemas import CeleryTaskResponse, CeleryTaskResult
 from app.worker import test_celery
 
 router = APIRouter()
@@ -23,7 +19,9 @@ router = APIRouter()
 def get_status(task_id: str):
     """Retrieve results of a market selection task."""
     task_result = celery_app.AsyncResult(task_id)
-    result = CeleryTaskResult(task_id=task_id, task_status=task_result.status, task_result=task_result.result)
+    result = CeleryTaskResult(
+        task_id=task_id, task_status=task_result.status, task_result=task_result.result
+    )
     return result
 
 
