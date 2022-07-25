@@ -1,5 +1,6 @@
+"""API Schema."""
 import datetime
-from typing import Optional, List
+from typing import Any, List, Optional
 
 from geojson_pydantic import Feature
 from pydantic import UUID4, BaseModel, Field
@@ -73,3 +74,16 @@ class ShapeCountResponse(BaseModel):
 
 class BulkGeoShapeCreate(BaseModel):
     shapes: List[GeoShapeCreate] = Field(..., description="List of GeoShapeCreate objects")
+
+class CeleryTaskResponse(BaseModel):
+    """Response from submitting a Celery task."""
+
+    task_id: str = Field(..., description="Task id.")
+
+
+class CeleryTaskResult(BaseModel):
+    """Result of a Celery task."""
+
+    task_id: str = Field(..., description="Task id.")
+    task_status: str = Field(..., description="Task status.")
+    task_result: Any = Field(..., description="Task results.")

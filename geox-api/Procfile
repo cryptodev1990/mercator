@@ -1,1 +1,2 @@
 web-server: ./start.sh
+worker-queue: ./worker-start.sh

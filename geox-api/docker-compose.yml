@@ -4,18 +4,36 @@ services:
   db:
     image: "postgis/postgis:14-3.2-alpine"
     env_file: ./.env.docker
-    container_name: geox-api-app
+    container_name: geox-api-db
     volumes:
       - geox-app-db-data:/var/lib/postgresql/data/pgdata
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
 
+  queue:
+    container_name: geox-api-queue
+    image: redis
+    env_file: ./.env.docker
+
+  celeryworker:
+    container_name: geox-api-celeryworker
+    build:
+        context: .
+        dockerfile: ./Dockerfile.celeryworker
+    depends_on:
+      - db
+      - queue
+    env_file: ./.env.docker
+    environment:
+      POSTGRES_SERVER: db
+      REDIS_CONNECTION: 'redis://queue:6379/0'
+
   # Backend app
   app:
+    container_name: geox-api-app
     build:
       context: .
       dockerfile: ./Dockerfile
-    container_name: geox-api-db
     depends_on:
       - db
     # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run
@@ -24,6 +42,7 @@ services:
       APP_ENV: prod
       # Internally the hostname is set to service name
       POSTGRES_SERVER: db
+      REDIS_CONNECTION: 'redis://queue:6379/0'
     ports:
       - "8080:8080"
 

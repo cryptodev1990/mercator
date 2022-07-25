@@ -10,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.middleware import ProtectedRoutesMiddleware
-from app.routes import health, shapes, osm
+from app import routes
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -51,9 +51,10 @@ async def log_requests(request: Request, call_next):
     return response
 
 
-app.include_router(health.router)
-app.include_router(shapes.router)
-app.include_router(osm.router)
+app.include_router(routes.osm.router)
+app.include_router(routes.health.router)
+app.include_router(routes.shapes.router)
+app.include_router(routes.tasks.router)
 
 
 @app.get("/")
