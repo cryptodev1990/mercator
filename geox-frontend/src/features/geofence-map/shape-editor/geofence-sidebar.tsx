@@ -109,7 +109,7 @@ const GeofenceSidebarView = ({ children }: { children: any }) => {
 
   return (
     <>
-      <Transition in={hidden} timeout={50}>
+      <Transition in={!hidden} timeout={50}>
         {(state: any) => (
           <div
             className="w-[300px] z-30 overflow-y-none snap-y bg-gradient-to-br from-slate-600 to-slate-700"
@@ -123,7 +123,7 @@ const GeofenceSidebarView = ({ children }: { children: any }) => {
         )}
       </Transition>
 
-      <Transition in={hidden} timeout={50}>
+      <Transition in={!hidden} timeout={50}>
         {(state: any) => (
           <div
             style={{

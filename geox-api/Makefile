@@ -62,7 +62,11 @@ db-upgrade:  ## Upgrade database schema with alembic
 
 .PHONY: pg
 pg: ## Connect to running local postgres database
-	psql -p5432 "geox"
+	pgcli -p5432 "geox"
+	
+.PHONY: pg-osm
+pg: ## Connect to running local postgres database
+	pgcli -p5432 "osm" -u "osmuser"
 
 .PHONY: shell
 shell:  ## Run an interactive shell for the project
