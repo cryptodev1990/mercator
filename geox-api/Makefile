@@ -65,7 +65,7 @@ pg: ## Connect to running local postgres database
 	pgcli -p5432 "geox"
 	
 .PHONY: pg-osm
-pg: ## Connect to running local postgres database
+pg-osm: ## Connect to running local postgres database
 	pgcli -p5432 "osm" -u "osmuser"
 
 .PHONY: shell
