@@ -7,7 +7,15 @@ from pydantic import UUID4
 
 from app.crud import shape as crud
 from app.db.session import SessionLocal
-from app.schemas import GeoShape, GeoShapeCreate, GeoShapeRead, GeoShapeUpdate, User, ShapeCountResponse, BulkGeoShapeCreate
+from app.schemas import (
+    BulkGeoShapeCreate,
+    GeoShape,
+    GeoShapeCreate,
+    GeoShapeRead,
+    GeoShapeUpdate,
+    ShapeCountResponse,
+    User,
+)
 
 from .common import security
 
@@ -17,7 +25,6 @@ router = APIRouter(tags=["geofencer"])
 class GetAllShapesRequestType(str, Enum):
     domain = "domain"
     user = "user"
-
 
 
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)

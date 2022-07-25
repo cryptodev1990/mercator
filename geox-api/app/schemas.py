@@ -73,7 +73,10 @@ class ShapeCountResponse(BaseModel):
 
 
 class BulkGeoShapeCreate(BaseModel):
-    shapes: List[GeoShapeCreate] = Field(..., description="List of GeoShapeCreate objects")
+    shapes: List[GeoShapeCreate] = Field(
+        ..., description="List of GeoShapeCreate objects"
+    )
+
 
 class CeleryTaskResponse(BaseModel):
     """Response from submitting a Celery task."""

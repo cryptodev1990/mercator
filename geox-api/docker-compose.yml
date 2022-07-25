@@ -18,8 +18,8 @@ services:
   celeryworker:
     container_name: geox-api-celeryworker
     build:
-        context: .
-        dockerfile: ./Dockerfile.celeryworker
+      context: .
+      dockerfile: ./Dockerfile.celeryworker
     depends_on:
       - db
       - queue
