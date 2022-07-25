@@ -177,7 +177,7 @@ def bulk_create_shapes(
     insertable = ""
     for i, geoshape in enumerate(geoshapes):
         interpolated_dict[f"geojson_{i}"] = geoshape.geojson.json()
-        interpolated_dict[f"name_{i}"] = geoshape.name
+        interpolated_dict[f"name_{i}"] = geoshape.name  # type: ignore
         comma = "," if i != len(geoshapes) - 1 else ""
         insertable += (
             f"(GEN_RANDOM_UUID(), :name_{i}, :geojson_{i}, :now, :user_id, :now, :user_id)"

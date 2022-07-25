@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Lints all files in the project
-set -x
 # do not set -e because we want to run all the commands
 
 function check_status {
@@ -14,24 +13,29 @@ function check_status {
 
 # Lint python files
 function _mypy() {
+    echo "Running mypy"
     mypy .
 }
 
 function _black() {
+    echo "Running black"
     black --check .
 }
 
 function _isort() {
+    echo "Running isort"
     isort -q --check-only .
 }
 
 # Lint shell scripts (*.sh)
 function _shellcheck() {
+    echo "Running shellcheck"
     shellcheck -e SC1090 -S warning -- *.sh bin/*.sh
 }
 
 # Lint yaml with https://github.com/adrienverge/yamllint
 function _yamllint() {
+    echo "Running yamllint"
     # Relaxed is less strict about some things
     # See https://yamllint.readthedocs.io/en/stable/configuration.html#default-configuration
     yamllint -c yamllint.yml ./*.yml

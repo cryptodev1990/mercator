@@ -139,7 +139,7 @@ def test_read_shape():
         body = response.json()
         assert body.get("uuid") == str(shape.uuid)
         assert body.get("created_at") == ymd(shape.created_at)
-        assert json.dumps(body.get("geojson")) == shape.geojson.json()
+        assert json.dumps(body.get("geojson")) == shape.geojson.json()  # type: ignore
 
     run_shape_test(_test)
 
