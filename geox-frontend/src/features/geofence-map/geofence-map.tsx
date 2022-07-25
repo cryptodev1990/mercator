@@ -214,6 +214,15 @@ const GeofenceMap = () => {
       >
         <StaticMap
           mapStyle={"mapbox://styles/mapbox/light-v9"}
+          onLoad={(map: any) => {
+            const attrib = document.createElement("span");
+            attrib.innerText = "© Mercator Labs ";
+            attrib.style.color = "black";
+            document
+              .getElementsByClassName("mapboxgl-ctrl-attrib-inner")[0]
+              .prepend(attrib);
+            document.getElementsByClassName("mapbox-improve-map")[0].remove();
+          }}
           mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         />
       </DeckGL>

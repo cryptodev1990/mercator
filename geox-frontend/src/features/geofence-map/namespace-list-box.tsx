@@ -19,21 +19,18 @@ export function NamespaceListBox() {
   }, [user]);
 
   return (
-    <div className="text-white z-40">
+    <div className="text-white">
       <Listbox value={namespace} onChange={setNamespace}>
         <input name="listbox" className="hidden"></input>
         <div className="relative w-[13rem]">
           <Listbox.Button className="cursor-pointer relative w-full rounded-lg bg-slate-500 py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
             <span className="block truncate">{namespace}</span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <HiSelector
-                className="h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
+            <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+              <HiSelector className="text-gray-400" aria-hidden="true" />
             </span>
           </Listbox.Button>
           <SmoothTransition>
-            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="absolute mt-1 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               <p className="text-slate-500 px-3 py-1">Namespaces</p>
               <hr />
               {options.map((namespace, i) => (

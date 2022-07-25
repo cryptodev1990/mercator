@@ -1,4 +1,3 @@
-import { GeofencerNavbar } from "./geofencer-navbar";
 import { GeofenceMap } from "./geofence-map";
 import { GeofenceSidebar } from "./shape-editor/geofence-sidebar";
 import { useState } from "react";
@@ -14,6 +13,9 @@ import { GeofencerContext, MapEditOptions } from "./context";
 import buffer from "@turf/buffer";
 import { ViewState } from "react-map-gl";
 import { useAddShapeMutation } from "./hooks/openapi-hooks";
+import { NamespaceListBox } from "./namespace-list-box";
+import Dropdown from "../../common/components/dropdown";
+import { ToolButtonBank } from "./tool-button-bank/component";
 
 const GeofencerApp = () => {
   const [selectedShapes, setSelectedShapes] = useState<GeoShape[]>([]);
@@ -85,14 +87,21 @@ const GeofencerApp = () => {
         }}
       />
       <div className="text-white h-screen relative flex flex-col">
-        <div className="h-fit min-w-[400px] p-5 bg-gradient-to-r from-slate-800 to-slate-900">
-          <GeofencerNavbar />
-        </div>
         <div className="flex-auto w-screen relative">
-          <div className="h-[85vh] px-5 py-5 flex flex-row relative">
+          <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
+            <NamespaceListBox />
+            <div className="z-30 mx-2 right-0 flex flex-col gap-3">
+              <Dropdown />
+              <ToolButtonBank />
+            </div>
+          </div>
+          <div className="h-[95vh] px-5 py-5 flex flex-row relative">
             <GeofenceSidebar />
           </div>
           <GeofenceMap />
+        </div>
+        <div className="fixed bottom-0 left-0 my-7 text-gray-700 text-2xs mx-1 select-none pointer-events-none">
+          Basemap tiles by
         </div>
       </div>
     </GeofencerContext.Provider>
