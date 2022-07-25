@@ -530,3 +530,27 @@ July 23 2022
 - [ ] Export shapes to a FeatureCollection file
 - [X] Bulk delete / bulk add
 
+July 24 2022
+------------
+
+- [X] Smooth sidebar animation
+
+
+July 25 2022
+------------
+
+## Outstanding features
+
+### Backend / frontend
+
+- [ ] publishing to a backend database
+- [ ] publishing via web hooks
+- [ ] adding pagination to the shapes API
+- [ ] letting the user upload their own geometries
+
+### UI-only changes
+
+- [ ] snap shape to map
+- [ ] allow / disallow overlap
+- [ ] bulk add: letting the user upload their own geometries
+- [ ] bulk delete
