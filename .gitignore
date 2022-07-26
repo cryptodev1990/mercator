@@ -34,3 +34,4 @@ yarn-error.log*
 geox-frontend/.env
 celestial/dist/
 celestial/.parcel-cache/
+ignore__*.*
