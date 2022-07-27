@@ -1,0 +1,5 @@
+pandas
+geopandas
+requests
+psycopg2
+pydeck
