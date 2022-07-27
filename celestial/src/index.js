@@ -507,18 +507,18 @@ function App() {
   return (
     <div className="h-screen flex">
       <div className="text-slate-100 h-screen bold bg-slate-500 p-5 flex flex-col">
-        <div className="bg-red-300 w-fit p-3 h-screen rounded-tl-md">
-          <h1 className="uppercase font-black leading-tight select-none">
+        <div className="bg-red-300 w-fit px-3 py-7 rounded-tl-md">
+          <h1 className="uppercase font-extrabold leading-none select-none text-white text-lg">
             Celestial
           </h1>
-          <span className="text-xs">
+          <span className="text-sm uppercase">
             by{" "}
             <span className="text-yellow-300 hover:text-blue-400">
               <a href="https://mercator.tech">Mercator</a>
             </span>
           </span>
         </div>
-        <div className="my-[375px]">
+        <div className="my-5">
           <label className="label">
             <span class="label-text">Region</span>
           </label>
