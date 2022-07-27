@@ -260,9 +260,9 @@ const MapContainer = ({ parentData }) => {
             radiusMinPixels: 10,
             getRadius: (d) => {
               if (selectedDrivers.includes(d.driverId)) {
-                return 300;
+                return 1500;
               }
-              return 0;
+              return 730;
             },
             onClick: (info) => {
               const driverId = info.object.driverId;
@@ -272,6 +272,9 @@ const MapContainer = ({ parentData }) => {
             getFillColor: (d) => {
               if (selectedDrivers.includes(d.driverId)) {
                 return [0, 0, 255, 150];
+              }
+              if (viewState.zoom > 8) {
+                return [0, 0, 0, 0];
               }
               if (d.state === "en_route") {
                 return [0, 255, 0, 150];
@@ -284,7 +287,26 @@ const MapContainer = ({ parentData }) => {
               }
               return [0, 0, 0, 0];
             },
-            getLineColor: [0, 0, 0],
+            getLineColor: (d) => {
+              if (viewState.zoom <= 8) {
+                return [0, 0, 0, 0];
+              }
+              if (d.state === "en_route") {
+                return [0, 255, 0];
+              }
+              if (d.state === "late") {
+                return [255, 0, 0];
+              }
+              if (d.state === "delivered") {
+                return [255, 255, 0];
+              }
+            },
+            getLineWidth: (d) => {
+              if (viewState.zoom > 8) {
+                return 500
+              }
+              return 1
+            },
             transitions: {
               getPosition: {
                 duration: 450,
@@ -295,6 +317,9 @@ const MapContainer = ({ parentData }) => {
             filled: true,
             radiusScale: 6,
             getPosition: (d) => [d.longitude, d.latitude],
+            parameters: {
+              depthTest: false
+            },
             pickable: true,
           }),
           viewState.zoom > 8 &&
@@ -304,7 +329,8 @@ const MapContainer = ({ parentData }) => {
               pickable: true,
               sizeMinPixels: 10,
               scenegraph: MODEL_URL,
-              getPosition: (d) => [d.longitude, d.latitude],
+              extruded: true,
+              getPosition: (d) => [d.longitude, d.latitude, 300],
               getSize: (d) => {
                 if (selectedDrivers.includes(d.driverId)) {
                   return 300;
@@ -370,11 +396,11 @@ const DriverCard = ({ driver, unselect, status }) => {
       </div>
       <div className="card-body">
         <h2 className="card-title">
-          <a className="link link-primary" href="#">
+          <a className="link link-tertiary" href="#">
             {fake(driver, "name")}
           </a>{" "}
           for{" "}
-          <a className="link link-primary" href="#">
+          <a className="link link-tertiary" href="#">
             {fake(driver, "shipping")}
           </a>
           <div className="badge badge-info">{status}</div>
