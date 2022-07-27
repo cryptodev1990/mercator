@@ -554,3 +554,14 @@ July 25 2022
 - [ ] allow / disallow overlap
 - [ ] bulk add: letting the user upload their own geometries
 - [ ] bulk delete
+
+July 26 2022
+------------
+
+## Progress
+
+- [X] Mapbox analysis: Pull GPS traces
+
+## Observations
+
+- Pulumi is a Terraform replacement in JS

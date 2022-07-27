@@ -1,10 +1,10 @@
 import { MdDelete } from "react-icons/md";
 import Loading from "react-loading";
-import { GeoShape } from "../../../client";
-import { Button } from "../../../common/components/button";
-import { useUpdateShapeMutation } from "../hooks/openapi-hooks";
+import { GeoShape } from "../../../../client";
+import { Button } from "../../../../common/components/button";
+import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 import { MetadataEditButton } from "./edit-button";
-import { useSelectedShapes } from "./hooks";
+import { useSelectedShapes } from "../hooks";
 
 export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
   const { mutate: updateShape, isLoading } = useUpdateShapeMutation();

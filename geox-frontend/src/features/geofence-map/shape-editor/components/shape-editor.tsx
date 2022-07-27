@@ -1,9 +1,8 @@
-import { useEditableShape } from "./hooks";
+import { useEditableShape } from "../hooks";
 
-import { useUpdateShapeMutation } from "../hooks/openapi-hooks";
+import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 
 import { JsonEditor } from "./json-editor";
-import { useMemo } from "react";
 
 interface IDictionary<T> {
   [index: string]: T;

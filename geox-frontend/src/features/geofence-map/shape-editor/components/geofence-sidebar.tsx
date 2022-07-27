@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { MdOutlineArrowBackIos } from "react-icons/md";
-import { GetAllShapesRequestType } from "../../../client";
+import { GetAllShapesRequestType } from "../../../../client";
 import { Tabs } from "./tabs";
-import { useGetAllShapesQuery } from "../hooks/openapi-hooks";
+import { useGetAllShapesQuery } from "../../hooks/openapi-hooks";
 import { ShapeEditor } from "./shape-editor";
-import { useEditableShape } from "./hooks";
+import { useEditableShape } from "../hooks";
 import { ShapeCard } from "./shape-card";
 import { Transition } from "react-transition-group";
 

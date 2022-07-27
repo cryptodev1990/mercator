@@ -1,7 +1,7 @@
 import { BsPencil } from "react-icons/bs";
-import { GeoShape } from "../../../client";
-import { Button } from "../../../common/components/button";
-import { useEditableShape } from "./hooks";
+import { GeoShape } from "../../../../client";
+import { Button } from "../../../../common/components/button";
+import { useEditableShape } from "../hooks";
 
 export const MetadataEditButton = ({ shape }: { shape: GeoShape }) => {
   const { setShapeForEdit } = useEditableShape();

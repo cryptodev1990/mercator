@@ -1,5 +1,5 @@
 import { GeofenceMap } from "./geofence-map";
-import { GeofenceSidebar } from "./shape-editor/geofence-sidebar";
+import { GeofenceSidebar } from "./shape-editor/components/geofence-sidebar";
 import { useState } from "react";
 import {
   Feature,

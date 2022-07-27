@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useEffect } from "react";
-import { useEditableShape } from "./hooks";
-import { GeofencerNavbar } from "../geofencer-navbar";
+import { useEditableShape } from "../hooks";
+import { GeofencerNavbar } from "../../geofencer-navbar";
 import { TbListDetails, TbNotebook } from "react-icons/tb";
 
 export function Tabs({
@@ -10,7 +10,7 @@ export function Tabs({
   tabnames,
   active,
 }: {
-  children: any;
+  children: React.ReactNode[];
   tabnames: string[];
   active: number;
 }) {
