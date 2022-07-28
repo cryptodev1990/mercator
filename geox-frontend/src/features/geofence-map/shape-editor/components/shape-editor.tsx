@@ -53,7 +53,9 @@ export const ShapeEditor = () => {
 
   return (
     <div>
-      <h1 className="p-2 font-mono">Shape properties</h1>
+      <h1 className="px-2 py-1 bg-red font-semibold uppercase">
+        Shape properties
+      </h1>
       <div>
         <JsonEditor
           properties={reformattedProperties}

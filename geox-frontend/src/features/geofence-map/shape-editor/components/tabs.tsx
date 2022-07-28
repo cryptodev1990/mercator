@@ -67,7 +67,7 @@ export function Tabs({
               ))}
             </Tab.List>
           </header>
-          <Tab.Panels className="relative flex-auto bg-slate-300">
+          <Tab.Panels className="relative flex-auto bg-slate-700">
             {children.map((child: any, index: number) => (
               <Tab.Panel key={index}>{child}</Tab.Panel>
             ))}
