@@ -35,3 +35,4 @@ geox-frontend/.env
 celestial/dist/
 celestial/.parcel-cache/
 ignore__*.*
+.vercel
