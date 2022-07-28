@@ -20,6 +20,7 @@ import {
   useGetAllShapesQuery,
 } from "./hooks/openapi-hooks";
 
+// @ts-ignore
 import { useEditableMode } from "./tool-button-bank/hooks";
 
 import {
@@ -28,7 +29,10 @@ import {
   GetAllShapesRequestType,
   Polygon,
 } from "../../client";
+// @ts-ignore
 import { useEditableShape, useSelectedShapes } from "./shape-editor/hooks";
+
+// @ts-ignore
 import { MODES } from "./tool-button-bank/modes";
 import { useContext, useEffect, useState } from "react";
 import { GeofencerContext } from "./context";

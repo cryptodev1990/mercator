@@ -1,4 +1,6 @@
+// @ts-ignore
 import { useEditableMode } from "./hooks";
+// @ts-ignore
 import { MODES } from "./modes";
 import { BsArrowsMove } from "react-icons/bs";
 import { TbLasso } from "react-icons/tb";

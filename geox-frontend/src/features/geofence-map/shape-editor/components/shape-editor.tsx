@@ -1,3 +1,4 @@
+// @ts-ignore
 import { useEditableShape } from "../hooks";
 
 import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";

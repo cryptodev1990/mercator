@@ -7,6 +7,8 @@ import {
   GeoShapeCreate,
   GeoShapeUpdate,
 } from "../../client";
+
+// @ts-ignore
 import { MODES } from "./tool-button-bank/modes";
 import { CommandPalette } from "../command-palette/component";
 import { GeofencerContext, MapEditOptions } from "./context";

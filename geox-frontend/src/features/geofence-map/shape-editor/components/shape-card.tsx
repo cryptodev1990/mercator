@@ -4,6 +4,7 @@ import { GeoShape } from "../../../../client";
 import { Button } from "../../../../common/components/button";
 import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 import { MetadataEditButton } from "./edit-button";
+// @ts-ignore
 import { useSelectedShapes } from "../hooks";
 
 export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
