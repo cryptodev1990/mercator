@@ -5,6 +5,7 @@ import StaticMap from "react-map-gl";
 import { useCursorMode } from "./hooks/use-cursor-mode";
 
 import { useContext } from "react";
+// @ts-ignore
 import { GeofencerContext } from "./context";
 import { EditorMode } from "./cursor-modes";
 import { useLayers } from "./hooks/use-layers/use-layers";
@@ -20,7 +21,10 @@ const GeofenceMap = () => {
       return null;
     }
     if (cursorMode === EditorMode.ViewMode) {
-      return `${info.object.properties.name}`;
+      return {
+        text: `${info.object.properties.name || "Shape"}`,
+        className: "pointer-events-none",
+      };
     }
     return null;
   };
@@ -35,7 +39,6 @@ const GeofenceMap = () => {
         useDevicePixels={false}
         // @ts-ignore
         layers={layers}
-        getTooltip={getTooltip}
       >
         <StaticMap
           mapStyle={"mapbox://styles/mapbox/light-v9"}

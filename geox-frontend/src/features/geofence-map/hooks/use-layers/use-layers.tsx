@@ -14,19 +14,26 @@ import { featureToFeatureCollection } from "../../utils";
 import { useCursorMode } from "../use-cursor-mode";
 import { useEditFunction } from "./use-edit-function";
 import { useShapes } from "../use-shapes";
-import { GeoShape } from "../../../../client";
+import { Feature, GeoShape } from "../../../../client";
 
 const selectedFeatureIndexes: any[] = [];
 
 export const useLayers = () => {
-  const { shapes, tentativeShapes } = useShapes();
+  const {
+    shapes,
+    tentativeShapes,
+    selectedShapeUuids,
+    clearSelectedShapeUuids,
+    selectOneShapeUuid,
+  } = useShapes();
   const { cursorMode } = useCursorMode();
 
-  function getFillColorFunc(datum: any) {
-    if (datum.properties.__selected) {
+  function getFillColorFunc(datum: Feature) {
+    console.log(selectedShapeUuids);
+    if (selectedShapeUuids[datum?.properties?.__uuid]) {
       return [255, 0, 0, 150];
     }
-    return [255, 255, 0, 150];
+    return [36, 99, 235, 150];
   }
 
   const modeArgs = {
@@ -56,6 +63,14 @@ export const useLayers = () => {
         data: shapes.map((x: GeoShape) => x.geojson),
         // @ts-ignore
         getFillColor: getFillColorFunc,
+        onHover: (info: any) => {
+          if (info && info.object) {
+            selectOneShapeUuid(info.object.properties.__uuid);
+          }
+          if (info && !info.object && selectedShapeUuids) {
+            clearSelectedShapeUuids();
+          }
+        },
         mode: ViewMode,
       }),
 

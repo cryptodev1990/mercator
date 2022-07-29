@@ -2,6 +2,7 @@ import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 
 import { JsonEditor } from "./json-editor";
 import { useShapes } from "../../hooks/use-shapes";
+import { useEffect, useMemo } from "react";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -37,14 +38,22 @@ export const ShapeEditor = () => {
     );
   };
 
-  const { properties } = shapeForMetadataEdit?.geojson ?? {};
-  const reformattedProperties = properties
-    ? Object.keys(properties).map((k) => {
-        return { key: k, value: properties[k] };
-      })
-    : [];
+  console.log("GOT BACK HERE", shapeForMetadataEdit);
 
-  if (!shapeForMetadataEdit || reformattedProperties === null) {
+  const reformattedProperties = useMemo(() => {
+    if (!shapeForMetadataEdit?.uuid) {
+      return {};
+    }
+    const { properties } = shapeForMetadataEdit?.geojson ?? {};
+    properties.name = properties.name || "New shape";
+    return properties
+      ? Object.keys(properties).map((k) => {
+          return { key: k, value: properties[k] };
+        })
+      : [];
+  }, [shapeForMetadataEdit]);
+
+  if (!shapeForMetadataEdit) {
     return <div>The metadata editor needs a shape to edit</div>;
   }
 
@@ -55,7 +64,7 @@ export const ShapeEditor = () => {
       </h1>
       <div>
         <JsonEditor
-          properties={reformattedProperties}
+          properties={reformattedProperties as any}
           handleResults={handleSubmit}
         />
       </div>

@@ -39,14 +39,15 @@ export function useEditFunction() {
         mostRecentShape = diffShape as Feature;
       }
     }
+
     const newShape = {
       geojson: mostRecentShape,
       name: "New shape",
     };
     // TODO Correct type issue
     addShape(newShape as any, {
-      onSuccess: (data: GeoShape[]) => {
-        const geoshape = data[0];
+      onSuccess: (data: any) => {
+        const geoshape = data as GeoShape;
         setShapeForMetadataEdit(geoshape);
       },
     });

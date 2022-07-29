@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TbTrash } from "react-icons/tb";
 
 interface IDictionary<T> {
@@ -63,7 +63,18 @@ export function JsonEditor({ properties, handleResults }: IJsonEditorProps) {
                         <input
                           {...register(`properties[${index}].key`)}
                           type="text"
-                          className="text-black w-[100px]"
+                          className="text-black px-2 w-[100px] read-only:bg-slate-400 read-only:text-white read-only:select-none read-only:cursor-default"
+                          hidden={properties?.[index]?.key.startsWith("__")}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }
+                          }}
+                          readOnly={
+                            properties?.[index]?.key.startsWith("__") ||
+                            properties?.[index]?.key === "name"
+                          }
                           defaultValue={
                             properties?.[index]?.key ?? "New Key " + index
                           }
@@ -74,18 +85,33 @@ export function JsonEditor({ properties, handleResults }: IJsonEditorProps) {
                     <td>
                       <span>
                         <input
-                          {...register(`properties[${index}].value`)}
+                          {...register(`properties[${index}].value`, {
+                            minLength: 1,
+                          })}
                           type="text"
-                          className="text-black w-[150px]"
+                          autoFocus={index === 0}
+                          className="text-black px-2 w-[150px] disabled:text-white"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }
+                          }}
                           defaultValue={
                             properties?.[index]?.value ?? `New Value ` + index
                           }
+                          hidden={properties?.[index]?.key.startsWith("__")}
                           name={`${fieldName}.value`}
                         />
                       </span>
                     </td>
                     <button
-                      className="bg-ublue hover:bg-red-700 text-white font-sans py-1 px-1 rounded text-sm"
+                      className="bg-ublue hover:bg-red-700 text-white disabled:text-slate-600 disabled:bg-slate-600 font-sans py-1 px-1 rounded text-sm"
+                      hidden={properties?.[index]?.key.startsWith("__")}
+                      disabled={
+                        properties?.[index]?.key.startsWith("__") ||
+                        properties?.[index]?.key === "name"
+                      }
                       type="button"
                       onClick={remove(index)}
                     >

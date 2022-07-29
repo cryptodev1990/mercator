@@ -8,7 +8,9 @@ const useSelectedShapeUuids = () => {
     useContext(GeofencerContext);
 
   const addSelectedShapeUuid = (uuid: string) => {
-    setSelectedShapeUuids({ ...selectedShapeUuids, uuid: true });
+    const output = { ...selectedShapeUuids };
+    output[uuid] = true;
+    setSelectedShapeUuids(output);
   };
 
   const selectOneShapeUuid = (uuid: string) => {
@@ -28,6 +30,7 @@ const useSelectedShapeUuids = () => {
   const removeSelectedShapeUuid = (uuid: string) => {
     const newSelectedShapeUuids = { ...selectedShapeUuids };
     delete newSelectedShapeUuids[uuid];
+    console.log(newSelectedShapeUuids);
     setSelectedShapeUuids(newSelectedShapeUuids);
   };
 
@@ -61,6 +64,9 @@ export const useShapes = () => {
   useEffect(() => {
     if (remoteShapes === undefined) {
       return;
+    }
+    for (const shape of remoteShapes) {
+      shape.geojson.properties.__uuid = shape.uuid;
     }
     setShapes(remoteShapes);
   }, [remoteShapes]);

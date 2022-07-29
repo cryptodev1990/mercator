@@ -8,7 +8,7 @@ import { GeoShape } from "../../../../client";
 
 export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
   const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
-  const { addSelectedShapeUuid, removeSelectedShapeUuid, shapeIsSelected } =
+  const { selectOneShapeUuid, removeSelectedShapeUuid, shapeIsSelected } =
     useShapes();
   if (!shape.uuid || shape.uuid === undefined) {
     return null;
@@ -16,7 +16,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
   const selectionBg = shapeIsSelected(shape) ? "bg-slate-600" : "bg-slate-800";
   return (
     <div
-      onMouseOver={() => addSelectedShapeUuid(shape.uuid ?? "")}
+      onMouseEnter={() => selectOneShapeUuid(shape.uuid ?? "")}
       onMouseLeave={() => removeSelectedShapeUuid(shape.uuid ?? "")}
       className={`p-6 max-w-sm relative snap-start bg-slate-600 first-child:rounded-none last-child:rounded-none rounded-lg border border-gray-200 shadow-md ${selectionBg}`}
     >

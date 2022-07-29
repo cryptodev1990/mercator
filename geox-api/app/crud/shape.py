@@ -89,7 +89,6 @@ def create_shape(
         RETURNING uuid;
     """,
         {
-            # TODO This is needlessly slow
             "geojson": geoshape.geojson.json(),
             "name": geoshape.name,
             "created_by_user_id": user_id,
