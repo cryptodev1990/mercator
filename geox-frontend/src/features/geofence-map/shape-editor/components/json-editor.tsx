@@ -63,8 +63,11 @@ export function JsonEditor({ properties, handleResults }: IJsonEditorProps) {
                         <input
                           {...register(`properties[${index}].key`)}
                           type="text"
-                          className="text-black px-2 w-[100px] read-only:bg-slate-400 read-only:text-white read-only:select-none read-only:cursor-default"
+                          className="text-black font-bold focus:font-normal read-only:font-bold px-2 w-[100px] read-only:bg-slate-400 read-only:text-white read-only:select-none read-only:cursor-default"
                           hidden={properties?.[index]?.key.startsWith("__")}
+                          {...(properties?.[index]?.key === "name"
+                            ? { tabIndex: -1 }
+                            : {})}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
