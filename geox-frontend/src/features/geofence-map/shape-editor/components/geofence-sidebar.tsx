@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { MdOutlineArrowBackIos } from "react-icons/md";
-import { GetAllShapesRequestType } from "../../../../client";
 import { Tabs } from "./tabs";
-import { useGetAllShapesQuery } from "../../hooks/openapi-hooks";
 import { ShapeEditor } from "./shape-editor";
-// @ts-ignore
-import { useEditableShape } from "../hooks";
 import { ShapeCard } from "./shape-card";
 import { Transition } from "react-transition-group";
+import { useShapes } from "../../hooks/use-shapes";
+import Loading from "react-loading";
 
 const NewUserMessage = () => {
   return (
@@ -44,10 +42,8 @@ const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   );
 };
 
-export const GeofenceSidebar = () => {
-  const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
-
-  const { shapeForEdit } = useEditableShape();
+const GeofenceSidebar = () => {
+  const { shapes, shapeForMetadataEdit, isLoading } = useShapes();
 
   // Feature: Display card for each shape in the namespace
   const shapeCards = shapes?.map((shape, i) => (
@@ -56,18 +52,25 @@ export const GeofenceSidebar = () => {
 
   return (
     <GeofenceSidebarView>
-      <Tabs
-        children={[
-          shapes?.length !== 0 ? (
-            <div className="overflow-y-scroll">{shapeCards}</div>
-          ) : (
-            <NewUserMessage />
-          ),
-          <ShapeEditor />,
-        ]}
-        active={shapeForEdit ? 1 : 0}
-        tabnames={["Shapes", "Metadata Editor"]}
-      />
+      {!isLoading && (
+        <Tabs
+          children={[
+            shapes?.length !== 0 ? (
+              <div className="overflow-y-scroll">{shapeCards}</div>
+            ) : (
+              <NewUserMessage />
+            ),
+            <ShapeEditor />,
+          ]}
+          active={shapeForMetadataEdit ? 1 : 0}
+          tabnames={["Shapes", "Metadata Editor"]}
+        />
+      )}
+      {isLoading && (
+        <div className="w-max m-auto">
+          <Loading type="bubbles" />
+        </div>
+      )}
     </GeofenceSidebarView>
   );
 };
@@ -140,3 +143,5 @@ const GeofenceSidebarView = ({ children }: { children: any }) => {
     </>
   );
 };
+
+export { GeofenceSidebar };

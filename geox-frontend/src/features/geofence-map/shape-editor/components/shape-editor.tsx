@@ -1,9 +1,7 @@
-// @ts-ignore
-import { useEditableShape } from "../hooks";
-
 import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 
 import { JsonEditor } from "./json-editor";
+import { useShapes } from "../../hooks/use-shapes";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -12,42 +10,41 @@ interface IDictionary<T> {
 export const ShapeEditor = () => {
   const { mutate: updateShape } = useUpdateShapeMutation();
 
-  const { shapeForEdit, setShapeForEdit } = useEditableShape();
-  console.log("shapeForEdit", shapeForEdit);
+  const { shapeForMetadataEdit, setShapeForMetadataEdit } = useShapes();
+
   const handleSubmit = (properties: IDictionary<string>) => {
-    if (!shapeForEdit || !shapeForEdit.geojson) {
+    if (
+      !shapeForMetadataEdit ||
+      !shapeForMetadataEdit.uuid ||
+      !shapeForMetadataEdit.geojson
+    ) {
       return;
     }
-
+    const shapeUuid = shapeForMetadataEdit.uuid;
     updateShape(
       {
         name: properties.name,
         geojson: {
-          ...shapeForEdit.geojson,
+          ...(shapeForMetadataEdit.geojson as any),
           properties,
         },
-        uuid: shapeForEdit.uuid,
+        uuid: shapeUuid,
         should_delete: false,
       },
       {
-        onSuccess: (data, variables, context) => {
-          setShapeForEdit(null);
-        },
+        onSuccess: () => setShapeForMetadataEdit(null),
       }
     );
   };
 
-  if (!shapeForEdit || !shapeForEdit.geojson) {
-    return null;
-  }
-  const { properties } = shapeForEdit.geojson;
+  const { properties } = shapeForMetadataEdit?.geojson ?? {};
   const reformattedProperties = properties
     ? Object.keys(properties).map((k) => {
         return { key: k, value: properties[k] };
       })
     : [];
 
-  if (!shapeForEdit || reformattedProperties === null) {
+  if (!shapeForMetadataEdit || reformattedProperties === null) {
     return <div>The metadata editor needs a shape to edit</div>;
   }
 

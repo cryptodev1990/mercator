@@ -39,9 +39,9 @@ function _fake(entityName) {
 
 export function determineStatus(status) {
   if (status === "en_route") {
-    return Math.random() < 0.001 ? "late" : "en_route";
+    return Math.random() < 0.005 ? "late" : "en_route";
   }
   if (status === "late") {
-    return Math.random() < 0.999 ? "late" : "en_route";
+    return Math.random() < 0.9999 ? "late" : "en_route";
   }
 }

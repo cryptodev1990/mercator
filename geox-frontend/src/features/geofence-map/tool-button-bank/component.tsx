@@ -1,7 +1,5 @@
-// @ts-ignore
-import { useEditableMode } from "./hooks";
-// @ts-ignore
-import { MODES } from "./modes";
+import { useCursorMode } from "../hooks/use-cursor-mode";
+import { EditorMode } from "../cursor-modes";
 import { BsArrowsMove } from "react-icons/bs";
 import { TbLasso } from "react-icons/tb";
 import { RiCursorLine } from "react-icons/ri";
@@ -13,7 +11,7 @@ import { MdOutlineDraw, MdOutlineEditRoad } from "react-icons/md";
 import { useEffect } from "react";
 
 export const ToolButtonBank = () => {
-  const { editableMode, setEditableMode } = useEditableMode();
+  const { cursorMode, setCursorMode } = useCursorMode();
   const buttonCss =
     "bg-slate-600 hover:bg-blue-500 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent";
   const { tooltip, tooltipEvents } = useTooltip();
@@ -22,50 +20,50 @@ export const ToolButtonBank = () => {
     {
       name: "View",
       icon: <RiCursorLine />,
-      onClick: () => setEditableMode(MODES.ViewMode),
+      onClick: () => setCursorMode(EditorMode.ViewMode),
       dataTip: "Read-only view of existing geofences",
-      active: editableMode === MODES.ViewMode,
+      active: cursorMode === EditorMode.ViewMode,
     },
     {
       name: "Edit",
       icon: <FaDrawPolygon />,
-      onClick: () => setEditableMode(MODES.EditMode),
+      onClick: () => setCursorMode(EditorMode.EditMode),
       dataTip: "Draw new or edit existing geofences",
-      active: editableMode === MODES.EditMode,
+      active: cursorMode === EditorMode.EditMode,
     },
     {
       name: "Lasso",
       icon: <MdOutlineEditRoad />,
-      onClick: () => setEditableMode(MODES.LassoMode),
+      onClick: () => setCursorMode(EditorMode.LassoMode),
       dataTip: "Select a group of elements for editing",
-      active: editableMode === MODES.LassoMode,
+      active: cursorMode === EditorMode.LassoMode,
     },
     {
       name: "Polygon Lasso",
       icon: <TbLasso />,
-      onClick: () => setEditableMode(MODES.LassoDrawMode),
+      onClick: () => setCursorMode(EditorMode.LassoDrawMode),
       dataTip: "Freely draw a polygon",
-      active: editableMode === MODES.LassoDrawMode,
+      active: cursorMode === EditorMode.LassoDrawMode,
     },
     {
       name: "Translate",
       icon: <BsArrowsMove />,
-      onClick: () => setEditableMode(MODES.TranslateMode),
+      onClick: () => setCursorMode(EditorMode.TranslateMode),
       dataTip: "Moves an existing shape",
-      active: editableMode === MODES.TranslateMode,
+      active: cursorMode === EditorMode.TranslateMode,
     },
     {
       name: "Polygon from Route",
       icon: <MdOutlineDraw />,
-      onClick: () => setEditableMode(MODES.DrawPolygonFromRouteMode),
+      onClick: () => setCursorMode(EditorMode.DrawPolygonFromRouteMode),
       dataTip: "Draws a polygon from a route",
-      active: editableMode === MODES.DrawPolygonFromRouteMode,
+      active: cursorMode === EditorMode.DrawPolygonFromRouteMode,
     },
   ];
 
   useEffect(() => {
     if (window.location.hash === "#ic-demo") {
-      setEditableMode(MODES.InstacartDemoMode);
+      setCursorMode(EditorMode.InstacartDemoMode);
     }
   }, []);
 
@@ -73,9 +71,9 @@ export const ToolButtonBank = () => {
     modes.push({
       name: "Instacart demo",
       icon: <BiCart />,
-      onClick: () => setEditableMode(MODES.InstacartDemoMode),
+      onClick: () => setCursorMode(EditorMode.InstacartDemoMode),
       dataTip: "Prop 22 - Instacart demo",
-      active: editableMode === MODES.InstacartDemoMode,
+      active: cursorMode === EditorMode.InstacartDemoMode,
     });
   }
 

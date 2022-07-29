@@ -4,11 +4,12 @@ import { lineToPolygon } from "@turf/turf";
 
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { useEffect, useState } from "react";
-import { Feature, GetAllShapesRequestType } from "../../../client";
+import { Feature } from "../../../client";
 import { useDebounce } from "../../../hooks/use-debounce";
 import { mapMatch } from "../api/gis";
-import { geoShapesToFeatureCollection } from "../utils";
-import { useAddShapeMutation, useGetAllShapesQuery } from "./openapi-hooks";
+import { featureToFeatureCollection } from "../utils";
+import { useAddShapeMutation } from "./openapi-hooks";
+import { useShapes } from "./use-shapes";
 
 export const useMapMatchMode = ({
   getFillColorFunc,
@@ -17,7 +18,7 @@ export const useMapMatchMode = ({
   getFillColorFunc: (datum: any) => number[];
   selectedFeatureIndexes: any[];
 }) => {
-  const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.DOMAIN);
+  const { shapes } = useShapes();
   const { mutate: addShape } = useAddShapeMutation();
 
   const [mapmatch, setMapMatch] = useState([]);
@@ -43,7 +44,7 @@ export const useMapMatchMode = ({
   const layer = new EditableGeoJsonLayer({
     id: "geojson",
     pickable: true,
-    data: geoShapesToFeatureCollection(shapes),
+    data: featureToFeatureCollection(shapes.map((x) => x.geojson)),
     // @ts-ignore
     getFillColor: getFillColorFunc,
     // @ts-ignore

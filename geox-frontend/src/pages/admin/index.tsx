@@ -1,13 +1,9 @@
 // This is really just a scratchpad for testing stuff
 // that I don't yet know how to get working.
 
-import {
-  HealthService,
-  OpenAPI,
-} from "../../client";
+import { HealthService } from "../../client";
 
 import { useQuery } from "react-query";
-import { useEffect, useState } from "react";
 
 const AuthComponent = () => {
   const { isLoading, isError, data, error } = useQuery(
@@ -29,7 +25,6 @@ const AuthComponent = () => {
 
 // TODO get this working
 const AdminPage = () => {
-
   // if (isLoading) {
   //   return <div>We have posted {data}</div>;
   // }

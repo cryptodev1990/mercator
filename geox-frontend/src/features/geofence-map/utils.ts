@@ -25,9 +25,7 @@ export function geoShapesToFeatureCollection(shapes: GeoShape[] | undefined) {
   };
 }
 
-export function featureToFeatureCollection(
-  features: Feature[] | null | undefined
-) {
+export function featureToFeatureCollection(features: any[] | null | undefined) {
   /**
    * Converts GeoShapes to GeoJSON FeatureCollection
    */

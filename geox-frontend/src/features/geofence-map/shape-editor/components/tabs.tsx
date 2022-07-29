@@ -1,22 +1,21 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useEffect } from "react";
-// @ts-ignore
-import { useEditableShape } from "../hooks";
 import { GeofencerNavbar } from "../../geofencer-navbar";
 import { TbListDetails, TbNotebook } from "react-icons/tb";
+import { useShapes } from "../../hooks/use-shapes";
 
 export function Tabs({
   children,
   tabnames,
   active,
 }: {
-  children: React.ReactNode[];
+  children: ReactNode[];
   tabnames: string[];
   active: number;
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { setShapeForEdit } = useEditableShape();
+  const { setShapeForMetadataEdit } = useShapes();
 
   useEffect(() => {
     setSelectedIndex(active);
@@ -24,7 +23,7 @@ export function Tabs({
 
   useEffect(() => {
     if (active !== selectedIndex) {
-      setShapeForEdit(null);
+      setShapeForMetadataEdit(null);
     }
   }, [selectedIndex]);
 

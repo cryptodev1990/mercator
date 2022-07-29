@@ -565,3 +565,22 @@ July 26 2022
 ## Observations
 
 - Pulumi is a Terraform replacement in JS
+
+July 28 2022
+------------
+
+- [ ] Finish refactor
+
+Useful snippet for figuring out what function is the caller function:
+
+```javascript
+  // @ts-ignore
+  console.log(new Error().stack.split("\n")[2].trim().split(" ")[1]);
+```
+
+
+- Landscaping
+  - "Matinee prices" for landscaping -- this is the least busy time in the neighborhood
+  - Optimize routes
+- Daycare
+- Dropoff planning

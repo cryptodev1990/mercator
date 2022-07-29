@@ -30,6 +30,7 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
       return GeofencerService.getAllShapesGeofencerShapesGet(queryType);
     },
     {
+      refetchOnMount: false,
       enabled: isTokenSet,
       onSuccess(data) {
         console.log("saw data", data);

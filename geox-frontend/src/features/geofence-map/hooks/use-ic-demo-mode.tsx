@@ -1,12 +1,13 @@
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { useEffect, useState } from "react";
-import { Feature, GetAllShapesRequestType } from "../../../client";
+import { Feature } from "../../../client";
 import { mapMatch } from "../api/gis";
-import { geoShapesToFeatureCollection } from "../utils";
-import { useAddShapeMutation, useGetAllShapesQuery } from "./openapi-hooks";
+import { featureToFeatureCollection } from "../utils";
+import { useAddShapeMutation } from "./openapi-hooks";
 import { DrawLineStringMode } from "@nebula.gl/edit-modes";
 import { smoothWithAverage } from "./smooth-gps";
 import { ScatterplotLayer } from "@deck.gl/layers";
+import { useShapes } from "./use-shapes";
 
 export const useIcDemoMode = ({
   getFillColorFunc,
@@ -15,7 +16,7 @@ export const useIcDemoMode = ({
   getFillColorFunc: (datum: any) => number[];
   selectedFeatureIndexes: any[];
 }) => {
-  const { data: shapes } = useGetAllShapesQuery(GetAllShapesRequestType.USER);
+  const { shapes } = useShapes();
   const { mutate: addShape } = useAddShapeMutation();
 
   const [smoothableShape, setSmoothableShape] = useState<any>(null);
@@ -56,7 +57,7 @@ export const useIcDemoMode = ({
       new EditableGeoJsonLayer({
         id: "geojson",
         pickable: true,
-        data: geoShapesToFeatureCollection(shapes),
+        data: featureToFeatureCollection(shapes.map((x) => x.geojson)),
         // @ts-ignore
         getFillColor: getFillColorFunc,
         // @ts-ignore
