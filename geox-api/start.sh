@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 # Start the unicorn process to run the app
 # - MODULE_NAME: default app.main
 # - VARIABLE_NAME: default app
@@ -22,11 +22,6 @@ APP_PORT=${APP_PORT:-8080}
 APP_LOG_LEVEL=${APP_LOG_LEVEL:-info}
 
 __prestart_app() {
-    if [ "$(uname -s)" = "Darwin" ]; then
-        # brew services start postgres 1>/dev/null
-        echo skipping brew postgres
-    fi
-
     # Put all pre-start logic in a function - easier to comment out or make conditional if needed
     # Let the DB start
     echo $PYTHONPATH
@@ -34,7 +29,10 @@ __prestart_app() {
     python -m app.backend_pre_start
 
     # Run migrations
-    alembic upgrade head
+    if [ "$APP_NO_ALEMBIC" = "1" ] || [ "$(echo \"$APP_NO_ALEMBIC\" | tr '[:upper:]' '[:lower:]')" = "true" ]
+    then
+        alembic upgrade head
+    fi
 
     # Create initial data in DB
     python -m app.initial_data
@@ -44,8 +42,8 @@ __prestart_app
 
 # Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false
 RELOAD_OPT=
-APP_RELOAD=$(echo "$APP_RELOAD" | tr '[:upper:]' '[:lower:]')
-if [ "$APP_RELOAD" = "1" ] && [ "$APP_RELOAD" != "true" ]; then
+if [ "$APP_RELOAD" = "1" ] || [ "$(echo \"$APP_RELOAD\" | tr '[:upper:]' '[:lower:]')" = "true" ]
+then
     RELOAD_OPT="--reload"
 fi;
 exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"

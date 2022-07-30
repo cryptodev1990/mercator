@@ -92,6 +92,25 @@ To run CI tests with docker,
 ./bin/test-ci.sh
 ```
 
+Scripts
+----------
+
+`start.sh`
+++++++++++
+
+Script that starts the app. It starts and initializes the database before starting the app.
+
+The script `start.sh` uses these environment variables to customize its behavior.
+
+- `APP_RELOAD`: If set to "1" or "true", will run the app in reload mode. Default is not to reload the app.
+- `APP_NO_ALEMBIC`: If set to "1" or "true", then **do not run alembic on startup. Default is to run `alembic upgrade` on start.
+- `MODULE_NAME`: Name of the Python module where the FastAPI app is defined. Default is `app.main`.
+- `VARIABLE_NAME`: Name of the variable in `MODULE_NAME` that defines the FastAPI app is defined. Default is `app`.
+- `APP_HOST`. Host name to run the app on. Default is "0.0.0.0".
+- `APP_PORT`. Port number to use for the app. Default is "8080".
+- `APP_LOG_LEVEL`. Logging level to use with the
+- `MODULE_NAME`. Name of the Python module where the FastAPI app is defined. Default is `app.main`.
+
 References
 ----------
 
