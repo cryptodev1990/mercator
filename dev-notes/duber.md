@@ -544,6 +544,19 @@ July 25 2022
 ### Backend / frontend
 
 - [ ] publishing to a backend database
+  - [ ] Create user organizations
+    - [ ] Default users to a personal organization
+      - [ ] If a new user appears, create a new organization with them. Each organization has one member by default
+      - [ ] TODO add the ability to invite other members to your organization
+  - [ ] Fill in DB manager page
+    - [ ] Let user create a db for their organization
+    - [ ] Let user read active dbs
+    - [ ] Let user delete a db
+  - [ ] Create DB manager Celery task
+    - [ ] Test connection health to user db
+    - [ ] Write to table in connection db
+        - Schema: shape UUID, geojson, version
+    - [ ] Read from table in connection db
 - [ ] publishing via web hooks
 - [ ] adding pagination to the shapes API
 - [ ] letting the user upload their own geometries
@@ -569,7 +582,7 @@ July 26 2022
 July 28 2022
 ------------
 
-- [ ] Finish refactor
+- [X] Finish refactor
 
 Useful snippet for figuring out what function is the caller function:
 
@@ -578,9 +591,20 @@ Useful snippet for figuring out what function is the caller function:
   console.log(new Error().stack.split("\n")[2].trim().split(" ")[1]);
 ```
 
+July 30 2022
+------------
 
-- Landscaping
-  - "Matinee prices" for landscaping -- this is the least busy time in the neighborhood
-  - Optimize routes
-- Daycare
-- Dropoff planning
+## Progress
+
+- [X] Add "Edit" mode to shapes UI
+- [X] Add "Cut" mode to shapes UI
+
+## Plans
+
+- [ ] Allow export to GeoJSON
+
+## Observations
+
+- We could go one of two ways:
+  - Prioritize sharing this with devs
+  - Prioritize demo features
