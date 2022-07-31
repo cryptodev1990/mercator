@@ -1,7 +1,10 @@
+// @ts-ignore
 import { useCursorMode } from "../hooks/use-cursor-mode";
+
 import { EditorMode } from "../cursor-modes";
-import { BsArrowsMove } from "react-icons/bs";
+import { BsArrowsMove, BsScissors } from "react-icons/bs";
 import { TbLasso } from "react-icons/tb";
+import { CgEditMarkup } from "react-icons/cg";
 import { RiCursorLine } from "react-icons/ri";
 import { FaDrawPolygon } from "react-icons/fa";
 import { useTooltip } from "../../../hooks/use-tooltip";
@@ -9,12 +12,12 @@ import ReactTooltip from "react-tooltip";
 import { BiCart } from "react-icons/bi";
 import { MdOutlineDraw, MdOutlineEditRoad } from "react-icons/md";
 import { useEffect } from "react";
+import { useShapes } from "../hooks/use-shapes";
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
-  const buttonCss =
-    "bg-slate-600 hover:bg-blue-500 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent";
   const { tooltip, tooltipEvents } = useTooltip();
+  const { getNumSelectedShapes } = useShapes();
 
   const modes = [
     {
@@ -59,6 +62,22 @@ export const ToolButtonBank = () => {
       dataTip: "Draws a polygon from a route",
       active: cursorMode === EditorMode.DrawPolygonFromRouteMode,
     },
+    {
+      name: "Alter",
+      icon: <CgEditMarkup />,
+      onClick: () => setCursorMode(EditorMode.ModifyMode),
+      dataTip: "Alter points on existing shape",
+      active: cursorMode === EditorMode.ModifyMode,
+      disabled: getNumSelectedShapes() !== 1,
+    },
+    {
+      name: "Split existing shape",
+      icon: <BsScissors />,
+      onClick: () => setCursorMode(EditorMode.SplitMode),
+      dataTip: "Split existing shape",
+      active: cursorMode === EditorMode.SplitMode,
+      disabled: getNumSelectedShapes() !== 1,
+    },
   ];
 
   useEffect(() => {
@@ -76,9 +95,11 @@ export const ToolButtonBank = () => {
       active: cursorMode === EditorMode.InstacartDemoMode,
     });
   }
+  const buttonCss =
+    "bg-slate-600 hover:bg-blue-500 text-white font-semibold disabled:bg-slate-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent";
 
   return (
-    <div className="grid grid-flow-row gap-0">
+    <div className="grid grid-flow-row gap-0 ">
       {modes.map((mode) => {
         let classes = buttonCss;
         if (mode.active) {
@@ -90,6 +111,7 @@ export const ToolButtonBank = () => {
           <button
             data-tip={mode.dataTip}
             key={mode.name}
+            disabled={mode.disabled}
             onClick={mode.onClick}
             className={classes}
             {...tooltipEvents}

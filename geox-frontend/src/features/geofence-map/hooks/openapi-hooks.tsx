@@ -10,15 +10,12 @@ export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation(GeofencerService.createShapeGeofencerShapesPost, {
     onSuccess(data: GeoShape[]) {
-      console.log("onSuccess createShapeMutation");
       queryClient.fetchQuery("geofencer");
     },
     onError(error) {
       console.log("failed", error);
     },
-    onSettled() {
-      console.log("done");
-    },
+    onSettled() {},
   });
 };
 
@@ -32,9 +29,6 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
     {
       refetchOnMount: false,
       enabled: isTokenSet,
-      onSuccess(data) {
-        console.log("saw data", data);
-      },
     }
   );
 };
@@ -43,14 +37,10 @@ export const useUpdateShapeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
     onSuccess(data: GeoShape) {
-      console.log("onSuccess createShapeMutation");
       queryClient.fetchQuery("geofencer");
     },
     onError(error) {
       console.log("failed", error);
-    },
-    onSettled() {
-      console.log("done");
     },
   });
 };

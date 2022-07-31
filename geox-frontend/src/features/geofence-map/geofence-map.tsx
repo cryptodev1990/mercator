@@ -2,10 +2,10 @@ import DeckGL from "@deck.gl/react";
 
 import StaticMap from "react-map-gl";
 
+// @ts-ignore
 import { useCursorMode } from "./hooks/use-cursor-mode";
 
 import { useContext } from "react";
-// @ts-ignore
 import { GeofencerContext } from "./context";
 import { EditorMode } from "./cursor-modes";
 import { useLayers } from "./hooks/use-layers/use-layers";
@@ -14,7 +14,7 @@ const GeofenceMap = () => {
   const { viewport } = useContext(GeofencerContext);
   const { cursorMode } = useCursorMode();
 
-  const layers = useLayers();
+  const { layers, onCanvasClick } = useLayers();
 
   const getTooltip = (info: any) => {
     if (!info || !info.object || !info.object.properties) {
@@ -36,7 +36,8 @@ const GeofenceMap = () => {
         controller={{
           doubleClickZoom: false,
         }}
-        useDevicePixels={false}
+        onClick={onCanvasClick}
+        useDevicePixels={true}
         // @ts-ignore
         layers={layers}
       >

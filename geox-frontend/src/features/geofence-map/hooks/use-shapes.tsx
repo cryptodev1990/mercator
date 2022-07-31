@@ -74,6 +74,7 @@ export const useShapes = () => {
   const {
     shapes,
     tentativeShapes,
+    setTentativeShapes,
     selectedShapeUuids,
     setSelectedShapeUuids,
     shapeForMetadataEdit,
@@ -90,10 +91,15 @@ export const useShapes = () => {
     shapeIsSelected,
   } = useSelectedShapeUuids();
 
+  const getNumSelectedShapes = () => {
+    return Object.keys(selectedShapeUuids).length;
+  };
+
   return {
     shapes,
     isLoading,
     // selection
+    getNumSelectedShapes,
     selectedShapeUuids,
     setSelectedShapeUuids,
     addSelectedShapeUuid,
@@ -106,5 +112,6 @@ export const useShapes = () => {
     shapeForMetadataEdit,
     setShapeForMetadataEdit,
     tentativeShapes,
+    setTentativeShapes,
   };
 };

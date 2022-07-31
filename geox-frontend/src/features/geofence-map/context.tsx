@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useState } from "react";
 import { ViewState } from "react-map-gl";
 import { GeoShape, GeoShapeCreate } from "../../client";
+// @ts-ignore
 import { EditorMode } from "./cursor-modes";
 import { GlobalEditorOptions } from "./types";
 

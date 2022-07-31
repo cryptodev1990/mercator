@@ -38,8 +38,6 @@ export const ShapeEditor = () => {
     );
   };
 
-  console.log("GOT BACK HERE", shapeForMetadataEdit);
-
   const reformattedProperties = useMemo(() => {
     if (!shapeForMetadataEdit?.uuid) {
       return {};
