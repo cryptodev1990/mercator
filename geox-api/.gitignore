@@ -6,3 +6,6 @@ dump.rdb
 .coverage
 htmlcov
 docker-stack.yml
+.env.*
+.envrc
+!.env.template
