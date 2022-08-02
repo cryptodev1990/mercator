@@ -7,22 +7,24 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.dev
+      args:
+      - git_commit_hash=${GIT_COMMIT}
     volumes:
-      - ".:/webapp"
+    - ".:/webapp"
     environment:
-      - "APP_RELOAD=1"
+    - "APP_RELOAD=1"
 
   db:
     container_name: geox-api-db-dev
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+    - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-      - "geox-app-db-data-dev:/var/lib/postgresql/data/pgdata"
+    - "geox-app-db-data-dev:/var/lib/postgresql/data/pgdata"
 
   celeryworker:
     container_name: geox-api-celeryworker-dev
     volumes:
-      - ".:/webapp"
+    - ".:/webapp"
 
   queue:
     container_name: geox-api-dev-queue

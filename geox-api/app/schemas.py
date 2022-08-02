@@ -90,3 +90,10 @@ class CeleryTaskResult(BaseModel):
     task_id: str = Field(..., description="Task id.")
     task_status: str = Field(..., description="Task status.")
     task_result: Any = Field(..., description="Task results.")
+
+
+class AppVersion(BaseModel):
+    """Version information about the app."""
+
+    version: str = Field(..., description="App version number.")
+    git_commit: Optional[str] = Field(description="Git hash")

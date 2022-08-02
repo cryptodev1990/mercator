@@ -7,11 +7,13 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.ci
+      args:
+      - git_commit_hash=${GIT_COMMIT}
     environment:
-      - "APP_RELOAD="
-      - "PYTHONPATH=/webapp/"
+    - "APP_RELOAD="
+    - "PYTHONPATH=/webapp/"
 
   db:
     container_name: geox-api-db-ci
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+    - "POSTGRES_HOST_AUTH_METHOD=trust"

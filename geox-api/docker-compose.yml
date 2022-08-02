@@ -20,6 +20,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.celeryworker
+      args:
+        - git_commit_hash=${GIT_COMMIT}
     depends_on:
       - db
       - queue
@@ -34,6 +36,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+      args:
+        - git_commit_hash=${GIT_COMMIT}
     depends_on:
       - db
     # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run

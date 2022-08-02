@@ -7,3 +7,4 @@ pytest
 sqlalchemy-stubs
 types-requests
 yamllint
+GitPython

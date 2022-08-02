@@ -1,9 +1,12 @@
 # Builds App for local development
-
 ARG PYTHON_VERSION=3.9
+
 FROM python:${PYTHON_VERSION}
 
 VOLUME /webapp
+
+ARG git_commit_hash
+ENV GIT_COMMIT ${git_commit_hash}
 
 # Dockerfile for mercator FastAPI backend.
 # Derived from https://fastapi.tiangolo.com/deployment/docker/?h=containers
@@ -21,5 +24,7 @@ WORKDIR /webapp
 COPY . /webapp/
 
 EXPOSE 8080
-ENV PYTHONPATH=/webapp APP_RELOAD=0
+ENV PYTHONPATH=/webapp
+ENV APP_RELOAD=0
+
 CMD ["./start.sh"]

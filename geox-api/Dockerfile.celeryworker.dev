@@ -1,6 +1,11 @@
 # Builds App for local development
 ARG PYTHON_VERSION=3.9
+
+
 FROM python:${PYTHON_VERSION}
+
+ARG git_commit_hash
+ENV GIT_COMMIT ${git_commit_hash}
 
 VOLUME /webapp
 

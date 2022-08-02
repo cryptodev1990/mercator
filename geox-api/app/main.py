@@ -15,9 +15,16 @@ from app.middleware import ProtectedRoutesMiddleware
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+__VERSION__ = "0.0.1"
+
 settings = get_settings()
 
 app = FastAPI(
+    title="Mercator API",
+    contact={
+        "email": settings.machine_account_email,
+    },
+    version=settings.version,
     middleware=[
         Middleware(
             CORSMiddleware,
@@ -30,7 +37,7 @@ app = FastAPI(
             ProtectedRoutesMiddleware,
             protected_routes=["/protected_health", "/geofencer*"],
         ),
-    ]
+    ],
 )
 
 
@@ -55,6 +62,7 @@ app.include_router(routes.osm.router)
 app.include_router(routes.health.router)
 app.include_router(routes.shapes.router)
 app.include_router(routes.tasks.router)
+app.include_router(routes.info.router)
 
 
 @app.get("/")

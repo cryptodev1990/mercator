@@ -1,7 +1,9 @@
 """App settings and configuration management."""
-import hashlib
+import logging
 import os
+from asyncio.log import logger
 from functools import lru_cache
+from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import (
@@ -12,22 +14,42 @@ from pydantic import (
     PostgresDsn,
     RedisDsn,
     SecretStr,
+    constr,
     validator,
 )
 from sqlalchemy import desc
 
+logger = logging.getLogger(__name__)
+
+__VERSION__ = "0.0.1"
+
 DEFAULT_DOMAIN = "mercator.tech"
 DEFAULT_MACHINE_ACCOUNT_EMAIL = f"duber+ManagementApi@{DEFAULT_DOMAIN}"
+CONTACT_EMAIL = f"founders@{DEFAULT_DOMAIN}"
 
 AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""
 # used in CORS types
 
 
+GitCommitHash: type = constr(
+    min_length=40,
+    max_length=40,
+    regex="^[0-9a-fA-F]{40}$",
+    strict=True,
+    to_lower=True,
+    strip_whitespace=True,
+)
+"""Pydantic type to validate git hashes."""
+
+
 class Settings(BaseSettings):
     """Config settings."""
 
-    app_secret_key: SecretStr
+    version: str = Field(
+        __VERSION__, description="App version number", env="APP_VERSION"
+    )
+    app_secret_key: SecretStr = Field(...)
 
     # Auth For JWT
     # These proporties are confusing because the env variable name != property names
@@ -41,6 +63,7 @@ class Settings(BaseSettings):
     auth_algorithms: str = Field("RS256", env="AUTH0_ALGORITHMS")
 
     machine_account_email: EmailStr = Field(DEFAULT_MACHINE_ACCOUNT_EMAIL)
+    contact_email: EmailStr = Field(CONTACT_EMAIL)
 
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
@@ -103,28 +126,41 @@ class Settings(BaseSettings):
         "redis://localhost:6379/0", description="Redis DSN to use for celery"
     )
 
+    git_commit: Optional[GitCommitHash] = Field(None, description="Git commit of the app source code being used.")  # type: ignore
+
+    @validator("git_commit", pre=True, always=True)
+    def _validate_git_commit(cls, v):
+        # Case in which GIT_COMMIT exists
+        if v is not None:
+            return str(v).lower()
+        # Case in which GIT_COMMIT does not exist
+        try:
+            import git
+
+            # TODO: be more careful about where this is searching and handling specific errors
+            git_repo = git.Repo(
+                Path(__file__).resolve(), search_parent_directories=True
+            )
+            if git_repo.is_dirty():
+                logger.warning(
+                    "Git repo is dirty. The git commit does not reflect local changes."
+                )
+            branch = str(git_repo.active_branch.commit).lower()
+            return branch
+        except:
+            return None
+
     class Config:  # noqa
         env_file = ".env"
         case_sensitive = False
 
 
 @lru_cache()
-def _get_settings(env_file: Optional[str], env_file_hash: str) -> Settings:
-    return Settings(_env_file=env_file)  # type: ignore
-
-
 def get_settings() -> Settings:
     """Return the app settings object."""
     # This allows specifying the source of environment variables via an env file
     # See https://pydantic-docs.helpmanual.io/usage/settings/#dotenv-env-support
     env_file: Optional[str] = os.environ.get("ENV_FILE", ".env")
     if env_file and os.path.isfile(env_file):
-        env_file_hash = (
-            hashlib.md5(open(env_file, "rb").read()) if os.path.isfile(env_file) else ""
-        )
-    else:
-        env_file_hash = ""
-        env_file = None
-    # Using an inner function will cache on the *contents* of the settings file,
-    # so it will update if that changes. This may be unnecessary - but I think it makes sense.
-    return _get_settings(env_file, env_file_hash)
+        return Settings(_env_file=env_file)  # type: ignore
+    return Settings()

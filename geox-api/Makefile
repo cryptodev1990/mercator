@@ -9,14 +9,13 @@ SHELL := bash
 LOCAL_ENV_FILE := .env.local
 DOCKER_ENV_FILE := .env.docker
 
-
 .PHONY: help
 help:  ## Display available tasks
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: docker-build
 docker-build: ## Build docker container
-	docker-compose build
+	GIT_COMMIT=$(git rev-parse HEAD) docker-compose build
 
 .PHONY: docker-run
 docker-run: docker-build ## Run docker container
@@ -63,7 +62,7 @@ db-upgrade:  ## Upgrade database schema with alembic
 .PHONY: pg
 pg: ## Connect to running local postgres database
 	pgcli -p5432 "geox"
-	
+
 .PHONY: pg-osm
 pg-osm: ## Connect to running local postgres database
 	pgcli -p5432 "osm" -u "osmuser"

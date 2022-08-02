@@ -14,6 +14,13 @@ COPY ./app /webapp/app
 COPY ./alembic /webapp/alembic
 COPY ./start.sh ./alembic.ini /webapp/
 
+# WARNING=ARG have to be after FROM to be read
+ARG git_commit_hash
+ENV GIT_COMMIT=${git_commit_hash}
+RUN touch /webapp/.env &&  \
+    echo "GIT_COMMIT=$GIT_COMMIT" >> /webapp/.env
+
 EXPOSE 8080
-ENV PYTHONPATH=/webapp APP_RELOAD=
+ENV PYTHONPATH=/webapp
+ENV APP_RELOAD=
 CMD ["./start.sh"]

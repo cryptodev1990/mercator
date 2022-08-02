@@ -1,5 +1,5 @@
 import datetime
-from typing import Union
+from typing import Optional, Union
 
 from sqlalchemy.orm import Session
 
@@ -128,6 +128,7 @@ def create_or_update_user_from_bearer_data(
     db: Session, auth_jwt_payload: dict
 ) -> models.User:
     user = dict(auth_jwt_payload)
+    existing_user: Optional[UserType]
     try:
         existing_user = get_user_by_sub_id(db, user["sub"])
     except NoUserException:
