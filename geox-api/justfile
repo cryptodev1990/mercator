@@ -7,6 +7,9 @@ set shell := ["bash", "-uc"]
 # Assumes that local environment
 set dotenv-load
 
+git_commit_hash := `git rev-parse HEAD`
+
+
 default:
 	@just --list
 
@@ -41,8 +44,20 @@ lint: ## Lint the project
 
 # Deploy the project to flyctl
 deploy: ## Deploy the project to flyctl
-	test `command -v flyctl` || (echo "\033[31m Please install flyctl from fly.io" && exit -1);
-	flyctl deploy
+	#!/usr/bin/env zsh
+	set -e
+	if (( !$+commands[flyctl] ))
+	then
+		echo "\033[31m Please install flyctl from fly.io" 1>&2
+		exit 1
+	fi
+	# same check run by R devtools for uncommitted changes
+	if [[ -n "$(git status --porcelain=v1)" ]]
+	then
+		echo "Commit all changes before deploying" 1>&2
+		exit 1
+	fi
+	flyctl deploy --build-arg "git_commit_hash={{ git_commit_hash }}" --dockerfile "Dockerfile"
 
 # Run tests
 test *FLAGS=".":

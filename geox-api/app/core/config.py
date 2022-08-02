@@ -130,8 +130,8 @@ class Settings(BaseSettings):
 
     @validator("git_commit", pre=True, always=True)
     def _validate_git_commit(cls, v):
-        # Case in which GIT_COMMIT exists
-        if v is not None:
+        # Case in which GIT_COMMIT exists - treat empty string as non-existence
+        if v:
             return str(v).lower()
         # Case in which GIT_COMMIT does not exist
         try:
