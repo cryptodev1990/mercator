@@ -15,7 +15,7 @@ help:  ## Display available tasks
 
 .PHONY: docker-build
 docker-build: ## Build docker container
-	GIT_COMMIT=$(git rev-parse HEAD) docker-compose build
+	GIT_COMMIT=$(shell git rev-parse HEAD) docker-compose build
 
 .PHONY: docker-run
 docker-run: docker-build ## Run docker container
@@ -45,7 +45,7 @@ lint: ## Lint the project
 .PHONY: deploy
 deploy: ## Deploy the project to flyctl
 	test `command -v flyctl` || (echo "\033[31m Please install flyctl from fly.io" && exit -1);
-	flyctl deploy
+	GIT_COMMIT="$(shell git rev-parse HEAD)" flyctl deploy
 
 .PHONY: test
 test: ## Run tests
