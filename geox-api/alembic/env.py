@@ -40,7 +40,7 @@ def get_url() -> str:
     """Return the database URL."""
     settings = get_settings()
     if settings.sqlalchemy_database_uri is None:
-        raise ValueError("Databse URI is None")
+        raise ValueError("Database URI is None")
     uri = str(settings.sqlalchemy_database_uri)
     return uri
 

@@ -608,3 +608,28 @@ July 30 2022
 - We could go one of two ways:
   - Prioritize sharing this with devs
   - Prioritize demo features
+
+Aug 1 2022
+-----------
+
+- [X] CRUD for connections
+
+
+- Creating a new user gives an organization called Personal, with a namespace called Personal
+- Users can join organizations, with a default namespace called Shared and Personal
+
+Aug 3 2022
+----------
+
+## Progress
+
+- [ ] Test for CRUD for connections
+
+## Plans
+
+- [ ] CRUD for namespaces
+- [ ] Test for CRUD for namespaces
+
+## Observations
+
+- [Will need to get separate encryption keys per tenant](https://stackoverflow.com/questions/34199979/protecting-encrypting-data-in-a-shared-database-of-a-multitenant-cloud-applica)

@@ -53,7 +53,8 @@ test: ## Run tests
 
 .PHONY: db-revision
 db-revision: ## Revise database with alembic
-	ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh alembic revision --autogenerate -m "Add users and shapes"
+	@echo Run this maually, see Makefile
+	# ENV_FILE=$(LOCAL_ENV_FILE) ./bin/run-with-env.sh alembic revision --autogenerate -m "Add users and shapes"
 
 .PHONY: db-upgrade
 db-upgrade:  ## Upgrade database schema with alembic

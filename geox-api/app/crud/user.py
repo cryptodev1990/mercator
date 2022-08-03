@@ -1,6 +1,8 @@
 import datetime
 from typing import Optional, Union
 
+from pydantic import UUID4
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -160,3 +162,14 @@ def create_or_update_user_from_bearer_data(
             ),
         )
     return out_user
+
+
+def get_organization_for_user(db: Session, user_id: int) -> Optional[UUID4]:
+    """Get the organization UUID for a user ID"""
+    user = db.query(models.User).where(models.User.id == user_id).first()
+    return user.organization_id
+
+
+def delete_user(db: Session, user_id: int) -> None:
+    db.query(models.User).filter(models.User.id == user_id).delete()
+    db.commit()

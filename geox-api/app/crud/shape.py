@@ -2,7 +2,6 @@ import datetime
 import json
 from typing import List, Optional, Union
 
-import jinja2
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 

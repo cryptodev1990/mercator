@@ -8,7 +8,6 @@ from pydantic import UUID4
 from app.crud import shape as crud
 from app.db.session import SessionLocal
 from app.schemas import (
-    BulkGeoShapeCreate,
     GeoShape,
     GeoShapeCreate,
     GeoShapeRead,

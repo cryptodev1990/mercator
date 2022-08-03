@@ -19,11 +19,12 @@ class Shape(Base):
     name = Column(String, index=True)
     created_at = Column(DateTime, default=func.now())
     created_by_user_id = Column(Integer, ForeignKey("users.id"))
-    updated_at = Column(DateTime, default=func.now(), onupdate=datetime.datetime.now)
+    updated_at = Column(DateTime, default=func.now(), onupdate=datetime.datetime.utcnow)
     updated_by_user_id = Column(Integer, ForeignKey("users.id"))
     deleted_at = Column(DateTime, nullable=True)
     deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     geojson = Column(JSON, nullable=False)
+    namespace_id = Column(Integer, ForeignKey("namespaces.id"))
 
     # TODO: If Pydantic basemodel was used, then dict is already used. See https://pydantic-docs.helpmanual.io/usage/models/
     def as_dict(self) -> Dict[str, Any]:

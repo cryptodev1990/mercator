@@ -6,40 +6,6 @@ from geojson_pydantic import Feature
 from pydantic import UUID4, BaseModel, Field
 
 
-class UserBase(BaseModel):
-    email: str
-
-
-class UserCreate(UserBase):
-    # All from Auth0
-    sub_id: str
-    given_name: str
-    family_name: str
-    nickname: str
-    name: str
-    picture: str
-    locale: str
-    updated_at: Optional[datetime.datetime]
-    email_verified: bool
-    iss: str
-
-
-class User(UserBase):
-    id: int
-    sub_id: str
-    given_name: Optional[str]
-    family_name: Optional[str]
-    nickname: Optional[str]
-    name: Optional[str]
-    locale: Optional[str]
-    picture: Optional[str]
-    last_login_at: Optional[datetime.datetime]
-    is_active: bool
-
-    class Config:
-        orm_mode = True
-
-
 class GeoShapeCreate(BaseModel):
     name: Optional[str] = Field(None, description="Name of the shape")
     geojson: Feature = Field(..., description="GeoJSON representation of the shape")

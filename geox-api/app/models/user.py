@@ -1,5 +1,5 @@
-"""User model."""
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
+"""User model"""
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 
 from app.db.base_class import Base
 
@@ -21,3 +21,4 @@ class User(Base):
     email_verified = Column(Boolean)
     iss = Column(String)
     last_login_at = Column(DateTime)
+    organization_id = Column(Integer, ForeignKey("organizations.id"))

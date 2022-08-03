@@ -52,7 +52,7 @@ class Settings(BaseSettings):
     app_secret_key: SecretStr = Field(...)
 
     # Auth For JWT
-    # These proporties are confusing because the env variable name != property names
+    # These properties are confusing because the env variable name != property names
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
@@ -61,6 +61,7 @@ class Settings(BaseSettings):
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
     auth_algorithms: str = Field("RS256", env="AUTH0_ALGORITHMS")
+    fernet_encryption_key: str = Field(..., env="FERNET_ENCRYPTION_KEY")
 
     machine_account_email: EmailStr = Field(DEFAULT_MACHINE_ACCOUNT_EMAIL)
     contact_email: EmailStr = Field(CONTACT_EMAIL)
