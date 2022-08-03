@@ -64,11 +64,18 @@ test *FLAGS=".":
 	./bin/test.sh {{ FLAGS }}
 
 # Revise database with alembic
-db-revision: ## Revise database with alembic
-	alembic revision --autogenerate -m "Add users and shapes"
+db-revision message *FLAGS:
+	#!/usr/bin/env zsh
+	set -e
+	echo "Check that all the models were included in app/db/base.py"
+	echo "--- Start of app/db/base.py"
+	cat ./app/db/base.py
+	echo "--- End of app/db/base.py"
+	alembic revision --autogenerate -m {{ message }} {{ FLAGS }}
+
 
 # Upgrade database schema with alembic
-db-upgrade:  ## Upgrade database schema with alembic
+db-upgrade:
 	alembic upgrade head
 
 # Connect to running local postgres database
