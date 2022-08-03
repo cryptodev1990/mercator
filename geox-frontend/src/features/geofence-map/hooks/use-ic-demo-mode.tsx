@@ -43,7 +43,7 @@ export const useIcDemoMode = ({
           type: "LineString",
           coordinates: linestring.geometry.coordinates,
         },
-        properties: {},
+        properties: { name: "Smoothed GPS trace" },
       } as Feature;
       addShape({ geojson, name: "Smoothed GPS trace" });
     });
@@ -84,10 +84,22 @@ export const useIcDemoMode = ({
           },
           geojson: {
             getLineColor: (x: any) => {
-              if (x.properties.name.includes("Smoothed")) {
-                return [150, 255, 255];
+              if (x.properties?.name?.includes("Smoothed")) {
+                return [150, 255, 0];
               }
               return [255, 0, 0];
+            },
+            _subLayerProps: {
+              "points-circle": {
+                // Styling for editHandles goes here
+                type: ScatterplotLayer,
+                radiusScale: 2,
+                stroked: true,
+                getLineWidth: 1,
+                radiusMinPixels: 4,
+                radiusMaxPixels: 8,
+                getRadius: 2,
+              },
             },
           },
         },
