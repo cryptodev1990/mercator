@@ -25,19 +25,17 @@ class DbCredentialRead(BaseModel):
 
 
 class DbCredentialUpdate(DbCredentialRead):
-    name: Optional[str]
-    should_delete: Optional[bool] = Field(
-        False, description="If true, deletes the connection"
-    )
-    is_default: Optional[bool]
-    db_user: Optional[str]
-    db_password: Optional[str]
-    db_host: Optional[str]
-    db_port: Optional[str]
-    db_database: Optional[str]
-    db_extras: Optional[dict]
+    name: Optional[str] = None
+    should_delete: Optional[bool] = None
+    is_default: Optional[bool] = None
+    db_user: Optional[str] = None
+    db_password: Optional[str] = None
+    db_host: Optional[str] = None
+    db_port: Optional[str] = None
+    db_database: Optional[str] = None
+    db_extras: Optional[dict] = None
     # TODO make enum for supported databases
-    db_driver: Optional[str]
+    db_driver: Optional[str] = None
 
 
 class PublicDbCredential(BaseModel):
@@ -64,7 +62,8 @@ class DbCredentialWithCreds(BaseModel):
     db_driver: str
 
 
-class EncryptedDbCredentialWithCreds(DbCredentialRead):
+class EncryptedDbCredentialWithCreds(BaseModel):
+    id: UUID4
     encrypted_db_user: bytes
     encrypted_db_password: bytes
     encrypted_db_host: bytes

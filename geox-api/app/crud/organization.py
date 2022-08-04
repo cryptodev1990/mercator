@@ -5,7 +5,7 @@ from .. import schemas
 
 
 def create_organization(
-    db: Session, organization: schemas.OrganizationCreate, user_id: UUID4
+    db: Session, organization: schemas.OrganizationCreate, user: schemas.User
 ) -> UUID4:
     res = db.execute(
         """
@@ -28,7 +28,7 @@ def create_organization(
     """,
         {
             "name": organization.name,
-            "admin_user_id": user_id,
+            "admin_user_id": user.id,
         },
     )
     rows = res.mappings().all()

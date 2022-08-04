@@ -7,7 +7,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.crud.user import get_organization_for_user
+from app.crud.user import get_user
 from app.schemas.db_credential import PublicDbCredential
 
 from .. import schemas
@@ -15,6 +15,15 @@ from .. import schemas
 settings = get_settings()
 _key = settings.fernet_encryption_key
 cipher_suite = Fernet(_key)
+
+
+def get_organization_for_user(db: Session, user_id: int) -> Optional[UUID4]:
+    user = get_user(db, user_id)
+    organization_id = db.query(user.organization_id).first()
+    if organization_id is None:
+        return None
+    return organization_id[0]
+
 
 
 def encrypt(plaintext: str) -> str:
@@ -34,7 +43,8 @@ def get_conn(
     If the user has no assigned organization, they can only read their own connections.
     """
 
-    organization_id = get_organization_for_user(db, conn_read.user_id)
+    user = get_user(db, conn_read.user_id)
+    organization_id = user.organization_id
 
     tmpl = (
         j2.Template(
@@ -189,12 +199,12 @@ def get_conn_with_secrets(
         """
     SELECT d.id
     , d.db_driver
-    , d.db_user
-    , d.db_password
-    , d.db_host
-    , d.db_port
-    , d.db_database
-    , d.db_extras
+    , d.db_user AS encrypted_db_user
+    , d.db_password AS encrypted_db_password
+    , d.db_host AS encrypted_db_host
+    , d.db_port AS encrypted_db_port
+    , d.db_database AS encrypted_db_database
+    , d.db_extras AS encrypted_db_extras
     FROM db_credentials d
     WHERE 1=1
       AND id = :id
@@ -223,15 +233,17 @@ def get_conn_with_secrets(
 
 
 def update_db_conn(
-    db: Session, conn_update: schemas.DbCredentialUpdate, user_id: int
+    db: Session, conn_update: schemas.DbCredentialUpdate
 ) -> schemas.PublicDbCredential:
+
+    organization_id = get_organization_for_user(db, conn_update.user_id)
 
     update_args = {
         "id": conn_update.id,
-        "name": conn_update.name,
-        "is_default": conn_update.is_default,
-        "user_id": user_id,
+        "user_id": conn_update.user_id,
+        "organization_id": organization_id,
     }
+
 
     if conn_update.db_user is not None:
         update_args["db_user"] = encrypt(conn_update.db_user)
@@ -245,6 +257,11 @@ def update_db_conn(
         update_args["db_database"] = encrypt(conn_update.db_database)
     if conn_update.db_extras is not None:
         update_args["db_extras"] = encrypt(json.dumps(conn_update.db_extras))
+    if conn_update.is_default is not None:
+        update_args["is_default"] = conn_update.is_default
+    if conn_update.name is not None:
+        update_args["name"] = conn_update.name
+
 
     if conn_update.db_driver is not None:
         update_args["db_driver"] = conn_update.db_driver
@@ -252,20 +269,24 @@ def update_db_conn(
     update_template = j2.Template(
         """
       UPDATE db_credentials
-      SET name = :name
-      , updated_at = NOW()
+      SET updated_at = NOW()
       , updated_by_user_id = :user_id
       {% for key, value in update_args.items() %}
-        {% if key.startswith('db_') or key == "is_default" %}
+        {% if key.startswith('db_') or key in ["is_default", "name"] %}
         , {{key}} = :{{key}}
         {% endif %}
       {% endfor %}
       WHERE id = :id
-      RETURNING name, id, is_default, created_at, created_by_user_id, updated_at, updated_by_user_id;
+      {% if update_args.get('organization_id') %}
+        AND organization_id = :organization_id
+      {% else %}
+        AND created_by_user_id = :user_id
+      {% endif %}
+      RETURNING name, id, is_default, created_at, created_by_user_id, updated_at, updated_by_user_id, db_driver;
       """
     )
 
-    res = db.execute(update_template.render(**update_args), update_args)
+    res = db.execute(update_template.render(update_args=update_args), update_args)
     db.commit()
     rows = res.mappings().all()
     db_result = schemas.PublicDbCredential(**rows[0])

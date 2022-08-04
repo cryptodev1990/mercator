@@ -623,7 +623,7 @@ Aug 3 2022
 
 ## Progress
 
-- [ ] Test for CRUD for connections
+- [X] Test for CRUD for connections
 
 ## Plans
 

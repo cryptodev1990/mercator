@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import UUID4, BaseModel, Field
 
 
 class UserBase(BaseModel):
@@ -35,6 +35,8 @@ class User(UserBase):
     picture: Optional[str]
     last_login_at: Optional[datetime.datetime]
     is_active: bool
+    organization_id: Optional[UUID4] = Field(
+        None, description="The ID of the organization the user belongs to")
 
     class Config:
         orm_mode = True
