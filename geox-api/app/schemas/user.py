@@ -36,7 +36,8 @@ class User(UserBase):
     last_login_at: Optional[datetime.datetime]
     is_active: bool
     organization_id: Optional[UUID4] = Field(
-        None, description="The ID of the organization the user belongs to")
+        None, description="The ID of the organization the user belongs to"
+    )
 
     class Config:
         orm_mode = True

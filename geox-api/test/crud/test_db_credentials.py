@@ -9,13 +9,11 @@ from app.crud.db_credentials import (
     get_last_created_connection_for_user,
     update_db_conn,
 )
-from app.crud.user import (
-    delete_user,
-    get_user,
-    get_user_by_email,
-)
+from app.crud.user import delete_user, get_user, get_user_by_email
 from app.db.session import SessionLocal
-from utils import make_user
+
+from ..utils import make_user
+
 
 def make_fake_db_credentials():
     return schemas.DbCredentialCreate(
@@ -65,7 +63,9 @@ def test_create_conn_no_org():
         create_conn_record(db, new_cred, user.id)
         conn = get_all_connections(db, user)[0]
         assert conn.name == "Test Postgres"
-        conn_secrets = get_conn_with_secrets(db, schemas.DbCredentialRead(id=conn.id, user_id=user.id))
+        conn_secrets = get_conn_with_secrets(
+            db, schemas.DbCredentialRead(id=conn.id, user_id=user.id)
+        )
         assert conn_secrets
         assert conn_secrets.db_password == "test"
         assert conn_secrets.db_extras == {"sslmode": "disable"}
@@ -80,15 +80,29 @@ def test_update_conn():
         create_conn_record(db, new_cred, user.id)
         conn = get_all_connections(db, user)[0]
         assert conn.name == "Test Postgres"
-        conn_secrets = get_conn_with_secrets(db, schemas.DbCredentialRead(id=conn.id, user_id=user.id))
+        conn_secrets = get_conn_with_secrets(
+            db, schemas.DbCredentialRead(id=conn.id, user_id=user.id)
+        )
         assert conn_secrets
         assert conn_secrets.db_password == "test"
         assert conn_secrets.db_extras == {"sslmode": "disable"}
-        update_db_conn(db, schemas.DbCredentialUpdate(id=conn.id, name="Test Postgres Updated", user_id=user.id))
+        update_db_conn(
+            db,
+            schemas.DbCredentialUpdate(
+                id=conn.id, name="Test Postgres Updated", user_id=user.id
+            ),
+        )
         conn = get_all_connections(db, user)[0]
         assert conn.name == "Test Postgres Updated"
-        update_db_conn(db, schemas.DbCredentialUpdate(id=conn.id, db_password="NEWPASS", user_id=user.id))
-        new_conn_secrets = get_conn_with_secrets(db, schemas.DbCredentialRead(id=conn.id, user_id=user.id))
+        update_db_conn(
+            db,
+            schemas.DbCredentialUpdate(
+                id=conn.id, db_password="NEWPASS", user_id=user.id
+            ),
+        )
+        new_conn_secrets = get_conn_with_secrets(
+            db, schemas.DbCredentialRead(id=conn.id, user_id=user.id)
+        )
         assert new_conn_secrets
         assert conn_secrets.db_password != new_conn_secrets.db_password
 

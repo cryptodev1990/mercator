@@ -1,9 +1,7 @@
 import datetime
 
 from app import schemas
-from app.crud.user import (
-    create_user,
-)
+from app.crud.user import create_user
 
 
 def make_user(db, test_email):

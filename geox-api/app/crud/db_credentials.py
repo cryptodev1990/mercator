@@ -25,7 +25,6 @@ def get_organization_for_user(db: Session, user_id: int) -> Optional[UUID4]:
     return organization_id[0]
 
 
-
 def encrypt(plaintext: str) -> str:
     return cipher_suite.encrypt(plaintext.encode()).decode()
 
@@ -244,7 +243,6 @@ def update_db_conn(
         "organization_id": organization_id,
     }
 
-
     if conn_update.db_user is not None:
         update_args["db_user"] = encrypt(conn_update.db_user)
     if conn_update.db_password is not None:
@@ -261,7 +259,6 @@ def update_db_conn(
         update_args["is_default"] = conn_update.is_default
     if conn_update.name is not None:
         update_args["name"] = conn_update.name
-
 
     if conn_update.db_driver is not None:
         update_args["db_driver"] = conn_update.db_driver

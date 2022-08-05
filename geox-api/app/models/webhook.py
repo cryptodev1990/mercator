@@ -1,4 +1,6 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+import datetime
+
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String, func
 
 from app.db.base_class import Base
 
@@ -7,7 +9,7 @@ class Webhook(Base):
     __tablename__ = "webhooks"
 
     id = Column(Integer, primary_key=True, index=True)
-    webhook_uri - Column(String, nullable=False)
+    webhook_uri = Column(String, nullable=False)
     request_args = Column(JSON, nullable=False)
     belongs_to_organization_id = Column(Integer, ForeignKey("organizations.id"))
     created_at = Column(DateTime, default=func.now())
