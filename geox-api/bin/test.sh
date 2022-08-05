@@ -3,4 +3,4 @@
 # Exit in case of error
 set -e
 
-pytest -x -vvv "${@}"
+pytest --cov=app --cov-report=term-missing -x -vvv "${@}"

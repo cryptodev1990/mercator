@@ -4,6 +4,7 @@ isort
 mypy
 pydocstyle
 pytest
+pytest-cov
 sqlalchemy-stubs
 types-requests
 yamllint
