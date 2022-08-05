@@ -12,4 +12,9 @@ repos:
     hooks:
     -   id: detect-secrets
         exclude: package.lock.json
+        args:
+        - "--baseline"
+        - ".secrets.baseline"
+        - "--exclude-files"
+        - "alembic/verions/.*"
 
