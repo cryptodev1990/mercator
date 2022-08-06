@@ -3,7 +3,7 @@ import datetime
 import uuid
 from typing import Any, Dict
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, null
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, null, text
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.sql import func
 

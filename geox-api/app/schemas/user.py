@@ -11,12 +11,12 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     # All from Auth0
     sub_id: str
-    given_name: str
-    family_name: str
+    given_name: Optional[str] = None
+    family_name: Optional[str] = None
     nickname: str
-    name: str
-    picture: str
-    locale: str
+    name: Optional[str] = None
+    picture: Optional[str] = None
+    locale: Optional[str] = None
     updated_at: Optional[datetime.datetime] = Field(
         None, description="The time the user was last updated"
     )
@@ -35,9 +35,10 @@ class User(UserBase):
     picture: Optional[str]
     last_login_at: Optional[datetime.datetime]
     is_active: bool
-    organization_id: Optional[UUID4] = Field(
-        None, description="The ID of the organization the user belongs to"
-    )
 
     class Config:
         orm_mode = True
+
+
+class UserWithMembership(User):
+    organization_id: UUID4

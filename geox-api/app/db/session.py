@@ -1,11 +1,13 @@
 """SQLAlchemy session objects and functions."""
 
+from typing import Any
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.config import get_settings
 
-SQLALCHEMY_DATABASE_URI = get_settings().sqlalchemy_database_uri
+SQLALCHEMY_DATABASE_URI: Any = get_settings().sqlalchemy_database_uri
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

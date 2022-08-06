@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from pydantic import UUID4, BaseModel, Field
@@ -13,20 +14,26 @@ class OrganizationCreate(BaseModel):
 
 class OrganizationUpdate(BaseModel):
     uuid: UUID4
-    name: Optional[str] = Field(None, description="Name of the organization")
-    admin_email: Optional[str] = Field(
-        None, description="Email of the organization admin"
-    )
-    admin_user_id: Optional[int] = Field(
-        None, description="User ID of the organization admin"
-    )
+    name: Optional[str] = None
+    admin_user_id: Optional[int] = None
     should_delete: Optional[bool] = False
 
 
 class Organization(BaseModel):
-    uuid: str
+    id: UUID4
     name: str
-    admin_email: str
-    admin_user_id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+
+class OrganizationMember(BaseModel):
+    uuid: UUID4
+    organization_id: UUID4
+    name: str
+    user_id: int
+    added_by_user_id: int
+    has_read: bool
+    has_write: bool
+    is_admin: bool
     created_at: str
     updated_at: str

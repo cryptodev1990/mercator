@@ -40,5 +40,5 @@ def create_db_conn(
     """Creates a database connection"""
     user = request.state.user
     with SessionLocal() as db_session:
-        creds = crud.create_conn_record(db_session, new_db_conn, user.id)
+        creds = crud.create_conn(db_session, new_db_conn, user.id)
         return creds

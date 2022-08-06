@@ -1,12 +1,15 @@
 import datetime
-from typing import Optional, Union
+from typing import Any, Union
 
 from pydantic import UUID4
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.core.config import get_settings
+from app.crud.organization import (
+    get_or_create_organization_for_user,
+    remove_orphaned_orgs,
+)
 
 UserType = Union[schemas.User, models.User]
 
@@ -39,18 +42,25 @@ class NoUserWithSubIdException(NoUserException):
         return f"No user with sub_id='{self.sub_id}'"
 
 
-def get_user(db: Session, user_id: int) -> models.User:
+def get_user(db: Session, user_id: int) -> schemas.User:
+    db_user = get_db_user(db, user_id)
+    return schemas.User(**db_user.__dict__)
+
+
+def get_db_user(db: Session, user_id: int) -> models.User:
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         raise NoUserWithIdException(user_id)
     return user
 
 
-def get_user_by_email(db: Session, email: str) -> models.User:
+def get_user_by_email(db: Session, email: str) -> schemas.User:
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise NoUserWithEmailException(email)
-    return user
+    return schemas.User(
+        **user.__dict__,
+    )
 
 
 def get_user_by_sub_id(db: Session, sub_id: str) -> models.User:
@@ -60,26 +70,15 @@ def get_user_by_sub_id(db: Session, sub_id: str) -> models.User:
     return user
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def gen_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
-
-
-def update_user_by_email(db: Session, user: UserType) -> models.User:
-    if not user.email:
-        raise ValueError("Missing email")
-    db_user = get_user_by_email(db, user.email)
-    if not db_user:
-        raise Exception(f"no user with email {user.email}")
-    db_user.last_login_at = user.last_login_at  # type: ignore
-    db.commit()
-    db.refresh(db_user)
-    return db_user
 
 
 def update_user_by_id(db: Session, user: UserType) -> models.User:
     if not user.id:
         raise ValueError("Missing user_id")
-    db_user = get_user(db, user.id)
+    user_id: Any = user.id
+    db_user = get_db_user(db, user_id)
     if not db_user:
         raise Exception(f"no user with id {user.id}")
     db_user.last_login_at = user.last_login_at  # type: ignore
@@ -88,7 +87,7 @@ def update_user_by_id(db: Session, user: UserType) -> models.User:
     return db_user
 
 
-def create_user(db: Session, user: schemas.UserCreate) -> models.User:
+def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:
     db_user = models.User(
         sub_id=user.sub_id,
         email=user.email,
@@ -105,10 +104,25 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    return schemas.User(
+        **db_user.__dict__,
+    )
 
 
-def handle_management_api_account(user, db):
+def create_user_with_default_organization(
+    db: Session, user_create: schemas.UserCreate
+) -> schemas.UserWithMembership:
+    user = create_user(db, user_create)
+    org_member = get_or_create_organization_for_user(db, user.id)
+    if not org_member:
+        raise Exception(f"no organization for user {user.id}")
+    return schemas.UserWithMembership(
+        **user.__dict__,
+        organization_id=org_member.organization_id,
+    )
+
+
+def handle_management_api_account(user, db) -> schemas.User:
     now = datetime.datetime.utcnow()
     new_user = create_user(
         db,
@@ -128,48 +142,32 @@ def is_management(user: dict) -> bool:
 
 def create_or_update_user_from_bearer_data(
     db: Session, auth_jwt_payload: dict
-) -> models.User:
-    user = dict(auth_jwt_payload)
-    existing_user: Optional[UserType]
+) -> schemas.User:
+    user_auth_dict = dict(auth_jwt_payload)
+    existing_user: Any
     try:
-        existing_user = get_user_by_sub_id(db, user["sub"])
+        existing_user = get_user_by_sub_id(db, user_auth_dict["sub"])
     except NoUserException:
         existing_user = None
     now = datetime.datetime.utcnow()
-    user["last_login_at"] = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-    out_user: models.User
+    user_auth_dict["last_login_at"] = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+    # If the user exists, update it. Otherwise, create a new one.
     if existing_user:
         existing_user.last_login_at = now
         out_user = update_user_by_id(db, existing_user)
-    elif is_management(user):
-        out_user = handle_management_api_account(user, db)
+    elif is_management(user_auth_dict):
+        out_user = handle_management_api_account(user_auth_dict, db)
     else:
         out_user = create_user(
             db,
             schemas.UserCreate(
-                sub_id=user["sub"],
-                email=user["email"],
-                given_name=user.get("given_name"),
-                family_name=user.get("family_name"),
-                nickname=user["nickname"],
-                name=user.get("name"),
-                picture=user.get("picture"),
-                locale=user.get("locale"),
-                updated_at=user["updated_at"],
-                email_verified=user["email_verified"],
-                iss=user["iss"],
-                last_login_at=now,
+                **user_auth_dict,
             ),
         )
     return out_user
 
 
-def get_organization_for_user(db: Session, user_id: int) -> Optional[UUID4]:
-    """Get the organization UUID for a user ID"""
-    user = db.query(models.User).where(models.User.id == user_id).first()
-    return user.organization_id
-
-
 def delete_user(db: Session, user_id: int) -> None:
     db.query(models.User).filter(models.User.id == user_id).delete()
     db.commit()
+    remove_orphaned_orgs(db)

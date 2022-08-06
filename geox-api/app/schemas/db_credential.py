@@ -46,11 +46,13 @@ class PublicDbCredential(BaseModel):
     created_by_user_id: int
     updated_at: datetime.datetime
     updated_by_user_id: int
+    organization_id: Optional[UUID4]
     db_driver: str
 
 
 class DbCredentialWithCreds(BaseModel):
     id: UUID4
+    name: Optional[str] = None
     db_user: Optional[str]
     db_password: Optional[str]
     db_host: Optional[str]
@@ -64,6 +66,8 @@ class DbCredentialWithCreds(BaseModel):
 
 class EncryptedDbCredentialWithCreds(BaseModel):
     id: UUID4
+    name: Optional[str] = None
+    db_user: Optional[str]
     encrypted_db_user: bytes
     encrypted_db_password: bytes
     encrypted_db_host: bytes

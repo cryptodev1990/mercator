@@ -1,4 +1,3 @@
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import schemas

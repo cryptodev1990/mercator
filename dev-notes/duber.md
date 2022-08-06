@@ -633,3 +633,22 @@ Aug 3 2022
 ## Observations
 
 - [Will need to get separate encryption keys per tenant](https://stackoverflow.com/questions/34199979/protecting-encrypting-data-in-a-shared-database-of-a-multitenant-cloud-applica)
+
+
+Aug 4 2022
+----------
+
+## Progress
+
+- [X] ~~Test for CRUD for connections~~ Refactored to prefer SqlAlchemy to raw SQL, preferred a "organization members" table.
+  This unfortunately undid a lot of the db credentials / connections progress
+
+## Plans
+
+- [ ] CRUD for namespaces
+- [ ] Test for CRUD for namespaces
+- [ ] Bugfix for shape edit
+- [ ] See user cursors in the same namespace.
+  - [ ] [Copy Excalidraw maybe?](https://github.com/excalidraw/excalidraw/blob/dac8dda4d4f4b92471e3ae388206443dcb66fb78/src/excalidraw-app/collab/Collab.tsx#L204)
+  - [ ] [LiveBlocks?](https://liveblocks.io/presence)
+- [ ] Re-do landing page for Launch Bookface
