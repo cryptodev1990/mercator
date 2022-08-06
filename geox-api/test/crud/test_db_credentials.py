@@ -104,7 +104,7 @@ def test_autocreate_org():
         org_id = get_org(db, user.id)
         assert org_id
         assert get_organization_members(db, org_id)[0].id == user.id
-        assert get_org_by_id(db, org_id).name == live_user.name + "'s Team"
+        assert get_org_by_id(db, org_id).name.endswith(" Workspace")  # This is set in Alembic triggers, grep for token
 
         new_cred = gen_cred_params()
         create_conn(db, new_cred, user.id)

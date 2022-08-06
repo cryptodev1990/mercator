@@ -2,21 +2,19 @@ import datetime
 from contextlib import contextmanager
 from typing import Any, Generator, List, Tuple
 
-from pydantic import UUID4
-
 from app import models, schemas
 from app.crud.db_credentials import create_conn, delete_conn, get_mru_conn
 from app.crud.organization import (
     create_organization,
     create_organization_and_assign_to_user,
     get_org,
-    hard_delete_organization,
     upsert_organization_for_user,
 )
 from app.crud.user import (
     NoUserWithEmailException,
-    create_user_with_default_organization,
+    create_user,
     delete_user,
+    delete_user_by_email,
     get_user_by_email,
 )
 from app.db.session import SessionLocal
@@ -45,18 +43,7 @@ def make_user(db, test_email):
         locale="en-US",
         updated_at=datetime.datetime.utcnow(),
     )
-    create_user_with_default_organization(db, new_user)
-
-
-def take_user(db, test_email):
-    user = get_user_by_email(db, test_email)
-    user_id: Any = user.id
-    assert user
-    delete_user(db, user_id)
-
-
-def take_organization(db, org_uuid: UUID4):
-    hard_delete_organization(db, org_uuid)
+    create_user(db, new_user)
 
 
 def cleanup_test_users(db):
@@ -115,7 +102,7 @@ def gen_users() -> Generator[Tuple[List[schemas.User], Any], None, None]:
         yield (users, db)
     finally:
         for email in emails:
-            take_user(db, email)
+            delete_user_by_email(db, email)
 
 
 def gen_cred_params(
@@ -129,7 +116,7 @@ def gen_cred_params(
         db_driver="postgres",
         name=name,
         is_default=True,
-        db_host="localhost",
+        db_host=host,
         db_port=port,
         db_user=user,
         db_password=password,

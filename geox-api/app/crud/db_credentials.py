@@ -7,7 +7,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.crud.organization import get_or_create_organization_for_user, get_org
+from app.crud.organization import get_org
 from app.schemas.db_credential import PublicDbCredential
 
 from .. import models, schemas
@@ -74,7 +74,7 @@ def create_conn(
     db: Session, db_credential: schemas.DbCredentialCreate, user_id: int
 ) -> PublicDbCredential:
 
-    organization_member = get_or_create_organization_for_user(db, user_id)
+    org_id = get_org(db, user_id)
 
     encrypted_db_user = encrypt(db_credential.db_user)
     encrypted_db_password = encrypt(db_credential.db_password)
@@ -85,7 +85,7 @@ def create_conn(
 
     cred = models.DbCredential(
         name=db_credential.name,
-        organization_id=organization_member.organization_id,
+        organization_id=org_id,
         is_default=db_credential.is_default,
         created_by_user_id=user_id,
         updated_by_user_id=user_id,

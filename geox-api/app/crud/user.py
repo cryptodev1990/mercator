@@ -1,15 +1,11 @@
+"""IMPORTANT: There are database triggers that affect this logic, see Alembic"""
 import datetime
 from typing import Any, Union
 
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.core.config import get_settings
-from app.crud.organization import (
-    get_or_create_organization_for_user,
-    remove_orphaned_orgs,
-)
 
 UserType = Union[schemas.User, models.User]
 
@@ -70,10 +66,6 @@ def get_user_by_sub_id(db: Session, sub_id: str) -> models.User:
     return user
 
 
-def gen_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
 def update_user_by_id(db: Session, user: UserType) -> models.User:
     if not user.id:
         raise ValueError("Missing user_id")
@@ -109,19 +101,6 @@ def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:
     )
 
 
-def create_user_with_default_organization(
-    db: Session, user_create: schemas.UserCreate
-) -> schemas.UserWithMembership:
-    user = create_user(db, user_create)
-    org_member = get_or_create_organization_for_user(db, user.id)
-    if not org_member:
-        raise Exception(f"no organization for user {user.id}")
-    return schemas.UserWithMembership(
-        **user.__dict__,
-        organization_id=org_member.organization_id,
-    )
-
-
 def handle_management_api_account(user, db) -> schemas.User:
     now = datetime.datetime.utcnow()
     new_user = create_user(
@@ -144,20 +123,20 @@ def create_or_update_user_from_bearer_data(
     db: Session, auth_jwt_payload: dict
 ) -> schemas.User:
     user_auth_dict = dict(auth_jwt_payload)
-    existing_user: Any
+    out_user: schemas.User
+    existing_user: models.User
+    now = datetime.datetime.utcnow()
+
     try:
         existing_user = get_user_by_sub_id(db, user_auth_dict["sub"])
+        existing_user.last_login_at = now  # type: ignore
+        updated_user = update_user_by_id(db, existing_user)
+        out_user = schemas.User(**updated_user.__dict__)
     except NoUserException:
-        existing_user = None
-    now = datetime.datetime.utcnow()
-    user_auth_dict["last_login_at"] = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-    # If the user exists, update it. Otherwise, create a new one.
-    if existing_user:
-        existing_user.last_login_at = now
-        out_user = update_user_by_id(db, existing_user)
-    elif is_management(user_auth_dict):
-        out_user = handle_management_api_account(user_auth_dict, db)
-    else:
+        user_auth_dict["last_login_at"] = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+        if is_management(user_auth_dict):
+            out_user = handle_management_api_account(user_auth_dict, db)
+            return out_user
         out_user = create_user(
             db,
             schemas.UserCreate(
@@ -170,4 +149,8 @@ def create_or_update_user_from_bearer_data(
 def delete_user(db: Session, user_id: int) -> None:
     db.query(models.User).filter(models.User.id == user_id).delete()
     db.commit()
-    remove_orphaned_orgs(db)
+
+
+def delete_user_by_email(db: Session, email: str) -> None:
+    db.query(models.User).filter(models.User.email == email).delete()
+    db.commit()

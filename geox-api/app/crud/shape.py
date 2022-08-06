@@ -77,6 +77,27 @@ def get_all_shapes_by_email_domain(
     return [schemas.GeoShape(**row) for row in rows] if len(rows) > 0 else []
 
 
+def get_all_shapes_by_organization(db: Session, organization: schemas.Organization) -> List[schemas.GeoShape]:
+    res = db.execute(
+        """
+        SELECT shapes.uuid::VARCHAR AS uuid
+        , shapes.name
+        , shapes.geojson
+        , shapes.created_at
+        , shapes.created_by_user_id
+        FROM shapes
+        JOIN users
+        ON users.id = shapes.created_by_user_id
+          AND users.organization_id = :organization_id
+        WHERE 1=1
+          AND shapes.deleted_at IS NULL
+        """,
+        {"organization_id": organization.id},
+    )
+    rows = res.mappings().all()
+    return [schemas.GeoShape(**row) for row in rows] if len(rows) > 0 else []
+
+
 def create_shape(
     db: Session, geoshape: schemas.GeoShapeCreate, user_id: int
 ) -> schemas.GeoShape:

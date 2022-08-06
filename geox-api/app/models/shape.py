@@ -25,6 +25,7 @@ class Shape(Base):
     deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     geojson = Column(JSON, nullable=False)
     namespace_id = Column(Integer, ForeignKey("namespaces.id"))
+    organization_id = Column(Integer, ForeignKey("organizations.id"))
 
     # TODO: If Pydantic basemodel was used, then dict is already used. See https://pydantic-docs.helpmanual.io/usage/models/
     def as_dict(self) -> Dict[str, Any]:

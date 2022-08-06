@@ -80,7 +80,7 @@ def cleanup():
 def run_shape_test(test_func: Callable[[Shape], None]):
     _, shape = setup_shape()
     try:
-        test_func(shape)
+        test_func(shape)  # type: ignore
     finally:
         cleanup()
 
