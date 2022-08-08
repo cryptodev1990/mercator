@@ -1,113 +1,69 @@
 import { Navbar } from "../../common/components/navbar";
+import { EmailBox } from "./email-box";
+import { FooterSection } from "./footer-section";
+import { GradientHeader } from "./gradient-header";
 
-// @ts-ignore
-import { GeoJsonLayer } from "@deck.gl/layers";
-import { GlobeView } from "./globe-view";
-// @ts-ignore
-import DeckGL from "@deck.gl/react";
-import { useEffect, useState } from "react";
-
-const countries =
-  "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_scale_rank.geojson";
-
-interface ViewStateArgs {
-  longitude: number;
-  latitude: number;
-  zoom: number;
-  minZoom: number;
-  maxZoom: number;
-}
-
-const Globe = () => {
-  const [initialViewState, setInitialViewState] = useState({
-    longitude: 2.27,
-    latitude: 48.86,
-    zoom: 0,
-    minZoom: 0,
-    maxZoom: 0,
-  });
-
-  const [rotate, setRotate] = useState(true);
-
-  useEffect(() => {
-    if (!rotate) {
-      return;
-    }
-    const intervalId = setInterval(() => {
-      setInitialViewState({
-        ...initialViewState,
-        longitude: initialViewState.longitude + 0.5,
-      });
-    }, 50);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [initialViewState, rotate]);
-
-  return (
-    <div onMouseLeave={() => setRotate(true)}>
-      <DeckGL
-        initialViewState={initialViewState}
-        controller={true}
-        onDragStart={() => {
-          setRotate(false);
-        }}
-        onDragEnd={(args: any) => {
-          const { viewport } = args;
-          setInitialViewState({
-            ...initialViewState,
-            latitude: viewport.latitude,
-            longitude: viewport.longitude,
-          } as ViewStateArgs);
-        }}
-        parameters={{ cull: true }}
-        layers={[
-          new GeoJsonLayer({
-            data: countries,
-            getLineColor: [255, 255, 255],
-            getFillColor: [255, 255, 255],
-            stroked: false,
-            filled: true,
-          }),
-        ]}
-        views={[new GlobeView()]}
-      ></DeckGL>
-    </div>
-  );
-};
+import { HeroSection } from "./hero-section";
+import { ProductSection } from "./product-section";
 
 const LandingPage = () => {
   return (
     <main
-      className="max-w-full h-screen bg-gradient-to-br from-ublue to-chestnut-rose relative overflow-hidden"
+      className="
+      top-0
+      left-0
+      w-screen
+      bg-gradient-to-tl from-ublue to-chestnut-rose
+      overflow-scroll-none
+      fixed"
       role="main"
     >
-      <section className="m-10">
+      <div className="max-w-5xl mx-auto border-b-2 py-5">
         <Navbar />
-        <div className="grid max-w-5xl lg:grid-cols-2 grid-rows-2 gap-10 items-baseline container mx-auto px-4 sm:px-6 lg:px-8 pt-9 md:pt-16 lg:pt-24 xl:pt-40 text-white">
-          <div className="relative max-w-none xl:max-w-md">
-            <h1 className="font-heading mb-5 text-4xl leading-tight lg:leading-tight xl:text-5xl xl:leading-tight">
-              <strong className="text-white">Geospatial analytics</strong>
-              <br />
-              for data science and operations
-            </h1>
-            <p className="text-base lg:text-lg xl:text-xl text-white-200 mb-9">
-              A suite of tools inspired by the teams from Uber, Airbnb, and
-              Instacart.
-            </p>
-            <a
-              href="mailto:founders@mercator.tech"
-              className="w-full button-xl font-bold bg-white text-ublue text-bold hover:bg-opacity-75 hover:text-porsche transition-colors p-3 rounded"
-            >
-              Request early access
-            </a>
+      </div>
+      <div className="relative overflow-y-scroll h-screen">
+        {/* overflow-y-auto no-scrollbar*/}
+        <div className="my-20">
+          <HeroSection />
+        </div>
+        {/* Products */}
+        <div className="max-w-5xl mx-auto border-b">
+          <GradientHeader>Our products</GradientHeader>
+        </div>
+        <ProductSection
+          header="Control dispatch, analysis, and reporting with Geofencer"
+          video={"PdZAk17Gxx0"}
+          copytext={
+            "Draw neighborhood boundaries, annotate maps, and create regions to analyze and report on. Publish shapes to web hooks and databases directly or consume via our SDK."
+          }
+          align="right"
+        />
+        <ProductSection
+          header="Celestial: Track your fleet"
+          video={"95shFHRoZZw"}
+          copytext={
+            "Receive real-time updates on your assets, message your drivers, set up alerts for issues, get analytics on your live and historic data, and support tracking thousands of assets effortlessly."
+          }
+          align="left"
+        />
+        <ProductSection
+          header="Make your GPS data dependable using our developer API"
+          video={"-h58GEoxeoI"}
+          copytext={
+            "Impute missing GPS data or extrapolate future pings with our GPS APIs. In particular, manage pay for your contractors for Prop 22 in California, even in the presence of damaged or missing GPS."
+          }
+          align="left"
+        />
+        <div className="max-w-5xl mx-auto py-5 border-b border-t flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
+          <div className="flex-1">
+            <GradientHeader>Like what you see? Try it out.</GradientHeader>
           </div>
-          <div className="relative md:h-[160%] xl:h-[110%] h-[230%] hidden sm:block">
-            <Globe />
+          <div className="sm:w-1/2 w-full sm:p-0 p-5">
+            <EmailBox />
           </div>
         </div>
-      </section>
+        <FooterSection />
+      </div>
     </main>
   );
 };

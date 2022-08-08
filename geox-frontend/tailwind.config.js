@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -26,5 +28,23 @@ module.exports = {
       },
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {
+        ".text-animation": {
+          animation: "text 5s ease infinite",
+        },
+        ".no-scrollbar::-webkit-scrollbar": {
+          display: "none",
+        },
+        ".no-scrollbar": {
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+      };
+      addUtilities(newUtilities);
+    }),
+  ],
 };
