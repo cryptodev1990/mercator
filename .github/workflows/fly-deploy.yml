@@ -14,3 +14,4 @@ jobs:
         - uses: actions/checkout@v2
         - uses: superfly/flyctl-actions/setup-flyctl@master
         - run: flyctl deploy --build-arg git_commit_hash=$GITHUB_SHA --dockerfile="Dockerfile" --remote-only
+          working-directory: geox-api
