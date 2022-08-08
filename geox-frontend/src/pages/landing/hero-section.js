@@ -14,7 +14,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section ref={ref} className="m-1 snap-start">
+    <section ref={ref} className="m-1">
       <div className="grid max-w-5xl md:grid-cols-2 gap-10 mx-auto px-4 text-white">
         <div className="h-fit-content">
           <div className="relative max-w-none xl:max-w-md">

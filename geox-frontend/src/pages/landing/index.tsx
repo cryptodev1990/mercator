@@ -21,13 +21,12 @@ const LandingPage = () => {
       <div className="max-w-5xl mx-auto border-b-2 py-5">
         <Navbar />
       </div>
-      <div className="relative overflow-y-scroll h-screen">
-        {/* overflow-y-auto no-scrollbar*/}
+      <div className="relative overflow-y-scroll h-screen snap-y">
         <div className="my-20">
           <HeroSection />
         </div>
         {/* Products */}
-        <div className="max-w-5xl mx-auto border-b">
+        <div className="max-w-5xl mx-auto border-b snap-start">
           <GradientHeader>Our products</GradientHeader>
         </div>
         <ProductSection

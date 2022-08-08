@@ -2,7 +2,7 @@ import { GradientHeader } from "./gradient-header";
 
 export const ProductSection = ({ header, copytext, align, video }) => {
   return (
-    <section className={`mx-auto max-w-5xl my-10`}>
+    <section className={`mx-auto max-w-5xl my-10 snap-start`}>
       <div className="sm:hidden display sm:top-0 sm:left-0 bg-ublue w-full bg-opacity-95 p-5">
         <GradientHeader>{header}</GradientHeader>
         <p className="text-base text-white text-left">{copytext}</p>
