@@ -110,6 +110,83 @@ The relevant files are:
 - `docker-compose.override.yml` - overrides settings in `docker-compose.yml`
 - `Dockerfile.dev`
 
+## Environment Variables and Settings
+
+Environment variables and dotenv files are used for configuration.
+
+### Advice
+
+- Avoid directly using the file `.env` because Overmind reads it with a high precedence that is
+  difficult to override.
+- Use different dotenv files for local and docker development
+
+  - `.env.local`
+  - `.env.docker`
+
+- Don't set environment variables in
+
+### Applications
+
+#### App
+
+- Reads dotenv file specified by the `ENV_FILE` environment variable.
+  Does not read a file otherwise.
+- Any environment variables in the shell take precendence over the dotenv file
+  so be careful.
+- Uses Pydantic settings to manage configs from environment variables and a dotenv file.
+
+  - See `app.core.config` for the settings object
+  - See [Pydantic docs](https://pydantic-docs.helpmanual.io/usage/settings/), [FastAPI docs](https://fastapi.tiangolo.com/advanced/settings/),
+
+#### Justfile
+
+- The `dotenv-load` will load environment variables from a `.env` file. It cannot be customized
+  to read from different files, and shell variables generally override `.env` files in child
+  processes. **DO NOT USE**
+
+#### Docker and Docker compose
+
+See [Docs](https://docs.docker.com/compose/environment-variables/).
+
+- Sources
+
+  - Command line `--env-file` arguments, e.g. `docker compose --env-file .env.docker ...`
+  - `env_file` key in docker compose file to read from a dotenv file
+  - `environment` key in docker compose to specify env variables directly
+  - `ENV` command in a Dockerfile
+  - shell variables at build or runtime
+
+- Order of precedence
+
+  - Compose file
+  - Shell environment variables
+  - Environment file
+  - Dockerfile
+  - Variable is not defined
+
+#### Overmind
+
+[Docs](https://github.com/mercatorhq/mercator/runs/7730555711?check_suite_focus=true#step:4:10)
+
+- Sources:
+
+  - Reads `.env` file by default
+  - Reads `.overmind.env` for additional env variables
+  - Set the variable `OVERMIND_SKIP_ENV` to not read `.env` file. Overmind will still read `.overmind.env` files
+  - The env variable `OVERMIND_ENV` is used to add additional dotenv files to read.
+
+- Order of precedence
+
+  - `~/.overmind.env`
+  - `./.overmind.env`
+  - `./.env`
+  - `$OVERMIND_ENV`
+
+#### Github Actions
+
+Set environment variables directly in the yml file if not secret, or use [Github secrets](https://docs.github.com/en/rest/actions/secrets) for
+sensitive information.
+
 ## Scripts
 
 ### start.sh
