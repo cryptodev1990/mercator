@@ -18,10 +18,19 @@ RUN python -m pip install --no-cache-dir --upgrade pip==22.1.2 && \
     pip install --no-cache-dir --upgrade -r /code/requirements.txt && \
     pip install --no-cache-dir --upgrade -r /code/requirements-dev.txt
 
+# Install overmind
+ENV OVERMIND_VERSION ${OVERMIND_VERSION:-2.2.2}
+RUN apt-get update \
+    && apt-get install -y tmux \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget https://github.com/DarthSim/overmind/releases/download/v${OVERMIND_VERSION}/overmind-v${OVERMIND_VERSION}-linux-amd64.gz -O overmind.gz \
+    && gunzip -d overmind.gz \
+    && mv overmind /usr/local/bin/overmind \
+    && chmod +x /usr/local/bin/overmind
+
 WORKDIR /webapp
 
 EXPOSE 8080
 ENV PYTHONPATH=/webapp
 ENV APP_RELOAD=1
-
-CMD ["./start.sh"]
+CMD ["overmind", "start"]

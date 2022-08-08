@@ -16,15 +16,8 @@ services:
 
   db:
     container_name: geox-api-db-dev
-    environment:
-    - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
     - "geox-app-db-data-dev:/var/lib/postgresql/data/pgdata"
-
-  celeryworker:
-    container_name: geox-api-celeryworker-dev
-    volumes:
-    - ".:/webapp"
 
   queue:
     container_name: geox-api-dev-queue

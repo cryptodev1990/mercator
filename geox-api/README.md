@@ -1,26 +1,32 @@
-GeoX API
-=========
+# GeoX API
 
-The Makefile is the documentation for tasks for now. Check the Makefile by running
+
+The justfile is the documentation for tasks for now. [Just](https://github.com/casey/just) is a command line runner similar to make.
+
+To see the commands, run (after installing `just`):
 
 ```shell
-make
+just
 ```
+
+Other important information:
 
 - Deploys are on fly.io.
 - Frontend is in a sibling directory to this one.
 - ``app`` is the FastAPI web app.
 
-Build and Running Cases
------------------------
+## Build and Insall Cases
 
 1. Build and deploy to fly.io with Docker
 2. Develop locally on MacOS
 3. Develop locally with Docker
 4. Test on GitHub
 
-Local Install
--------------
+The file `.env.template` shows the env variables needed for this.
+
+To support the various use cases here, it is a good idea **NOT TO USE** a an `.env` file because various tools in the app apply a strong precedence to `.env` files making it difficult to override those environment variables later.
+
+### MacOS
 
 Local install and development only supported for MacOS.
 
@@ -50,53 +56,63 @@ Check that you can connect to the `geox` database.
 psql geox
 ```
 
-Docker
---------------------
+## Docker (self-contained build)
 
-There are three Docker images defined in these Dockeriles:
+This builds an image of the app, including the files needed into the image (as in deployment), and uses Docker images of redis and postgres.
+The postgres database is stored in a Docker volume to persist it.
+The relevant files are:
 
-- `Dockerfile`: Build app for deployment
-- `Dockerfile.dev`: Develop app with Docker. This uses the local filesystem.
-- `Dockerfile.ci`: Similar to `Dockerfile`, but the build includes files and dependencies used for development and testing.
+- `docker-compose.yml`
+- `Dockerfile`
+
+The environment variables are read from the file `.env.docker`.
 
 Define the relevant ENV variables in `.env.docker`.
 
-When developing with Docker, use this:
+To build the image (`docker-compose build`)
 
 ```shell
-docker-compose build
-docker-compose up -d
+just docker-build
 ```
 
-This workflow also containerized postgres database, but uses the app host files so that source changes made while the app is running will be used in the app.
-
-These make targets can also be used to build, run, and connect to the app running in Docker containers.
+To start all the services (`docker-compose up`):
 
 ```shell
-make docker-build
-make docker-run
-make docker-connect
+just docker-up
 ```
 
-Build and containers similar to deployment. This uses a containerized postgres database, and includes app source code in the image.
+To shell into the app's running container:
 
 ```shell
-docker-compose -f docker-compose.yml build
-docker-compose -f docker-compose.yml up -d
+just docker-exec
 ```
 
-
-To run CI tests with docker,
+To shell into a different service's container:
 
 ```shell
-./bin/test-ci.sh
+just docker-exec db bash
 ```
 
-Scripts
-----------
+The app's database data is persisted in a Docker volume, `geox-app-db-data`.
+To delete the data in the database, run:
 
-`start.sh`
-++++++++++
+```shell
+just docker-delete-db
+```
+
+## Docker Development Build
+
+The docker dev recipes will build an image of the app with the necessary Python dependencies, and use docker containers for redis and postgres.
+Unlike, the self-contained build, the dev build uses the local app files and restarts the server when any app files are changed.
+
+The relevant files are:
+
+- `docker-compose.override.yml` - overrides settings in `docker-compose.yml`
+- `Dockerfile.dev`
+
+## Scripts
+
+### start.sh
 
 Script that starts the app. It starts and initializes the database before starting the app.
 
@@ -111,8 +127,7 @@ The script `start.sh` uses these environment variables to customize its behavior
 - `APP_LOG_LEVEL`. Logging level to use with the
 - `MODULE_NAME`. Name of the Python module where the FastAPI app is defined. Default is `app.main`.
 
-References
-----------
+## References
 
 - <https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker>
 - <https://github.com/tiangolo/uvicorn-gunicorn-docker>

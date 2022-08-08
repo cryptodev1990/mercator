@@ -109,9 +109,10 @@ class Settings(BaseSettings):
         cls, v: Optional[str], values: Dict[str, Any]
     ) -> Any:
         """Return the SQLAlchemy database URI."""
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
+        # Treat None and empty string as existence
+        if v:
+            return str(v)
+        dsn = PostgresDsn.build(
             scheme="postgresql+psycopg2",
             user=values.get("postgres_user"),
             password=str(values.get("postgres_password", "")),
@@ -119,6 +120,7 @@ class Settings(BaseSettings):
             port=str(values.get("postgres_port")),
             path=f"/{values.get('postgres_db', '')}",
         )
+        return dsn
 
     # validateion is done in the order fields are defined. sqlalchemy_database_uri
     # needs to be defined after everything

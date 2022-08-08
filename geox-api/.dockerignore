@@ -4,6 +4,5 @@
 .dockerignore
 docker-compose*
 Dockerfile*
-Procfile
 .gitignore
 fly.toml
