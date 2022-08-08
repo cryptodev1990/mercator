@@ -9,7 +9,7 @@ export const FooterSection = () => {
             </a>
           </li>
           <li>
-            <p className="text-md">Made in Palo Alto, California</p>
+            <p className="text-md">Made in San Francisco, California</p>
           </li>
         </ul>
         <div>

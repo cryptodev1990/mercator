@@ -20,13 +20,11 @@ export const HeroSection = () => {
           <div className="relative max-w-none xl:max-w-md">
             <div className="font-heading mb-5 text-4xl font-extrabold leading-none lg:leading-tight xl:text-5xl">
               <div>
-                <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-blue-300">
-                  The world at your fingertips
+                <span className="text-white">The world at your fingertips</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-50 to-blue-600 inline-block">
+                  {" "}
+                  for logistics, drones, mining, and more
                 </span>
-                <span className="text-white"> for logistics,</span>
-                <span className="text-white"> drones,</span>
-                <span className="text-white"> mining,</span>
-                <span className="text-white"> and more</span>
               </div>
               <span className="font-bold text-2xl">
                 Customizable fleet management tools
