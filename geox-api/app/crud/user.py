@@ -122,7 +122,7 @@ def is_management(user: dict) -> bool:
 def create_or_update_user_from_bearer_data(
     db: Session, auth_jwt_payload: dict
 ) -> schemas.User:
-    user_auth_dict = dict(auth_jwt_payload)
+    user_auth_dict = dict(auth_jwt_payload)  # This is pulled from auth0
     out_user: schemas.User
     existing_user: models.User
     now = datetime.datetime.utcnow()
@@ -134,6 +134,7 @@ def create_or_update_user_from_bearer_data(
         out_user = schemas.User(**updated_user.__dict__)
     except NoUserException:
         user_auth_dict["last_login_at"] = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+        user_auth_dict["sub_id"] = user_auth_dict["sub"]
         if is_management(user_auth_dict):
             out_user = handle_management_api_account(user_auth_dict, db)
             return out_user
