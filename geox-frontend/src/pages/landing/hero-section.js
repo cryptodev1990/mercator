@@ -15,24 +15,19 @@ export const HeroSection = () => {
 
   return (
     <section ref={ref} className="m-1">
-      <div className="grid max-w-5xl md:grid-cols-2 gap-10 mx-auto px-4 text-white">
+      <div className="grid max-w-5xl md:grid-cols-2 gap-20 mx-auto px-4 text-white">
         <div className="h-fit-content">
           <div className="relative max-w-none xl:max-w-md">
             <div className="font-heading mb-5 text-4xl font-extrabold leading-none lg:leading-tight xl:text-5xl">
               <div>
-                <span className="text-white">The world at your fingertips</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-50 to-blue-600 inline-block">
-                  {" "}
-                  for logistics, drones, mining, and more
+                <span className="text-white">
+                  Hands at your keyboard? Get the world at your fingertips.
                 </span>
               </div>
-              <span className="font-bold text-2xl">
-                Customizable fleet management tools
-              </span>
             </div>
             <p className="text-base lg:text-lg xl:text-xl text-white-200 mb-9 leading-snug">
-              Empower your operations team with best practices from companies
-              like Uber and Instacart for managing vehicle fleets.
+              Empower your operations team with fleet management tools inspired
+              by the best practices from companies like Uber and Instacart.
             </p>
             <EmailBox />
             <div className="">
@@ -48,6 +43,7 @@ export const HeroSection = () => {
                       display: "inline-block",
                       width: "60px",
                       height: "60px",
+                      filter: "grayscale(100%)",
                     }}
                   >
                     <img
@@ -67,6 +63,9 @@ export const HeroSection = () => {
                       }
                       className="h-[60px] w-[60px]"
                       title={`Uber`}
+                      style={{
+                        filter: "grayscale(100%)",
+                      }}
                       alt="Uber"
                     ></img>
                     <img
@@ -74,6 +73,9 @@ export const HeroSection = () => {
                         "https://xmwdyaolhaobykjycchu.supabase.co/storage/v1/object/public/landing-page/Berkeley-logo.jpeg?t=2022-08-08T22%3A15%3A22.718Z"
                       }
                       className="h-[60px] w-[90px]"
+                      style={{
+                        filter: "grayscale(100%)",
+                      }}
                       alt="University of California, Berkeley"
                       title={`University of California, Berkeley`}
                     ></img>
@@ -82,6 +84,9 @@ export const HeroSection = () => {
                         "https://xmwdyaolhaobykjycchu.supabase.co/storage/v1/object/public/landing-page/instacart-square.png?t=2022-08-08T22%3A15%3A40.046Z"
                       }
                       className="h-[60px] w-[60px]"
+                      style={{
+                        filter: "grayscale(100%)",
+                      }}
                       alt="Instacart"
                       title={`Instacart`}
                     ></img>

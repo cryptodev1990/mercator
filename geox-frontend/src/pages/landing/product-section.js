@@ -2,8 +2,11 @@ import { GradientHeader } from "./gradient-header";
 
 export const ProductSection = ({ header, copytext, align, video }) => {
   return (
-    <section className={`mx-auto max-w-5xl my-10 snap-start`}>
-      <div className="sm:hidden display sm:top-0 sm:left-0 bg-ublue w-full bg-opacity-95 p-5">
+    <section
+      className={`mx-auto max-w-5xl my-10 flex gap-10`}
+      style={{ flexDirection: "left" === align ? "row-reverse" : "row" }}
+    >
+      <div className="flex flex-col w-[25%]">
         <GradientHeader>{header}</GradientHeader>
         <p className="text-base text-white text-left">{copytext}</p>
       </div>
@@ -17,11 +20,6 @@ export const ProductSection = ({ header, copytext, align, video }) => {
           borderRadius: "5px",
         }}
       >
-        <div className="sm:block sm:absolute hidden top-0 left-0 bg-ublue w-full bg-opacity-95 p-5">
-          <GradientHeader>{header}</GradientHeader>
-          <p className="text-base text-white text-left">{copytext}</p>
-        </div>
-
         <iframe
           style={{
             width: "300%",

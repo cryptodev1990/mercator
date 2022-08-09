@@ -42,14 +42,14 @@ const EmailBox = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <div className="flex flex-row bg-white text-ublue text-xl w-full gap-3 rounded justify-between items-baseline">
+        <div className="flex flex-row bg-white text-slate-600 text-xl w-full gap-3 justify-between items-baseline rounded-2xl">
           <input
-            className="focus:outline-none p-3"
+            className="focus:outline-none p-3 rounded-l-3xl"
             type="email"
             placeholder="Your email here"
           ></input>
           <button
-            className="transition bg-ublue text-white cursor-pointer 2 border p-3 pr-3 hover:bg-chestnut-rose rounded-r font-bold overflow-x-clip whitespace-nowrap text-ellipsis"
+            className="transition bg-purple-500 text-white cursor-pointer 2 p-3 pr-3 hover:bg-tertiary rounded-r-2xl font-bold overflow-x-clip whitespace-nowrap text-ellipsis"
             disabled={status === "loading"}
           >
             {status === "loading" ? "Submitting..." : "Get early access"}
