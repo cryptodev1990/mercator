@@ -3,10 +3,11 @@ import { GradientHeader } from "./gradient-header";
 export const ProductSection = ({ header, copytext, align, video }) => {
   return (
     <section
-      className={`mx-auto max-w-5xl my-10 flex gap-10`}
-      style={{ flexDirection: "left" === align ? "row-reverse" : "row" }}
+      className={`md:mx-auto mx-10 max-w-5xl my-10 flex gap-10 flex-col ${
+        align === "left" ? "md:flex-row-reverse" : "md:flex-row"
+      }`}
     >
-      <div className="flex flex-col w-[25%]">
+      <div className="md:flex md:flex-col md:w-[25%]">
         <GradientHeader>{header}</GradientHeader>
         <p className="text-base text-white text-left">{copytext}</p>
       </div>

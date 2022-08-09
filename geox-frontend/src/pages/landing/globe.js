@@ -37,7 +37,11 @@ const Globe = () => {
     <div onMouseLeave={() => setRotate(true)}>
       <DeckGL
         initialViewState={initialViewState}
-        controller={true}
+        controller={{
+          keyboard: true,
+          scrollZoom: false,
+        }}
+        getCursor={() => "crosshair"}
         onDragStart={() => {
           setRotate(false);
         }}

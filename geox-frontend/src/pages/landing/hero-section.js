@@ -21,7 +21,7 @@ export const HeroSection = () => {
             <div className="font-heading mb-5 text-4xl font-extrabold leading-none lg:leading-tight xl:text-5xl">
               <div>
                 <span className="text-white">
-                  Hands at your keyboard? Get the world at your fingertips.
+                  Hands on your keyboard? Get the world at your fingertips.
                 </span>
               </div>
             </div>

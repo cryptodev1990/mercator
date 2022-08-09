@@ -20,40 +20,46 @@ const LandingPage = () => {
     >
       <div className="">
         <div className="relative overflow-y-scroll h-screen">
-          <div className="absolute skew-y-12 h-[100vh] z-0 w-[100vw] -translate-y-40 bg-gradient-to-br from-secondary to-purple-500"></div>
+          <div className="absolute skew-y-12 h-[100vh] z-0 w-[100vw] -translate-y-40 bg-gradient-to-br from-secondary to-purple-500 overflow-hidden"></div>
           <div className="max-w-5xl mx-auto py-5 h-screen">
             <Navbar />
 
-            <div className="my-20">
+            <div className="my-12 sm:my-20 container">
               <HeroSection />
             </div>
           </div>
           {/* Products */}
           <div className="z-50 container max-w-5xl mx-auto my-10">
-            <ProductSection
-              header="Control dispatch, analysis, and reporting with Geofencer"
-              video={"PdZAk17Gxx0"}
-              copytext={
-                "Draw neighborhood boundaries, annotate maps, and create regions to analyze and report on. Publish shapes to web hooks and databases directly or consume via our SDK."
-              }
-              align="right"
-            />
-            <ProductSection
-              header="Celestial: Track your fleet"
-              video={"95shFHRoZZw"}
-              copytext={
-                "Receive real-time updates on your assets, message your drivers, set up alerts for issues, get analytics on your live and historic data, and support tracking thousands of assets effortlessly."
-              }
-              align="left"
-            />
-            <ProductSection
-              header="Make your GPS data dependable using our developer API"
-              video={"-h58GEoxeoI"}
-              copytext={
-                "Impute missing GPS data or extrapolate future pings with our GPS APIs. In particular, manage pay for your contractors for Prop 22 in California, even in the presence of damaged or missing GPS."
-              }
-              align="right"
-            />
+            <div className="">
+              <ProductSection
+                header="Control dispatch, analysis, and reporting with Geofencer"
+                video={"PdZAk17Gxx0"}
+                copytext={
+                  "Draw neighborhood boundaries and create shapes to analyze and report on"
+                }
+                align="right"
+              />
+            </div>
+            <div className="relative">
+              <ProductSection
+                header="Celestial: Track your fleet"
+                video={"95shFHRoZZw"}
+                copytext={
+                  "Receive real-time updates on your assets, message your drivers. Effortlessly track thousands or even tens of thousands of assets."
+                }
+                align="left"
+              />
+            </div>
+            <div className="relative">
+              <ProductSection
+                header="Make your GPS data dependable using our developer API"
+                video={"-h58GEoxeoI"}
+                copytext={
+                  "Impute missing GPS data or extrapolate future pings with our GPS APIs. In particular, manage pay for your contractors for Prop 22 in California, even in the presence of damaged or missing GPS."
+                }
+                align="right"
+              />
+            </div>
             <div className="max-w-5xl mx-auto py-5 border-b border-t flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
               <div className="flex-1">
                 <GradientHeader>Like what you see? Try it out.</GradientHeader>

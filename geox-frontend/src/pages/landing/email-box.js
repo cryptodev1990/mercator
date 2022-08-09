@@ -42,7 +42,7 @@ const EmailBox = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <div className="flex flex-row bg-white text-slate-600 text-xl w-full gap-3 justify-between items-baseline rounded-2xl">
+        <div className="flex flex-row bg-white text-slate-600 text-sm sm:text-xl gap-3 justify-between items-baseline rounded-2xl w-full">
           <input
             className="focus:outline-none p-3 rounded-l-3xl"
             type="email"
