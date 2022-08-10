@@ -12,6 +12,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import backref, relationship
 
 from app.models.common import TimestampMixin, UUIDMixin
+from app.models.organization import Organization
+from app.models.user import User
 
 
 class DbCredential(UUIDMixin, TimestampMixin):
@@ -46,7 +48,7 @@ class DbCredential(UUIDMixin, TimestampMixin):
         ),
         foreign_keys=[organization_id],
     )
-    created_by_user = relationship("User", foreign_keys=[created_by_user_id])
-    updated_by_user = relationship("User", foreign_keys=[updated_by_user_id])
+    created_by_user = relationship(User, foreign_keys=[created_by_user_id])
+    updated_by_user = relationship(User, foreign_keys=[updated_by_user_id])
 
     UniqueConstraint("name", "organization_id", name="unique_within_org")

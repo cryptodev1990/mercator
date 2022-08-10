@@ -1,5 +1,6 @@
 """Functions to generate an auth tokens."""
 import requests
+import typer
 
 from app.core.config import get_settings
 
@@ -22,3 +23,12 @@ def get_access_token() -> str:
     )
     data = response.json()
     return data["access_token"]
+
+
+def main() -> None:
+    """Generate an Auth0 access token."""
+    typer.echo(get_access_token())
+
+
+if __name__ == "__main__":
+    typer.run(main)

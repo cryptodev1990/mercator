@@ -188,7 +188,7 @@ def get_org(db: Session, user_id: int) -> Optional[UUID4]:
         .first()
     )
     if organization_member:
-        return organization_member.__dict__['organization_id']
+        return organization_member.__dict__["organization_id"]
     return None
 
 

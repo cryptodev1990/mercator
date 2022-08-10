@@ -1,15 +1,9 @@
-from sqlalchemy import (
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    String,
-    UniqueConstraint,
-)
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import backref, relationship
 
 from app.models.common import MembershipMixin, TimestampMixin, UUIDMixin
+from app.models.user import User
 
 
 class Organization(TimestampMixin, UUIDMixin):
@@ -45,12 +39,12 @@ class OrganizationMember(TimestampMixin, MembershipMixin):
 
     # https://stackoverflow.com/questions/7548033/how-to-define-two-relationships-to-the-same-table-in-sqlalchemy
     user = relationship(
-        "User",
+        User,
         backref=backref(
             "OrganizationMember", passive_deletes=True, cascade="all,delete"
         ),
         foreign_keys=[user_id],
     )
-    added_by_user = relationship("User", foreign_keys=[added_by_user_id])
-    organization = relationship("Organization", foreign_keys=[organization_id])
+    added_by_user = relationship(User, foreign_keys=[added_by_user_id])
+    organization = relationship(Organization, foreign_keys=[organization_id])
     UniqueConstraint("user_id", "organization_id")

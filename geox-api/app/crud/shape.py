@@ -77,7 +77,9 @@ def get_all_shapes_by_email_domain(
     return [schemas.GeoShape(**row) for row in rows] if len(rows) > 0 else []
 
 
-def get_all_shapes_by_organization(db: Session, organization: schemas.Organization) -> List[schemas.GeoShape]:
+def get_all_shapes_by_organization(
+    db: Session, organization: schemas.Organization
+) -> List[schemas.GeoShape]:
     res = db.execute(
         """
         SELECT shapes.uuid::VARCHAR AS uuid

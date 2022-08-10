@@ -104,7 +104,9 @@ def test_autocreate_org():
         org_id = get_org(db, user.id)
         assert org_id
         assert get_organization_members(db, org_id)[0].id == user.id
-        assert get_org_by_id(db, org_id).name.endswith(" Workspace")  # This is set in Alembic triggers, grep for token
+        assert get_org_by_id(db, org_id).name.endswith(
+            " Workspace"
+        )  # This is set in Alembic triggers, grep for token
 
         new_cred = gen_cred_params()
         create_conn(db, new_cred, user.id)
@@ -112,7 +114,7 @@ def test_autocreate_org():
         assert conn.name == "Test Postgres"
         conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)
         assert conn_secrets
-        assert conn_secrets.db_password == "postgres"
+        assert conn_secrets.db_password == "postgres" # pragma: allowlist secret
         assert conn_secrets.db_extras == {"sslmode": "disable"}
 
 
@@ -125,7 +127,7 @@ def test_update_conn():
         assert conn.name == "Test Postgres"
         conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)
         assert conn_secrets
-        assert conn_secrets.db_password == "postgres"
+        assert conn_secrets.db_password == "postgres" # pragma: allowlist secret
         assert conn_secrets.db_extras == {"sslmode": "disable"}
         update_conn(
             db,
