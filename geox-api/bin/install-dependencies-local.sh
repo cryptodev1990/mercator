@@ -16,9 +16,12 @@ _install_db() {
 # Install python dependencies
 _setup_python() {
     echo "Creating Python virtual environment at ./env"
+    brew install rust openssl@1.1
     python3 -m venv env
     source env/bin/activate
-    pip install -r requirements.txt
+    # Update pip and install wheel before isntalling anything else
+    pip install --update wheel pip
+    env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" pip install -r requirements.txt
     pip install -r requirements-dev.txt
     deactivate
 }
