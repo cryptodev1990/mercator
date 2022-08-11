@@ -1,171 +1,26 @@
-from typing import List, Optional
+from typing import List, Optional, Set, Union
 
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.crud.user import get_user
 
 
 class OrganizationModelException(Exception):
     pass
 
 
-def has_membership(db: Session, organization_id: UUID4, user_id: int) -> bool:
+def caller_must_be_in_org(db, organization_id: UUID4, user_id: int) -> bool:
     """Check if user is member of organization."""
-    org = (
-        db.query(models.OrganizationMember)
-        .filter(
-            models.OrganizationMember.organization_id == organization_id,
-            models.OrganizationMember.user_id == user_id,
-        )
-        .first()
-    )
-    return org is not None
-
-
-def create_organization_and_assign_to_user(
-    db: Session,
-    organization: schemas.OrganizationCreate,
-    user_id: int,
-    added_by_user_id: Optional[int] = None,
-) -> schemas.UserWithMembership:
-    """Creates an organization and assigns it to the user who created it"""
-    org_id = create_organization(db, organization)
-    org_member = upsert_organization_for_user(db, user_id, org_id)
-    return org_member
-
-
-def create_organization(db: Session, organization: schemas.OrganizationCreate) -> UUID4:
-    """Creates an organization without assigning it to a user"""
-    db_org = models.Organization(name=organization.name)
-    db.add(db_org)
-    db.commit()
-    res = (
-        db.query(models.Organization)
-        .filter(models.Organization.id == db_org.id)
-        .first()
-    )
-    if not res:
-        raise OrganizationModelException("Organization failed to create")
-    return res.id
-
-
-def hard_delete_organization(db: Session, organization_id: UUID4) -> int:
-    """Hard deletes an organization and all of its members"""
-    num_rows = (
-        db.query(models.Organization)
-        .filter(models.Organization.id == organization_id)
-        .delete()
-    )
-    db.commit()
-    return num_rows
-
-
-def upsert_organization_for_user(
-    db: Session, user_id: int, organization_id: UUID4
-) -> schemas.UserWithMembership:
-    """Update or insert an organization for a user."""
-    candidate_org_membership = models.OrganizationMember(
-        user_id=user_id, organization_id=organization_id
-    )
-    live_org_membership = (
-        db.query(models.OrganizationMember)
-        .filter(
-            # TODO modify to support multiple organizations
-            # models.OrganizationMember.user_id == user_id, models.OrganizationMember.organization_id == organization_id
-            models.OrganizationMember.user_id
-            == user_id
-        )
-        .first()
-    )
-    # If the user is already a member of the organization, replace the existing membership.
-    if live_org_membership:
-        live_org_membership.organization_id = organization_id  # type: ignore
-        db.commit()
-    # Otherwise, insert a new membership.
-    else:
-        db.add(candidate_org_membership)
-        db.commit()
-    # Pull user to get the new organization membership.
-    user_org_membership = get_membership(db, user_id)
-    assert user_org_membership is not None
-    return user_org_membership
-
-
-def add_user_to_organization(
-    db: Session,
-    invited_user_id: int,
-    added_by_user_id: int,
-    organization_id: Optional[UUID4] = None,
-) -> bool:
-    """Adds a user to an organization"""
-    organization_id = organization_id or get_org(db, added_by_user_id)
-    invited_user_org = get_org(db, invited_user_id)
-    if not organization_id:
-        raise OrganizationModelException("No organization to add user to")
-    if invited_user_org == organization_id:
-        raise OrganizationModelException("User already in organization")
-    if get_org(db, added_by_user_id) != organization_id:
-        raise OrganizationModelException(
-            "Adding user can only add to organizations they are a member of"
-        )
-    # TODO support multiple organizations
-    # new_org_member = models.OrganizationMember(
-    #     organization_id=organization_id, user_id=invited_user_id, added_by_user_id=added_by_user_id,
-    #     has_read=True, has_write=True, is_admin=True
-    # )
-    # db.add(new_org_member)
-    upsert_organization_for_user(db, invited_user_id, organization_id)
-    db.commit()
-    return True
-
-
-def get_organization_members(
-    db: Session, organization_id: UUID4
-) -> List[schemas.UserWithMembership]:
-    """Returns a list of all members of an organization"""
-    res = db.execute(
-        """SELECT u.*
-        , organization_id
-        FROM users u
-        JOIN organization_members o
-        ON o.user_id = u.id
-        WHERE o.organization_id = :organization_id""",
-        {"organization_id": organization_id},
-    )
-    rows = res.mappings().all()
-    return [schemas.UserWithMembership(**row) for row in rows]
-
-
-def delete_organization_member(db: Session, user_id: int, organization_id: int) -> int:
-    """Deletes a member of an organization"""
-    num_rows = (
-        db.query(models.OrganizationMember)
-        .filter(
-            models.OrganizationMember.user_id == user_id,
-            models.OrganizationMember.organization_id == organization_id,
-        )
-        .delete()
-    )
-    db.commit()
-    return num_rows
-
-
-def deactivate_organization_member(
-    db: Session, user_id: int, organization_id: int
-) -> bool:
-    """Deactivates a member of an organization"""
-    member = (
-        db.query(models.OrganizationMember)
-        .filter(
-            models.OrganizationMember.user_id == user_id,
-            models.OrganizationMember.organization_id == organization_id,
-        )
-        .one()
-    )
-    member.update(has_read=False, has_write=False, is_admin=False)
-    db.commit()
-    return True
+    res = db.query(models.OrganizationMember).filter(
+        models.OrganizationMember.organization_id == organization_id,
+        models.OrganizationMember.user_id == user_id,
+        models.OrganizationMember.deleted_at.is_(None),
+    ).first()
+    if res:
+        return True
+    raise OrganizationModelException("User is not in organization")
 
 
 def get_org_by_id(db: Session, organization_id: UUID4) -> schemas.Organization:
@@ -180,11 +35,212 @@ def get_org_by_id(db: Session, organization_id: UUID4) -> schemas.Organization:
     return schemas.Organization(**res.__dict__)
 
 
+def create_organization_and_assign_to_user(
+    db: Session,
+    organization: schemas.OrganizationCreate,
+    user_id: int,
+) -> schemas.UserWithMembership:
+    """Creates an organization and assigns it to the user who created it"""
+    org = create_organization(db, organization, user_id)
+    new_org_member = models.OrganizationMember(
+        organization_id=org.id,
+        user_id=user_id,
+        active=False,
+        has_read=True, has_write=True, is_admin=True
+    )
+    db.add(new_org_member)
+    db.commit()
+    set_active_organization(db, user_id, org.id)
+    member = get_all_memberships(db, user_id)  # most recent membership
+    assert member[0]
+    return member[0]
+
+
+def create_organization(db: Session, organization: schemas.OrganizationCreate, user_id: int) -> schemas.Organization:
+    """Creates an organization without assigning it to a user"""
+    db_org = models.Organization(
+        name=organization.name, created_by_user_id=user_id, is_personal=False)
+    db.add(db_org)
+    db.commit()
+    res = (
+        db.query(models.Organization)
+        .filter(models.Organization.id == db_org.id)
+        .first()
+    )
+    if not res:
+        raise OrganizationModelException("Organization failed to create")
+    set_active_organization(db, user_id, db_org.id)
+    db.refresh(res)
+    return schemas.Organization(**res.__dict__)
+
+
+def hard_delete_organization(db: Session, organization_id: UUID4) -> int:
+    """Hard deletes an organization and all of its members"""
+    num_rows = (
+        db.query(models.Organization)
+        .filter(models.Organization.id == organization_id)
+        .delete()
+    )
+    db.commit()
+    return num_rows
+
+
+def has_membership(db: Session, organization_id: UUID4, user_id: int) -> bool:
+    """Check if user is member of organization."""
+    org = (
+        db.query(models.OrganizationMember)
+        .filter(
+            models.OrganizationMember.organization_id == organization_id,
+            models.OrganizationMember.user_id == user_id,
+            models.OrganizationMember.deleted_at.is_(None),
+        )
+        .first()
+    )
+    return org is not None
+
+
+def add_user_to_organization_by_invite(
+    db: Session,
+    invited_user_id: int,
+    added_by_user_id: int,
+    organization_id: Optional[UUID4] = None,
+) -> schemas.UserWithMembership:
+    """Adds a user to an organization"""
+    organization_id = organization_id or get_active_org(db, added_by_user_id)
+    if not organization_id:
+        raise OrganizationModelException("No organization to add user to")
+   
+    caller_must_be_in_org(db, organization_id, added_by_user_id)
+    # TODO user has agreed to invite
+    new_org_member = add_user_to_organization(
+        db, invited_user_id, organization_id)
+    return schemas.UserWithMembership(**new_org_member.__dict__)
+
+
+def add_user_to_organization(
+    db: Session,
+    user_id: int,
+    organization_id: UUID4,
+) -> schemas.UserWithMembership:
+    """Adds a user to an organization
+    TODO this is potentially leaky, since a user can be added
+    from outside the organization if you know their ID (easy to guess) 
+    """
+    org_set = get_all_orgs_for_user_as_set(db, user_id)
+    if organization_id in org_set:
+        raise OrganizationModelException("User is already in organization")
+
+    org = get_org_by_id(db, organization_id)
+    if org.is_personal:
+        raise OrganizationModelException("Cannot add a user to a personal organization")
+ 
+    new_org_member = models.OrganizationMember(
+        organization_id=organization_id,
+        user_id=user_id,
+        has_read=True, has_write=True, is_admin=True
+    )
+    db.add(new_org_member)
+    db.commit()
+    user = get_user(db, user_id)
+    args = user.__dict__
+    args["organization_id"] = organization_id
+    args["is_personal"] = org.is_personal
+    set_active_organization(db, user_id, organization_id)
+    return schemas.UserWithMembership(**args)
+
+def get_organization_members(
+    db: Session, organization_id: UUID4
+) -> List[schemas.UserWithMembership]:
+    """Returns a list of all members of an organization"""
+    res = db.execute(
+        """SELECT u.*
+        , organization_id
+        , is_personal
+        FROM users u
+        JOIN organization_members om
+        ON om.user_id = u.id
+        JOIN organizations o
+        ON o.id = om.organization_id
+        WHERE 1=1
+          AND om.organization_id = :organization_id
+          AND om.deleted_at IS NULL""",
+        {"organization_id": organization_id},
+    )
+    rows = res.mappings().all()
+    return [schemas.UserWithMembership(**row) for row in rows]
+
+
+def delete_organization_member(db: Session, user_id: int, organization_id: int) -> int:
+    """Hard deletes an member of an organization"""
+    num_rows = (
+        db.query(models.OrganizationMember)
+        .filter(
+            models.OrganizationMember.user_id == user_id,
+            models.OrganizationMember.organization_id == organization_id,
+        )
+        .delete()
+    )
+    db.commit()
+    return num_rows
+
+
+def soft_delete_organization_member(db: Session, user_id: int, organization_id: UUID4) -> int:
+    """Soft deletes a member of an organization"""
+    org = get_org_by_id(db, organization_id)
+    if org.is_personal:
+        raise OrganizationModelException("Cannot delete personal organization")
+    num_rows = (
+        db.query(models.OrganizationMember)
+        .filter(
+            models.OrganizationMember.user_id == user_id,
+            models.OrganizationMember.organization_id == organization_id,
+        )
+        .update({"is_deleted": True, "active": False})
+    )
+    db.commit()
+    return num_rows
+
+
+def soft_delete_and_revert_to_personal_organization(db: Session, user_id: int, organization_id: UUID4) -> int:
+    """Soft deletes a member of an organization"""
+    num_rows = soft_delete_organization_member(db, user_id, organization_id)
+    personal_org_id = get_personal_org_id(db, user_id)
+    set_active_organization(db, user_id, personal_org_id)
+    return num_rows
+
+
+def set_active_organization(db: Session, user_id: int, organization_id: UUID4) -> bool:
+    """Sets the active organization for a user"""
+    db.execute(
+        """
+        BEGIN; 
+        UPDATE organization_members
+          SET active = False
+          WHERE user_id = :user_id
+        ;
+        UPDATE organization_members
+          SET active = True
+          WHERE user_id = :user_id AND organization_id = :organization_id
+        ;
+        END;
+        """,
+        {"user_id": user_id, "organization_id": organization_id},
+    )
+    return True
+
+
 # TODO make this consistent with the other get_* functions, use user instead of user_id
-def get_org(db: Session, user_id: int) -> Optional[UUID4]:
+def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
+    """Gets the organization of a user
+
+    Active organization is the most recent added organization where the user wasn't soft-deleted"""
     organization_member = (
         db.query(models.OrganizationMember)
-        .filter(models.OrganizationMember.user_id == user_id)
+        .filter(models.OrganizationMember.user_id == user_id,
+                models.OrganizationMember.deleted_at.is_(None),
+                models.OrganizationMember.active == True,
+                )
+        .order_by(models.OrganizationMember.created_at.desc())
         .first()
     )
     if organization_member:
@@ -192,17 +248,76 @@ def get_org(db: Session, user_id: int) -> Optional[UUID4]:
     return None
 
 
-def get_membership(db: Session, user_id: int) -> Optional[schemas.UserWithMembership]:
+def get_all_memberships(db: Session, user_id: int) -> List[schemas.UserWithMembership]:
+    """Generates an object with User and OrganizationMember fields"""
     res = db.execute(
         """SELECT u.*
-        , organization_id
+        , om.organization_id
+        , og.is_personal
         FROM users u
-        JOIN organization_members o
-        ON o.user_id = u.id
-          AND u.id = :user_id""",
+        JOIN organization_members om
+        ON om.user_id = u.id
+        JOIN organizations og
+        ON og.id = om.organization_id
+          AND om.user_id = u.id
+        WHERE 1=1
+          AND u.id = :user_id
+          AND om.deleted_at IS NULL
+        ORDER BY om.created_at DESC""",
         {"user_id": user_id},
     )
-    if not res.rowcount:
-        return None
-    row = res.mappings().first()
-    return schemas.UserWithMembership(**row)
+    rows = res.mappings().all()
+    return [schemas.UserWithMembership(**row) for row in rows]
+
+
+def get_all_orgs_for_user(db: Session, user_id: int) -> List[schemas.Organization]:
+    """Generates an object with User and OrganizationMember fields"""
+    res = db.execute(
+        """
+        SELECT og.id
+        , og.name
+        , og.is_personal
+        , og.created_at
+        , og.updated_at
+        FROM organization_members om
+        JOIN organizations og
+        ON om.user_id = :user_id
+          AND om.deleted_at IS NULL
+        ORDER BY om.created_at ASC""",
+        {"user_id": user_id},
+    )
+    rows = res.mappings().all()
+    return [schemas.Organization(**row) for row in rows]
+
+
+def get_all_orgs_for_user_as_set(db: Session, user_id: int) -> Set[UUID4]:
+    """Generates an object with User and OrganizationMember fields"""
+    res = db.execute(
+        """
+        SELECT og.id
+        , og.name
+        , og.is_personal
+        , og.created_at
+        FROM organization_members om
+        JOIN organizations og
+        ON om.user_id = :user_id
+          AND om.organization_id = og.id
+          AND om.deleted_at IS NULL
+        ORDER BY om.created_at ASC""",
+        {"user_id": user_id},
+    )
+    rows = res.mappings().all()
+    return {row["id"] for row in rows}
+
+
+def get_personal_org_id(db: Session, user_id: int) -> UUID4:
+    res = db.execute("""
+        SELECT og.id
+        FROM organizations og
+        JOIN organization_members om
+        ON om.user_id = :user_id
+          AND om.organization_id = og.id
+          AND om.deleted_at IS NULL
+          AND og.is_personal = True
+        """, {"user_id": user_id})
+    return res.first()[0]

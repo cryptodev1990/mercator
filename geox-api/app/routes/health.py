@@ -25,8 +25,8 @@ async def protected_health(
 @router.get("/db-health", tags=["health"])
 async def db_health(db_session: Session = Depends(get_db)):
     try:
-        res = db_session.execute("SELECT 1")
-        assert res.first()[0] == 1
+        res = engine.execute("SELECT 1")
+        assert res.first()[0] == 1  # type: ignore
         return JSONResponse({"message": "OK"})
     except Exception as e:
         return JSONResponse({"message": "ERROR"}, status_code=500)

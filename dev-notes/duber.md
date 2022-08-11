@@ -652,3 +652,37 @@ Aug 4 2022
   - [ ] [Copy Excalidraw maybe?](https://github.com/excalidraw/excalidraw/blob/dac8dda4d4f4b92471e3ae388206443dcb66fb78/src/excalidraw-app/collab/Collab.tsx#L204)
   - [ ] [LiveBlocks?](https://liveblocks.io/presence)
 - [ ] Re-do landing page for Launch Bookface
+
+Aug 5-7
+
+## Progress
+
+- [X] Finished organizations flow
+
+Aug 7-8
+
+## Progress
+
+- [X] Re-do landing page for Launch Bookface
+- [X] Add to organization flow
+- [ ] Write tests for organization flow
+- [ ] Support publishing shapes to database
+
+Aug 9
+
+## Progress
+
+- [X] Polish landing page
+
+Aug 10
+
+## Progress
+
+- [X] Add endpoints to manipulate credentials
+- [X] Add endpoints to manipulate organizations
+- [ ] Add create and read tests for organization flow
+
+## Plans
+
+- [ ] Need to make sure an organization always exists for a user. Another update trigger?
+  - On org member soft delete, create a personal organization for a user

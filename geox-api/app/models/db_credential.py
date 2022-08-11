@@ -12,7 +12,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import backref, relationship
 
 from app.models.common import TimestampMixin, UUIDMixin
-from app.models.organization import Organization
 from app.models.user import User
 
 

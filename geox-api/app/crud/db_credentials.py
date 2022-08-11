@@ -7,7 +7,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.crud.organization import get_org
+from app.crud.organization import get_active_org
 from app.schemas.db_credential import PublicDbCredential
 
 from .. import models, schemas
@@ -36,7 +36,7 @@ def get_conn(
 
     Only the user's organization can read a connection.
     """
-    organization_id = get_org(db, user_id)
+    organization_id = get_active_org(db, user_id)
 
     if not organization_id:
         raise DbCredentialModelException("User has no organization")
@@ -58,7 +58,7 @@ def get_conn(
 
 def get_conns(db: Session, user: schemas.User) -> List[schemas.PublicDbCredential]:
     """Read all connections for user"""
-    organization_id = get_org(db, user.id)
+    organization_id = get_active_org(db, user.id)
     if not organization_id:
         raise DbCredentialModelException("User has no organization")
 
@@ -74,7 +74,7 @@ def create_conn(
     db: Session, db_credential: schemas.DbCredentialCreate, user_id: int
 ) -> PublicDbCredential:
 
-    org_id = get_org(db, user_id)
+    org_id = get_active_org(db, user_id)
 
     encrypted_db_user = encrypt(db_credential.db_user)
     encrypted_db_password = encrypt(db_credential.db_password)
@@ -149,17 +149,27 @@ def get_conn_secrets(
 
 
 def update_conn(
-    db: Session, conn_update: schemas.DbCredentialUpdate
+    db: Session, conn_update: schemas.DbCredentialUpdate, user_id: int
 ) -> schemas.PublicDbCredential:
 
-    organization_id = get_org(db, conn_update.user_id)
+    organization_id = get_active_org(db, user_id)
 
     if not organization_id:
         raise DbCredentialModelException("User does not have an organization")
 
+
+    conn = get_conn(db, db_credential_id=conn_update.id, user_id=user_id)
+    if not conn:
+        raise DbCredentialModelException("Connection not found")
+
+    if conn.organization_id != organization_id:
+        raise DbCredentialModelException(
+            "User does not have permission to update this connection"
+        )
+
     update_args = {
         "id": conn_update.id,
-        "user_id": conn_update.user_id,
+        "user_id": user_id,
         "organization_id": organization_id,
     }
 
@@ -196,13 +206,15 @@ def update_conn(
     return db_result
 
 
-def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> bool:
+def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> int:
     """Delete a database connection
 
     Users can only delete connections that belong to their organization
+
+    Returns number of affected rows
     """
 
-    organization_id = get_org(db, user_id)
+    organization_id = get_active_org(db, user_id)
     if not organization_id:
         raise DbCredentialModelException("User does not have an organization")
 
@@ -215,24 +227,26 @@ def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> bool:
             "User does not have permission to delete this connection"
         )
 
-    db.query(models.DbCredential).filter_by(id=str(conn_id)).delete()
+    num_conns = count_conns(db, user_id)
+    db.query(models.DbCredential).filter_by(id=str(conn_id), organization_id=organization_id).delete()
     db.commit()
-    return True
+    new_num_conns = count_conns(db, user_id)
+    return new_num_conns - num_conns
 
 
 def count_conns(db: Session, user_id: int) -> int:
-    organization_id = get_org(db, user_id)
+    organization_id = get_active_org(db, user_id)
     res = db.execute(
         j2.Template(
             """
-      SELECT COUNT(*) FROM db_credentials
+      SELECT COUNT(*) AS freq FROM db_credentials
         WHERE organization_id = :organization_id
     """
         ).render(organization_id=organization_id),
         {"organization_id": organization_id, "user_id": user_id},
     )
     rows = res.mappings().all()
-    return rows[0]["count"]
+    return rows[0]["freq"]
 
 
 def get_mru_conn(db: Session, user_id: int) -> Optional[schemas.PublicDbCredential]:

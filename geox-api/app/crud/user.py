@@ -106,7 +106,7 @@ def handle_management_api_account(user, db) -> schemas.User:
     new_user = create_user(
         db,
         models.User(
-            sub_id=user["sub"],
+            sub_id=get_settings().machine_account_sub_id,
             email="duber+ManagementApi@mercator.tech",
             iss=user["iss"],
             last_login_at=now,

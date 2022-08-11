@@ -13,8 +13,10 @@ from app.crud.db_credentials import (
     update_conn,
 )
 from app.crud.organization import (
-    add_user_to_organization,
-    get_org,
+    add_user_to_organization_by_invite,
+    get_active_org,
+    get_all_orgs_for_user,
+    get_all_orgs_for_user_as_set,
     get_org_by_id,
     get_organization_members,
 )
@@ -31,7 +33,7 @@ def test_read_conn():
     with gen_users() as (users, db):
         user = users[0]
         new_user = get_user(db, user_id=user.id)
-        assert get_org(db, new_user.id) is not None, "User should be in an organization"
+        assert len(get_all_orgs_for_user(db, new_user.id)) >= 1, "User should be in an organization"
         assert get_conns(db, user) == [], "User should not have any connections"
 
         with gen_cred(db, gen_cred_params(), by_user_id=user.id) as new_conn:
@@ -68,9 +70,9 @@ def test_adversarial_read():
         good_user, _, bad_user, _ = users
         cred = gen_cred_params()
         with gen_cred(db, cred, by_user_id=good_user.id) as good_conn:
-            assert get_org(db, bad_user.id) != get_org(
+            assert bool(get_all_orgs_for_user_as_set(db, bad_user.id) & get_all_orgs_for_user_as_set(
                 db, good_user.id
-            ), "Users should not be in the same organization"
+            )) == False, "Users should not be in the same organization"
             assert (
                 get_conns(db, bad_user) == []
             ), "Adversary should not be able to see good user connections"
@@ -82,13 +84,13 @@ def test_adversarial_read():
             except Exception as e:
                 assert "Connection not found" in str(e)
             # Add adversary to good user's organization
-            org_id = get_org(db, good_user.id)
+            org_id = get_active_org(db, good_user.id)
             assert org_id
-            add_user_to_organization(
+            add_user_to_organization_by_invite(
                 db, invited_user_id=bad_user.id, added_by_user_id=good_user.id
             )
             assert (
-                get_org(db, bad_user.id) == org_id
+                org_id in get_all_orgs_for_user_as_set(db, bad_user.id)
             ), "Adverserial user should be in good user's organization"
             assert (
                 get_conns(db, bad_user)[0] == good_conn
@@ -101,7 +103,7 @@ def test_autocreate_org():
         live_user = get_user(db, user_id=user.id)
         assert live_user.name
         assert get_conns(db, user) == []
-        org_id = get_org(db, user.id)
+        org_id = get_active_org(db, user.id)
         assert org_id
         assert get_organization_members(db, org_id)[0].id == user.id
         assert get_org_by_id(db, org_id).name.endswith(
@@ -132,16 +134,18 @@ def test_update_conn():
         update_conn(
             db,
             schemas.DbCredentialUpdate(
-                id=conn.id, name="Test Postgres Updated", user_id=user.id
+                id=conn.id, name="Test Postgres Updated"
             ),
+            user_id=user.id
         )
         conn = get_conns(db, user)[0]
         assert conn.name == "Test Postgres Updated"
         update_conn(
             db,
             schemas.DbCredentialUpdate(
-                id=conn.id, db_password="NEWPASS", user_id=user.id
+                id=conn.id, db_password="NEWPASS"
             ),
+            user_id=user.id
         )
         new_conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)
         assert new_conn_secrets

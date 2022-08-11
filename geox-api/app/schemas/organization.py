@@ -5,7 +5,8 @@ from pydantic import UUID4, BaseModel, Field
 
 
 class OrganizationRead(BaseModel):
-    uuid: UUID4 = Field(..., description="Unique identifier for the organization")
+    uuid: UUID4 = Field(...,
+                        description="Unique identifier for the organization")
 
 
 class OrganizationCreate(BaseModel):
@@ -22,6 +23,7 @@ class OrganizationUpdate(BaseModel):
 class Organization(BaseModel):
     id: UUID4
     name: str
+    is_personal: bool
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
@@ -37,3 +39,21 @@ class OrganizationMember(BaseModel):
     is_admin: bool
     created_at: str
     updated_at: str
+
+
+class OrganizationMemberCreate(BaseModel):
+    organization_id: UUID4
+    user_id: int
+    has_read: bool = True
+    has_write: bool = True
+    is_admin: bool = False
+
+
+class OrganizationMemberDelete(BaseModel):
+    organization_id: UUID4
+    user_id: int
+
+
+class OrganizationMemberUpdate(BaseModel):
+    organization_id: UUID4
+    active: Optional[bool] = None

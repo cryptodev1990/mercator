@@ -19,12 +19,8 @@ class DbCredentialCreate(BaseModel):
     db_extras: Optional[dict]
 
 
-class DbCredentialRead(BaseModel):
+class DbCredentialUpdate(BaseModel):
     id: UUID4
-    user_id: int
-
-
-class DbCredentialUpdate(DbCredentialRead):
     name: Optional[str] = None
     should_delete: Optional[bool] = None
     is_default: Optional[bool] = None
@@ -40,7 +36,7 @@ class DbCredentialUpdate(DbCredentialRead):
 
 class PublicDbCredential(BaseModel):
     id: UUID4
-    name: Optional[str]
+    name: str
     is_default: Optional[bool]
     created_at: datetime.datetime
     created_by_user_id: int

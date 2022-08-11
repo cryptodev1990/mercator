@@ -1,14 +1,20 @@
 import datetime
 from contextlib import contextmanager
 from typing import Any, Generator, List, Tuple
+from uuid import UUID
 
 from app import models, schemas
+from app.core.config import get_settings
 from app.crud.db_credentials import create_conn, delete_conn, get_mru_conn
 from app.crud.organization import (
+    add_user_to_organization,
+    add_user_to_organization_by_invite,
     create_organization,
     create_organization_and_assign_to_user,
-    get_org,
-    upsert_organization_for_user,
+    get_active_org,
+    get_all_orgs_for_user,
+    get_personal_org_id,
+    hard_delete_organization,
 )
 from app.crud.user import (
     NoUserWithEmailException,
@@ -19,6 +25,9 @@ from app.crud.user import (
 )
 from app.db.session import SessionLocal
 
+settings = get_settings()
+
+
 emails = [
     "testuser@mercator.tech",
     "testuser-friendly@mercator.tech",
@@ -27,7 +36,7 @@ emails = [
 ]
 
 
-def make_user(db, test_email):
+def make_user(db, test_email, sub_id=None):
     username = test_email.split("@")[0]
     domain_part = test_email.split("@")[1]
     new_user = schemas.UserCreate(
@@ -38,12 +47,35 @@ def make_user(db, test_email):
         nickname=username,
         email_verified=True,
         iss="https://" + domain_part,
-        sub_id=username,
+        sub_id=username if sub_id is None else sub_id,
         picture="https://mercator.tech/testuser.png",
         locale="en-US",
         updated_at=datetime.datetime.utcnow(),
     )
-    create_user(db, new_user)
+    return create_user(db, new_user)
+
+
+@contextmanager
+def use_managerial_user():
+    db = SessionLocal()
+    user = None
+    try:
+        try:
+            user = get_user_by_email(db, settings.machine_account_email)
+        except NoUserWithEmailException:
+            user = make_user(db, settings.machine_account_email, sub_id=settings.machine_account_sub_id)
+        else:
+            # Delete and make a new user if they exist
+            delete_user_by_email(db, settings.machine_account_email)
+            user = make_user(db, settings.machine_account_email, sub_id=settings.machine_account_sub_id)
+        org_id = get_active_org(db, user.id)
+        assert org_id
+        assert get_personal_org_id(db, user.id) == org_id
+        assert len(get_all_orgs_for_user(db, user.id)) == 1
+        yield schemas.UserWithMembership(**user.__dict__, organization_id=org_id, is_personal=True)
+    finally:
+        if user:
+            delete_user(db, user.id)
 
 
 def cleanup_test_users(db):
@@ -55,13 +87,10 @@ def cleanup_test_users(db):
         except NoUserWithEmailException:
             continue
         # delete org
-        org_id = get_org(db, user.id)
         delete_user(db, user.id)
-        if org_id:
-            db.query(models.Organization).filter(
-                models.Organization.id == str(org_id)
-            ).delete()
-            db.commit()
+        orgs = get_all_orgs_for_user(db, user.id)
+        for org in orgs:
+            hard_delete_organization(db, org.id)
 
 
 @contextmanager
@@ -84,10 +113,11 @@ def gen_users() -> Generator[Tuple[List[schemas.User], Any], None, None]:
             db, schemas.OrganizationCreate(name="Test Organization"), admin_user_id
         )
         friendly_user_id: Any = users[1].id
-        res = upsert_organization_for_user(
-            db, friendly_user_id, admin_org_member.organization_id
+
+        res = add_user_to_organization_by_invite(
+            db, friendly_user_id, admin_org_member.id, admin_org_member.organization_id
         )
-        assert admin_org_member.organization_id == get_org(
+        assert admin_org_member.organization_id == get_active_org(
             db, friendly_user_id
         ), "Org ID not set correctly"
         assert (
@@ -95,10 +125,11 @@ def gen_users() -> Generator[Tuple[List[schemas.User], Any], None, None]:
         ), "Org ID not set correctly"
         # Create adversary org
         advesary_admin_user_id = users[2].id
-        adversary_org_id = create_organization(
-            db, schemas.OrganizationCreate(name="Adversary Organization")
+        adversary_org = create_organization(
+            db, schemas.OrganizationCreate(name="Adversary Organization"), advesary_admin_user_id
         )
-        res = upsert_organization_for_user(db, advesary_admin_user_id, adversary_org_id)
+
+        res = add_user_to_organization(db, advesary_admin_user_id, adversary_org.id)
         yield (users, db)
     finally:
         for email in emails:
@@ -150,3 +181,12 @@ def gen_cred(db, credential_create: schemas.DbCredentialCreate, by_user_id: int)
         if not cred:
             return
         delete_conn(db, cred.id, by_user_id)
+
+
+def is_valid_uuid(uuid_to_test):
+    try:
+        uuid_obj = UUID(uuid_to_test, version=4)
+    except ValueError:
+        return False
+    return True
+
