@@ -1,12 +1,13 @@
 from enum import Enum
 from typing import List, Optional
 
-from fastapi import APIRouter, Request, Security
+from fastapi import APIRouter, Request, Security, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
+from sqlalchemy.orm import Session
 
 from app.crud import db_credentials as crud
-from app.db.session import SessionLocal
+from app.db.session import get_db
 from app.schemas import PublicDbCredential
 from app.schemas.db_credential import DbCredentialCreate, DbCredentialRead
 
@@ -24,11 +25,11 @@ def get_db_conn(
     request: Request,
     uuid: UUID4,
     credentials: HTTPAuthorizationCredentials = Security(security),
+    db_session: Session = Depends(get_db)
 ) -> Optional[PublicDbCredential]:
-    """Read a single connection by UUID. Requires that the user be in the same organization as the connection"""
+    """Read a single connection by UUID. Requires that the user be in the same organization as the connection."""
     user = request.state.user
-    with SessionLocal() as db_session:
-        return crud.get_conn(db_session, DbCredentialRead(uuid=uuid, user_id=user.id))
+    return crud.get_conn(db_session, DbCredentialRead(uuid=uuid, user_id=user.id))
 
 
 @router.post("/db_config/connections", response_model=PublicDbCredential)
@@ -36,9 +37,9 @@ def create_db_conn(
     request: Request,
     new_db_conn: DbCredentialCreate,
     credentials: HTTPAuthorizationCredentials = Security(security),
+    db_session: Session = Depends(get_db)
 ) -> Optional[PublicDbCredential]:
-    """Creates a database connection"""
+    """Create a database connection."""
     user = request.state.user
-    with SessionLocal() as db_session:
-        creds = crud.create_conn(db_session, new_db_conn, user.id)
-        return creds
+    creds = crud.create_conn(db_session, new_db_conn, user.id)
+    return creds
