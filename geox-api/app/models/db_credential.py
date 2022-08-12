@@ -41,7 +41,7 @@ class DbCredential(UUIDMixin, TimestampMixin):
     db_extras = Column(String, nullable=True)
 
     organization = relationship(
-        "Organization",
+        "Organization",  # type: ignore
         backref=backref(
             "OrganizationMember", passive_deletes=True, cascade="all,delete"
         ),

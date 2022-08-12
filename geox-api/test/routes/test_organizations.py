@@ -46,3 +46,52 @@ def test_create_org():
         assert is_valid_uuid(r["organization_id"])
         assert r["id"] == user.id
         assert str(r["organization_id"]) != str(user.organization_id)
+
+
+def test_delete_org():
+    with use_managerial_user() as user:
+        try:
+            response = client.delete(
+                "/organizations/{}".format(user.organization_id),
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+        except Exception as e:
+            assert "personal org" in str(e)
+
+
+def test_update_org_no_org():
+    with use_managerial_user() as user:
+        try:
+            response = client.put(
+                "/organizations/{}".format(user.organization_id),
+                json={
+                    "name": "test",
+                },
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+        except Exception as e:
+            assert "not found" in str(e)
+
+
+def test_update_org():
+    with use_managerial_user() as user:
+        response = client.post(
+            "/organizations",
+            json={
+                "name": "test",
+            },
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        org_id = response.json()['organization_id']
+
+        response = client.put(
+            "/organizations/{}".format(org_id),
+            json={
+                "name": "test 2",
+            },
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        print(response.json())
+
+        assert response.status_code == 200
+        assert response.json()['name'] == 'test 2'

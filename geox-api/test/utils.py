@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from typing import Any, Generator, List, Tuple
 from uuid import UUID
 
-from app import models, schemas
+from app import schemas
 from app.core.config import get_settings
 from app.crud.db_credentials import create_conn, delete_conn, get_mru_conn
 from app.crud.organization import (
@@ -79,6 +79,7 @@ def use_managerial_user():
         org_id = get_active_org(db, user.id)
         assert org_id
         assert get_personal_org_id(db, user.id) == org_id
+        print(get_all_orgs_for_user(db, user.id))
         assert len(get_all_orgs_for_user(db, user.id)) == 1
         yield schemas.UserWithMembership(
             **user.__dict__, organization_id=org_id, is_personal=True

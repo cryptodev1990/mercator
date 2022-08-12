@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
+from app.dependencies import get_db, verify_token
+from app.db.session import SessionLocal
 from app.crud.organization import (
     add_user_to_organization_by_invite,
     caller_must_be_in_org,
@@ -13,18 +15,22 @@ from app.crud.organization import (
     get_all_orgs_for_user,
     get_org_by_id,
     get_organization_members,
+    guarded_hard_delete_organization,
     set_active_organization,
     soft_delete_and_revert_to_personal_organization,
-    soft_delete_organization_member,
+    guarded_hard_delete_organization,
+    update_organization,
 )
-from app.dependencies import get_db, verify_token
+from app.db.session import SessionLocal
 from app.schemas.organization import (
     Organization,
     OrganizationCreate,
     OrganizationMemberCreate,
     OrganizationMemberDelete,
     OrganizationMemberUpdate,
+    OrganizationUpdate,
 )
+from app.db.session import SessionLocal
 from app.schemas.user import UserWithMembership
 
 router = APIRouter(dependencies=[Depends(verify_token)])
@@ -52,9 +58,43 @@ async def create_organization(
     return res
 
 
-@router.post(
-    "/organizations/members", tags=["organizations"], response_model=UserWithMembership
-)
+@router.get("/organizations/{organization_id}", tags=["organizations"], response_model=Organization)
+async def get_organization(
+    request: Request,
+    organization_id: UUID4,
+):
+    user = request.state.user
+    with SessionLocal() as db_session:
+        caller_must_be_in_org(db_session, organization_id, user.id)
+        org = get_org_by_id(db_session, organization_id)
+        return org
+
+
+@router.delete("/organizations/{organization_id}", tags=["organizations"])
+async def delete_organization(
+    request: Request,
+    organization_id: UUID4,
+) -> bool:
+    user = request.state.user
+    with SessionLocal() as db_session:
+        guarded_hard_delete_organization(db_session, organization_id, user.id)
+        return True
+
+
+@router.put("/organizations/{organization_id}", tags=["organizations"], response_model=Organization)
+async def update_organization_(
+    request: Request,
+    organization_id: UUID4,
+    organization: OrganizationUpdate,
+) -> Organization:
+    user = request.state.user
+    with SessionLocal() as db_session:
+        caller_must_be_in_org(db_session, organization_id, user.id)
+        org = update_organization(db_session, organization_id, organization)
+        return org
+
+
+@router.post("/organizations/members", tags=["organizations"], response_model=UserWithMembership)
 async def create_organization_member(
     request: Request, organization: OrganizationMemberCreate, db_session=Depends(get_db)
 ) -> UserWithMembership:
@@ -93,7 +133,7 @@ async def list_organization_members(
     return members
 
 
-@router.patch("/organizations/membership", tags=["organizations"])
+@router.put("/organizations/member", tags=["organizations"])
 async def update_organization_membership(
     request: Request, organization: OrganizationMemberUpdate, db_session=Depends(get_db)
 ) -> List[Organization]:

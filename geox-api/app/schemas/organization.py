@@ -13,10 +13,7 @@ class OrganizationCreate(BaseModel):
 
 
 class OrganizationUpdate(BaseModel):
-    uuid: UUID4
     name: Optional[str] = None
-    admin_user_id: Optional[int] = None
-    should_delete: Optional[bool] = False
 
 
 class Organization(BaseModel):

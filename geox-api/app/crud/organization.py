@@ -94,6 +94,35 @@ def hard_delete_organization(db: Session, organization_id: UUID4) -> int:
     return num_rows
 
 
+def guarded_hard_delete_organization(db: Session, organization_id: UUID4, user_id: int) -> int:
+    """Hard deletes an organization and all of its members"""
+    caller_must_be_in_org(db, organization_id, user_id)
+    if get_personal_org_id(db, user_id) == organization_id:
+        raise OrganizationModelException("Cannot delete personal organization")
+    num_rows = (
+        db.query(models.Organization)
+        .filter(models.Organization.id == organization_id)
+        .delete()
+    )
+    db.commit()
+    return num_rows
+
+
+def update_organization(db: Session, organization_id: UUID4, organization: schemas.OrganizationUpdate) -> schemas.Organization:
+    """Updates an organization"""
+    db_org = (
+        db.query(models.Organization)
+        .filter(models.Organization.id == organization_id, models.Organization.is_personal == False)
+        .first()
+    )
+    if not db_org:
+        raise OrganizationModelException("Organization not found")
+    db_org.name = organization.name or db_org.name  # type: ignore
+    db.commit()
+    db.refresh(db_org)
+    return schemas.Organization(**db_org.__dict__)
+
+
 def has_membership(db: Session, organization_id: UUID4, user_id: int) -> bool:
     """Check if user is member of organization."""
     org = (
@@ -299,6 +328,7 @@ def get_all_orgs_for_user(db: Session, user_id: int) -> List[schemas.Organizatio
         JOIN organizations og
         ON om.user_id = :user_id
           AND om.deleted_at IS NULL
+          AND om.organization_id = og.id
         ORDER BY om.created_at ASC""",
         {"user_id": user_id},
     )
