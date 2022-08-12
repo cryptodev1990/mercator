@@ -1,10 +1,6 @@
-from fastapi import APIRouter, Request, Security
-from fastapi.security import HTTPAuthorizationCredentials
-from pydantic import UUID4
+from fastapi import APIRouter
 
 from app.core.celery_app import celery_app
-from app.crud import shape as crud
-from app.db.session import SessionLocal
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
 from app.worker import test_celery
 

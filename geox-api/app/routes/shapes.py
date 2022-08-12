@@ -6,8 +6,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.crud import shape as crud
-from app.db.session import get_db
-from app.dependencies import verify_token
+from app.dependencies import get_db, verify_token
 from app.schemas import (
     GeoShape,
     GeoShapeCreate,
