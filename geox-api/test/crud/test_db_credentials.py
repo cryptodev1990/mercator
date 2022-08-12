@@ -1,5 +1,7 @@
 from test.utils import gen_cred, gen_cred_params, gen_users
 
+import pytest
+
 from app import schemas
 from app.crud.db_credentials import (
     DbCredentialModelException,

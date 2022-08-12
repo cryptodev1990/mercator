@@ -1,7 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Request, Security
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, Request
 from pydantic import UUID4
 
 from app.crud.organization import (
@@ -18,6 +17,7 @@ from app.crud.organization import (
     soft_delete_organization_member,
 )
 from app.db.session import SessionLocal
+from app.dependencies import verify_token
 from app.schemas.organization import (
     Organization,
     OrganizationCreate,
@@ -27,9 +27,7 @@ from app.schemas.organization import (
 )
 from app.schemas.user import UserWithMembership
 
-from .common import security
-
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verify_token)])
 
 
 @router.get("/organizations", tags=["organizations"], response_model=List[Organization])
@@ -46,7 +44,6 @@ def get_organizations(request: Request) -> List[Organization]:
 async def create_organization(
     request: Request,
     organization: OrganizationCreate,
-    credentials: HTTPAuthorizationCredentials = Security(security),
 ):
     user = request.state.user
     with SessionLocal() as db_session:
@@ -60,9 +57,7 @@ async def create_organization(
     "/organizations/members", tags=["organizations"], response_model=UserWithMembership
 )
 async def create_organization_member(
-    request: Request,
-    organization: OrganizationMemberCreate,
-    credentials: HTTPAuthorizationCredentials = Security(security),
+    request: Request, organization: OrganizationMemberCreate
 ) -> UserWithMembership:
     own_user = request.state.user
     with SessionLocal() as db_session:
@@ -76,7 +71,6 @@ async def create_organization_member(
 async def remove_user(
     request: Request,
     organization: OrganizationMemberDelete,
-    credentials: HTTPAuthorizationCredentials = Security(security),
 ) -> int:
     user = request.state.user
     with SessionLocal() as db_session:
@@ -97,7 +91,6 @@ async def remove_user(
 async def list_organization_members(
     request: Request,
     organization_uuid: UUID4,
-    credentials: HTTPAuthorizationCredentials = Security(security),
 ) -> List[UserWithMembership]:
     user = request.state.user
     with SessionLocal() as db_session:
@@ -112,7 +105,6 @@ async def list_organization_members(
 async def update_organization_membership(
     request: Request,
     organization: OrganizationMemberUpdate,
-    credentials: HTTPAuthorizationCredentials = Security(security),
 ) -> List[Organization]:
     user = request.state.user
     with SessionLocal() as db_session:

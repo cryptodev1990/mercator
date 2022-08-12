@@ -2,12 +2,12 @@ from enum import Enum
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request, Security
-from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.crud import shape as crud
 from app.db.session import get_db
+from app.dependencies import verify_token
 from app.schemas import (
     GeoShape,
     GeoShapeCreate,
@@ -17,9 +17,7 @@ from app.schemas import (
     User,
 )
 
-from .common import security
-
-router = APIRouter(tags=["geofencer"])
+router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
 
 class GetAllShapesRequestType(str, Enum):
@@ -30,7 +28,6 @@ class GetAllShapesRequestType(str, Enum):
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def get_shape(
     uuid: UUID4,
-    credentials: HTTPAuthorizationCredentials = Security(security),
     db_session: Session = Depends(get_db),
 ) -> Optional[GeoShape]:
     return crud.get_shape(db_session, GeoShapeRead(uuid=uuid))
@@ -40,7 +37,6 @@ def get_shape(
 def get_all_shapes(
     request: Request,
     rtype: GetAllShapesRequestType,
-    credentials: HTTPAuthorizationCredentials = Security(security),
     db_session: Session = Depends(get_db),
 ) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
@@ -58,7 +54,6 @@ def get_all_shapes(
 def create_shape(
     request: Request,
     geoshape: GeoShapeCreate,
-    credentials: HTTPAuthorizationCredentials = Security(security),
     db_session: Session = Depends(get_db),
 ) -> GeoShape:
     # Set by ProtectedRoutesMiddleware
@@ -71,7 +66,6 @@ def create_shape(
 def update_shape(
     request: Request,
     geoshape: GeoShapeUpdate,
-    credentials: HTTPAuthorizationCredentials = Security(security),
     db_session: Session = Depends(get_db),
 ) -> Optional[GeoShape]:
     # Set by ProtectedRoutesMiddleware
@@ -84,7 +78,6 @@ def update_shape(
 def bulk_soft_delete_shapes(
     request: Request,
     shape_uuids: List[UUID4],
-    credentials: HTTPAuthorizationCredentials = Security(security),
     db_session: Session = Depends(get_db),
 ) -> ShapeCountResponse:
     # Set by ProtectedRoutesMiddleware
@@ -97,7 +90,6 @@ def bulk_soft_delete_shapes(
 def bulk_create_shapes(
     request: Request,
     geoshapes: List[GeoShapeCreate],
-    credentials: HTTPAuthorizationCredentials = Security(security),
     db_session: Session = Depends(get_db),
 ) -> ShapeCountResponse:
     # Set by ProtectedRoutesMiddleware
