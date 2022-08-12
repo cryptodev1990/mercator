@@ -157,7 +157,6 @@ def update_conn(
     if not organization_id:
         raise DbCredentialModelException("User does not have an organization")
 
-
     conn = get_conn(db, db_credential_id=conn_update.id, user_id=user_id)
     if not conn:
         raise DbCredentialModelException("Connection not found")
@@ -228,7 +227,9 @@ def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> int:
         )
 
     num_conns = count_conns(db, user_id)
-    db.query(models.DbCredential).filter_by(id=str(conn_id), organization_id=organization_id).delete()
+    db.query(models.DbCredential).filter_by(
+        id=str(conn_id), organization_id=organization_id
+    ).delete()
     db.commit()
     new_num_conns = count_conns(db, user_id)
     return new_num_conns - num_conns

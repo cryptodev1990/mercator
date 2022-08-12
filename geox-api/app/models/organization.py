@@ -1,4 +1,12 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import backref, relationship
 
@@ -10,18 +18,17 @@ class Organization(TimestampMixin, UUIDMixin):
     __tablename__ = "organizations"
 
     name = Column(String, nullable=False)
-    created_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by_user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
     deleted_at = Column(DateTime)
     is_personal = Column(Boolean, default=False)
 
     user = relationship(
         "User",
-        backref=backref(
-            "Organization", passive_deletes=True, cascade="all,delete"
-        ),
+        backref=backref("Organization", passive_deletes=True, cascade="all,delete"),
         foreign_keys=[created_by_user_id],
     )
-
 
 
 class OrganizationMember(TimestampMixin, MembershipMixin):

@@ -35,7 +35,12 @@ app = FastAPI(
         ),
         Middleware(
             ProtectedRoutesMiddleware,
-            protected_routes=["/protected_health", "/geofencer*", "/organization*", "/db_config*"],
+            protected_routes=[
+                "/protected_health",
+                "/geofencer*",
+                "/organization*",
+                "/db_config*",
+            ],
         ),
     ],
 )
@@ -56,7 +61,6 @@ async def log_requests(request: Request, call_next):
     )
 
     return response
-
 
 
 app.include_router(routes.osm.router)

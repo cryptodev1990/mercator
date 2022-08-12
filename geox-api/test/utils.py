@@ -63,16 +63,26 @@ def use_managerial_user():
         try:
             user = get_user_by_email(db, settings.machine_account_email)
         except NoUserWithEmailException:
-            user = make_user(db, settings.machine_account_email, sub_id=settings.machine_account_sub_id)
+            user = make_user(
+                db,
+                settings.machine_account_email,
+                sub_id=settings.machine_account_sub_id,
+            )
         else:
             # Delete and make a new user if they exist
             delete_user_by_email(db, settings.machine_account_email)
-            user = make_user(db, settings.machine_account_email, sub_id=settings.machine_account_sub_id)
+            user = make_user(
+                db,
+                settings.machine_account_email,
+                sub_id=settings.machine_account_sub_id,
+            )
         org_id = get_active_org(db, user.id)
         assert org_id
         assert get_personal_org_id(db, user.id) == org_id
         assert len(get_all_orgs_for_user(db, user.id)) == 1
-        yield schemas.UserWithMembership(**user.__dict__, organization_id=org_id, is_personal=True)
+        yield schemas.UserWithMembership(
+            **user.__dict__, organization_id=org_id, is_personal=True
+        )
     finally:
         if user:
             delete_user(db, user.id)
@@ -126,7 +136,9 @@ def gen_users() -> Generator[Tuple[List[schemas.User], Any], None, None]:
         # Create adversary org
         advesary_admin_user_id = users[2].id
         adversary_org = create_organization(
-            db, schemas.OrganizationCreate(name="Adversary Organization"), advesary_admin_user_id
+            db,
+            schemas.OrganizationCreate(name="Adversary Organization"),
+            advesary_admin_user_id,
         )
 
         res = add_user_to_organization(db, advesary_admin_user_id, adversary_org.id)
@@ -189,4 +201,3 @@ def is_valid_uuid(uuid_to_test):
     except ValueError:
         return False
     return True
-

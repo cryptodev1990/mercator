@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Security, Depends
+from fastapi import APIRouter, Depends, Security
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session

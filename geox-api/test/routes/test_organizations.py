@@ -1,13 +1,12 @@
-from datetime import datetime
 import pathlib
-
-from app.core.access_token import get_access_token
-from fastapi.testclient import TestClient
-from app.core.config import get_settings
+from datetime import datetime
 from test.utils import is_valid_uuid, use_managerial_user
 
-from app.main import app
+from fastapi.testclient import TestClient
 
+from app.core.access_token import get_access_token
+from app.core.config import get_settings
+from app.main import app
 
 access_token = get_access_token()
 
@@ -23,13 +22,12 @@ def test_get_organization():
     with use_managerial_user() as user:
         response = client.get(
             "/organizations",
-            headers={
-                "Authorization": f"Bearer {access_token}"},
+            headers={"Authorization": f"Bearer {access_token}"},
         )
         assert response.status_code == 200
         r = response.json()
         assert is_valid_uuid(r[0]["id"])
-        assert r[0]["name"] == 'duber+ManagementApi Workspace'
+        assert r[0]["name"] == "duber+ManagementApi Workspace"
         assert r[0]["is_personal"] == True
 
 

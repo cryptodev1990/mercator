@@ -33,7 +33,9 @@ def test_read_conn():
     with gen_users() as (users, db):
         user = users[0]
         new_user = get_user(db, user_id=user.id)
-        assert len(get_all_orgs_for_user(db, new_user.id)) >= 1, "User should be in an organization"
+        assert (
+            len(get_all_orgs_for_user(db, new_user.id)) >= 1
+        ), "User should be in an organization"
         assert get_conns(db, user) == [], "User should not have any connections"
 
         with gen_cred(db, gen_cred_params(), by_user_id=user.id) as new_conn:
@@ -70,9 +72,13 @@ def test_adversarial_read():
         good_user, _, bad_user, _ = users
         cred = gen_cred_params()
         with gen_cred(db, cred, by_user_id=good_user.id) as good_conn:
-            assert bool(get_all_orgs_for_user_as_set(db, bad_user.id) & get_all_orgs_for_user_as_set(
-                db, good_user.id
-            )) == False, "Users should not be in the same organization"
+            assert (
+                bool(
+                    get_all_orgs_for_user_as_set(db, bad_user.id)
+                    & get_all_orgs_for_user_as_set(db, good_user.id)
+                )
+                == False
+            ), "Users should not be in the same organization"
             assert (
                 get_conns(db, bad_user) == []
             ), "Adversary should not be able to see good user connections"
@@ -89,8 +95,8 @@ def test_adversarial_read():
             add_user_to_organization_by_invite(
                 db, invited_user_id=bad_user.id, added_by_user_id=good_user.id
             )
-            assert (
-                org_id in get_all_orgs_for_user_as_set(db, bad_user.id)
+            assert org_id in get_all_orgs_for_user_as_set(
+                db, bad_user.id
             ), "Adverserial user should be in good user's organization"
             assert (
                 get_conns(db, bad_user)[0] == good_conn
@@ -116,7 +122,7 @@ def test_autocreate_org():
         assert conn.name == "Test Postgres"
         conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)
         assert conn_secrets
-        assert conn_secrets.db_password == "postgres" # pragma: allowlist secret
+        assert conn_secrets.db_password == "postgres"  # pragma: allowlist secret
         assert conn_secrets.db_extras == {"sslmode": "disable"}
 
 
@@ -129,23 +135,19 @@ def test_update_conn():
         assert conn.name == "Test Postgres"
         conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)
         assert conn_secrets
-        assert conn_secrets.db_password == "postgres" # pragma: allowlist secret
+        assert conn_secrets.db_password == "postgres"  # pragma: allowlist secret
         assert conn_secrets.db_extras == {"sslmode": "disable"}
         update_conn(
             db,
-            schemas.DbCredentialUpdate(
-                id=conn.id, name="Test Postgres Updated"
-            ),
-            user_id=user.id
+            schemas.DbCredentialUpdate(id=conn.id, name="Test Postgres Updated"),
+            user_id=user.id,
         )
         conn = get_conns(db, user)[0]
         assert conn.name == "Test Postgres Updated"
         update_conn(
             db,
-            schemas.DbCredentialUpdate(
-                id=conn.id, db_password="NEWPASS"
-            ),
-            user_id=user.id
+            schemas.DbCredentialUpdate(id=conn.id, db_password="NEWPASS"),
+            user_id=user.id,
         )
         new_conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)
         assert new_conn_secrets

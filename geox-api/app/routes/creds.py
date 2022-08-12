@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 
-from fastapi import APIRouter, Request, Security, Depends
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -38,7 +38,7 @@ def read_db_conn(
     request: Request,
     uuid: UUID4,
     credentials: HTTPAuthorizationCredentials = Security(security),
-    db_session: Session = Depends(get_db)
+    db_session: Session = Depends(get_db),
 ) -> Optional[PublicDbCredential]:
     """Read a single connection by UUID. Requires that the user be in the same organization as the connection."""
     user = request.state.user
@@ -51,7 +51,7 @@ def update_db_conn(
     request: Request,
     conn_update: DbCredentialUpdate,
     credentials: HTTPAuthorizationCredentials = Security(security),
-    db_session: Session = Depends(get_db)
+    db_session: Session = Depends(get_db),
 ) -> Optional[PublicDbCredential]:
     """Updates a single db connection"""
     user = request.state.user

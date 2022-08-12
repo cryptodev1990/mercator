@@ -1,14 +1,13 @@
-import pytest
-
 import pathlib
-from app.core.access_token import get_access_token
-from fastapi.testclient import TestClient
-from app.core.config import get_settings
-from app.db.session import engine
-
-from app.main import app
 from test.utils import is_valid_uuid
 
+import pytest
+from fastapi.testclient import TestClient
+
+from app.core.access_token import get_access_token
+from app.core.config import get_settings
+from app.db.session import engine
+from app.main import app
 
 access_token = get_access_token()
 
@@ -18,6 +17,7 @@ client = TestClient(app)
 
 
 here = pathlib.Path(__file__).parent.resolve()
+
 
 def cleanup():
     email = settings.machine_account_email
@@ -34,22 +34,22 @@ def cleanup():
 
 @pytest.mark.skip()
 def test_create_db_conn():
-        response = client.post(
-            "/db_config/connections",
-            json={
-                "name": "test",
-                "host": "localhost",
-                "port": "5432",
-                "user": "test",
-                "password": "test",
-                "database": "test",
-                "name": "test connection",
-            },
-            headers={"Authorization": f"Bearer {access_token}"},
-        )
+    response = client.post(
+        "/db_config/connections",
+        json={
+            "name": "test",
+            "host": "localhost",
+            "port": "5432",
+            "user": "test",
+            "password": "test",
+            "database": "test",
+            "name": "test connection",
+        },
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
 
-        r = response.json()
-        assert response.status_code == 200
-        assert is_valid_uuid(r["id"])
-        assert r["name"] == "test"
-        assert r["organization_id"]
+    r = response.json()
+    assert response.status_code == 200
+    assert is_valid_uuid(r["id"])
+    assert r["name"] == "test"
+    assert r["organization_id"]

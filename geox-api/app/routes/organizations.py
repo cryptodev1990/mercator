@@ -1,16 +1,36 @@
 from typing import List
+
 from fastapi import APIRouter, Request, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import UUID4
 
+from app.crud.organization import (
+    add_user_to_organization_by_invite,
+    caller_must_be_in_org,
+    create_organization_and_assign_to_user,
+    get_active_org,
+    get_all_memberships,
+    get_all_orgs_for_user,
+    get_org_by_id,
+    get_organization_members,
+    set_active_organization,
+    soft_delete_and_revert_to_personal_organization,
+    soft_delete_organization_member,
+)
 from app.db.session import SessionLocal
-from app.schemas.organization import Organization, OrganizationCreate, OrganizationMemberCreate, OrganizationMemberDelete, OrganizationMemberUpdate
-from app.crud.organization import add_user_to_organization_by_invite, caller_must_be_in_org, create_organization_and_assign_to_user, get_active_org, get_all_memberships, get_all_orgs_for_user, get_org_by_id, get_organization_members, set_active_organization, soft_delete_and_revert_to_personal_organization, soft_delete_organization_member
+from app.schemas.organization import (
+    Organization,
+    OrganizationCreate,
+    OrganizationMemberCreate,
+    OrganizationMemberDelete,
+    OrganizationMemberUpdate,
+)
 from app.schemas.user import UserWithMembership
 
 from .common import security
 
 router = APIRouter()
+
 
 @router.get("/organizations", tags=["organizations"], response_model=List[Organization])
 def get_organizations(request: Request) -> List[Organization]:
@@ -20,7 +40,9 @@ def get_organizations(request: Request) -> List[Organization]:
         return orgs
 
 
-@router.post("/organizations", tags=["organizations"], response_model=UserWithMembership)
+@router.post(
+    "/organizations", tags=["organizations"], response_model=UserWithMembership
+)
 async def create_organization(
     request: Request,
     organization: OrganizationCreate,
@@ -28,12 +50,15 @@ async def create_organization(
 ):
     user = request.state.user
     with SessionLocal() as db_session:
-        res = create_organization_and_assign_to_user(db_session, OrganizationCreate(
-            name=organization.name), user.id)
+        res = create_organization_and_assign_to_user(
+            db_session, OrganizationCreate(name=organization.name), user.id
+        )
         return res
 
 
-@router.post("/organizations/members", tags=["organizations"], response_model=UserWithMembership)
+@router.post(
+    "/organizations/members", tags=["organizations"], response_model=UserWithMembership
+)
 async def create_organization_member(
     request: Request,
     organization: OrganizationMemberCreate,
@@ -41,7 +66,9 @@ async def create_organization_member(
 ) -> UserWithMembership:
     own_user = request.state.user
     with SessionLocal() as db_session:
-        res = add_user_to_organization_by_invite(db_session, organization.user_id, own_user.id, organization.organization_id)
+        res = add_user_to_organization_by_invite(
+            db_session, organization.user_id, own_user.id, organization.organization_id
+        )
         return res
 
 
@@ -54,11 +81,19 @@ async def remove_user(
     user = request.state.user
     with SessionLocal() as db_session:
         caller_must_be_in_org(db_session, organization.organization_id, user.id)
-        num_rows = soft_delete_and_revert_to_personal_organization(db_session, organization_id=organization.organization_id, user_id=organization.user_id)
+        num_rows = soft_delete_and_revert_to_personal_organization(
+            db_session,
+            organization_id=organization.organization_id,
+            user_id=organization.user_id,
+        )
         return num_rows
 
 
-@router.get("/organizations/members", tags=["organizations"], response_model=List[UserWithMembership])
+@router.get(
+    "/organizations/members",
+    tags=["organizations"],
+    response_model=List[UserWithMembership],
+)
 async def list_organization_members(
     request: Request,
     organization_uuid: UUID4,
@@ -67,7 +102,9 @@ async def list_organization_members(
     user = request.state.user
     with SessionLocal() as db_session:
         caller_must_be_in_org(db_session, organization_uuid, user.id)
-        members = get_organization_members(db=db_session, organization_id=organization_uuid)
+        members = get_organization_members(
+            db=db_session, organization_id=organization_uuid
+        )
         return members
 
 
@@ -83,4 +120,3 @@ async def update_organization_membership(
         if organization.active:
             set_active_organization(db_session, user.id, organization.organization_id)
         return get_all_orgs_for_user(db_session, user.id)
-

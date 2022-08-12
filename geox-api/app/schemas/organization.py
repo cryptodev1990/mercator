@@ -5,8 +5,7 @@ from pydantic import UUID4, BaseModel, Field
 
 
 class OrganizationRead(BaseModel):
-    uuid: UUID4 = Field(...,
-                        description="Unique identifier for the organization")
+    uuid: UUID4 = Field(..., description="Unique identifier for the organization")
 
 
 class OrganizationCreate(BaseModel):
