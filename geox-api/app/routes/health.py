@@ -3,8 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from app.db.session import get_db
-from app.dependencies import verify_token
+from app.dependencies import get_db, verify_token
 
 router = APIRouter()
 

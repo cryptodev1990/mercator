@@ -7,8 +7,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.crud import db_credentials as crud
-from app.db.session import SessionLocal, get_db
-from app.dependencies import verify_token
+from app.dependencies import get_db, verify_token
 from app.schemas import PublicDbCredential
 from app.schemas.db_credential import DbCredentialCreate, DbCredentialUpdate
 
