@@ -18,7 +18,6 @@ from app.crud.organization import (
     guarded_hard_delete_organization,
     set_active_organization,
     soft_delete_and_revert_to_personal_organization,
-    guarded_hard_delete_organization,
     update_organization,
 )
 from app.db.session import SessionLocal
