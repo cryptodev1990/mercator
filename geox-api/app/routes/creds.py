@@ -1,8 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Request, Security
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, Request, Security, HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -36,7 +35,25 @@ def read_db_conn(
 ) -> Optional[PublicDbCredential]:
     """Read a single connection by UUID. Requires that the user be in the same organization as the connection."""
     user = request.state.user
-    return crud.get_conn(db=db_session, db_credential_id=uuid, user_id=user.id)
+    try:
+        return crud.get_conn(db=db_session, db_credential_id=uuid, user_id=user.id)
+    except crud.DbCredentialModelException as e:
+        if "not found" in str(e):
+            raise HTTPException(status_code=404, detail="Not found")
+
+
+@router.get("/db_config/connections", response_model=List[PublicDbCredential])
+def read_db_conns(
+    request: Request,
+    type: GetAllConnectionsType = GetAllConnectionsType.organization,
+    db_session: Session = Depends(get_db),
+) -> List[PublicDbCredential]:
+    """Read all connections. Requires that the user be in the same organization as the connection."""
+    user = request.state.user
+    if type == GetAllConnectionsType.organization:
+        return crud.get_conns(db=db_session, user=user)
+    else:
+        raise HTTPException(status_code=404, detail="Not found")
 
 
 @router.patch("/db_config/connections/{uuid}", response_model=PublicDbCredential)
