@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type GeoShapeRead = {
+export type OrganizationCreate = {
     /**
-     * Unique identifier for the shape
+     * Name of the organization
      */
-    uuid: string;
+    name: string;
 };
 

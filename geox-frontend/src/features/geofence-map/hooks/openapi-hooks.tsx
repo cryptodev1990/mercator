@@ -8,8 +8,9 @@ import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 
 export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation(GeofencerService.createShapeGeofencerShapesPost, {
-    onSuccess(data: GeoShape[]) {
+  const post = GeofencerService.createShapeGeofencerShapesPost;
+  return useMutation(post, {
+    onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
     },
     onError(error) {
@@ -43,4 +44,19 @@ export const useUpdateShapeMutation = () => {
       console.log("failed", error);
     },
   });
+};
+
+export const useBulkDeleteShapesMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    GeofencerService.bulkSoftDeleteShapesGeofencerShapesDelete,
+    {
+      onSuccess(data: GeoShape) {
+        queryClient.fetchQuery("geofencer");
+      },
+      onError(error) {
+        console.log("failed", error);
+      },
+    }
+  );
 };

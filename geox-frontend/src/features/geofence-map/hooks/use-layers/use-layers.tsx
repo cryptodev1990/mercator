@@ -99,8 +99,8 @@ export const useLayers = () => {
               stroked: true,
               // https://deck.gl/docs/api-reference/layers/geojson-layer#pointtypecircle-options
               pointRadiusMinPixels: 2,
-              getPointRadius: 20,
-              getFillColor: [255, 255, 255],
+              getPointRadius: 5,
+              getFillColor: [255, 255, 255, 150],
               getLineColor: [0, 150, 255],
             },
           },
@@ -109,6 +109,7 @@ export const useLayers = () => {
               return;
             }
             if (event && event.rightButton) {
+              selectOneShapeUuid(data.object.properties.__uuid);
               return;
             }
             if (data && data.object) {

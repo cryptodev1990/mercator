@@ -1,9 +1,31 @@
+import { cleanup } from "@testing-library/react";
 import { useEffect, useState } from "react";
+import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
+import { useShapes } from "./hooks/use-shapes";
 
 export const GeofencerContextMenu = () => {
   const [xPos, setXPos] = useState<string | null>(null);
   const [yPos, setYPos] = useState<string | null>(null);
   const [recentActivity, setRecentActivity] = useState<number>(0);
+  // read selection from context
+  const {
+    selectedShapeUuids,
+    setShapeForMetadataEdit,
+    shapes,
+    clearSelectedShapeUuids,
+  } = useShapes();
+  const { mutate: bulkDelete } = useBulkDeleteShapesMutation();
+
+  function closeMenu() {
+    setXPos(null);
+    setYPos(null);
+  }
+
+  function cleanup() {
+    setShapeForMetadataEdit(null);
+    clearSelectedShapeUuids();
+    closeMenu();
+  }
 
   const listenerFunc = (event: MouseEvent) => {
     event.preventDefault();
@@ -23,6 +45,32 @@ export const GeofencerContextMenu = () => {
 
   if (!xPos || !yPos) {
     return null;
+  }
+
+  function handleClickFor(fieldType: string) {
+    switch (fieldType) {
+      case "Edit":
+        if (Object.keys(selectedShapeUuids).length > 1) {
+          alert("Please select only one shape to edit");
+        }
+        const selectedShape = shapes.find(
+          (shape) => shape.uuid === Object.keys(selectedShapeUuids)[0]
+        );
+        if (!selectedShape) {
+          return;
+        }
+        setShapeForMetadataEdit(selectedShape);
+        cleanup();
+        return;
+      case "Delete":
+        bulkDelete(Object.keys(selectedShapeUuids));
+        cleanup();
+        return;
+      default:
+        return () => {
+          setRecentActivity(recentActivity + 1);
+        };
+    }
   }
 
   return (
@@ -46,10 +94,13 @@ export const GeofencerContextMenu = () => {
         setRecentActivity(Math.random());
       }}
     >
-      <div>Transform</div>
-      <div>Edit</div>
-      <div>Transform</div>
-      <div>Transform</div>
+      <ul className="dropdown-content text-black menu p-1 rounded-box w-52 bg-white">
+        {["Edit", "Delete", "Duplicate"].map((item) => (
+          <li onClick={() => handleClickFor(item)} key={item}>
+            <a>{item}</a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
