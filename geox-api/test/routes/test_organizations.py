@@ -82,7 +82,7 @@ def test_update_org():
             },
             headers={"Authorization": f"Bearer {access_token}"},
         )
-        org_id = response.json()['organization_id']
+        org_id = response.json()["organization_id"]
 
         response = client.put(
             "/organizations/{}".format(org_id),
@@ -94,4 +94,4 @@ def test_update_org():
         print(response.json())
 
         assert response.status_code == 200
-        assert response.json()['name'] == 'test 2'
+        assert response.json()["name"] == "test 2"

@@ -94,7 +94,9 @@ def hard_delete_organization(db: Session, organization_id: UUID4) -> int:
     return num_rows
 
 
-def guarded_hard_delete_organization(db: Session, organization_id: UUID4, user_id: int) -> int:
+def guarded_hard_delete_organization(
+    db: Session, organization_id: UUID4, user_id: int
+) -> int:
     """Hard deletes an organization and all of its members"""
     caller_must_be_in_org(db, organization_id, user_id)
     if get_personal_org_id(db, user_id) == organization_id:
@@ -108,11 +110,16 @@ def guarded_hard_delete_organization(db: Session, organization_id: UUID4, user_i
     return num_rows
 
 
-def update_organization(db: Session, organization_id: UUID4, organization: schemas.OrganizationUpdate) -> schemas.Organization:
+def update_organization(
+    db: Session, organization_id: UUID4, organization: schemas.OrganizationUpdate
+) -> schemas.Organization:
     """Updates an organization"""
     db_org = (
         db.query(models.Organization)
-        .filter(models.Organization.id == organization_id, models.Organization.is_personal == False)
+        .filter(
+            models.Organization.id == organization_id,
+            models.Organization.is_personal == False,
+        )
         .first()
     )
     if not db_org:

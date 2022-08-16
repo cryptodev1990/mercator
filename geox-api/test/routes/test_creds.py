@@ -1,5 +1,11 @@
 import pathlib
-from test.utils import gen_cred, gen_cred_params, gen_users, is_valid_uuid, use_managerial_user
+from test.utils import (
+    gen_cred,
+    gen_cred_params,
+    gen_users,
+    is_valid_uuid,
+    use_managerial_user,
+)
 
 from fastapi.testclient import TestClient
 
@@ -26,7 +32,7 @@ def create_conn_http():
             "db_host": "localhost",
             "db_port": "5432",
             "db_user": "test",
-            "db_password": "test",
+            "db_password": "test",  # pragma: allowlist secret
             "db_database": "test",
             "db_driver": "postgres",
             "name": "test connection",
@@ -109,8 +115,11 @@ def test_read_multiple_conns():
         )
         assert response.status_code == 200
         assert len(response.json()) == 2
-        assert all([any([x in str(row) for x in conn_uuids]) for row in response.json(
-        )]), f"All UUIDs ({', '.join(conn_uuids)}) must be in the list, saw " + str(response.json())
+        assert all(
+            [any([x in str(row) for x in conn_uuids]) for row in response.json()]
+        ), f"All UUIDs ({', '.join(conn_uuids)}) must be in the list, saw " + str(
+            response.json()
+        )
 
 
 def test_update_conn():

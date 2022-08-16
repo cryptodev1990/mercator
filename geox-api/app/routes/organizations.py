@@ -4,8 +4,6 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db, verify_token
-from app.db.session import SessionLocal
 from app.crud.organization import (
     add_user_to_organization_by_invite,
     caller_must_be_in_org,
@@ -19,6 +17,7 @@ from app.crud.organization import (
     update_organization,
 )
 from app.db.session import SessionLocal
+from app.dependencies import get_db, verify_token
 from app.schemas.organization import (
     Organization,
     OrganizationCreate,
@@ -27,7 +26,6 @@ from app.schemas.organization import (
     OrganizationMemberUpdate,
     OrganizationUpdate,
 )
-from app.db.session import SessionLocal
 from app.schemas.user import UserWithMembership
 
 router = APIRouter(dependencies=[Depends(verify_token)])
@@ -55,7 +53,11 @@ async def create_organization(
     return res
 
 
-@router.get("/organizations/{organization_id}", tags=["organizations"], response_model=Organization)
+@router.get(
+    "/organizations/{organization_id}",
+    tags=["organizations"],
+    response_model=Organization,
+)
 async def get_organization(
     request: Request,
     organization_id: UUID4,
@@ -78,7 +80,11 @@ async def delete_organization(
         return True
 
 
-@router.put("/organizations/{organization_id}", tags=["organizations"], response_model=Organization)
+@router.put(
+    "/organizations/{organization_id}",
+    tags=["organizations"],
+    response_model=Organization,
+)
 async def update_organization_(
     request: Request,
     organization_id: UUID4,
@@ -91,7 +97,9 @@ async def update_organization_(
         return org
 
 
-@router.post("/organizations/members", tags=["organizations"], response_model=UserWithMembership)
+@router.post(
+    "/organizations/members", tags=["organizations"], response_model=UserWithMembership
+)
 async def create_organization_member(
     request: Request, organization: OrganizationMemberCreate, db_session=Depends(get_db)
 ) -> UserWithMembership:

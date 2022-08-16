@@ -232,7 +232,7 @@ def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> int:
     ).delete()
     db.commit()
     new_num_conns = count_conns(db, user_id)
-    return num_conns - new_num_conns 
+    return num_conns - new_num_conns
 
 
 def count_conns(db: Session, user_id: int) -> int:
