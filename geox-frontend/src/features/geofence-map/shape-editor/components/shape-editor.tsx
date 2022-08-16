@@ -2,7 +2,7 @@ import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 
 import { JsonEditor } from "./json-editor";
 import { useShapes } from "../../hooks/use-shapes";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 interface IDictionary<T> {
   [index: string]: T;

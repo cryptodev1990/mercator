@@ -654,6 +654,7 @@ Aug 4 2022
 - [ ] Re-do landing page for Launch Bookface
 
 Aug 5-7
+-------
 
 ## Progress
 
@@ -669,12 +670,14 @@ Aug 7-8
 - [ ] Support publishing shapes to database
 
 Aug 9
+------
 
 ## Progress
 
 - [X] Polish landing page
 
 Aug 10
+-------
 
 ## Progress
 
@@ -686,3 +689,12 @@ Aug 10
 
 - [ ] Need to make sure an organization always exists for a user. Another update trigger?
   - On org member soft delete, create a personal organization for a user
+
+Aug 16 2022
+-----------
+
+## Progress
+- [ ] Fix backlog tags
+  - [ ] Editable shapes can't have points dragged back into the shape
+  - [X] Right-click of a shape occasionally does not select the shape
+- [ ] Complete database publish

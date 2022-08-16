@@ -12,6 +12,7 @@ import {
 
 import { useShapes } from "../use-shapes";
 import { useAddShapeMutation, useUpdateShapeMutation } from "../openapi-hooks";
+import { useEffect, useRef } from "react";
 
 export function useEditFunction() {
   const { options } = useCursorMode();
@@ -20,10 +21,32 @@ export function useEditFunction() {
     selectedShapeUuids,
     setShapeForMetadataEdit,
     clearSelectedShapeUuids,
+    tentativeShapes,
     setTentativeShapes,
   } = useShapes();
   const { mutate: addShape } = useAddShapeMutation();
   const { mutate: updateShape } = useUpdateShapeMutation();
+  const operationRef = useRef<any>();
+
+  useEffect(() => {
+    if (!tentativeShapes) {
+      return;
+    }
+    if (operationRef.current) {
+      clearInterval(operationRef.current);
+    }
+    operationRef.current = setTimeout(() => {
+      updateShape({
+        uuid: Object.keys(selectedShapeUuids)[0],
+        geojson: tentativeShapes[0].geojson,
+      });
+    }, 100);
+    return () => {
+      if (operationRef.current) {
+        clearTimeout(operationRef.current);
+      }
+    };
+  }, [tentativeShapes]);
 
   const addShapeAndEdit = async (shape: GeoShapeCreate) => {
     addShape(shape as any, {

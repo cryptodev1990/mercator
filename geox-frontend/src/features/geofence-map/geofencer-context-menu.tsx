@@ -1,6 +1,7 @@
-import { cleanup } from "@testing-library/react";
 import { useEffect, useState } from "react";
+import { EditorMode } from "./cursor-modes";
 import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
+import { useCursorMode } from "./hooks/use-cursor-mode";
 import { useShapes } from "./hooks/use-shapes";
 
 export const GeofencerContextMenu = () => {
@@ -27,6 +28,8 @@ export const GeofencerContextMenu = () => {
     closeMenu();
   }
 
+  const { setCursorMode } = useCursorMode();
+
   const listenerFunc = (event: MouseEvent) => {
     event.preventDefault();
     const xPos = event.pageX - 10 + "px";
@@ -49,7 +52,10 @@ export const GeofencerContextMenu = () => {
 
   function handleClickFor(fieldType: string) {
     switch (fieldType) {
-      case "Edit":
+      case "Draw":
+        setCursorMode(EditorMode.EditMode);
+        return;
+      case "Metadata":
         if (Object.keys(selectedShapeUuids).length > 1) {
           alert("Please select only one shape to edit");
         }
@@ -60,7 +66,14 @@ export const GeofencerContextMenu = () => {
           return;
         }
         setShapeForMetadataEdit(selectedShape);
-        cleanup();
+        closeMenu();
+        return;
+      case "Edit":
+        if (Object.keys(selectedShapeUuids).length > 1) {
+          alert("Please select only one shape to edit");
+        }
+        setCursorMode(EditorMode.ModifyMode);
+        closeMenu();
         return;
       case "Delete":
         bulkDelete(Object.keys(selectedShapeUuids));
@@ -73,6 +86,15 @@ export const GeofencerContextMenu = () => {
     }
   }
 
+  let options;
+  if (Object.keys(selectedShapeUuids).length === 0) {
+    options = ["Draw"];
+  } else if (Object.keys(selectedShapeUuids).length === 1) {
+    options = ["Metadata", "Edit", "Delete", "Duplicate"];
+  } else {
+    options = [""];
+  }
+
   return (
     <div
       style={{
@@ -82,7 +104,6 @@ export const GeofencerContextMenu = () => {
         zIndex: 9999,
         backgroundColor: "white",
         border: "1px solid black",
-        padding: "10px",
         boxShadow: "0px 0px 10px black",
         borderRadius: "5px",
       }}
@@ -95,7 +116,7 @@ export const GeofencerContextMenu = () => {
       }}
     >
       <ul className="dropdown-content text-black menu p-1 rounded-box w-52 bg-white">
-        {["Edit", "Delete", "Duplicate"].map((item) => (
+        {options.map((item) => (
           <li onClick={() => handleClickFor(item)} key={item}>
             <a>{item}</a>
           </li>
