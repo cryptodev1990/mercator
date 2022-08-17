@@ -16,5 +16,5 @@ repos:
         - "--baseline"
         - ".secrets.baseline"
         - "--exclude-files"
-        - "alembic/verions/.*"
+        - "alembic/versions/.*"
 
