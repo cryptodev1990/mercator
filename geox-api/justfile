@@ -115,7 +115,7 @@ lint: ## Lint the project
 
 # Run tests
 test *FLAGS=".":
-	ENV_FILE=.env.local ./bin/test.sh {{ FLAGS }}
+	ENV_FILE=.env.local ./bin/test-local.sh {{ FLAGS }}
 
 ## Alembic
 

@@ -3,9 +3,5 @@
 set -e
 
 python -m app.tests_pre_start
-if [ "$APP_NO_ALEMBIC" = "1" ] || [ "$(echo \"$APP_NO_ALEMBIC\" | tr '[:upper:]' '[:lower:]')" = "true" ]
-then
-    alembic upgrade head
-fi
 alembic upgrade head
 bash ./bin/test.sh "$@"
