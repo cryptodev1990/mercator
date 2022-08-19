@@ -27,7 +27,7 @@ if [ ! "$(docker ps -q -f name=$DOCKER_CONTAINER_NAME)" ]; then
 fi
 
 # wait 10
-ENV_FILE=.env.local ./tests-start.sh
+ENV_FILE=.env.local ./tests-start.sh "$@"
 
 docker stop $DOCKER_CONTAINER_NAME
 docker container rm $DOCKER_CONTAINER_NAME

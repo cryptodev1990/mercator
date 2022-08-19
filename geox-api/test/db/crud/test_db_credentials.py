@@ -148,7 +148,7 @@ def test_update_conn():
         assert conn.name == "Test Postgres Updated"
         update_conn(
             db,
-            schemas.DbCredentialUpdate(id=conn.id, db_password="NEWPASS"),
+            schemas.DbCredentialUpdate(id=conn.id, db_password="NEWPASS"),  # pragma: allowlist secret
             user_id=user.id,
         )
         new_conn_secrets = get_conn_secrets(db, db_credential_id=conn.id)

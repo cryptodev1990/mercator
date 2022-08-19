@@ -101,6 +101,24 @@ def test_bounce_for_bad_bearer_token():
 
 def test_404_with_auth():
     try:
+        with SessionLocal() as db_session:
+            # the user needs to exist for the latter tests to work
+            create_user(
+                db_session,
+                UserCreate(
+                    sub_id=settings.machine_account_sub_id,
+                    email=settings.machine_account_email,
+                    given_name="Test",
+                    family_name="User",
+                    nickname="",
+                    name="",
+                    picture="",
+                    locale="en-US",
+                    updated_at=None,
+                    email_verified=False,
+                    iss="",
+                ),
+            )
         response = client.get("/geofencer/shapesa/", headers=headers)
         assert response.status_code == 404
         with SessionLocal() as db_session:

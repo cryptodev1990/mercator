@@ -6,7 +6,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.crud import shape as crud
-from app.dependencies import get_db, verify_token
+from app.dependencies import verify_token, get_app_user_session, UserSession
 from app.schemas import (
     GeoShape,
     GeoShapeCreate,
@@ -27,19 +27,19 @@ class GetAllShapesRequestType(str, Enum):
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def get_shape(
     uuid: UUID4,
-    db_session: Session = Depends(get_db),
+    user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[GeoShape]:
-    return crud.get_shape(db_session, GeoShapeRead(uuid=uuid))
+    return crud.get_shape(user_session.session, GeoShapeRead(uuid=uuid))
 
 
 @router.get("/geofencer/shapes", response_model=List[GeoShape])
 def get_all_shapes(
-    request: Request,
     rtype: GetAllShapesRequestType,
-    db_session: Session = Depends(get_db),
+    user_session: UserSession = Depends(get_app_user_session)
 ) -> Optional[List[GeoShape]]:
     # Set by ProtectedRoutesMiddleware
-    user = request.state.user
+    user = user_session.user
+    db_session = user_session.session
     shapes = []
     if rtype == GetAllShapesRequestType.user:
         shapes = crud.get_all_shapes_by_user(db_session, User(**user.__dict__))
@@ -51,47 +51,39 @@ def get_all_shapes(
 
 @router.post("/geofencer/shapes", response_model=GeoShape)
 def create_shape(
-    request: Request,
     geoshape: GeoShapeCreate,
-    db_session: Session = Depends(get_db),
+    user_session: UserSession = Depends(get_app_user_session),
 ) -> GeoShape:
     # Set by ProtectedRoutesMiddleware
-    user = request.state.user
-    shape = crud.create_shape(db_session, geoshape, user_id=user.id)
+    shape = crud.create_shape(user_session.session, geoshape, user_id=user_session.user.id)
     return shape
 
 
 @router.put("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def update_shape(
-    request: Request,
     geoshape: GeoShapeUpdate,
-    db_session: Session = Depends(get_db),
+    user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[GeoShape]:
     # Set by ProtectedRoutesMiddleware
-    user = request.state.user
-    shape = crud.update_shape(db_session, geoshape, user.id)
+    shape = crud.update_shape(user_session.session, geoshape, user_session.user.id)
     return shape
 
 
 @router.delete("/geofencer/shapes")
 def bulk_soft_delete_shapes(
-    request: Request,
     shape_uuids: List[UUID4],
-    db_session: Session = Depends(get_db),
+    user_session: UserSession = Depends(get_app_user_session),
 ) -> ShapeCountResponse:
     # Set by ProtectedRoutesMiddleware
-    user = request.state.user
-    shape_count = crud.bulk_soft_delete_shapes(db_session, shape_uuids, user.id)
+    shape_count = crud.bulk_soft_delete_shapes(user_session.session, shape_uuids, user_session.user.id)
     return shape_count
 
 
 @router.post("/geofencer/shapes/bulk")
 def bulk_create_shapes(
-    request: Request,
     geoshapes: List[GeoShapeCreate],
-    db_session: Session = Depends(get_db),
+    user_session: UserSession = Depends(get_app_user_session),
 ) -> ShapeCountResponse:
     # Set by ProtectedRoutesMiddleware
-    user = request.state.user
-    num_shapes_created = crud.bulk_create_shapes(db_session, geoshapes, user.id)
+    num_shapes_created = crud.bulk_create_shapes(user_session.session, geoshapes, user_session.user.id)
     return num_shapes_created

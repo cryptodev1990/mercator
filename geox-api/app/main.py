@@ -10,7 +10,6 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app import routes
 from app.core.config import get_settings
-from app.middleware import ProtectedRoutesMiddleware
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -32,15 +31,6 @@ app = FastAPI(
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
-        ),
-        Middleware(
-            ProtectedRoutesMiddleware,
-            protected_routes=[
-                "/protected_health",
-                "/geofencer*",
-                "/organization*",
-                "/db_config*",
-            ],
         ),
     ],
 )
