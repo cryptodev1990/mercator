@@ -40,6 +40,7 @@ const GeofenceMap = () => {
         useDevicePixels={true}
         // @ts-ignore
         layers={layers}
+        getTooltip={getTooltip}
       >
         <StaticMap
           mapStyle={"mapbox://styles/mapbox/light-v9"}

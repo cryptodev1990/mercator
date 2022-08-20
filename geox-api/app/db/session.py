@@ -1,6 +1,6 @@
 """SQLAlchemy session objects and functions."""
 
-from typing import Any, Generator
+from typing import Any
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import get_settings
 
 SQLALCHEMY_DATABASE_URI: Any = get_settings().sqlalchemy_database_uri
+OSM_DATABASE_URI: Any = get_settings().sqlalchemy_osm_database_uri
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
@@ -41,5 +42,14 @@ def receive_reset(dbapi_connection, connection_record):
     _set_default_app_user_id(dbapi_connection)
 
 
+osm_engine = create_engine("postgresql://andrewduberstein:@localhost:5432/andrewduberstein")
+
+OsmSessionLocal = None
+osm_engine = None
+if OSM_DATABASE_URI:
+    osm_engine = create_engine(OSM_DATABASE_URI)
+    OsmSessionLocal = sessionmaker(bind=osm_engine)
+else:
+    print("OSM_DATABASE_URI is not set, OSM features will be disabled")
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-"""SQLALchemy session to use in the app."""

@@ -11,11 +11,13 @@ export const CommandPalette = ({
   onOSM,
   onBuffer,
   onPublish,
+  onIsochrone,
 }: {
   onNominatim: any;
   onOSM: any;
   onBuffer: any;
   onPublish: any;
+  onIsochrone: any;
 }) => {
   const [hidden, setHidden] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
@@ -40,11 +42,29 @@ export const CommandPalette = ({
             })
           : setError("No results");
       } else if (value.startsWith("get ")) {
-        const res = await getOSMData(value.replace("get ", ""));
-        const features = res.data.features as Feature[];
+        // extract the location from the command
+        const values = value.match(/get (.*) in (.*)$/);
+        if (!values) {
+          setError(
+            "Command must be in the format 'get <amenity> in <location>'"
+          );
+          return;
+        }
+        const res = await getOSMData(values![1], values![2]);
+        const features = res as Feature[];
         onOSM(features);
       } else if (value.startsWith("draw ")) {
-        onBuffer(500, "meters");
+        if (value.endsWith("buffer")) {
+          // extract number and unit from string
+          const values = value.match(/^draw (\d+)m buffer$/);
+          onBuffer(values![1] ?? 100, "meters");
+        } else if (value.endsWith("drive")) {
+          // extract number from string
+          console.log("ok");
+          const values = value.match(/^draw (\d+) (\w+) drive*/);
+          console.log(values);
+          onIsochrone(values![1] ?? 100, values![2] ?? "minute");
+        }
       } else if (value.startsWith("publish")) {
         onPublish();
       } else {

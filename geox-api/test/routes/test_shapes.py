@@ -256,7 +256,7 @@ def test_bulk_delete_shapes():
         body = response.json()
         assert len(body) == 3
         response = client.delete(
-            f"/geofencer/shapes",
+            f"/geofencer/shapes/bulk",
             json=[str(shape1.uuid), str(shape2.uuid), str(shape3.uuid)],
             headers=headers,
         )

@@ -690,11 +690,44 @@ Aug 10
 - [ ] Need to make sure an organization always exists for a user. Another update trigger?
   - On org member soft delete, create a personal organization for a user
 
-Aug 16 2022
+Aug 16-19 2022
 -----------
 
 ## Progress
 - [ ] Fix backlog tags
   - [ ] Editable shapes can't have points dragged back into the shape
   - [X] Right-click of a shape occasionally does not select the shape
+  - [ ] Fix scroll
 - [ ] Complete database publish
+- [ ] Complete snap shape to roads
+  - [ ] Break polygon into ring
+  - [ ] Snap ring to roads
+- [X] Make OSM searchable - demo copy
+  - Used ``osm2pgsql`` with a ``flex`` argument and a [custom Lua script](https://github.com/openstreetmap/osm2pgsql/blob/master/flex-config/generic.lua)
+  - Added a TSVector to pg tags column
+- [ ] Pagination for shape results
+
+
+# MVP
+
+## Tier 0
+- [ ] Multitenancy
+- [ ] Snowflake publication
+ - Possibly solved by [AirByte](https://airbyte.com/tutorials/postgresql-database-to-snowflake?utm_term=&utm_campaign=Airbyte+-+Nonbrand+-+Database+Transition&utm_source=adwords&utm_medium=ppc&hsa_acc=7542309003&hsa_cam=16651686687&hsa_grp=140090051201&hsa_ad=596994094959&hsa_src=g&hsa_tgt=aud-1637563966306:dsa-1720612594717&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gclid=CjwKCAjw6fyXBhBgEiwAhhiZsnMhxX_vU0BFWEH1upPto2BNLp0pXD85CZTIz62YZR9BAy1XK2aizxoCBh8QAvD_BwE#step-7)
+- [ ] Download to JSON -- download all live shapes to JSON
+- [ ] Uploads of random data -- cap at 100 MB?
+- [ ] UI bugs
+  - [ ] "Tentative shape" shadow lingers
+    - Repro steps: Draw a shape, alter it, delete the shape. Shadow is still there.
+  - [ ] Shape delete from right click does not work
+  - [ ] "The metadata editor needs a shape to edit" needs to be hidden
+- [ ] Error snackbar needs to exist
+
+## Tier 1
+------
+- [ ] Alerting on 400s/500s
+- [ ] DataDog
+
+## Tier 2
+---------
+- [ ] OSM search / copy for all of North America

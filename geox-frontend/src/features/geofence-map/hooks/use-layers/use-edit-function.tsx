@@ -36,8 +36,12 @@ export function useEditFunction() {
       clearInterval(operationRef.current);
     }
     operationRef.current = setTimeout(() => {
+      const uuid = Object.keys(selectedShapeUuids)[0];
+      if (!uuid) {
+        return;
+      }
       updateShape({
-        uuid: Object.keys(selectedShapeUuids)[0],
+        uuid,
         geojson: tentativeShapes[0].geojson,
       });
     }, 100);
@@ -64,7 +68,6 @@ export function useEditFunction() {
     updatedData: any;
     editType: string;
   }) {
-    console.log(editType);
     if (editType === "split") {
       let editedShape: Feature<MultiPolygon> =
         updatedData.features[selectedFeatureIndexes[0]];
@@ -76,12 +79,6 @@ export function useEditFunction() {
         shapes[selectedFeatureIndexes[0]].uuid !==
           Object.keys(selectedShapeUuids)[0]
       ) {
-        console.log(
-          Object.keys(selectedShapeUuids).length > 1 ||
-            selectedFeatureIndexes.length > 1 ||
-            shapes[selectedFeatureIndexes[0]].uuid !==
-              Object.keys(selectedShapeUuids)[0]
-        );
         throw new Error("Split should not select more than one shape");
       }
       const uuid = editedShape?.properties?.__uuid;

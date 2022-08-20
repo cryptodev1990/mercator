@@ -37,7 +37,6 @@ def get_all_shapes(
     rtype: GetAllShapesRequestType,
     user_session: UserSession = Depends(get_app_user_session)
 ) -> Optional[List[GeoShape]]:
-    # Set by ProtectedRoutesMiddleware
     user = user_session.user
     db_session = user_session.session
     shapes = []
@@ -54,7 +53,6 @@ def create_shape(
     geoshape: GeoShapeCreate,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> GeoShape:
-    # Set by ProtectedRoutesMiddleware
     shape = crud.create_shape(user_session.session, geoshape, user_id=user_session.user.id)
     return shape
 
@@ -64,26 +62,23 @@ def update_shape(
     geoshape: GeoShapeUpdate,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[GeoShape]:
-    # Set by ProtectedRoutesMiddleware
     shape = crud.update_shape(user_session.session, geoshape, user_session.user.id)
     return shape
 
 
-@router.delete("/geofencer/shapes")
+@router.delete("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_soft_delete_shapes(
     shape_uuids: List[UUID4],
     user_session: UserSession = Depends(get_app_user_session),
 ) -> ShapeCountResponse:
-    # Set by ProtectedRoutesMiddleware
     shape_count = crud.bulk_soft_delete_shapes(user_session.session, shape_uuids, user_session.user.id)
     return shape_count
 
 
-@router.post("/geofencer/shapes/bulk")
+@router.post("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_create_shapes(
     geoshapes: List[GeoShapeCreate],
     user_session: UserSession = Depends(get_app_user_session),
 ) -> ShapeCountResponse:
-    # Set by ProtectedRoutesMiddleware
     num_shapes_created = crud.bulk_create_shapes(user_session.session, geoshapes, user_session.user.id)
     return num_shapes_created

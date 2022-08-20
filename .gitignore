@@ -36,3 +36,6 @@ celestial/dist/
 celestial/.parcel-cache/
 ignore__*.*
 .vercel
+*.geojson
+*.csv
+*.pbf
