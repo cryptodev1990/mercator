@@ -15,6 +15,8 @@ from app.models.user import User
 
 
 class Organization(TimestampMixin, UUIDMixin):
+    """An organization is a collection of members."""
+
     __tablename__ = "organizations"
 
     name = Column(String, nullable=False)
@@ -32,6 +34,8 @@ class Organization(TimestampMixin, UUIDMixin):
 
 
 class OrganizationMember(TimestampMixin, MembershipMixin):
+    """Represents membership in an organization."""
+
     __tablename__ = "organization_members"
 
     id = Column(Integer, primary_key=True, index=True)

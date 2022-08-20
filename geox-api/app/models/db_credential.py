@@ -1,4 +1,8 @@
-"""Database credentials model"""
+"""Database credentials model.
+
+Database credentials are credentials for *external databases* which shapes are exported.
+
+"""
 from sqlalchemy import (
     Boolean,
     Column,
@@ -16,6 +20,8 @@ from app.models.user import User
 
 
 class DbCredential(UUIDMixin, TimestampMixin):
+    """Represents an external database connection for export."""
+
     __tablename__ = "db_credentials"
 
     name = Column(String, index=True, nullable=False)
