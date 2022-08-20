@@ -3,6 +3,7 @@ FastAPI dependencies
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
+from multiprocessing import connection
 from typing import Any, AsyncGenerator, Dict, Generator, Iterator
 
 from fastapi import Depends, HTTPException, status
@@ -80,7 +81,7 @@ async def get_app_user_session(
 ) -> UserSession:
     """Configure database session for an authorized user.
 
-    Adds a hook which inserts ``SET LOCAL auth.auth_user_id = :user_id``
+    Adds a hook which inserts ``SET LOCAL app.user_id = :user_id``
     at the start of each transaction.
 
     """
@@ -92,6 +93,7 @@ async def get_app_user_session(
 
     @event.listens_for(db_session, "after_begin")
     def receive_after_begin(session, transaction, connection):
+        session.execute("SET LOCAL ROLE app_user")
         set_app_user_id(session, user_id, local=True)
 
     # Need to commit any remaining transactions prior to exiting
