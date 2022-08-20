@@ -11,6 +11,8 @@ from app.db.base_class import Base
 
 
 class Shape(Base):
+    """A geospatial shape."""
+
     __tablename__ = "shapes"
 
     uuid = Column(

@@ -1,10 +1,12 @@
-"""User model"""
+"""App users."""
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
 from app.db.base_class import Base
 
 
 class User(Base):
+    """Represents a user of the app."""
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)

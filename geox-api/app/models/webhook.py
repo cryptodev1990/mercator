@@ -6,6 +6,7 @@ from app.db.base_class import Base
 
 
 class Webhook(Base):
+    """Represents a webhook."""
     __tablename__ = "webhooks"
 
     id = Column(Integer, primary_key=True, index=True)
