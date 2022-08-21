@@ -714,6 +714,7 @@ Aug 16-19 2022
 - [ ] Multitenancy
 - [ ] Snowflake publication
  - Possibly solved by [AirByte](https://airbyte.com/tutorials/postgresql-database-to-snowflake?utm_term=&utm_campaign=Airbyte+-+Nonbrand+-+Database+Transition&utm_source=adwords&utm_medium=ppc&hsa_acc=7542309003&hsa_cam=16651686687&hsa_grp=140090051201&hsa_ad=596994094959&hsa_src=g&hsa_tgt=aud-1637563966306:dsa-1720612594717&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gclid=CjwKCAjw6fyXBhBgEiwAhhiZsnMhxX_vU0BFWEH1upPto2BNLp0pXD85CZTIz62YZR9BAy1XK2aizxoCBh8QAvD_BwE#step-7)
+ - See branch ``ajd/add-a-database`` for WIP backend publication with Celery
 - [ ] Download to JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
