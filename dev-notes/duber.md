@@ -718,6 +718,7 @@ Aug 16-19 2022
  - [ ] DB credential creation flow
    - [X] Add UI for DB credential creation
    - [ ] Add health tests for DB credentials
+   - [ ] Do an end to end test: Add credentials, do a health check
 - [ ] Download to JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
