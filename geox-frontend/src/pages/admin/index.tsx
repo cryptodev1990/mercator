@@ -9,7 +9,6 @@ const AuthComponent = () => {
   const { isLoading, isError, data, error } = useQuery(
     ["health"],
     () => {
-      console.log("got here");
       return HealthService.protectedHealthProtectedHealthGet();
     },
     {}

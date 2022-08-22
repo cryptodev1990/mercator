@@ -61,7 +61,6 @@ export const GeofencerCommandPalette = () => {
         setTentativeShapes(newShapes);
       }}
       onIsochrone={async (num: number, timeUnits: string) => {
-        console.log(num, timeUnits);
         const timeInSeconds = num * 60;
         const newShapes: GeoShapeCreate[] = [];
         for (const s of tentativeShapes) {
@@ -71,8 +70,6 @@ export const GeofencerCommandPalette = () => {
             timeInSeconds,
             "car"
           );
-          console.log(isochroneError);
-          console.log(chrone);
           newShapes.push({
             ...s,
             geojson: chrone as any,

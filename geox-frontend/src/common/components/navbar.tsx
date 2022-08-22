@@ -4,8 +4,6 @@ import logo from "../assets/mercator-logo.svg";
 import ReactLoading from "react-loading";
 import { useNavigate, useMatch } from "react-router-dom";
 import Dropdown from "./dropdown";
-import { HealthService } from "../../client";
-import { useEffect } from "react";
 import { FlashButton } from "./button";
 
 const LoginButton = () => {
@@ -34,12 +32,6 @@ const Navbar: React.FC = () => {
   const onDashboard = useMatch("/dashboard/*");
   const onHomepage = useMatch("/");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    HealthService.protectedHealthProtectedHealthGet().then(() => {
-      console.log("Health check passed");
-    });
-  });
 
   let cornerButton = null;
   if (!isAuthenticated) {

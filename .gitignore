@@ -39,3 +39,4 @@ ignore__*.*
 *.geojson
 *.csv
 *.pbf
+autogen/*

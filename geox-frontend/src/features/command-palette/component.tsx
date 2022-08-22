@@ -60,9 +60,7 @@ export const CommandPalette = ({
           onBuffer(values![1] ?? 100, "meters");
         } else if (value.endsWith("drive")) {
           // extract number from string
-          console.log("ok");
           const values = value.match(/^draw (\d+) (\w+) drive*/);
-          console.log(values);
           onIsochrone(values![1] ?? 100, values![2] ?? "minute");
         }
       } else if (value.startsWith("publish")) {

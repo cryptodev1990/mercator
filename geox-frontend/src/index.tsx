@@ -13,19 +13,19 @@ const queryClient = new QueryClient();
 
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Auth0Provider
-        domain={process.env.REACT_APP_AUTH0_DOMAIN!}
-        clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
-        useRefreshTokens={true}
-        cacheLocation="localstorage"
-        redirectUri={window.location.origin}
-      >
+    <Auth0Provider
+      domain={process.env.REACT_APP_AUTH0_DOMAIN!}
+      clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
+      useRefreshTokens={true}
+      cacheLocation="localstorage"
+      redirectUri={window.location.origin}
+    >
+      <QueryClientProvider client={queryClient}>
         <div className="h-full relative w-full bg-[#090A14] antialiased text-gray-600">
           <App />
         </div>
-      </Auth0Provider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </Auth0Provider>
   </React.StrictMode>
 );
 

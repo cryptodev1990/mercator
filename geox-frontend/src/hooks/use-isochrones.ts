@@ -9,7 +9,7 @@ export const useIsochrones = () => {
   const URL = "https://graphhopper.com/api/1/isochrone";
   // const API_KEY = process.env.REACT_APP_GRAPHHOPPER_API_KEY;
 
-  console.error('not implemented')
+  console.error("not implemented");
   async function getIsochrones(
     point: Array<number>,
     timeInMinutes: number,
@@ -24,7 +24,6 @@ export const useIsochrones = () => {
         api_key: null,
       },
     });
-    console.log(res.data);
     return res.data;
   }
 

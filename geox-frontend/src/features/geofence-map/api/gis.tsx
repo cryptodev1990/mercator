@@ -10,9 +10,7 @@ export async function getRoute(points: number[][]) {
         points.map((d) => `point=${d[1]},${d[0]}`).join("&") +
         `&profile=car&locale=de&calc_points=true&key=${process.env.REACT_APP_GRAPHHOPPER_API_KEY}`
     );
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 }
 
 export async function mapMatch(datum: any) {
@@ -33,7 +31,6 @@ export async function mapMatch(datum: any) {
           process.env.REACT_APP_MAPBOX_TOKEN
       )
       .then((res) => {
-        console.log(res);
         if (res.data.code === "NoMatch") {
           throw new Error("no match");
         }

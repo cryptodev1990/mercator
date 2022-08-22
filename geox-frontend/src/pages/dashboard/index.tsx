@@ -1,6 +1,6 @@
 import { Navbar } from "../../common/components/navbar";
 import geofencer from "./icons/geofencer-logo.svg";
-import blank from "./icons/dbconfig-logo.svg";
+import dbconfig from "./icons/dbconfig-logo.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { isAdmin } from "../../common";
@@ -24,11 +24,11 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
     <div
       onClick={() => navigate(props.navlink)}
       tabIndex={props.tabindex}
-      className="max-w-sm cursor-pointer rounded overflow-hidden shadow-lg bg-swiss-coffee focus:shadow-none"
+      className="max-w-sm cursor-pointer rounded overflow-hidden shadow-lg bg-slate-100 focus:shadow-none"
     >
       <a>
-        <div className="bg-porsche">
-          <img src={props.svg} alt="logo" />
+        <div className="bg-slate-600 text-white">
+          <img src={props.svg} alt="logo" className="h-[300px] mx-auto" />
         </div>
         <div className="px-6 py-4 bg-swiss-coffee overflow-hidden">
           <div className="font-bold text-xl pb-2">{props.name}</div>
@@ -46,7 +46,7 @@ const DashboardPage = () => {
       className="max-w-full h-screen bg-gray-200 overflow-scroll"
       role="main"
     >
-      <section className="max-w-full bg-tuna">
+      <section className="max-w-full bg-slate-700">
         <div className="max-w-5xl mx-auto h-fit p-3">
           <Navbar />
         </div>
@@ -61,7 +61,7 @@ const DashboardPage = () => {
         />
         <AppCard
           tabindex={2}
-          svg={blank}
+          svg={dbconfig}
           navlink={"/db-config"}
           name="DBConfig"
           description="Configure database connections for your team"
@@ -69,17 +69,10 @@ const DashboardPage = () => {
         <AppCard
           hidden={!isAdmin(user)}
           tabindex={3}
-          svg={blank}
+          svg={dbconfig}
           navlink={"/admin"}
           name="Admin"
           description="Admin"
-        />
-        <AppCard
-          tabindex={3}
-          svg={blank}
-          navlink={"/"}
-          name="Other application"
-          description="Lorem ipsum dolores"
         />
       </section>
     </main>
