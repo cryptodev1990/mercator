@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # Run a tests locally.
 # This uses a docker container for postgis that it
 DOCKER_CONTAINER_NAME=geox-api-local-test
