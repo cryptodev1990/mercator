@@ -5,6 +5,7 @@ from typing import List, Tuple
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from geojson_pydantic import Feature
+from sqlalchemy import text
 
 from app.db.session import OsmSessionLocal
 
