@@ -9,7 +9,7 @@ from typing import Any, AsyncGenerator, Dict, Generator, Iterator
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
-from sqlalchemy import event
+from sqlalchemy import event, text
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -93,7 +93,7 @@ async def get_app_user_session(
 
     @event.listens_for(db_session, "after_begin")
     def receive_after_begin(session, transaction, connection):
-        session.execute("SET LOCAL ROLE app_user")
+        session.execute(text("SET LOCAL ROLE app_user"))
         set_app_user_id(session, user_id, local=True)
 
     # Need to commit any remaining transactions prior to exiting

@@ -2,6 +2,7 @@
 # Copied from https://raw.githubusercontent.com/tiangolo/full-stack-fastapi-postgresql/master/%7B%7Bcookiecutter.project_slug%7D%7D/backend/app/app/tests_pre_start.py
 import logging
 
+from sqlalchemy import text
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from app.db.session import SessionLocal
@@ -23,7 +24,7 @@ def init() -> None:
     try:
         # Try to create session to check if DB is awake
         db = SessionLocal()
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
     except Exception as e:
         logger.error(e)
         raise e

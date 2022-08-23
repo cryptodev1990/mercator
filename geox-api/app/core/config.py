@@ -108,7 +108,6 @@ class Settings(BaseSettings):
         None, env="SQLALCHEMY_OSM_DATABASE_URI"
     )
 
-
     @validator("sqlalchemy_database_uri", pre=True)
     def _validate_sqlalchemy_database_uri(
         cls, v: Optional[str], values: Dict[str, Any]

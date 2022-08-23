@@ -6,7 +6,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app.crud import db_credentials as crud
-from app.dependencies import get_app_user_session, UserSession, verify_token
+from app.dependencies import UserSession, get_app_user_session, verify_token
 from app.schemas import PublicDbCredential
 from app.schemas.db_credential import DbCredentialCreate, DbCredentialUpdate
 
@@ -19,7 +19,8 @@ class GetAllConnectionsType(str, Enum):
 
 @router.post("/db_config/connections", response_model=PublicDbCredential)
 def create_db_conn(
-    new_db_conn: DbCredentialCreate, user_session: UserSession = Depends(get_app_user_session)
+    new_db_conn: DbCredentialCreate,
+    user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[PublicDbCredential]:
     """Creates a database connection"""
     user = user_session.user
@@ -35,7 +36,9 @@ def read_db_conn(
     """Read a single connection by UUID. Requires that the user be in the same organization as the connection."""
     user = user_session.user
     try:
-        return crud.get_conn(db=user_session.session, db_credential_id=uuid, user_id=user.id)
+        return crud.get_conn(
+            db=user_session.session, db_credential_id=uuid, user_id=user.id
+        )
     except crud.DbCredentialModelException as e:
         if "not found" in str(e):
             raise HTTPException(status_code=404, detail="Not found")
@@ -61,7 +64,9 @@ def update_db_conn(
 ) -> Optional[PublicDbCredential]:
     """Updates a single db connection"""
     user = user_session.user
-    creds = crud.update_conn(user_session.session, conn_update=conn_update, user_id=user.id)
+    creds = crud.update_conn(
+        user_session.session, conn_update=conn_update, user_id=user.id
+    )
     return creds
 
 

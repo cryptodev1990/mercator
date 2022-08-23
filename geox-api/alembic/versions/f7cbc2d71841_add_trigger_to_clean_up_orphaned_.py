@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade() -> None:
     conn = op.get_bind()
-    conn.execute("""
+    conn.execute(sa.text("""
         CREATE FUNCTION remove_orphaned_organizations()
           RETURNS TRIGGER AS
           $_$
@@ -57,14 +57,14 @@ def upgrade() -> None:
           AFTER INSERT ON "users"
             FOR EACH ROW
             EXECUTE PROCEDURE create_default_organization();
-        """)
+        """))
 
 
 def downgrade() -> None:
     conn = op.get_bind()
-    conn.execute("""
+    conn.execute(sa.text("""
       DROP TRIGGER users_delete_trigger ON users;
       DROP FUNCTION remove_orphaned_organizations;
       DROP TRIGGER users_insert_trigger ON users;
       DROP FUNCTION create_default_organization;
-    """)
+    """))

@@ -1,6 +1,7 @@
 from typing import List, Optional, Set, Union
 
 from pydantic import UUID4
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -198,9 +199,10 @@ def add_user_to_organization(
 def get_organization_members(
     db: Session, organization_id: UUID4
 ) -> List[schemas.UserWithMembership]:
-    """Returns a list of all members of an organization"""
+    """Returns a list of all members of an organization."""
     res = db.execute(
-        """SELECT u.*
+        text(
+            """SELECT u.*
         , organization_id
         , is_personal
         FROM users u
@@ -210,7 +212,8 @@ def get_organization_members(
         ON o.id = om.organization_id
         WHERE 1=1
           AND om.organization_id = :organization_id
-          AND om.deleted_at IS NULL""",
+          AND om.deleted_at IS NULL"""
+        ),
         {"organization_id": organization_id},
     )
     rows = res.mappings().all()
@@ -263,8 +266,9 @@ def soft_delete_and_revert_to_personal_organization(
 def set_active_organization(db: Session, user_id: int, organization_id: UUID4) -> bool:
     """Sets the active organization for a user"""
     db.execute(
-        """
-        BEGIN; 
+        text(
+            """
+        BEGIN;
         UPDATE organization_members
           SET active = False
           WHERE user_id = :user_id
@@ -274,7 +278,8 @@ def set_active_organization(db: Session, user_id: int, organization_id: UUID4) -
           WHERE user_id = :user_id AND organization_id = :organization_id
         ;
         END;
-        """,
+        """
+        ),
         {"user_id": user_id, "organization_id": organization_id},
     )
     return True
@@ -303,7 +308,8 @@ def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
 def get_all_memberships(db: Session, user_id: int) -> List[schemas.UserWithMembership]:
     """Generates an object with User and OrganizationMember fields"""
     res = db.execute(
-        """SELECT u.*
+        text(
+            """SELECT u.*
         , om.organization_id
         , og.is_personal
         FROM users u
@@ -315,7 +321,8 @@ def get_all_memberships(db: Session, user_id: int) -> List[schemas.UserWithMembe
         WHERE 1=1
           AND u.id = :user_id
           AND om.deleted_at IS NULL
-        ORDER BY om.created_at DESC""",
+        ORDER BY om.created_at DESC"""
+        ),
         {"user_id": user_id},
     )
     rows = res.mappings().all()
@@ -325,7 +332,8 @@ def get_all_memberships(db: Session, user_id: int) -> List[schemas.UserWithMembe
 def get_all_orgs_for_user(db: Session, user_id: int) -> List[schemas.Organization]:
     """Generates an object with User and OrganizationMember fields"""
     res = db.execute(
-        """
+        text(
+            """
         SELECT og.id
         , og.name
         , og.is_personal
@@ -336,7 +344,8 @@ def get_all_orgs_for_user(db: Session, user_id: int) -> List[schemas.Organizatio
         ON om.user_id = :user_id
           AND om.deleted_at IS NULL
           AND om.organization_id = og.id
-        ORDER BY om.created_at ASC""",
+        ORDER BY om.created_at ASC"""
+        ),
         {"user_id": user_id},
     )
     rows = res.mappings().all()
@@ -346,7 +355,8 @@ def get_all_orgs_for_user(db: Session, user_id: int) -> List[schemas.Organizatio
 def get_all_orgs_for_user_as_set(db: Session, user_id: int) -> Set[UUID4]:
     """Generates an object with User and OrganizationMember fields"""
     res = db.execute(
-        """
+        text(
+            """
         SELECT og.id
         , og.name
         , og.is_personal
@@ -356,7 +366,8 @@ def get_all_orgs_for_user_as_set(db: Session, user_id: int) -> Set[UUID4]:
         ON om.user_id = :user_id
           AND om.organization_id = og.id
           AND om.deleted_at IS NULL
-        ORDER BY om.created_at ASC""",
+        ORDER BY om.created_at ASC"""
+        ),
         {"user_id": user_id},
     )
     rows = res.mappings().all()
@@ -365,7 +376,8 @@ def get_all_orgs_for_user_as_set(db: Session, user_id: int) -> Set[UUID4]:
 
 def get_personal_org_id(db: Session, user_id: int) -> UUID4:
     res = db.execute(
-        """
+        text(
+            """
         SELECT og.id
         FROM organizations og
         JOIN organization_members om
@@ -373,7 +385,8 @@ def get_personal_org_id(db: Session, user_id: int) -> UUID4:
           AND om.organization_id = og.id
           AND om.deleted_at IS NULL
           AND og.is_personal = True
-        """,
+        """
+        ),
         {"user_id": user_id},
     )
     return res.first()[0]

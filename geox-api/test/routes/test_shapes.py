@@ -5,6 +5,7 @@ from typing import Callable
 
 from fastapi import status
 from fastapi.testclient import TestClient
+from sqlalchemy import text
 
 from app.core.access_token import get_access_token
 from app.core.config import get_settings
@@ -66,15 +67,14 @@ def setup_shape(should_cleanup=True, should_create_test_user=True):
 
 def cleanup():
     email = settings.machine_account_email
-    engine.execute(
-        """
-        BEGIN TRANSACTION;
-          DELETE FROM shapes WHERE created_by_user_id IN (SELECT id FROM users WHERE email = %s);
-          DELETE FROM users WHERE email = %s;
-        END TRANSACTION;
-        """,
-        (email, email),
-    )
+    with engine.connect() as conn, conn.begin():
+        conn.execute(
+            text(
+                "DELETE FROM shapes WHERE created_by_user_id IN (SELECT id FROM users WHERE email = :email)"
+            ),
+            {"email": email},
+        )
+        conn.execute(text("DELETE FROM users WHERE email = :email"), {"email": email})
 
 
 def run_shape_test(test_func: Callable[[Shape], None]):

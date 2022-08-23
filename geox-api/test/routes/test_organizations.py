@@ -95,4 +95,3 @@ def test_update_org():
 
         assert response.status_code == 200
         assert response.json()["name"] == "test 2"
-

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from fastapi.security import HTTPAuthorizationCredentials
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db, verify_token
@@ -21,7 +21,7 @@ async def protected_health():
 @router.get("/db-health", tags=["health"])
 async def db_health(db_session: Session = Depends(get_db)):
     try:
-        res = db_session.execute("SELECT 1").scalar()
+        res = db_session.execute(text("SELECT 1")).scalar()
         assert res == 1
         return JSONResponse({"message": "OK"})
     except Exception as e:

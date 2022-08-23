@@ -66,7 +66,6 @@ def test_check_app_auth_user_ids_nested_sessions():
 def test_check_app_auth_user_ids_sequential_sessions():
     """Check settings when no cleanup"""
     user_id_1 = "1234"
-    user_id_2 = "5678"
     with SessionLocal() as session1:
         assert get_app_user_id(session1) is None
         set_app_user_id(session1, user_id_1)

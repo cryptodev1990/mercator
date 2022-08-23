@@ -3,6 +3,7 @@ import json
 from typing import List, Optional, Union
 
 from pydantic import UUID4
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from .. import schemas
@@ -12,7 +13,8 @@ def get_shape(
     db: Session, shape: schemas.GeoShapeRead
 ) -> Union[schemas.GeoShape, None]:
     res = db.execute(
-        """
+        text(
+            """
     SELECT uuid
     , name
     , created_at
@@ -25,7 +27,8 @@ def get_shape(
       AND deleted_at IS NULL
       AND uuid = :uuid
     LIMIT 1
-    """,
+    """
+        ),
         {"uuid": shape.uuid},
     )
     rows = res.mappings().all()
@@ -34,7 +37,8 @@ def get_shape(
 
 def get_all_shapes_by_user(db: Session, user: schemas.User) -> List[schemas.GeoShape]:
     res = db.execute(
-        """
+        text(
+            """
         SELECT shapes.uuid::VARCHAR AS uuid
         , shapes.name
         , shapes.geojson
@@ -46,7 +50,8 @@ def get_all_shapes_by_user(db: Session, user: schemas.User) -> List[schemas.GeoS
           AND users.id = :user_id
         WHERE 1=1
           AND shapes.deleted_at IS NULL
-        """,
+        """
+        ),
         {"user_id": user.id},
     )
     rows = res.mappings().all()
@@ -57,7 +62,8 @@ def get_all_shapes_by_email_domain(
     db: Session, email_domain: str
 ) -> List[schemas.GeoShape]:
     res = db.execute(
-        """
+        text(
+            """
         SELECT shapes.uuid::VARCHAR AS uuid
         , shapes.name
         , shapes.geojson
@@ -70,7 +76,8 @@ def get_all_shapes_by_email_domain(
         WHERE 1=1
           AND shapes.deleted_at IS NULL
         ORDER BY created_at DESC
-        """,
+        """
+        ),
         {"email_domain_wildcard": f"%@{email_domain}"},
     )
     rows = res.mappings().all()
@@ -81,7 +88,8 @@ def get_all_shapes_by_organization(
     db: Session, organization: schemas.Organization
 ) -> List[schemas.GeoShape]:
     res = db.execute(
-        """
+        text(
+            """
         SELECT shapes.uuid::VARCHAR AS uuid
         , shapes.name
         , shapes.geojson
@@ -93,7 +101,8 @@ def get_all_shapes_by_organization(
           AND users.organization_id = :organization_id
         WHERE 1=1
           AND shapes.deleted_at IS NULL
-        """,
+        """
+        ),
         {"organization_id": organization.id},
     )
     rows = res.mappings().all()
@@ -105,11 +114,13 @@ def create_shape(
 ) -> schemas.GeoShape:
     now = datetime.datetime.utcnow()
     res = db.execute(
-        """
+        text(
+            """
     INSERT INTO shapes (uuid, name, geojson, created_at, created_by_user_id, updated_at, updated_by_user_id)
         VALUES (GEN_RANDOM_UUID(), :name, :geojson, :now, :created_by_user_id, :now, :created_by_user_id)
         RETURNING uuid;
-    """,
+    """
+        ),
         {
             "geojson": geoshape.geojson.json(),
             "name": geoshape.name,
@@ -148,7 +159,8 @@ def update_shape(
         deleted_at = datetime.datetime.utcnow()
 
     res = db.execute(
-        """
+        text(
+            """
     UPDATE shapes
       SET geojson = :geojson
       , name = :name
@@ -159,7 +171,8 @@ def update_shape(
       WHERE 1=1
         AND uuid = :uuid
       RETURNING *
-    """,
+    """
+        ),
         {
             "uuid": db_shape.uuid,
             # TODO This is needlessly slow
@@ -205,10 +218,12 @@ def bulk_create_shapes(
             + comma
         )
     db.execute(
-        f"""INSERT INTO shapes (
+        text(
+            f"""INSERT INTO shapes (
         uuid, name, geojson, created_at, created_by_user_id, updated_at, updated_by_user_id)
     VALUES {insertable}
-    """,
+    """
+        ),
         {
             **interpolated_dict,
             "user_id": user_id,
@@ -217,11 +232,13 @@ def bulk_create_shapes(
     )
     db.commit()
     res = db.execute(
-        """SELECT COUNT(*) AS num_shapes
+        text(
+            """SELECT COUNT(*) AS num_shapes
         FROM shapes
         WHERE 1=1
           AND created_by_user_id = :user_id
-          AND created_at BETWEEN :transaction_time AND NOW() AT TIME ZONE 'UTC'""",
+          AND created_at BETWEEN :transaction_time AND NOW() AT TIME ZONE 'UTC'"""
+        ),
         {"user_id": user_id, "transaction_time": now},
     )
     rows = res.mappings().all()
@@ -233,7 +250,8 @@ def bulk_soft_delete_shapes(
 ) -> schemas.ShapeCountResponse:
     now = datetime.datetime.utcnow()
     db.execute(
-        """UPDATE shapes
+        text(
+            """UPDATE shapes
         SET deleted_at = :now
         , updated_by_user_id = :user_id
         WHERE uuid IN :uuid_list
@@ -248,7 +266,8 @@ def bulk_soft_delete_shapes(
             ) domain_filter
             ON SUBSTRING(users.email FROM '@(.*)$') = domain_filter.domain
           )
-    """,
+    """
+        ),
         {
             "uuid_list": tuple(str(guid) for guid in shape_uuids),
             "now": now,
@@ -257,11 +276,13 @@ def bulk_soft_delete_shapes(
     )
     db.commit()
     res = db.execute(
-        """SELECT COUNT(*) AS num_shapes
+        text(
+            """SELECT COUNT(*) AS num_shapes
         FROM shapes
         WHERE 1=1
           AND updated_by_user_id = :user_id
-          AND deleted_at BETWEEN :transaction_time AND NOW() AT TIME ZONE 'UTC'""",
+          AND deleted_at BETWEEN :transaction_time AND NOW() AT TIME ZONE 'UTC'"""
+        ),
         {"user_id": user_id, "transaction_time": now},
     )
     rows = res.mappings().all()

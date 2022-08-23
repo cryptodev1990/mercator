@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 import jinja2 as j2
 from cryptography.fernet import Fernet
 from pydantic import UUID4
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -110,7 +111,8 @@ def get_conn_secrets(
     This is exclusively for Celery worker use
     """
     res = db.execute(
-        """
+        text(
+            """
     SELECT d.id
     , d.db_driver
     , d.db_user AS encrypted_db_user
@@ -123,7 +125,8 @@ def get_conn_secrets(
     FROM db_credentials d
     WHERE 1=1
       AND id = :id
-    """,
+    """
+        ),
         {"id": db_credential_id},
     )
     rows = res.mappings().all()
@@ -198,7 +201,7 @@ def update_conn(
       """
     )
 
-    res = db.execute(update_template.render(update_args=update_args), update_args)
+    res = db.execute(text(update_template.render(update_args=update_args)), update_args)
     db.commit()
     rows = res.mappings().all()
     db_result = schemas.PublicDbCredential(**rows[0])
@@ -206,7 +209,7 @@ def update_conn(
 
 
 def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> int:
-    """Delete a database connection
+    """Delete a database connection.
 
     Users can only delete connections that belong to their organization
 
@@ -238,12 +241,12 @@ def delete_conn(db: Session, conn_id: UUID4, user_id: int) -> int:
 def count_conns(db: Session, user_id: int) -> int:
     organization_id = get_active_org(db, user_id)
     res = db.execute(
-        j2.Template(
+        text(
             """
-      SELECT COUNT(*) AS freq FROM db_credentials
+        SELECT COUNT(*) AS freq FROM db_credentials
         WHERE organization_id = :organization_id
-    """
-        ).render(organization_id=organization_id),
+         """
+        ),
         {"organization_id": organization_id, "user_id": user_id},
     )
     rows = res.mappings().all()
@@ -252,12 +255,14 @@ def count_conns(db: Session, user_id: int) -> int:
 
 def get_mru_conn(db: Session, user_id: int) -> Optional[schemas.PublicDbCredential]:
     res = db.execute(
-        """
+        text(
+            """
       SELECT * FROM db_credentials
       WHERE created_by_user_id = :user_id
       ORDER BY created_at DESC
       LIMIT 1
-    """,
+    """
+        ),
         {"user_id": user_id},
     )
     rows = res.mappings().all()

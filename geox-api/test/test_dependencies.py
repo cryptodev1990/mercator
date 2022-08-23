@@ -1,5 +1,6 @@
 """Test functions in app.dependencies."""
 import pytest
+from sqlalchemy import text
 
 from app import schemas
 from app.db.app_user import get_app_user_id
@@ -42,7 +43,7 @@ async def test_get_auth_user_session(user):
         # Did not change the setting in the other session
         assert get_app_user_id(other_session) is None
         try:
-            session.execute("This is an error")
+            session.execute(text("This is an error"))
         except:
             pass
         assert get_app_user_id(other_session) is None

@@ -1,3 +1,5 @@
+from sqlalchemy import text
+
 from app.crud.user import create_user
 from app.db.session import SessionLocal, engine
 from app.schemas import UserCreate
@@ -26,4 +28,8 @@ def test_create_user():
             assert new_user.given_name == "Test"
         finally:
             if user_id:
-                engine.execute("DELETE FROM users WHERE id = %s", user_id)
+                with engine.connect() as con, con.begin():
+                    con.execute(
+                        text("DELETE FROM users WHERE id = :user_id"),
+                        {"user_id": user_id},
+                    )
