@@ -5,6 +5,7 @@ from typing import List, Tuple
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from geojson_pydantic import Feature
+from sqlalchemy import text
 
 from app.db.session import OsmSessionLocal
 
@@ -26,6 +27,8 @@ def point_in_box(point, bounding_box: List[float]) -> bool:
 @router.get("/osm")
 async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Feature]:
     """Get shapes from OSM by amenity"""
+    if OsmSessionLocal is None:
+        raise Exception  # TODO: need an exception for this
     with OsmSessionLocal() as db_osm:
         res = db_osm.execute(
             text(
@@ -58,6 +61,8 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
 async def get_roads_by_bounding_box(
     xmin: float, ymin: float, xmax: float, ymax: float, shape_to_snap: Feature
 ):
+    if OsmSessionLocal is None:
+        raise Exception  # TODO: need an exception for this
     with OsmSessionLocal() as db_osm:
         db_osm.execute(
             text(
@@ -81,9 +86,7 @@ async def get_roads_by_bounding_box(
 
 
 @router.get("/osm/isochrone")
-async def get_shapes_from_osm(
-    latlngs: List[Tuple[float]], time_in_minutes: float, profile: str
-):
+async def isochrone(latlngs: List[Tuple[float]], time_in_minutes: float, profile: str):
     # https://docs.graphhopper.com/#tag/Isochrone-API
     """Get shapes from OSM by amenity"""
     # TODO: implement

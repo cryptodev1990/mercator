@@ -22,7 +22,7 @@ def create_db_conn(
     new_db_conn: DbCredentialCreate,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[PublicDbCredential]:
-    """Creates a database connection"""
+    """Create a database connection."""
     user = user_session.user
     creds = crud.create_conn(user_session.session, new_db_conn, user.id)
     return creds
@@ -42,6 +42,7 @@ def read_db_conn(
     except crud.DbCredentialModelException as e:
         if "not found" in str(e):
             raise HTTPException(status_code=404, detail="Not found")
+    return None
 
 
 @router.get("/db_config/connections", response_model=List[PublicDbCredential])
@@ -62,7 +63,7 @@ def update_db_conn(
     conn_update: DbCredentialUpdate,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[PublicDbCredential]:
-    """Updates a single db connection"""
+    """Update a single db connection."""
     user = user_session.user
     creds = crud.update_conn(
         user_session.session, conn_update=conn_update, user_id=user.id
@@ -75,7 +76,7 @@ def delete_db_conn(
     uuid: UUID4,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> bool:
-    """Deletes a database connection"""
+    """Delete a database connection."""
     user = user_session.user
     num_rows = crud.delete_conn(user_session.session, uuid, user.id)
     return num_rows > 0

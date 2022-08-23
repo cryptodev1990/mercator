@@ -1,4 +1,4 @@
-from typing import List, Optional, Set, Union
+from typing import List, Optional, Set, cast
 
 from pydantic import UUID4
 from sqlalchemy import text
@@ -29,7 +29,7 @@ def caller_must_be_in_org(db, organization_id: UUID4, user_id: int) -> bool:
 
 
 def get_org_by_id(db: Session, organization_id: UUID4) -> schemas.Organization:
-    """Returns an organization by id"""
+    """Return an organization by id."""
     res = (
         db.query(models.Organization)
         .filter(models.Organization.id == organization_id)
@@ -45,7 +45,7 @@ def create_organization_and_assign_to_user(
     organization: schemas.OrganizationCreate,
     user_id: int,
 ) -> schemas.UserWithMembership:
-    """Creates an organization and assigns it to the user who created it"""
+    """Create an organization and assigns it to the user who created it."""
     org = create_organization(db, organization, user_id)
     new_org_member = models.OrganizationMember(
         organization_id=org.id,
@@ -66,7 +66,7 @@ def create_organization_and_assign_to_user(
 def create_organization(
     db: Session, organization: schemas.OrganizationCreate, user_id: int
 ) -> schemas.Organization:
-    """Creates an organization without assigning it to a user"""
+    """Create an organization without assigning it to a user."""
     db_org = models.Organization(
         name=organization.name, created_by_user_id=user_id, is_personal=False
     )
@@ -79,13 +79,13 @@ def create_organization(
     )
     if not res:
         raise OrganizationModelException("Organization failed to create")
-    set_active_organization(db, user_id, db_org.id)
+    set_active_organization(db, user_id, cast(UUID4, db_org.id))
     db.refresh(res)
     return schemas.Organization(**res.__dict__)
 
 
 def hard_delete_organization(db: Session, organization_id: UUID4) -> int:
-    """Hard deletes an organization and all of its members"""
+    """Hard delete an organization and all of its members."""
     num_rows = (
         db.query(models.Organization)
         .filter(models.Organization.id == organization_id)
@@ -98,7 +98,7 @@ def hard_delete_organization(db: Session, organization_id: UUID4) -> int:
 def guarded_hard_delete_organization(
     db: Session, organization_id: UUID4, user_id: int
 ) -> int:
-    """Hard deletes an organization and all of its members"""
+    """Hard delete an organization and all of its members."""
     caller_must_be_in_org(db, organization_id, user_id)
     if get_personal_org_id(db, user_id) == organization_id:
         raise OrganizationModelException("Cannot delete personal organization")
@@ -114,7 +114,7 @@ def guarded_hard_delete_organization(
 def update_organization(
     db: Session, organization_id: UUID4, organization: schemas.OrganizationUpdate
 ) -> schemas.Organization:
-    """Updates an organization"""
+    """Update an organization."""
     db_org = (
         db.query(models.Organization)
         .filter(
@@ -151,7 +151,7 @@ def add_user_to_organization_by_invite(
     added_by_user_id: int,
     organization_id: Optional[UUID4] = None,
 ) -> schemas.UserWithMembership:
-    """Adds a user to an organization"""
+    """Add a user to an organizatio."""
     organization_id = organization_id or get_active_org(db, added_by_user_id)
     if not organization_id:
         raise OrganizationModelException("No organization to add user to")
@@ -167,7 +167,8 @@ def add_user_to_organization(
     user_id: int,
     organization_id: UUID4,
 ) -> schemas.UserWithMembership:
-    """Adds a user to an organization
+    """Add a user to an organization.
+
     TODO this is potentially leaky, since a user can be added
     from outside the organization if you know their ID (easy to guess)
     """
@@ -199,7 +200,7 @@ def add_user_to_organization(
 def get_organization_members(
     db: Session, organization_id: UUID4
 ) -> List[schemas.UserWithMembership]:
-    """Returns a list of all members of an organization."""
+    """Return a list of all members of an organization."""
     res = db.execute(
         text(
             """SELECT u.*
@@ -221,7 +222,7 @@ def get_organization_members(
 
 
 def delete_organization_member(db: Session, user_id: int, organization_id: int) -> int:
-    """Hard deletes an member of an organization"""
+    """Hard deletes an member of an organization."""
     num_rows = (
         db.query(models.OrganizationMember)
         .filter(
