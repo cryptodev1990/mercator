@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import datetime
 from contextlib import contextmanager
 from typing import Any, Generator, List, Tuple
@@ -24,6 +25,9 @@ from app.crud.user import (
     get_user_by_email,
 )
 from app.db.session import SessionLocal
+
+import logging
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
@@ -79,7 +83,7 @@ def use_managerial_user():
         org_id = get_active_org(db, user.id)
         assert org_id
         assert get_personal_org_id(db, user.id) == org_id
-        print(get_all_orgs_for_user(db, user.id))
+        logger.info(get_all_orgs_for_user(db, user.id))
         assert len(get_all_orgs_for_user(db, user.id)) == 1
         yield schemas.UserWithMembership(
             **user.__dict__, organization_id=org_id, is_personal=True
@@ -154,7 +158,7 @@ def gen_cred_params(
     host="localhost",
     port="5432",
     user="postgres",
-    password="postgres",
+    password="postgres",  # pragma: allowlist secret
 ):
     return schemas.DbCredentialCreate(
         db_driver="postgres",
