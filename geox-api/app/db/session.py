@@ -1,5 +1,6 @@
 """SQLAlchemy session objects and functions."""
 
+import logging
 from asyncio.log import logger
 from typing import Any, Optional
 
@@ -9,7 +10,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.config import get_settings
 
-import logging
 logger = logging.getLogger(__name__)
 
 SQLALCHEMY_DATABASE_URI: Any = get_settings().sqlalchemy_database_uri
