@@ -86,7 +86,7 @@ async def get_roads_by_bounding_box(
 
 
 @router.get("/osm/isochrone")
-async def get_shapes_from_osm(
+async def isochrone(
     latlngs: List[Tuple[float]], time_in_minutes: float, profile: str
 ):
     # https://docs.graphhopper.com/#tag/Isochrone-API
