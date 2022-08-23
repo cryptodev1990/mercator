@@ -9,3 +9,4 @@ docker-stack.yml
 .env.*
 .envrc
 !.env.template
+Untitled*.ipynb
