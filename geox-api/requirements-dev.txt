@@ -1,6 +1,8 @@
 alembic
-black
+black[jupyter]
 isort
+ipython
+jupyterlab
 mypy
 pydocstyle
 pytest
@@ -10,4 +12,3 @@ pytest-fastapi-deps
 sqlalchemy-stubs
 types-requests
 yamllint
-

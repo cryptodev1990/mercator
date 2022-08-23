@@ -1,5 +1,6 @@
-from asyncio.log import logger
 import datetime
+import logging
+from asyncio.log import logger
 from contextlib import contextmanager
 from typing import Any, Generator, List, Tuple
 from uuid import UUID
@@ -26,7 +27,6 @@ from app.crud.user import (
 )
 from app.db.session import SessionLocal
 
-import logging
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
