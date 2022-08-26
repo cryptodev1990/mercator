@@ -91,7 +91,6 @@ def test_update_org():
             },
             headers={"Authorization": f"Bearer {access_token}"},
         )
-        print(response.json())
 
         assert response.status_code == 200
         assert response.json()["name"] == "test 2"

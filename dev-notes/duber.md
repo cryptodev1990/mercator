@@ -727,6 +727,7 @@ Aug 16-19 2022
   - [ ] Shape delete from right click does not work
   - [ ] "The metadata editor needs a shape to edit" needs to be hidden
 - [ ] Error snackbar needs to exist
+- [ ] Scroll
 
 ## Tier 1
 - [ ] Alerting on 400s/500s

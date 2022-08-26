@@ -28,7 +28,6 @@ def create_conn_http():
     return client.post(
         "/db_config/connections",
         json={
-            "name": "test",
             "db_host": "localhost",
             "db_port": "5432",
             "db_user": "test",
@@ -116,7 +115,8 @@ def test_read_multiple_conns():
         assert response.status_code == 200
         assert len(response.json()) == 2
         assert all(
-            [any([x in str(row) for x in conn_uuids]) for row in response.json()]
+            [any([x in str(row) for x in conn_uuids])
+             for row in response.json()]
         ), f"All UUIDs ({', '.join(conn_uuids)}) must be in the list, saw " + str(
             response.json()
         )
@@ -145,3 +145,30 @@ def test_delete_conn():
         )
         assert response.status_code == 200, response.text
         assert response.text == "true"
+
+
+def test_read_health_db_conn():
+    with use_managerial_user() as user:
+        db_conf = get_settings()
+        creds = {
+            "name": "test",
+            "db_host": db_conf.postgres_server,
+            "db_port": db_conf.postgres_port,
+            "db_user": db_conf.postgres_user,
+            "db_password": "",  # TODO can I read this from somewhere?
+            "db_database": db_conf.postgres_db,
+            "db_driver": "postgres",
+        }
+        response = client.post(
+            "/db_config/connections",
+            json=creds,
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        uuid = response.json()["id"]
+        response = client.get(f"/db_config/connections/{uuid}/health", headers={
+                              "Authorization": f"Bearer {access_token}"})
+        assert response.ok
+        assert response.json() == True
+        response = client.post(
+            f"/db_config/connections/{uuid}/health")
+        assert response.status_code == 405

@@ -117,6 +117,10 @@ lint: ## Lint the project
 test *FLAGS=".":
 	ENV_FILE=.env.local ./bin/test-local.sh {{ FLAGS }}
 
+# Run tests against local, non-Dockerized database
+test-local-db *FLAGS=".":
+	ENV_FILE=.env.local ./tests-start.sh {{ FLAGS }}
+
 ## Alembic
 
 # Revise database with alembic

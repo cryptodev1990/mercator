@@ -4,13 +4,27 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
+import sqlalchemy as sa
 
 from app.crud import db_credentials as crud
 from app.dependencies import UserSession, get_app_user_session, verify_token
 from app.schemas import PublicDbCredential
-from app.schemas.db_credential import DbCredentialCreate, DbCredentialUpdate
+from app.schemas.db_credential import DbCredentialCreate, DbCredentialUpdate, DbCredentialWithCreds
 
 router = APIRouter(tags=["db_config"], dependencies=[Depends(verify_token)])
+
+def convert_dict_to_query_string(dictionary: Optional[dict]) -> str:
+    if not dictionary:
+        return ""
+    return "?" + "&".join([f"{k}={v}" for k, v in dictionary.items()])
+
+def create_sqlalchemy_uri(
+    pc: DbCredentialWithCreds
+) -> str:
+    extras = convert_dict_to_query_string(pc.db_extras)
+    if pc.db_driver == "postgres":
+        return f"postgresql+psycopg2://{pc.db_user}:{pc.db_password}@{pc.db_host}:{pc.db_port}/{pc.db_database}" + extras
+    return f"{pc.db_driver}://{pc.db_user}:{pc.db_password}@{pc.db_host}:{pc.db_port}/{pc.db_database}" + extras
 
 
 class GetAllConnectionsType(str, Enum):
@@ -43,6 +57,30 @@ def read_db_conn(
         if "not found" in str(e):
             raise HTTPException(status_code=404, detail="Not found")
     return None
+
+
+@router.get("/db_config/connections/{uuid}/health")
+def read_health_db_conn(
+    uuid: UUID4,
+    user_session: UserSession = Depends(get_app_user_session),
+) -> Optional[bool]:
+    """Get the health of a single connection by UUID. Requires that the user be in the same organization as the connection."""
+    user = user_session.user
+    pub_conn = crud.get_conn(db=user_session.session, db_credential_id=uuid, user_id=user.id)
+    conn = crud.get_conn_secrets(db=user_session.session, db_credential_id=pub_conn.id)
+    assert conn
+    try:
+        uri = create_sqlalchemy_uri(conn)
+        engine = sa.create_engine(uri)
+        res = engine.execute("SELECT 1")
+        res = res.fetchone()
+        assert res
+        return res[0] == 1
+    except sa.exc.OperationalError as e:
+        return False
+    except crud.DbCredentialModelException as e:
+        if "not found" in str(e):
+            raise HTTPException(status_code=404, detail="Not found")
 
 
 @router.get("/db_config/connections", response_model=List[PublicDbCredential])
