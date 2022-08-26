@@ -1,3 +1,5 @@
+import pytest
+import os
 import pathlib
 from test.utils import (
     gen_cred,
@@ -147,6 +149,7 @@ def test_delete_conn():
         assert response.text == "true"
 
 
+@pytest.mark.skipif(os.getenv("CI") is not None, reason="Not supported on CI")
 def test_read_health_db_conn():
     with use_managerial_user() as user:
         db_conf = get_settings()
