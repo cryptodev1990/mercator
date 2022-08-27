@@ -714,11 +714,19 @@ Aug 16-19 2022
 - [ ] Multitenancy
 - [ ] Snowflake publication
  - Possibly solved by [AirByte](https://airbyte.com/tutorials/postgresql-database-to-snowflake?utm_term=&utm_campaign=Airbyte+-+Nonbrand+-+Database+Transition&utm_source=adwords&utm_medium=ppc&hsa_acc=7542309003&hsa_cam=16651686687&hsa_grp=140090051201&hsa_ad=596994094959&hsa_src=g&hsa_tgt=aud-1637563966306:dsa-1720612594717&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gclid=CjwKCAjw6fyXBhBgEiwAhhiZsnMhxX_vU0BFWEH1upPto2BNLp0pXD85CZTIz62YZR9BAy1XK2aizxoCBh8QAvD_BwE#step-7)
- - See branch ``ajd/add-a-database`` for WIP backend publication with Celery
- - [ ] DB credential creation flow
-   - [X] Add UI for DB credential creation
-   - [ ] Add health tests for DB credentials
-   - [ ] Do an end to end test: Add credentials, do a health check
+ - ~~See branch ``ajd/add-a-database`` for WIP backend publication with Celery~~
+ - [X] ~~DB credential creation flow [NOTE: Decided not to go with this approach]~~
+   - [X] ~~Add UI for DB credential creation~~
+   - [X] ~~Add health tests for DB credentials~~
+   - [X] ~~Do an end to end test: Add credentials, do a health check~~
+ - [ ] Copy data to a snowflake database
+   - [X] Create an S3 bucket
+     - [X] Verify can read from local machine (done at 10:37am Aug 27)
+     - [X] Verify can read from Snowflake (done at 11:23am Aug 27)
+   - [ ] Replicate the user's data to an S3 bucket
+   - [ ] Pull the S3 bucket into a Snowflake table
+   - [ ] Notify the user that the copy is complete
+ - [ ] [Set up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
 - [ ] Download to JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
@@ -726,8 +734,9 @@ Aug 16-19 2022
     - Repro steps: Draw a shape, alter it, delete the shape. Shadow is still there.
   - [ ] Shape delete from right click does not work
   - [ ] "The metadata editor needs a shape to edit" needs to be hidden
+  - [ ] Scroll on the shape bar needs to work
+    - Repro steps: Add enough shapes for a scroll
 - [ ] Error snackbar needs to exist
-- [ ] Scroll
 
 ## Tier 1
 - [ ] Alerting on 400s/500s
