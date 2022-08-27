@@ -29,7 +29,7 @@ __prestart_app() {
     python -m app.backend_pre_start
 
     # Run migrations
-    if [ "$APP_NO_ALEMBIC" = "1" ] || [ "$(echo \"$APP_NO_ALEMBIC\" | tr '[:upper:]' '[:lower:]')" = "true" ]
+    if [ ! "$APP_NO_ALEMBIC" = "1" ] || [ ! "$(echo \"$APP_NO_ALEMBIC\" | tr '[:upper:]' '[:lower:]')" = "true" ]
     then
         alembic upgrade head
     fi
