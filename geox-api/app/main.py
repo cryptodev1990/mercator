@@ -59,7 +59,6 @@ app.include_router(routes.shapes.router)
 app.include_router(routes.tasks.router)
 app.include_router(routes.info.router)
 app.include_router(routes.organizations.router)
-app.include_router(routes.creds.router)
 
 
 @app.get("/")

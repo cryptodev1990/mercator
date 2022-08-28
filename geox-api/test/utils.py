@@ -7,7 +7,6 @@ from uuid import UUID
 
 from app import schemas
 from app.core.config import get_settings
-from app.crud.db_credentials import create_conn, delete_conn, get_mru_conn
 from app.crud.organization import (
     add_user_to_organization,
     add_user_to_organization_by_invite,
@@ -153,26 +152,6 @@ def gen_users() -> Generator[Tuple[List[schemas.User], Any], None, None]:
             delete_user_by_email(db, email)
 
 
-def gen_cred_params(
-    name="Test Postgres",
-    host="localhost",
-    port="5432",
-    user="postgres",
-    password="postgres",  # pragma: allowlist secret
-):
-    return schemas.DbCredentialCreate(
-        db_driver="postgres",
-        name=name,
-        is_default=True,
-        db_host=host,
-        db_port=port,
-        db_user=user,
-        db_password=password,
-        db_database="test",
-        db_extras={"sslmode": "disable"},
-    )
-
-
 @contextmanager
 def get_user():
     db = SessionLocal()
@@ -183,21 +162,7 @@ def get_user():
     try:
         yield (test_user, db)
     finally:
-        last_db_conn = get_mru_conn(db, test_user.id)
-        if last_db_conn:
-            delete_conn(db, conn_id=last_db_conn.id, user_id=test_user.id)
         delete_user(db, test_user.id)
-
-
-@contextmanager
-def gen_cred(db, credential_create: schemas.DbCredentialCreate, by_user_id: int):
-    cred = create_conn(db, credential_create, by_user_id)
-    try:
-        yield cred
-    finally:
-        if not cred:
-            return
-        delete_conn(db, cred.id, by_user_id)
 
 
 def is_valid_uuid(uuid_to_test):

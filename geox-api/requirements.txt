@@ -12,3 +12,4 @@ tenacity==8.0.*
 alembic==1.8.*
 celery[redis]==5.2.*
 GitPython
+s3fs==2022.7.1
