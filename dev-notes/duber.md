@@ -724,9 +724,15 @@ Aug 16-19 2022
      - [X] Verify can read from local machine (done at 10:37am Aug 27)
      - [X] Verify can read from Snowflake (done at 11:23am Aug 27)
    - [ ] Replicate the user's data to an S3 bucket
-   - [ ] Pull the S3 bucket into a Snowflake table
-   - [ ] Notify the user that the copy is complete
- - [ ] [Set up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
+     - [ ] Copy data from Postgres to S3 (using Hightouch for this)
+     - [ ] Copy data from S3 to Snowflake
+       - [ ] Copy that S3 bucket to a stage
+       - [ ] Copy the stage to a table
+     - [ ] Configure a view for an organization on Snowflake
+     - [ ] Share that to an external Snowflake organization
+       - Docs for [setting up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
+     - [ ] Can we get some kind of a test on this??
+
 - [ ] Download to JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
