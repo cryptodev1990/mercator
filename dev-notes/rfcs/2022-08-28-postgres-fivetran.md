@@ -1,4 +1,6 @@
-My problem: I need to be able to connect to my Postgres database with 3rd party cloud services and can't.
+# RFC: Connecting to Fly Postgres with 3rd party ETL tools
+
+Problem: I need to be able to connect to my Postgres database with 3rd party cloud services and can't.
 
 My app is which is built on top of Fly, which itself is a wrapper around AWS. It aims to be a more modern Heroku--
 you take a Dockerfile, and Fly converts it to a VM. They also make it easy to spin up a Postgres
