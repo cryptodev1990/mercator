@@ -50,7 +50,7 @@ def send_data_to_s3(df: pd.DataFrame, org_id: UUID4):
     return res
 
 
-@ celery_app.task(acks_late=True)
+@celery_app.task(acks_late=True)
 def copy_to_s3(organization_id: UUID4) -> dict:
     """Copy data from postgres shapes to S3.
 
