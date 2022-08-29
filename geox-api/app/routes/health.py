@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db, verify_token
+from app.dependencies import get_db, verify_token, get_current_user
+from app.schemas.user import User
 
 router = APIRouter()
 
@@ -14,7 +15,7 @@ async def health():
 
 
 @router.get("/protected_health", tags=["health"], dependencies=[Depends(verify_token)])
-async def protected_health():
+async def protected_health(user: User = Depends(get_current_user)):
     return {"message": "OK"}
 
 

@@ -11,11 +11,12 @@ just
 
 Other important information:
 
-- Deploys are on fly.io.
+- Deploys are on [fly.io](https://fly.io/dashboard/geox).
 - Frontend is in a sibling directory to this one.
 - ``app`` is the FastAPI web app.
+- Auth0 handles our [dev](https://manage.auth0.com/dashboard/us/dev-w40e3mxg/) and [production](https://manage.auth0.com/dashboard/us/mercator-prod/) auth.
 
-## Build and Insall Cases
+## Build and Install Cases
 
 1. Build and deploy to fly.io with Docker
 2. Develop locally on MacOS

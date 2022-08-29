@@ -289,8 +289,9 @@ def set_active_organization(db: Session, user_id: int, organization_id: UUID4) -
 # TODO make this consistent with the other get_* functions, use user instead of user_id
 def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
     """Gets the organization of a user
-
-    Active organization is the most recent added organization where the user wasn't soft-deleted"""
+    
+    A user will only have one active organization at a time.
+    """
     organization_member = (
         db.query(models.OrganizationMember)
         .filter(

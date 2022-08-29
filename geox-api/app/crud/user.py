@@ -126,7 +126,6 @@ def create_or_update_user_from_bearer_data(
     out_user: schemas.User
     existing_user: models.User
     now = datetime.datetime.utcnow()
-
     try:
         existing_user = get_user_by_sub_id(db, user_auth_dict["sub"])
         existing_user.last_login_at = now  # type: ignore
