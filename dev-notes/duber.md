@@ -733,6 +733,7 @@ Aug 16-19 2022
      - [ ] Share that to an external Snowflake organization
        - Docs for [setting up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
      - [ ] Can we get some kind of a test on this??
+   - [ ] Add button to trigger data copy
 - [ ] Feature: Button to download all JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
