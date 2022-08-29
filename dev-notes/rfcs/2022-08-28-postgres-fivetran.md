@@ -2,11 +2,12 @@
 
 Problem: I need to be able to connect to my Postgres database with 3rd party cloud services and can't.
 
-My app is which is built on top of Fly, which itself is a wrapper around AWS. It aims to be a more modern Heroku--
+My app is which is built on top of Fly, which itself is a wrapper around AWS. Fly.io aims to be a PaaS application--
 you take a Dockerfile, and Fly converts it to a VM. They also make it easy to spin up a Postgres
 database, and any application you create through Fly is instantly on the same VPC as all the other applications there.
 
-I need to copy data from that Postgres instance (which is on a private network) to an S3 bucket that I control.
+That Postgres instance is on a private network, however, and I need to copy data from that Postgres instance to an S3 bucket that I control
+for replication to Snowflake and data sharing for customers.
 
 In other words, I need to copy the contents of my Postgres database out of Fly. I was hoping to use
 Postgres change data capture through a tool called FiveTran but at this point will accept whatever.
