@@ -9,12 +9,15 @@ To see the commands, run (after installing `just`):
 just
 ```
 
-Other important information:
+Other important links and information:
 
 - Deploys are on [fly.io](https://fly.io/dashboard/geox).
 - Frontend is in a sibling directory to this one.
 - ``app`` is the FastAPI web app.
 - Auth0 handles our [dev](https://manage.auth0.com/dashboard/us/dev-w40e3mxg/) and [production](https://manage.auth0.com/dashboard/us/mercator-prod/) auth.
+- Our [AWS portal](https://us-east-1.console.aws.amazon.com/iamv2/home#/home) has S3 buckets we use to transfer data and some IAM roles we've configured for 3rd party apps.
+- Our [Snowflake instance](https://app.snowflake.com/us-west-2/xga41918/) is used to transfer data to customers.
+- Our waitlist and some of our image hosting is on Supabase [here](https://app.supabase.com/project/xmwdyaolhaobykjycchu) and [here](https://app.supabase.com/project/nkkohsotcmbtyzqpxukw/storage/buckets/logo)
 
 ## Build and Install Cases
 

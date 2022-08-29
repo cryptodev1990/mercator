@@ -711,6 +711,7 @@ Aug 16-19 2022
 # MVP
 
 ## Tier 0
+
 - [ ] Multitenancy
 - [ ] Snowflake publication
  - Possibly solved by [AirByte](https://airbyte.com/tutorials/postgresql-database-to-snowflake?utm_term=&utm_campaign=Airbyte+-+Nonbrand+-+Database+Transition&utm_source=adwords&utm_medium=ppc&hsa_acc=7542309003&hsa_cam=16651686687&hsa_grp=140090051201&hsa_ad=596994094959&hsa_src=g&hsa_tgt=aud-1637563966306:dsa-1720612594717&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gclid=CjwKCAjw6fyXBhBgEiwAhhiZsnMhxX_vU0BFWEH1upPto2BNLp0pXD85CZTIz62YZR9BAy1XK2aizxoCBh8QAvD_BwE#step-7)
@@ -724,7 +725,7 @@ Aug 16-19 2022
      - [X] Verify can read from local machine (done at 10:37am Aug 27)
      - [X] Verify can read from Snowflake (done at 11:23am Aug 27)
    - [ ] Replicate the user's data to an S3 bucket
-     - [ ] Copy data from Postgres to S3 (using Hightouch for this)
+     - [X] Copy data from Postgres to S3 (done at 1:16am Aug 29)
      - [ ] Copy data from S3 to Snowflake
        - [ ] Copy that S3 bucket to a stage
        - [ ] Copy the stage to a table
@@ -732,10 +733,11 @@ Aug 16-19 2022
      - [ ] Share that to an external Snowflake organization
        - Docs for [setting up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
      - [ ] Can we get some kind of a test on this??
-
-- [ ] Download to JSON -- download all live shapes to JSON
+- [ ] Feature: Button to download all JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
+  - [ ] Drag / drop edits have odd jumps
+    - Repro steps: Make a few of these, you'll see the shape doesn't always snap to the point
   - [ ] "Tentative shape" shadow lingers
     - Repro steps: Draw a shape, alter it, delete the shape. Shadow is still there.
   - [ ] Shape delete from right click does not work
@@ -745,9 +747,12 @@ Aug 16-19 2022
 - [ ] Error snackbar needs to exist
 
 ## Tier 1
+
 - [ ] Alerting on 400s/500s
 - [ ] Organizations - Create an organization. For now, I can do this manually.
 - [ ] DataDog
+- [ ] Feature: Ability to select multiple shapes for bulk edit, export, delete
+- [ ] Feature: Ability to publish
 
 ## Tier 2
 - [ ] OSM search / copy for all of North America
