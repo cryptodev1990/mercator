@@ -30,9 +30,6 @@ class OrganizationMember(BaseModel):
     name: str
     user_id: int
     added_by_user_id: int
-    has_read: bool
-    has_write: bool
-    is_admin: bool
     created_at: str
     updated_at: str
 
@@ -40,9 +37,6 @@ class OrganizationMember(BaseModel):
 class OrganizationMemberCreate(BaseModel):
     organization_id: UUID4
     user_id: int
-    has_read: bool = True
-    has_write: bool = True
-    is_admin: bool = False
 
 
 class OrganizationMemberDelete(BaseModel):

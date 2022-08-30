@@ -42,7 +42,4 @@ class User(UserBase):
 
 class UserWithMembership(User):
     organization_id: UUID4
-    has_read: Optional[bool] = None
-    has_write: Optional[bool] = None
-    is_admin: Optional[bool] = None
     is_personal: bool

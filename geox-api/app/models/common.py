@@ -17,13 +17,6 @@ class TimestampMixin:
     )
 
 @declarative_mixin
-class MembershipMixin:
-    __abstract__ = True
-    has_read = Column(Boolean, nullable=False, default=False)
-    has_write = Column(Boolean, nullable=False, default=False)
-    is_admin = Column(Boolean, nullable=False, default=False)
-
-@declarative_mixin
 class UUIDMixin:
     __abstract__ = True
     id = Column(

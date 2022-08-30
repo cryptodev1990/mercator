@@ -50,10 +50,7 @@ def create_organization_and_assign_to_user(
     new_org_member = models.OrganizationMember(
         organization_id=org.id,
         user_id=user_id,
-        active=False,
-        has_read=True,
-        has_write=True,
-        is_admin=True,
+        active=False
     )
     db.add(new_org_member)
     db.commit()
@@ -183,9 +180,6 @@ def add_user_to_organization(
     new_org_member = models.OrganizationMember(
         organization_id=organization_id,
         user_id=user_id,
-        has_read=True,
-        has_write=True,
-        is_admin=True,
     )
     db.add(new_org_member)
     db.commit()
