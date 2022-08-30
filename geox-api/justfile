@@ -95,7 +95,7 @@ dev-install:
 
 # Run app locally
 dev:
-	ENV_FILE=.env.local overmind start
+	ENV_FILE=.env.local APP_RELOAD=1 overmind start
 
 # Connect to running local postgres database
 pg:
