@@ -9,8 +9,6 @@ export type { OpenAPIConfig } from "./core/OpenAPI";
 export type { AppVersion } from "./models/AppVersion";
 export type { CeleryTaskResponse } from "./models/CeleryTaskResponse";
 export type { CeleryTaskResult } from "./models/CeleryTaskResult";
-export type { DbCredentialCreate } from "./models/DbCredentialCreate";
-export type { DbCredentialUpdate } from "./models/DbCredentialUpdate";
 export type { Feature } from "./models/Feature";
 export type { GeometryCollection } from "./models/GeometryCollection";
 export type { GeoShape } from "./models/GeoShape";
@@ -31,11 +29,9 @@ export type { OrganizationMemberUpdate } from "./models/OrganizationMemberUpdate
 export type { OrganizationUpdate } from "./models/OrganizationUpdate";
 export type { Point } from "./models/Point";
 export type { Polygon } from "./models/Polygon";
-export type { PublicDbCredential } from "./models/PublicDbCredential";
 export type { UserWithMembership } from "./models/UserWithMembership";
 export type { ValidationError } from "./models/ValidationError";
 
-export { DbConfigService } from "./services/DbConfigService";
 export { DefaultService } from "./services/DefaultService";
 export { GeofencerService } from "./services/GeofencerService";
 export { HealthService } from "./services/HealthService";

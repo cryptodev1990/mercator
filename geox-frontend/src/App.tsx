@@ -5,7 +5,6 @@ import AdminPage from "./pages/admin";
 import RequireAuth from "./common/components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
-import DbConfigPage from "./pages/db-config";
 import { useTokenInOpenApi } from "./hooks/use-token-in-openapi";
 
 function Logout() {
@@ -40,10 +39,6 @@ function RoutesIndex() {
         <Route
           path="/geofencer"
           element={<RequireAuth page={<GeofencerPage />} />}
-        />
-        <Route
-          path="/db-config"
-          element={<RequireAuth page={<DbConfigPage />} />}
         />
         <Route path="/logout" element={<RequireAuth page={<Logout />} />} />
         <Route path="/health" element={<HealthRedirect />} />
