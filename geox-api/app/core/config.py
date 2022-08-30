@@ -4,7 +4,7 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import (
     AnyHttpUrl,
@@ -31,15 +31,14 @@ AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""
 # used in CORS types
 
-
-GitCommitHash: type = constr(
+GitCommitHash = Annotated[str, constr(
     min_length=40,
     max_length=40,
     regex="^[0-9a-fA-F]{40}$",
     strict=True,
     to_lower=True,
     strip_whitespace=True,
-)
+)]
 """Pydantic type to validate git hashes."""
 
 
