@@ -1,8 +1,7 @@
 """Celery worker."""
 import csv
 import json
-from tempfile import NamedTemporaryFile
-from typing import Dict, List, Union
+from typing import Optional
 
 import awswrangler as wr
 import boto3
@@ -28,10 +27,19 @@ settings = get_settings()
 
 
 def send_data_to_s3(df: pd.DataFrame, org_id: UUID4):
+
+    aws_secret_access_key: Optional[str]
+    if settings.aws_s3_upload_secret_access_key:
+        aws_secret_access_key = (
+            settings.aws_s3_upload_secret_access_key.get_secret_value()
+        )
+    else:
+        aws_secret_access_key = None
+
     # Boto3 session
     session = boto3.Session(
         aws_access_key_id=settings.aws_s3_upload_access_key_id,
-        aws_secret_access_key=settings.aws_s3_upload_secret_access_key.get_secret_value(),
+        aws_secret_access_key=aws_secret_access_key,
     )
 
     res = wr.s3.to_csv(
