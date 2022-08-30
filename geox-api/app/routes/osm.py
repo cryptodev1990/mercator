@@ -33,9 +33,14 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
         res = db_osm.execute(
             text("""
            WITH container AS (
-              SELECT ST_BuildArea(geom) AS geom
-              FROM boundaries
-              WHERE fts @@ websearch_to_tsquery(:geographic_reference)
+              SELECT geom
+              FROM (
+                SELECT ST_BuildArea(geom) AS geom
+                FROM boundaries
+                WHERE fts @@ websearch_to_tsquery(:geographic_reference)
+                LIMIT 5
+              ) candidates
+              ORDER BY ST_Area(geom) DESC
               LIMIT 1
             )
             SELECT
@@ -53,6 +58,7 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
                 "geographic_reference": geographic_reference
             })
         rows = res.mappings().all()
+        print(rows)
         return [Feature(**row) for row in rows] if len(rows) > 0 else []
 
 
