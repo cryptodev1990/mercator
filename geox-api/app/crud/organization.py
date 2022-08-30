@@ -158,7 +158,8 @@ def add_user_to_organization_by_invite(
 
     caller_must_be_in_org(db, organization_id, added_by_user_id)
     # TODO user has agreed to invite
-    new_org_member = add_user_to_organization(db, invited_user_id, organization_id)
+    new_org_member = add_user_to_organization(
+        db, invited_user_id, organization_id)
     return schemas.UserWithMembership(**new_org_member.__dict__)
 
 
@@ -178,7 +179,8 @@ def add_user_to_organization(
 
     org = get_org_by_id(db, organization_id)
     if org.is_personal:
-        raise OrganizationModelException("Cannot add a user to a personal organization")
+        raise OrganizationModelException(
+            "Cannot add a user to a personal organization")
 
     new_org_member = models.OrganizationMember(
         organization_id=organization_id,

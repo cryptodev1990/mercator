@@ -28,11 +28,10 @@ def point_in_box(point, bounding_box: List[float]) -> bool:
 async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Feature]:
     """Get shapes from OSM by amenity"""
     if OsmSessionLocal is None:
-        raise Exception  # TODO: need an exception for this
+        raise Exception()  # TODO: need an exception for this
     with OsmSessionLocal() as db_osm:
         res = db_osm.execute(
-            text(
-                """
+            text("""
            WITH container AS (
               SELECT ST_BuildArea(geom) AS geom
               FROM boundaries
@@ -49,10 +48,10 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
             ON ST_CONTAINS(container.geom, points.geom)
             WHERE 1=1
               AND fts @@ websearch_to_tsquery(:query)
-              """,
-                dict(query=query, geographic_reference=geographic_reference),
-            )
-        )
+              """), {
+                "query": query,
+                "geographic_reference": geographic_reference
+            })
         rows = res.mappings().all()
         return [Feature(**row) for row in rows] if len(rows) > 0 else []
 

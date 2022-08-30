@@ -150,7 +150,8 @@ def update_shape(
     if db_shape is None:
         raise Exception(f"Shape {geoshape.uuid} not found")
     db_shape.geojson = (
-        json.loads(geoshape.geojson.json()) if geoshape.geojson else db_shape.geojson
+        json.loads(geoshape.geojson.json()
+                   ) if geoshape.geojson else db_shape.geojson
     )
     db_shape.name = geoshape.name or db_shape.name
     deleted_at, deleted_at_by_user_id = None, None
