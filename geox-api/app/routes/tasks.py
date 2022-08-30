@@ -1,15 +1,11 @@
 from fastapi import APIRouter, Depends, Request, Security
+from pydantic import UUID4
 
 from app.core.celery_app import celery_app
-from app.dependencies import UserSession, get_app_user_session, verify_token
-
 from app.crud.organization import get_active_org
-
-
+from app.dependencies import UserSession, get_app_user_session, verify_token
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
-from app.worker import test_celery, copy_to_s3
-
-from pydantic import UUID4
+from app.worker import copy_to_s3, test_celery
 
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
@@ -37,8 +33,7 @@ def run_test_celery(word: str = "Hello"):
 
 @router.post("/tasks/copy_shapes", tags=["tasks"], response_model=CeleryTaskResponse)
 def run_copy_task(
-    user_session: UserSession = Depends(
-        get_app_user_session),
+    user_session: UserSession = Depends(get_app_user_session),
 ):
     """Run a test celery task."""
     user = user_session.user

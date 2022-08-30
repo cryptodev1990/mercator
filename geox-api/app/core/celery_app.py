@@ -11,5 +11,5 @@ celery_app = Celery(
 
 celery_app.conf.task_routes = {
     "app.worker.test_celery": "main-queue",
-    "app.worker.copy_to_s3": "main-queue"
+    "app.worker.copy_to_s3": "main-queue",
 }

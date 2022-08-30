@@ -56,16 +56,19 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(
-        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
     auth_algorithms: str = Field("RS256", env="AUTH0_ALGORITHMS")
     fernet_encryption_key: str = Field(..., env="FERNET_ENCRYPTION_KEY")
 
-    aws_s3_upload_access_key_id: Optional[str] = Field(None, env="AWS_S3_UPLOAD_ACCESS_KEY_ID")
-    aws_s3_upload_secret_access_key: Optional[SecretStr] = Field(None, env="AWS_S3_UPLOAD_SECRET_ACCESS_KEY")
+    aws_s3_upload_access_key_id: Optional[str] = Field(
+        None, env="AWS_S3_UPLOAD_ACCESS_KEY_ID"
+    )
+    aws_s3_upload_secret_access_key: Optional[SecretStr] = Field(
+        None, env="AWS_S3_UPLOAD_SECRET_ACCESS_KEY"
+    )
 
     machine_account_email: EmailStr = Field(DEFAULT_MACHINE_ACCOUNT_EMAIL)
     contact_email: EmailStr = Field(CONTACT_EMAIL)
@@ -73,8 +76,7 @@ class Settings(BaseSettings):
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(
-                f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     @property
@@ -139,7 +141,8 @@ class Settings(BaseSettings):
     )
 
     git_commit: Optional[GitCommitHash] = Field(
-        None, description="Git commit of the app source code being used.")  # type: ignore
+        None, description="Git commit of the app source code being used."
+    )  # type: ignore
 
     @validator("git_commit", pre=True, always=True)
     def _validate_git_commit(cls, v):

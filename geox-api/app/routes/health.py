@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db, verify_token, get_current_user
+from app.dependencies import get_current_user, get_db, verify_token
 from app.schemas.user import User
 
 router = APIRouter()
