@@ -18,10 +18,11 @@ depends_on = None
 
 def downgrade() -> None:
     conn = op.get_bind()
-    conn.execute(sa.text("DROP ROLE app_user"))
+    conn.execute(sa.text("DROP ROLE IF EXISTS app_user"))
 
 
 def upgrade() -> None:
     conn = op.get_bind()
+    conn.execute(sa.text("DROP ROLE IF EXISTS app_user"))
     conn.execute(sa.text("CREATE ROLE app_user"))
     conn.execute(sa.text("GRANT ALL ON ALL TABLES IN SCHEMA public TO app_user"))

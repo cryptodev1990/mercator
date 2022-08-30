@@ -83,6 +83,12 @@ dev-docker-run +COMMAND='app bash':
 
 ## Local development (OSX)
 
+# Clean and recreate local dev database
+dev-db-clean:
+	dropdb geox
+	echo "DROP ROLE IF EXISTS app_user" | psql
+	createdb geox
+
 # Install dependencies for local development
 dev-install:
 	./bin/install-dependencies-local.sh
