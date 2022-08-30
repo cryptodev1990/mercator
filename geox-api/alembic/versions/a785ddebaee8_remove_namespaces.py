@@ -24,7 +24,6 @@ def upgrade() -> None:
     op.drop_index('ix_db_credentials_name', table_name='db_credentials')
     op.drop_table('db_credentials')
     op.drop_index('ix_namespaces_id', table_name='namespaces')
-    op.drop_table('namespaces')
     op.drop_index('ix_namespace_members_added_by_user_id', table_name='namespace_members')
     op.drop_index('ix_namespace_members_id', table_name='namespace_members')
     op.drop_index('ix_namespace_members_namespace_id', table_name='namespace_members')
@@ -32,6 +31,7 @@ def upgrade() -> None:
     op.drop_table('namespace_members')
     op.drop_constraint('shapes_namespace_id_fkey', 'shapes', type_='foreignkey')
     op.drop_column('shapes', 'namespace_id')
+    op.drop_table('namespaces')
     # ### end Alembic commands ###
 
 
