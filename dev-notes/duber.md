@@ -727,13 +727,15 @@ Aug 16-19 2022
    - [ ] Replicate the user's data to an S3 bucket
      - [X] Copy data from Postgres to S3 (done at 1:16am Aug 29)
      - [ ] Copy data from S3 to Snowflake
-       - [ ] Copy that S3 bucket to a stage
-       - [ ] Copy the stage to a table
-     - [ ] Configure a view for an organization on Snowflake
+       - [X] Copy that S3 bucket to a stage
+       - [X] Copy the stage to a table
+       - [ ] Do this automatically: https://docs.snowflake.com/en/user-guide/tables-external-s3.html
+     - [X] Configure a view for an organization on Snowflake
      - [ ] Share that to an external Snowflake organization
        - Docs for [setting up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
+       - Also this: https://docs.snowflake.com/en/user-guide/data-sharing-intro.html
      - [ ] Can we get some kind of a test on this??
-   - [ ] Add button to trigger data copy
+- [ ] Feature: Add button to trigger data copy
 - [ ] Feature: Button to download all JSON -- download all live shapes to JSON
 - [ ] Uploads of random data -- cap at 100 MB?
 - [ ] UI bugs
