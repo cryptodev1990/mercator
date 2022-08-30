@@ -12,9 +12,10 @@ from sqlalchemy.orm import backref, relationship
 
 from app.models.common import MembershipMixin, TimestampMixin, UUIDMixin
 from app.models.user import User
+from app.db.base_class import Base
 
 
-class Organization(TimestampMixin, UUIDMixin):
+class Organization(TimestampMixin, UUIDMixin, Base):
     """An organization is a collection of members."""
 
     __tablename__ = "organizations"
@@ -33,7 +34,7 @@ class Organization(TimestampMixin, UUIDMixin):
     )
 
 
-class OrganizationMember(TimestampMixin, MembershipMixin):
+class OrganizationMember(TimestampMixin, MembershipMixin, Base):
     """Represents membership in an organization."""
 
     __tablename__ = "organization_members"

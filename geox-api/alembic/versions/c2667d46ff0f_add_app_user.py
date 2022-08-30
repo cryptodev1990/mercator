@@ -1,4 +1,4 @@
-"""empty message
+"""Add app user.
 
 Revision ID: c2667d46ff0f
 Revises: ec0c16e2c6b5
