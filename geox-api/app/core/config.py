@@ -31,14 +31,17 @@ AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""
 # used in CORS types
 
-GitCommitHash = Annotated[str, constr(
-    min_length=40,
-    max_length=40,
-    regex="^[0-9a-fA-F]{40}$",
-    strict=True,
-    to_lower=True,
-    strip_whitespace=True,
-)]
+GitCommitHash = Annotated[
+    str,
+    constr(
+        min_length=40,
+        max_length=40,
+        regex="^[0-9a-fA-F]{40}$",
+        strict=True,
+        to_lower=True,
+        strip_whitespace=True,
+    ),
+]
 """Pydantic type to validate git hashes."""
 
 

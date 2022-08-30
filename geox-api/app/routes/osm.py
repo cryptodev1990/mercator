@@ -31,7 +31,8 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
         raise Exception()  # TODO: need an exception for this
     with OsmSessionLocal() as db_osm:
         res = db_osm.execute(
-            text("""
+            text(
+                """
            WITH container AS (
               SELECT geom
               FROM (
@@ -53,10 +54,10 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
             ON ST_CONTAINS(container.geom, points.geom)
             WHERE 1=1
               AND fts @@ websearch_to_tsquery(:query)
-              """), {
-                "query": query,
-                "geographic_reference": geographic_reference
-            })
+              """
+            ),
+            {"query": query, "geographic_reference": geographic_reference},
+        )
         rows = res.mappings().all()
         print(rows)
         return [Feature(**row) for row in rows] if len(rows) > 0 else []
