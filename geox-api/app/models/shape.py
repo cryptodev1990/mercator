@@ -16,7 +16,7 @@ class Shape(Base):
     __tablename__ = "shapes"
 
     uuid = Column(
-        UUID(as_uuid=True), primary_key=True, default=lambda _: str(uuid.uuid4())
+        UUID(as_uuid=True), primary_key=True, server_default="gen_random_uuid()"
     )
     name = Column(String, index=True)
     created_at = Column(DateTime, default=func.now())
@@ -27,10 +27,5 @@ class Shape(Base):
     deleted_at_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     geojson = Column(JSON, nullable=False)
     organization_id = Column(UUID, ForeignKey("organizations.id"))
-
-    # TODO: If Pydantic basemodel was used, then dict is already used. See https://pydantic-docs.helpmanual.io/usage/models/
-    def as_dict(self) -> Dict[str, Any]:
-        """Return dict."""
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     __mapper_args__ = {"eager_defaults": True}

@@ -18,6 +18,7 @@ __VERSION__ = "0.0.1"
 
 settings = get_settings()
 
+
 app = FastAPI(
     title="Mercator API",
     contact={

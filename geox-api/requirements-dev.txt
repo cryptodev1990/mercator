@@ -12,3 +12,4 @@ pytest-fastapi-deps
 sqlalchemy-stubs
 types-requests
 yamllint
+pytest-asyncio==0.19.0

@@ -120,7 +120,7 @@ lint: ## Lint the project
 	./bin/lint.sh
 
 # Run tests
-test *FLAGS=".":
+test *FLAGS="-x -vvv .":
 	ENV_FILE=.env.local ./bin/test-local.sh {{ FLAGS }}
 
 # Run tests against local, non-Dockerized database

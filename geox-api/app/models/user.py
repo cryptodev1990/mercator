@@ -1,4 +1,6 @@
 """App users."""
+import datetime
+
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
 from app.db.base_class import Base
@@ -19,7 +21,7 @@ class User(Base):
     name = Column(String)
     picture = Column(String)
     locale = Column(String)
-    updated_at = Column(DateTime)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     email_verified = Column(Boolean)
     iss = Column(String)
     last_login_at = Column(DateTime)

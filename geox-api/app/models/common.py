@@ -1,11 +1,11 @@
+"""Mixin classes used by the model classes."""
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, text
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import declarative_mixin  # type: ignore
 
-"""Mixin classes used by the model classes."""
 from app.db.base_class import Base
-from sqlalchemy.orm import declarative_mixin
 
 
 @declarative_mixin
@@ -16,9 +16,10 @@ class TimestampMixin:
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
 
+
 @declarative_mixin
 class UUIDMixin:
     __abstract__ = True
     id = Column(
-        UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()")
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
     )

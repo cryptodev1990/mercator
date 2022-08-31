@@ -1,38 +1,28 @@
 import datetime
 import json
 from typing import List, Optional, Union
+from uuid import UUID
 
 from pydantic import UUID4
-from sqlalchemy import text
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
+
+from app import models
 
 from .. import schemas
 
 
-def get_shape(
-    db: Session, shape: schemas.GeoShapeRead
-) -> Union[schemas.GeoShape, None]:
-    res = db.execute(
-        text(
-            """
-    SELECT uuid
-    , name
-    , created_at
-    , created_by_user_id
-    , deleted_at
-    , deleted_at_by_user_id
-    , geojson
-    FROM shapes
-    WHERE 1=1
-      AND deleted_at IS NULL
-      AND uuid = :uuid
-    LIMIT 1
-    """
-        ),
-        {"uuid": shape.uuid},
+def get_shape(db: Session, shape: schemas.GeoShapeRead) -> Optional[schemas.GeoShape]:
+    query = (
+        select(models.Shape)  # type: ignore
+        .filter(models.Shape.deleted_at == None)
+        .filter(models.Shape.uuid == shape.uuid)
+        .limit(1)
     )
-    rows = res.mappings().all()
-    return schemas.GeoShape(**rows[0]) if res else None
+    res = db.execute(query).fetchone()
+    if res:
+        return schemas.GeoShape.from_orm(res[0])
+    return None
 
 
 def get_all_shapes_by_user(db: Session, user: schemas.User) -> List[schemas.GeoShape]:
@@ -90,17 +80,17 @@ def get_all_shapes_by_organization(
     res = db.execute(
         text(
             """
-        SELECT shapes.uuid::VARCHAR AS uuid
-        , shapes.name
-        , shapes.geojson
-        , shapes.created_at
-        , shapes.created_by_user_id
-        FROM shapes
-        JOIN users
-        ON users.id = shapes.created_by_user_id
-          AND users.organization_id = :organization_id
-        WHERE 1=1
-          AND shapes.deleted_at IS NULL
+            SELECT shapes.uuid::VARCHAR AS uuid
+            , shapes.name
+            , shapes.geojson
+            , shapes.created_at
+            , shapes.created_by_user_id
+            FROM shapes
+            JOIN users
+            ON users.id = shapes.created_by_user_id
+            AND users.organization_id = :organization_id
+            WHERE 1=1
+            AND shapes.deleted_at IS NULL
         """
         ),
         {"organization_id": organization.id},

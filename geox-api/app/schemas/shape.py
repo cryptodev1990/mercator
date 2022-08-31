@@ -33,6 +33,9 @@ class GeoShape(GeoShapeRead, GeoShapeCreate):
         None, description="Date and time of most recent updater"
     )
 
+    class Config:
+        orm_mode = True
+
 
 class ShapeCountResponse(BaseModel):
     num_shapes: int = Field(..., description="Number of shapes affected by transaction")

@@ -1,0 +1,60 @@
+- id: 1
+  sub_id: 'Bmh7BJUpnm9MrHduLipLLJPtYqglPfGS@clients'
+  email: willie.carpenter@millergilbertweber.com
+  is_active: true
+  given_name: William
+  family_name: Carpenter
+  nickname: Willie
+  name: Willie Carpenter
+  picture: ''
+  locale: en_US
+  email_verified: true
+  updated_at: 2022-08-23 00:00:00
+- id: 2
+  sub_id: 'PnoetwAXGcYDJUlRyMkEb3MbTUPZJAYU@clients'
+  email: brian.garcia@bowman-plc.com
+  is_active: true
+  given_name: Brian
+  family_name: Garcia
+  nickname: ''
+  name: Brian Garcia
+  picture: ''
+  locale: en_US
+  email_verified: true
+  updated_at: 2022-08-23 00:00:00
+- id: 3
+  sub_id: 'cxghHRlftI9vB5jmCK5jEE4XPZ3B7UvC@clients'
+  email: oscar.ward@price-ward-lutz.com
+  is_active: true
+  given_name: Oscar
+  family_name: Ward
+  nickname: ''
+  name: Oscar Ward
+  picture: ''
+  locale: en_US
+  email_verified: true
+  updated_at: 2022-08-23 00:00:00
+- id: 4
+  sub_id: 'e58gtWHwXlca6jzqkOggydJUrpDfs1ie@clients'
+  email: thomas.french@millergilbertweber.com
+  is_active: true
+  given_name: Thomas
+  family_name: French
+  nickname: ''
+  name: Thomas French
+  picture: ''
+  locale: en_US
+  email_verified: true
+  updated_at: 2022-08-23 00:00:00
+- id: 5
+  sub_id: 'mdiNW2x5hw24U9CTuXaVbZcezIVqsdmE@clients'
+  email: michael.gray@millergilbertweber.com
+  is_active: true
+  given_name: Michael
+  family_name: Gray
+  nickname: ''
+  name: Michael Gray
+  picture: ''
+  locale: en_US
+  email_verified: true
+  updated_at: 2022-08-23 00:00:00

@@ -1,3 +1,5 @@
+import logging
+from asyncio.log import logger
 from enum import Enum
 from typing import List, Optional
 
@@ -16,6 +18,8 @@ from app.schemas import (
     User,
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
 
@@ -24,12 +28,32 @@ class GetAllShapesRequestType(str, Enum):
     user = "user"
 
 
+from sqlalchemy import text
+
+
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def get_shape(
     uuid: UUID4,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[GeoShape]:
+    logger.info(
+        "app.user_id",
+        user_session.session.execute(text("SELECT app_user_id()")).scalar(),
+    )
+    res = user_session.session.execute(
+        text("SELECT organization_id, user_id from organization_members")
+    ).fetchall()
+    for org_member in res:
+        logger.info(org_member)
+    print("Hello!!!!!")
+    logger.info(
+        "app.user_org",
+        user_session.session.execute(text("SELECT app_user_org()")).scalar(),
+    )
     return crud.get_shape(user_session.session, GeoShapeRead(uuid=uuid))
+
+
+from sqlalchemy import func, select
 
 
 @router.get("/geofencer/shapes", response_model=List[GeoShape])
@@ -43,8 +67,8 @@ def get_all_shapes(
     if rtype == GetAllShapesRequestType.user:
         shapes = crud.get_all_shapes_by_user(db_session, User(**user.__dict__))
     elif rtype == GetAllShapesRequestType.domain:
-        email_domain = user.email.split("@")[1]
-        shapes = crud.get_all_shapes_by_email_domain(db_session, email_domain)
+        organization_id = db_session.execute(select(func.app_user_org())).scalar()
+        shapes = crud.get_all_shapes_by_organization(db_session, organization_id)
     return shapes
 
 

@@ -26,7 +26,7 @@ def set_app_user_id(
 def set_app_user_id(session, user_id, local=False):
     """Set Postgres setting ``app.auth_user_id`` to ``auth_user_id``."""
     scope = "LOCAL" if local else "SESSION"
-    stmt = text(f"SET {scope} app.auth_user_id = :user_id")
+    stmt = text(f"SET {scope} app.user_id = :user_id")
     return session.execute(stmt, {"user_id": str(user_id)})
 
 
@@ -43,12 +43,12 @@ def unset_app_user_id(session: Connection, local: bool = False) -> LegacyCursorR
 def unset_app_user_id(session, local=False) -> CursorResult:
     """Reset Posrgres setting ``app.auth_user_id`` to default."""
     scope = "LOCAL" if local else "SESSION"
-    stmt = text(f"SET {scope} app.auth_user_id = DEFAULT")
+    stmt = text(f"SET {scope} app.user_id = DEFAULT")
     return session.execute(stmt)
 
 
 def get_app_user_id(session: Union[Session, Connection]) -> Optional[str]:
     """Reset Postgres setting ``app.auth_user_id`` to ``auth_user_id``."""
-    stmt = text(f"SELECT nullif(current_setting('app.auth_user_id', TRUE), '')")
+    stmt = text(f"SELECT nullif(current_setting('app.user_id', TRUE), '')")
     res = session.execute(stmt).scalar()
     return res if res else None

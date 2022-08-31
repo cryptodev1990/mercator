@@ -48,9 +48,7 @@ def create_organization_and_assign_to_user(
     """Create an organization and assigns it to the user who created it."""
     org = create_organization(db, organization, user_id)
     new_org_member = models.OrganizationMember(
-        organization_id=org.id,
-        user_id=user_id,
-        active=False
+        organization_id=org.id, user_id=user_id, active=False
     )
     db.add(new_org_member)
     db.commit()
