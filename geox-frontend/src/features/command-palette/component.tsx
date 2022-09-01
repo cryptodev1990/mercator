@@ -61,7 +61,7 @@ export const CommandPalette = ({
         } else if (value.endsWith("drive")) {
           // extract number from string
           const values = value.match(/^draw (\d+) (\w+) drive*/);
-          onIsochrone(values![1] ?? 100, values![2] ?? "minute");
+          onIsochrone(values![1] ?? 10, values![2] ?? "minute");
         }
       } else if (value.startsWith("publish")) {
         onPublish();

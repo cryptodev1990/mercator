@@ -3,10 +3,12 @@ import { GeofencerContext } from "./context";
 import { Feature, GeoShapeCreate } from "../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
+import union from "@turf/union";
 
 import { useAddShapeMutation } from "./hooks/openapi-hooks";
 import { CommandPalette } from "../command-palette/component";
 import { useIsochrones } from "../../hooks/use-isochrones";
+import { featureEach, polygon } from "@turf/turf";
 
 export const GeofencerCommandPalette = () => {
   const { tentativeShapes, setTentativeShapes, setViewport } =
@@ -63,17 +65,31 @@ export const GeofencerCommandPalette = () => {
       onIsochrone={async (num: number, timeUnits: string) => {
         const timeInSeconds = num * 60;
         const newShapes: GeoShapeCreate[] = [];
+        let i = 0;
         for (const s of tentativeShapes) {
+          if (i >= 10) {
+            break;
+          }
+
           const pt = s.geojson as any;
-          const chrone = await getIsochrones(
-            centroid(pt) as any,
-            timeInSeconds,
-            "car"
-          );
-          newShapes.push({
-            ...s,
-            geojson: chrone as any,
-          });
+          i += 1;
+
+          try {
+            const chrone = await getIsochrones(
+              centroid(pt).geometry.coordinates,
+              timeInSeconds,
+              "car"
+            );
+            console.log(chrone.polygons[0]);
+
+            newShapes.push({
+              ...s,
+              geojson: chrone.polygons[0] as any,
+            });
+          } catch (err) {
+            console.log(err);
+            continue;
+          }
         }
         setTentativeShapes(newShapes);
       }}
