@@ -730,6 +730,7 @@ Aug 16-19 2022
        - [X] Copy that S3 bucket to a stage
        - [X] Copy the stage to a table
        - [ ] Do this automatically: https://docs.snowflake.com/en/user-guide/tables-external-s3.html
+             and maybe this, https://docs.snowflake.com/en/sql-reference/sql/create-external-table.html
      - [X] Configure a view for an organization on Snowflake
      - [ ] Share that to an external Snowflake organization
        - Docs for [setting up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
@@ -758,4 +759,6 @@ Aug 16-19 2022
 - [ ] Feature: Ability to publish
 
 ## Tier 2
+
 - [ ] OSM search / copy for all of North America
+- [ ] Copy from Postgres to Snowflake using Fivetran: https://fivetran.com/docs/databases/connection-options#reversesshtunnel
