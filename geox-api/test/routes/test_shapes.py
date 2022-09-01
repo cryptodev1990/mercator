@@ -1,21 +1,28 @@
+import datetime
 import json
 import os
 import pathlib
 from functools import partial
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 import pytest
-from fastapi import status
+from fastapi import Depends, status
 from fastapi.testclient import TestClient
+from geojson_pydantic import Feature, Point
+from pytest_fastapi_deps import fastapi_dep
 from ruamel.yaml import YAML
-from sqlalchemy import MetaData, delete, insert, select, text
-from sqlalchemy.engine import Connection
+from sqlalchemy import MetaData, delete, insert, select, text, update
+from sqlalchemy.engine import Connection, Row
+from sqlalchemy.orm import Session
 
+from app import models, schemas
 from app.core.access_token import get_access_token
 from app.core.config import get_settings
 from app.db.base import Organization, OrganizationMember, User
 from app.db.session import SessionLocal, engine
+from app.dependencies import get_current_user, get_db, verify_token
 from app.main import app
 from app.models import Organization, OrganizationMember, Shape, User
 
@@ -33,23 +40,15 @@ def assert_ok(response):
 access_token = get_access_token()
 headers = {"Authorization": f"Bearer {access_token}"}
 
-
 client = TestClient(app)
 
 here = pathlib.Path(__file__).parent.resolve()
 
-geojson = json.loads(open(os.path.join(here, "../fixtures/bbox.geojson")).read())
-
 settings = get_settings()
-
 
 def clear_all_tables(conn: Connection, meta: MetaData):
     for table in reversed(meta.sorted_tables):
         conn.execute(table.delete())
-
-
-settings = get_settings()
-
 
 @pytest.fixture(scope="module")
 def test_data():
@@ -80,13 +79,6 @@ def test_data():
     }
 
 
-from typing import Any, Dict, List
-from uuid import UUID
-
-from sqlalchemy import update
-from sqlalchemy.engine import Row
-
-
 def set_active_organization(
     conn: Connection, user_id: int, organization_id: UUID
 ) -> None:
@@ -104,10 +96,6 @@ def get_user_orgs(conn: Connection, user_id: int) -> List[Row]:
         Organization.is_personal,
     ).join(OrganizationMember.organization.and_(OrganizationMember.user_id == user_id))
     return conn.execute(stmt).fetchall()
-
-
-from typing import Optional
-from uuid import UUID
 
 
 def get_user_personal_org(conn: Connection, user_id: int) -> Optional[UUID]:
@@ -152,16 +140,6 @@ def connection(test_data: Dict[str, Any]):
 
         # clear_all_tables(conn, Base.metadata(bind=conn))
 
-
-from fastapi import Depends
-from pytest_fastapi_deps import fastapi_dep
-from sqlalchemy import delete, insert, select
-from sqlalchemy.orm import Session
-
-from app import models, schemas
-from app.dependencies import get_current_user, get_db, verify_token
-
-
 def get_current_user_override(*, user_id: int, db_session: Session = Depends(get_db)):
     """Return a particular existing user by id.
 
@@ -178,6 +156,10 @@ def get_db_override(connection):
         db = SessionLocal(bind=connection)
         try:
             yield db
+            try:
+                db.commit()
+            except:
+                pass
         finally:
             db.close()
 
@@ -272,7 +254,7 @@ def test_read_shape_diff_org(connection, dep_override_factory):
 def test_read_shape_doesnt_exist(connection, dep_override_factory):
     """Cannot read a shape that doesn't exist."""
     user_id = 1
-    shape_id = "1f053556-c21b-4420-a188-09fc6931eb6a"  # UUID doesn't exist
+    shape_id = "59075662-68d4-408b-afe3-8a0b7af08bee"  # UUID doesn't exist
 
     # check that the uuid doesn't exist
     assert not shape_exists(connection, shape_id)
@@ -282,81 +264,102 @@ def test_read_shape_doesnt_exist(connection, dep_override_factory):
         assert body == None
 
 
-def test_get_all_shapes_user(connection, dep_override_factory):
+def test_get_all_shapes_by_user(connection, dep_override_factory):
     user_id = 1
+    user_shapes = {
+        "4f974f2d-572b-46f1-8741-56bf7f357d12",
+        "a5da808f-b717-41cb-a566-603674172bf2",
+    }
 
     with dep_override_factory(user_id):
         response = client.get(f"/geofencer/shapes?rtype=user")
         assert_ok(response)
         body = response.json()
         assert body
-        print(body)
+        assert {shape["uuid"] for shape in body} == user_shapes
 
 
-# def test_update_shape():
-#     def _test(shape: Shape):
-#         edited_geojson = json.loads(
-#             open(os.path.join(here, "../fixtures/edited-bbox.geojson")).read()
-#         )
-#         response = client.put(
-#             f"/geofencer/shapes/" + str(shape.uuid),
-#             json={
-#                 "uuid": str(shape.uuid),
-#                 "name": "edited test shape",
-#                 "geojson": edited_geojson,
-#             },
-#             headers=headers,
-#         )
+def test_get_all_shapes_by_organization(connection, dep_override_factory):
+    user_id = 1
+    organization_id = "5b706ffe-9608-4edd-bb00-ab9cbcb7384f"
+    user_shapes = {
+        "4f974f2d-572b-46f1-8741-56bf7f357d12",
+        "8073a55a-98d4-43a7-a1fa-eefab3980f7a",
+        "59955baf-9ffb-4c63-a6fa-6e790286d307",
+        "88707385-829f-4edd-9860-927675a48c70",
+        "a5da808f-b717-41cb-a566-603674172bf2",
+        "45cd0ce9-7e2f-47cc-922a-fb02b0cf115b",
+        "13c0b2ee-dada-421b-92eb-f756ef79d883",
+    }
 
-#         body = response.json()
-#         geom = body.get("geojson")["geometry"]
-#         assert_ok(response)
-#         assert body.get("name") == "edited test shape", "Name should be updated"
-#         assert geom == edited_geojson["geometry"], "GeoJSON should be updated"
-#         assert geom != geojson["geometry"], "GeoJSON should be updated"
-#         assert ymd(shape.created_at) == body.get(
-#             "created_at"
-#         ), "created_at should be the same"
-#         assert ymd(shape.updated_at) < body.get(
-#             "updated_at"
-#         ), "updated_at should be updated"
-
-#     run_shape_test(_test)
+    with dep_override_factory(user_id):
+        response = client.get(f"/geofencer/shapes?rtype=organization")
+        assert_ok(response)
+        body = response.json()
+        assert body
+        assert {shape['uuid'] for shape in body} == user_shapes
 
 
-# def test_soft_delete_update_shape():
-#     def _test(shape: Shape):
-#         response = client.put(
-#             f"/geofencer/shapes/" + str(shape.uuid),
-#             json={"should_delete": True, "uuid": str(shape.uuid)},
-#             headers=headers,
-#         )
-#         assert_ok(response)
-#         body = response.json()
-#         assert not body
+def test_update_shape(connection, dep_override_factory):
+    user_id = 1
+    shape_id = "4f974f2d-572b-46f1-8741-56bf7f357d12"
 
-#     run_shape_test(_test)
+    with engine.connect() as conn:
+        shape_old = conn.execute(text("SELECT * FROM shapes WHERE uuid = :uuid LIMIT 1"), {"uuid": shape_id}).fetchone()
 
+    new_name ='fuchsia-auditor'
+    new_shape = Feature(geometry=Point(coordinates = [-6.364088, -65.21654]))
 
-# def test_bulk_delete_shapes():
-#     try:
-#         _, shape1 = setup_shape()
-#         _, shape2 = setup_shape(should_cleanup=False, should_create_test_user=False)
-#         _, shape3 = setup_shape(should_cleanup=False, should_create_test_user=False)
-#         response = client.get(f"/geofencer/shapes?rtype=user", headers=headers)
-#         body = response.json()
-#         assert len(body) == 3
-#         response = client.delete(
-#             f"/geofencer/shapes/bulk",
-#             json=[str(shape1.uuid), str(shape2.uuid), str(shape3.uuid)],
-#             headers=headers,
-#         )
-#         assert_ok(response)
-#         body = response.json()
-#         assert body == {"num_shapes": 3}
-#     finally:
-#         cleanup()
+    with dep_override_factory(user_id):
+        response = client.put(f"/geofencer/shapes/{shape_id}",
+                              json={"uuid": str(shape_id), "geojson": new_shape.dict(), "name": new_name})
+        assert_ok(response)
+        body = response.json()
+        assert body
+        geom = Feature.parse_obj(body.get("geojson"))
+        assert body.get("name") == new_name, "Name should be updated"
+        assert geom == new_shape, "GeoJSON should be updated"
+        assert datetime.datetime.strptime(body.get("created_at"), "%Y-%m-%dT%H:%M:%S") == shape_old.created_at, "Created at should be the same"
+        assert body.get("updated_at") != shape_old.updated_at, "Updated at should be different"
 
+def test_delete_shape(connection, dep_override_factory):
+    user_id = 1
+    shape_id = "4f974f2d-572b-46f1-8741-56bf7f357d12"
+
+    with dep_override_factory(user_id):
+        response = client.put(f"/geofencer/shapes/{shape_id}",
+                              json={"uuid": str(shape_id), "should_delete": True})
+        assert_ok(response)
+        body = response.json()
+        assert not body
+
+    connection.commit()
+    res = connection.execute(text("SELECT uuid, deleted_at, deleted_at_by_user_id FROM shapes WHERE uuid = :uuid"), {"uuid": shape_id})
+    row = res.fetchone()
+    assert row.uuid == UUID(shape_id)
+    assert row.deleted_at is not None
+    assert row.deleted_at_by_user_id == user_id
+
+def test_bulk_create_shapes(connection, dep_override_factory):
+    user_id = 1
+    shape_id = "4f974f2d-572b-46f1-8741-56bf7f357d12"
+
+    new_name ='fuchsia-auditor'
+    new_shape = Feature(geometry=Point(coordinates = [-6.364088, -65.21654]))
+
+    with dep_override_factory(user_id):
+        response = client.put(f"/geofencer/shapes/{shape_id}",
+                              json={"uuid": str(shape_id), "should_delete": True})
+        assert_ok(response)
+        body = response.json()
+        assert not body
+
+    connection.commit()
+    res = connection.execute(text("SELECT uuid, deleted_at, deleted_at_by_user_id FROM shapes WHERE uuid = :uuid"), {"uuid": shape_id})
+    row = res.fetchone()
+    assert row.uuid == UUID(shape_id)
+    assert row.deleted_at is not None
+    assert row.deleted_at_by_user_id == user_id
 
 # def test_bulk_create_shapes():
 #     try:

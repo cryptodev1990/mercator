@@ -12,7 +12,7 @@ class OrganizationModelException(Exception):
     pass
 
 
-def caller_must_be_in_org(db, organization_id: UUID4, user_id: int) -> bool:
+def caller_must_be_in_org(db: Session, organization_id: UUID4, user_id: int) -> bool:
     """Check if user is member of organization."""
     res = (
         db.query(models.OrganizationMember)
@@ -249,7 +249,7 @@ def soft_delete_organization_member(
 def soft_delete_and_revert_to_personal_organization(
     db: Session, user_id: int, organization_id: UUID4
 ) -> int:
-    """Soft deletes a member of an organization"""
+    """Soft deletes a member of an organization."""
     num_rows = soft_delete_organization_member(db, user_id, organization_id)
     personal_org_id = get_personal_org_id(db, user_id)
     set_active_organization(db, user_id, personal_org_id)
