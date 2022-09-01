@@ -24,8 +24,8 @@ router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
 
 class GetAllShapesRequestType(str, Enum):
-    domain = "domain"
     user = "user"
+    organization = "organization"
 
 
 from sqlalchemy import text
@@ -45,7 +45,6 @@ def get_shape(
     ).fetchall()
     for org_member in res:
         logger.info(org_member)
-    print("Hello!!!!!")
     logger.info(
         "app.user_org",
         user_session.session.execute(text("SELECT app_user_org()")).scalar(),
@@ -66,7 +65,7 @@ def get_all_shapes(
     shapes = []
     if rtype == GetAllShapesRequestType.user:
         shapes = crud.get_all_shapes_by_user(db_session, User(**user.__dict__))
-    elif rtype == GetAllShapesRequestType.domain:
+    elif rtype == GetAllShapesRequestType.organization:
         organization_id = db_session.execute(select(func.app_user_org())).scalar()
         shapes = crud.get_all_shapes_by_organization(db_session, organization_id)
     return shapes
