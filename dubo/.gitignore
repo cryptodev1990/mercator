@@ -1,8 +1,0 @@
-dist/
-node_modules/
-.git/
-.parcel-cache/
-env/
-pyodide-build-*.tar.bz2
-*.swp
-.env.local
