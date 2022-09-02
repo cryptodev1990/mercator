@@ -14,7 +14,6 @@ export type { GeometryCollection } from "./models/GeometryCollection";
 export type { GeoShape } from "./models/GeoShape";
 export type { GeoShapeCreate } from "./models/GeoShapeCreate";
 export type { GeoShapeUpdate } from "./models/GeoShapeUpdate";
-export { GetAllConnectionsType } from "./models/GetAllConnectionsType";
 export { GetAllShapesRequestType } from "./models/GetAllShapesRequestType";
 export type { HTTPValidationError } from "./models/HTTPValidationError";
 export type { LineString } from "./models/LineString";

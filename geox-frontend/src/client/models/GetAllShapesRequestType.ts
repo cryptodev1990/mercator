@@ -6,6 +6,6 @@
  * An enumeration.
  */
 export enum GetAllShapesRequestType {
-    DOMAIN = 'domain',
-    USER = 'user',
+  USER = "user",
+  ORGANIZATION = "organization",
 }

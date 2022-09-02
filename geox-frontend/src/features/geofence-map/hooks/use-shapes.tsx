@@ -58,7 +58,7 @@ const useSelectedShapeUuids = () => {
 export const useShapes = () => {
   // TODO this needs to be global state
   const { data: remoteShapes, isLoading } = useGetAllShapesQuery(
-    GetAllShapesRequestType.DOMAIN
+    GetAllShapesRequestType.ORGANIZATION
   );
 
   useEffect(() => {
