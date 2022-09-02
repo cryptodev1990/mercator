@@ -76,7 +76,7 @@ export const useIcDemoMode = ({
                 getLineWidth: 1,
                 radiusMinPixels: 4,
                 radiusMaxPixels: 8,
-                getRadius: 2,
+                getPointRadius: 2,
                 getFillColor: [220, 10, 0],
                 getLineColor: [250, 250, 250],
               },

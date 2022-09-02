@@ -7,6 +7,7 @@ import Dropdown from "../../common/components/dropdown";
 import { ToolButtonBank } from "./tool-button-bank/component";
 import { GeofencerCommandPalette } from "./geofencer-command-palette";
 import { GeofencerContextMenu } from "./geofencer-context-menu";
+import { Toaster } from "react-hot-toast";
 
 const GeofencerApp = () => {
   return (
@@ -31,6 +32,7 @@ const GeofencerApp = () => {
           Basemap tiles by
         </div>
       </div>
+      <Toaster />
     </GeofencerContextContainer>
   );
 };

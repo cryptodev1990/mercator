@@ -56,11 +56,17 @@ const GeofenceSidebar = () => {
         <Tabs
           children={[
             shapes?.length !== 0 ? (
-              <div className="overflow-y-scroll">{shapeCards}</div>
+              <div key={0} className="overflow-y-scroll">
+                {shapeCards}
+              </div>
             ) : (
-              <NewUserMessage />
+              <div key={0}>
+                <NewUserMessage />
+              </div>
             ),
-            <ShapeEditor />,
+            <div key={1}>
+              <ShapeEditor />
+            </div>,
           ]}
           active={shapeForMetadataEdit ? 1 : 0}
           tabnames={["Shapes", "Metadata Editor"]}

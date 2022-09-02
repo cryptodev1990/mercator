@@ -5,18 +5,20 @@ import {
   GetAllShapesRequestType,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
+import toast from "react-hot-toast";
 
 export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
   const post = GeofencerService.createShapeGeofencerShapesPost;
+
   return useMutation(post, {
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
     },
-    onError(error) {
-      console.log("failed", error);
+    onError(error: any) {
+      toast.error(`Shape failed to add`);
+      console.error(error);
     },
-    onSettled() {},
   });
 };
 
@@ -30,6 +32,9 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
     {
       refetchOnMount: false,
       enabled: isTokenSet,
+      onError(error: any) {
+        toast.error(`Shapes failed to fetch (${error})`);
+      },
     }
   );
 };
@@ -41,7 +46,7 @@ export const useUpdateShapeMutation = () => {
       queryClient.fetchQuery("geofencer");
     },
     onError(error) {
-      console.log("failed", error);
+      toast.error(`Shapes failed to update (${error})`);
     },
   });
 };
@@ -55,7 +60,7 @@ export const useBulkDeleteShapesMutation = () => {
         queryClient.fetchQuery("geofencer");
       },
       onError(error) {
-        console.log("failed", error);
+        toast.error(`Shapes failed to delete (${error})`);
       },
     }
   );
