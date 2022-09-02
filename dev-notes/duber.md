@@ -748,7 +748,7 @@ Aug 16-19 2022
   - [ ] "The metadata editor needs a shape to edit" needs to be hidden
   - [ ] Scroll on the shape bar needs to work
     - Repro steps: Add enough shapes for a scroll
-- [ ] Error snackbar needs to exist
+- [X] Error snackbar needs to exist
 
 ## Tier 1
 
