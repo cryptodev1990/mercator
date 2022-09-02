@@ -6,7 +6,6 @@ jupyterlab
 mypy
 pydocstyle
 pytest
-pytest-asyncio
 pytest-cov
 pytest-fastapi-deps
 sqlalchemy-stubs

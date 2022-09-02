@@ -351,14 +351,14 @@ def test_delete_shape(connection, dep_override_factory):
     connection.commit()
     res = connection.execute(
         text(
-            "SELECT uuid, deleted_at, deleted_at_by_user_id FROM shapes WHERE uuid = :uuid"
+            "SELECT uuid, deleted_at, deleted_by_user_id FROM shapes WHERE uuid = :uuid"
         ),
         {"uuid": shape_id},
     )
     row = res.fetchone()
     assert row.uuid == UUID(shape_id)
     assert row.deleted_at is not None
-    assert row.deleted_at_by_user_id == user_id
+    assert row.deleted_by_user_id == user_id
 
 
 def test_bulk_create_shapes(connection, dep_override_factory):

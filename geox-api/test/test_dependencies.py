@@ -12,7 +12,7 @@ from app.dependencies import get_app_user_session
 def user():
     return schemas.User(email="tester@example.com", id=1234, sub_id=5, is_active=True)
 
-
+@pytest.mark.asyncio
 async def test_get_auth_user_session(user):
     """
     Test setting app.auth_user_id setting in sessions.

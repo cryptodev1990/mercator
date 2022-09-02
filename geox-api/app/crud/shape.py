@@ -125,7 +125,7 @@ def delete_shape(db: Session, uuid: UUID) -> int:
     # TODO: What to do if exists?
     values = {
         "deleted_at": datetime.datetime.now(),
-        "deleted_at_by_user_id": func.app_user_id(),
+        "deleted_by_user_id": func.app_user_id(),
     }
     stmt = (
         update(Shape).values(**values).where(Shape.uuid == str(uuid)).returning(Shape.uuid)  # type: ignore
@@ -135,15 +135,12 @@ def delete_shape(db: Session, uuid: UUID) -> int:
     return rows
 
 
-import pytest
-
-
 def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
         "deleted_at": datetime.datetime.now(),
-        "deleted_at_by_user_id": func.app_user_id(),
+        "deleted_by_user_id": func.app_user_id(),
     }
     stmt = update(Shape).values(**values).where(Shape.uuid.in_(uuids))  # type: ignore
     res = db.execute(stmt)
