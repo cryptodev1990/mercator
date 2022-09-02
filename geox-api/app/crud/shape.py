@@ -26,10 +26,13 @@ def get_shape(db: Session, shape: schemas.GeoShapeRead) -> Optional[schemas.GeoS
 
 def get_all_shapes_by_user(db: Session, user_id: int) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
-    stmt = (select(Shape).where(  # type: ignore
-        Shape.created_by_user_id == user_id,
-        Shape.deleted_at == None
-    ).order_by(Shape.updated_at.desc()))
+    stmt = (
+        select(Shape)
+        .where(  # type: ignore
+            Shape.created_by_user_id == user_id, Shape.deleted_at == None
+        )
+        .order_by(Shape.updated_at.desc())
+    )
     res = db.execute(stmt).scalars().fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
@@ -39,9 +42,13 @@ def get_all_shapes_by_organization(
 ) -> List[schemas.GeoShape]:
     """Get all shapes for an organization."""
     # This is usually equivalent to getting all shapes by organization
-    stmt = select(Shape).where(  # type: ignore
-        Shape.organization_id == str(organization_id), Shape.deleted_at == None
-    ).order_by(Shape.updated_at.desc())
+    stmt = (
+        select(Shape)
+        .where(  # type: ignore
+            Shape.organization_id == str(organization_id), Shape.deleted_at == None
+        )
+        .order_by(Shape.updated_at.desc())
+    )
     res = db.execute(stmt).scalars().fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
@@ -77,7 +84,9 @@ def create_many_shapes(
     ins = (
         insert(Shape)  # type: ignore
         .values(
-            created_by_user_id=func.app_user_id(), updated_by_user_id=func.app_user_id()
+            created_by_user_id=func.app_user_id(),
+            updated_by_user_id=func.app_user_id(),
+            organization_id=func.app_user_org(),
         )
         .returning(Shape.uuid)
     )
@@ -125,16 +134,18 @@ def delete_shape(db: Session, uuid: UUID) -> int:
     rows = res.rowcount
     return rows
 
-def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
+
+import pytest
+
+
+def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
         "deleted_at": datetime.datetime.now(),
         "deleted_at_by_user_id": func.app_user_id(),
     }
-    stmt = (
-        update(Shape).values(**values).where(Shape.uuid.in_(uuids))  # type: ignore
-    )
+    stmt = update(Shape).values(**values).where(Shape.uuid.in_(uuids))  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
     return rows

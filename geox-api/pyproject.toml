@@ -7,7 +7,7 @@ profile = "black"
 [tool.black]
 line-length = 88
 target-version = ['py39']
-exclude = "env/|alembic/versions"
+exclude = "env/|alembic/versions|\\.ipynb$|\\.ipynb_checkpoints/"
 
 [tool.mypy]
 python_version = "3.9"

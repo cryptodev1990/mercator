@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Security
+from fastapi import APIRouter, Depends
 from pydantic import UUID4
 
 from app.core.celery_app import celery_app
