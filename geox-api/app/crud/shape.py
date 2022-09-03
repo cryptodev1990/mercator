@@ -78,6 +78,7 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
         .returning(Shape)  # type: ignore
     )
     new_shape = db.execute(ins).fetchone()
+    db.commit()
     res = schemas.GeoShape.from_orm(new_shape)
     return res
 
@@ -100,6 +101,7 @@ def create_many_shapes(
     new_shapes = db.execute(
         ins, [{"name": s.name, "geojson": s.geojson.json()} for s in geoshapes]
     ).scalars()
+    db.commit()
     return list(new_shapes)
 
 
@@ -120,11 +122,11 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     )
     res = db.execute(stmt)
     rows = res.rowcount
+    db.commit()
     if rows == 0:
-        raise Exception
-    else:
-        shape = res.fetchone()
-        return schemas.GeoShape.parse_obj(shape)
+        raise Exception("No rows updated")
+    shape = res.fetchone()
+    return schemas.GeoShape.parse_obj(shape)
 
 
 def delete_shape(db: Session, uuid: UUID) -> int:
@@ -140,6 +142,7 @@ def delete_shape(db: Session, uuid: UUID) -> int:
     )
     res = db.execute(stmt)
     rows = res.rowcount
+    db.commit()
     return rows
 
 
@@ -154,4 +157,5 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
         **values).where(Shape.uuid.in_(uuids))  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
+    db.commit()
     return rows
