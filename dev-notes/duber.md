@@ -748,6 +748,8 @@ Aug 16-19 2022
   - [ ] "The metadata editor needs a shape to edit" needs to be hidden
   - [ ] Scroll on the shape bar needs to work
     - Repro steps: Add enough shapes for a scroll
+  - [ ] Weird properties count
+    - Repro steps: Add a property on a shape, the New Key will have an odd number
 - [X] Error snackbar needs to exist
 
 ## Tier 1
