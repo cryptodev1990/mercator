@@ -56,8 +56,10 @@ def get_all_shapes(
     if rtype == GetAllShapesRequestType.user:
         shapes = crud.get_all_shapes_by_user(db_session, user.id)
     elif rtype == GetAllShapesRequestType.organization:
-        organization_id = db_session.execute(select(func.app_user_org())).scalar()
-        shapes = crud.get_all_shapes_by_organization(db_session, organization_id)
+        organization_id = db_session.execute(
+            select(func.app_user_org())).scalar()
+        shapes = crud.get_all_shapes_by_organization(
+            db_session, organization_id)
     return shapes
 
 

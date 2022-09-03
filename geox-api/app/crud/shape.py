@@ -45,7 +45,8 @@ def get_all_shapes_by_organization(
     stmt = (
         select(Shape)
         .where(  # type: ignore
-            Shape.organization_id == str(organization_id), Shape.deleted_at == None
+            Shape.organization_id == str(
+                organization_id), Shape.deleted_at == None
         )
         .order_by(Shape.updated_at.desc())
     )
@@ -76,8 +77,9 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
         )
         .returning(Shape)  # type: ignore
     )
-    new_shape = db.execute(ins)
-    return schemas.GeoShape.from_orm(new_shape)
+    new_shape = db.execute(ins).fetchone()
+    res = schemas.GeoShape.from_orm(new_shape)
+    return res
 
 
 def create_many_shapes(
@@ -133,7 +135,8 @@ def delete_shape(db: Session, uuid: UUID) -> int:
         "deleted_by_user_id": func.app_user_id(),
     }
     stmt = (
-        update(Shape).values(**values).where(Shape.uuid == str(uuid)).returning(Shape.uuid)  # type: ignore
+        update(Shape).values(**values).where(Shape.uuid ==
+                                             str(uuid)).returning(Shape.uuid)  # type: ignore
     )
     res = db.execute(stmt)
     rows = res.rowcount
@@ -147,7 +150,8 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
         "deleted_at": datetime.datetime.now(),
         "deleted_by_user_id": func.app_user_id(),
     }
-    stmt = update(Shape).values(**values).where(Shape.uuid.in_(uuids))  # type: ignore
+    stmt = update(Shape).values(
+        **values).where(Shape.uuid.in_(uuids))  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
     return rows
