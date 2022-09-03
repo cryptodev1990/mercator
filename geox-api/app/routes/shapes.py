@@ -85,15 +85,6 @@ def update_shape(
         return shape
 
 
-@router.delete("/geofencer/shapes/{uuid}", response_model=GeoShape)
-def delete_shape(
-    uuid: UUID4,
-    user_session: UserSession = Depends(get_app_user_session),
-) -> Optional[GeoShape]:
-    """Delete a shape."""
-    return crud.delete_shape(user_session.session, uuid)
-
-
 @router.post("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_create_shapes(
     geoshapes: List[GeoShapeCreate],

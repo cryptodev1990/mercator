@@ -68,6 +68,9 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
         .values(
             created_by_user_id=func.app_user_id(),
             updated_by_user_id=func.app_user_id(),
+            updated_at=func.now(),
+            created_at=func.now(),
+            organization_id=func.app_user_org(),
             name=geoshape.name,
             geojson=geoshape.geojson.json(),
         )
@@ -85,7 +88,9 @@ def create_many_shapes(
         insert(Shape)  # type: ignore
         .values(
             created_by_user_id=func.app_user_id(),
+            created_at=func.now(),
             updated_by_user_id=func.app_user_id(),
+            updated_at=func.now(),
             organization_id=func.app_user_org(),
         )
         .returning(Shape.uuid)

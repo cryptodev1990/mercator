@@ -360,6 +360,32 @@ def test_delete_shape(connection, dep_override_factory):
     assert row.deleted_at is not None
     assert row.deleted_by_user_id == user_id
 
+def test_create_shape(connection, dep_override_factory):
+    user_id = 1
+    shape = GeoShapeCreate(
+            name="fuchsia-auditor",
+            geojson=Feature(geometry=Point(coordinates=[-6.364088, -65.21654])),
+        )
+
+    with dep_override_factory(user_id):
+        response = client.post(
+            f"/geofencer/shapes/", json=shape.dict()
+        )
+        assert_ok(response)
+        body = response.json()
+        assert body
+        assert body["uuid"]
+        assert body["name"] == shape.name
+        assert body["user_id"] == 1
+        assert body["organization_id"] == "5b706ffe-9608-4edd-bb00-ab9cbcb7384f"
+        uuid = body["uuid"]
+
+    assert (
+        connection.execute(
+            text("SELECT uuid FROM shapes WHERE uuid = :uuid"), {"uuid": uuid}
+        ).rowcount
+        == 1
+    )
 
 def test_bulk_create_shapes(connection, dep_override_factory):
     user_id = 1
