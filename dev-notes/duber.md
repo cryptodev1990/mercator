@@ -762,3 +762,10 @@ Aug 16-19 2022
 
 - [ ] OSM search / copy for all of North America
 - [ ] Copy from Postgres to Snowflake using Fivetran: https://fivetran.com/docs/databases/connection-options#reversesshtunnel
+
+## Tier 3
+
+- [ ] Add 403 page
+  - Repro steps: Open up incognito browser to mercator.tech/geofencer
+- [ ] Add error snackbar to landing page
+  - Right now when you sign up with an unauthorized user, you don't receive any notice indicating that you are doing so
