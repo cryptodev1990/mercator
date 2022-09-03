@@ -750,6 +750,8 @@ Aug 16-19 2022
     - Repro steps: Add enough shapes for a scroll
   - [ ] Weird properties count
     - Repro steps: Add a property on a shape, the New Key will have an odd number
+  - [ ] Double tooltip issue
+    - Repro steps: Hover over multiple tooltip'd properties, the tooltips accumulate
 - [X] Error snackbar needs to exist
 
 ## Tier 1
