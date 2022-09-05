@@ -23,6 +23,18 @@ export class DefaultService {
     }
 
     /**
+     * Current User
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static currentUserCurrentUserGet(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/current_user',
+        });
+    }
+
+    /**
      * Home
      * @returns any Successful Response
      * @throws ApiError

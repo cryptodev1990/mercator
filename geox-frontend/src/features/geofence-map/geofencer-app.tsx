@@ -8,7 +8,7 @@ import { ToolButtonBank } from "./tool-button-bank/component";
 import { GeofencerCommandPalette } from "./geofencer-command-palette";
 import { GeofencerContextMenu } from "./geofencer-context-menu";
 import { UploadModal } from "./upload-modal";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 
 const GeofencerApp = () => {
@@ -28,10 +28,6 @@ const GeofencerApp = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  useEffect(() => {
-    toast.success("uploadModalOpen " + uploadModalOpen);
-  }, [uploadModalOpen]);
 
   return (
     <GeofencerContextContainer>

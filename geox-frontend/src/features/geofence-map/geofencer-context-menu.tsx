@@ -76,8 +76,11 @@ export const GeofencerContextMenu = () => {
         closeMenu();
         return;
       case "Delete":
-        bulkDelete(Object.keys(selectedShapeUuids));
-        cleanup();
+        bulkDelete(Object.keys(selectedShapeUuids), {
+          onSuccess: () => {
+            cleanup();
+          },
+        });
         return;
       default:
         return () => {

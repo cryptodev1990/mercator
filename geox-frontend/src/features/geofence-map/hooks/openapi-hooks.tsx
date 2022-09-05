@@ -1,8 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
+  CeleryTaskResponse,
+  CeleryTaskResult,
   GeofencerService,
   GeoShape,
+  GeoShapeCreate,
   GetAllShapesRequestType,
+  TasksService,
+  ShapeCountResponse,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
@@ -54,9 +59,9 @@ export const useUpdateShapeMutation = () => {
 export const useBulkDeleteShapesMutation = () => {
   const queryClient = useQueryClient();
   return useMutation(
-    GeofencerService.bulkSoftDeleteShapesGeofencerShapesDelete,
+    GeofencerService.bulkDeleteShapesGeofencerShapesBulkDelete,
     {
-      onSuccess(data: GeoShape) {
+      onSuccess(data: ShapeCountResponse) {
         queryClient.fetchQuery("geofencer");
       },
       onError(error) {
@@ -68,12 +73,60 @@ export const useBulkDeleteShapesMutation = () => {
 
 export const useBulkAddShapesMutation = () => {
   const queryClient = useQueryClient();
+
   return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
-    onSuccess(data: GeoShape) {
+    onSuccess(data: ShapeCountResponse) {
       queryClient.fetchQuery("geofencer");
     },
     onError(error) {
       toast.error(`Shapes failed to add (${error})`);
     },
   });
+};
+
+export const usePollCopyTaskQuery = (taskId: string | undefined) => {
+  const queryClient = useQueryClient();
+  return useQuery<CeleryTaskResult>(
+    ["copyTask", taskId],
+    () => {
+      if (taskId) {
+        return TasksService.getStatusTasksResultsTaskIdGet(taskId);
+      }
+      return Promise.resolve({} as CeleryTaskResult);
+    },
+    {
+      refetchInterval: (data) =>
+        data?.task_status === "SUCCESS" ? false : 2000,
+      refetchOnWindowFocus: false,
+      enabled: taskId !== undefined,
+      refetchOnMount: false,
+      onError(error) {
+        toast.error(`Copy task failed (${error})`);
+      },
+      onSuccess(data: CeleryTaskResult) {
+        if (data?.task_status === "SUCCESS") {
+          toast.success(
+            `Shapes copied successfully (${data.task_result.num_rows} shapes)`
+          );
+        }
+        // cancel polling
+        queryClient.cancelQueries(["copyTask", taskId]);
+      },
+    }
+  );
+};
+
+export const useTriggerCopyTaskMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<CeleryTaskResponse>(
+    TasksService.runCopyTaskTasksCopyShapesPost,
+    {
+      onSuccess(data: CeleryTaskResponse) {
+        queryClient.fetchQuery(["copyTask", data.task_id]);
+      },
+      onError(error) {
+        toast.error(`Copy task failed (${error})`);
+      },
+    }
+  );
 };

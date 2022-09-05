@@ -21,10 +21,6 @@ class Organization(TimestampMixin, UUIDMixin, Base):
     __tablename__ = "organizations"
 
     name = Column(String, nullable=False)
-    # TODO validate
-    slug = Column(String, nullable=True)
-    # TODO validate
-    domain = Column(String, nullable=True)
     created_by_user_id = Column(
         Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )

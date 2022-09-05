@@ -5,13 +5,12 @@ import StaticMap from "react-map-gl";
 // @ts-ignore
 import { useCursorMode } from "./hooks/use-cursor-mode";
 
-import { useContext } from "react";
-import { GeofencerContext } from "./context";
 import { EditorMode } from "./cursor-modes";
 import { useLayers } from "./hooks/use-layers/use-layers";
+import { useViewport } from "./hooks/use-viewport";
 
 const GeofenceMap = () => {
-  const { viewport } = useContext(GeofencerContext);
+  const { viewport, setViewport } = useViewport();
   const { cursorMode } = useCursorMode();
 
   const { layers, onCanvasClick } = useLayers();
@@ -33,7 +32,11 @@ const GeofenceMap = () => {
     <div>
       <DeckGL
         initialViewState={viewport}
+        onViewStateChange={({ viewState, oldViewState }) =>
+          setViewport(viewState)
+        }
         controller={{
+          // @ts-ignore
           doubleClickZoom: false,
         }}
         onClick={onCanvasClick}

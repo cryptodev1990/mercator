@@ -3,9 +3,9 @@
 /* eslint-disable */
 
 /**
- * An enumeration.
+ * Valid shape request types.
  */
 export enum GetAllShapesRequestType {
-  USER = "user",
-  ORGANIZATION = "organization",
+    USER = 'user',
+    ORGANIZATION = 'organization',
 }

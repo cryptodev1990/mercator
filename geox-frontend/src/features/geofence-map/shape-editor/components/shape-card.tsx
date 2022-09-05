@@ -1,39 +1,64 @@
 import { MdDelete } from "react-icons/md";
 import Loading from "react-loading";
-import { Button } from "../../../../common/components/button";
 import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 import { MetadataEditButton } from "./edit-button";
 import { useShapes } from "../../hooks/use-shapes";
 import { GeoShape } from "../../../../client";
+import toast from "react-hot-toast";
+import { TbTarget } from "react-icons/tb";
+import { useViewport } from "../../hooks/use-viewport";
 
 export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
   const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
   const { selectOneShapeUuid, removeSelectedShapeUuid, shapeIsSelected } =
     useShapes();
+  const { snapToBounds } = useViewport();
   if (!shape.uuid || shape.uuid === undefined) {
     return null;
   }
   const selectionBg = shapeIsSelected(shape) ? "bg-slate-600" : "bg-slate-800";
+  const selectionOpacity = shapeIsSelected(shape)
+    ? "opacity-100"
+    : "opacity-50";
   return (
     <div
       onMouseEnter={() => selectOneShapeUuid(shape.uuid ?? "")}
       onMouseLeave={() => removeSelectedShapeUuid(shape.uuid ?? "")}
-      className={`p-6 max-w-sm relative snap-start bg-slate-600 first-child:rounded-none last-child:rounded-none rounded-lg border border-gray-200 shadow-md ${selectionBg}`}
+      className={`p-3 max-w-sm relative border-b border-b-slate-600 snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
     >
-      <h5 className="mb-2 text-2xl font-bold tracking-tight text-white">
-        {shape?.geojson?.properties?.name || "New geofence"}
-      </h5>
-      <div className="flex flex-row justify-start space-x-2">
-        <MetadataEditButton shape={shape} />
-        <Button
-          onClick={() => {
-            if (!shape.uuid) alert("TODO Delete shape failed");
-            else updateShape({ uuid: shape.uuid, should_delete: true });
-          }}
+      <div className="flex flex-row justify-between items-center">
+        <h5
+          title={shape?.geojson?.properties?.name}
+          className="text-1xl font-sans tracking-tight text-white truncate"
         >
-          <span className="mx-1">Delete</span>
-          {isLoading ? <Loading height={8} width={8} /> : <MdDelete />}
-        </Button>
+          {shape?.geojson?.properties?.name || "New geofence"}
+        </h5>
+        <div
+          className={`transition flex flex-row justify-start space-x-1 ${selectionOpacity}`}
+        >
+          <MetadataEditButton shape={shape} />
+          <button
+            className="btn btn-square btn-sm bg-slate-700 hover:bg-red-400 hover:border-red-400"
+            onClick={() => {
+              if (!shape.uuid) toast.error("Delete shape failed");
+              else updateShape({ uuid: shape.uuid, should_delete: true });
+            }}
+          >
+            {isLoading ? (
+              <Loading height={8} width={8} />
+            ) : (
+              <MdDelete className="fill-white" />
+            )}
+          </button>
+          <button
+            className="btn btn-square btn-sm bg-slate-700 hover:bg-green-400 hover:border-green-400"
+            onClick={() => {
+              snapToBounds({ category: "selected" });
+            }}
+          >
+            <TbTarget className="fill-white" />
+          </button>
+        </div>
       </div>
     </div>
   );

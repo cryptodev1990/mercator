@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 import { ViewState } from "react-map-gl";
 import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 // @ts-ignore
@@ -51,13 +51,23 @@ export const GeofencerContextContainer = ({
   children: ReactNode[];
 }) => {
   const [shapes, setShapes] = useState<GeoShape[]>([]);
-  const [viewport, setViewport] = useState<ViewState>({
-    latitude: 37.762673511727435,
-    longitude: -122.40111919656555,
-    bearing: 0,
-    pitch: 0,
-    zoom: 11.363205994378514,
-  });
+  const storedViewport = localStorage.getItem("viewport");
+  const [viewport, setViewport] = useState<ViewState>(
+    storedViewport
+      ? JSON.parse(storedViewport)
+      : {
+          latitude: 37.762673511727435,
+          longitude: -122.40111919656555,
+          bearing: 0,
+          pitch: 0,
+          zoom: 11.363205994378514,
+        }
+  );
+
+  useEffect(() => {
+    // Store viewport in local storage
+    localStorage.setItem("viewport", JSON.stringify(viewport));
+  }, [viewport]);
 
   const [options, setOptions] = useState<GlobalEditorOptions>({
     denyOverlap: true,

@@ -1,6 +1,5 @@
 import { BsPencil } from "react-icons/bs";
 import { GeoShape } from "../../../../client";
-import { Button } from "../../../../common/components/button";
 import { useShapes } from "../../hooks/use-shapes";
 
 export const MetadataEditButton = ({ shape }: { shape: GeoShape }) => {
@@ -9,9 +8,11 @@ export const MetadataEditButton = ({ shape }: { shape: GeoShape }) => {
     return null;
   }
   return (
-    <Button onClick={() => setShapeForMetadataEdit(shape)}>
-      <span className="mx-1">Edit</span>
-      <BsPencil />
-    </Button>
+    <button
+      className="btn btn-square btn-sm bg-slate-700 hover:bg-blue-400 hover:border-blue-400"
+      onClick={() => setShapeForMetadataEdit(shape)}
+    >
+      <BsPencil className="fill-white" />
+    </button>
   );
 };

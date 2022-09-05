@@ -712,7 +712,7 @@ Aug 16-19 2022
 
 ## Tier 0
 
-- [ ] Multitenancy
+- [X] Multitenancy
 - ~~[ ] Snowflake publication~~
  - Possibly solved by [AirByte](https://airbyte.com/tutorials/postgresql-database-to-snowflake?utm_term=&utm_campaign=Airbyte+-+Nonbrand+-+Database+Transition&utm_source=adwords&utm_medium=ppc&hsa_acc=7542309003&hsa_cam=16651686687&hsa_grp=140090051201&hsa_ad=596994094959&hsa_src=g&hsa_tgt=aud-1637563966306:dsa-1720612594717&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gclid=CjwKCAjw6fyXBhBgEiwAhhiZsnMhxX_vU0BFWEH1upPto2BNLp0pXD85CZTIz62YZR9BAy1XK2aizxoCBh8QAvD_BwE#step-7)
  - ~~See branch ``ajd/add-a-database`` for WIP backend publication with Celery~~
@@ -736,22 +736,31 @@ Aug 16-19 2022
        - Docs for [setting up a snowflake data share](https://docs.snowflake.com/en/user-guide/data-sharing-gs.html#step-1-create-a-share)
        - Also this: https://docs.snowflake.com/en/user-guide/data-sharing-intro.html
      - [ ] Can we get some kind of a test on this??
-- [ ] Feature: Add button to trigger data copy
-- [ ] Feature: Button to download all JSON -- download all live shapes to JSON
-- [ ] Uploads of random data -- cap at 100 MB?
+- [X] Feature: Add button to trigger data copy (1:09am on Sep 5)
+- [X] Feature: Button to download all JSON -- download all live shapes to JSON (1:09am on Sep 5)
+- [X] Uploads of random data -- cap at 100 MB?
+- [X] Finish the tentative shapes flow for publish
+  - [X] Allow removal of tentative shapes (1:09am on Sep 5)
+  - [X] Hide tentative shape on publish (1:09am on Sep 5)
+  - [X] Cap upload of tentative shapes at 10MB (no-op)
+  - [X] Enable zoom to tentative shapes (1:09am on Sep 5)
 - [ ] UI bugs
   - [ ] Drag / drop edits have odd jumps
     - Repro steps: Make a few of these, you'll see the shape doesn't always snap to the point
   - [ ] "Tentative shape" shadow lingers
     - Repro steps: Draw a shape, alter it, delete the shape. Shadow is still there.
-  - [ ] Shape delete from right click does not work
-  - [ ] "The metadata editor needs a shape to edit" needs to be hidden
+  - [X] Shape delete from right click does not work (1:59am on Sep 5)
+    - Post-mortem: Frontend / backend client out of sync
+  - [X] "The metadata editor needs a shape to edit" needs to be hidden
   - [ ] Scroll on the shape bar needs to work
     - Repro steps: Add enough shapes for a scroll
+    - [ ] Virtual windows: https://react-window.vercel.app/#/examples/list/fixed-size
   - [ ] Weird properties count
     - Repro steps: Add a property on a shape, the New Key will have an odd number
   - [ ] Double tooltip issue
     - Repro steps: Hover over multiple tooltip'd properties, the tooltips accumulate
+- [ ] Feature: Surface options to enable shape overlap (but deny by default)
+- [ ] Feature: Snap to roads
 - [X] Error snackbar needs to exist
 
 ## Tier 1

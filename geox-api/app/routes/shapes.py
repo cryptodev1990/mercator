@@ -95,3 +95,13 @@ def bulk_create_shapes(
     """Create multiple shapes."""
     shapes_uuid = crud.create_many_shapes(user_session.session, geoshapes)
     return ShapeCountResponse(num_shapes=len(shapes_uuid))
+
+
+@router.delete("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
+def bulk_delete_shapes(
+    shape_uuids: List[UUID4],
+    user_session: UserSession = Depends(get_app_user_session),
+) -> ShapeCountResponse:
+    """Create multiple shapes."""
+    row_count = crud.delete_many_shapes(user_session.session, shape_uuids)
+    return ShapeCountResponse(num_shapes=row_count)

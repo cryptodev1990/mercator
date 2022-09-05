@@ -154,7 +154,7 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
         "deleted_by_user_id": func.app_user_id(),
     }
     stmt = update(Shape).values(
-        **values).where(Shape.uuid.in_(uuids))  # type: ignore
+        **values).where(Shape.uuid.in_(tuple([str(x) for x in uuids])))  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
     db.commit()

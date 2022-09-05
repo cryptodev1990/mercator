@@ -16,7 +16,7 @@ export function UploadModalView({
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-10"
+        className="relative z-50"
         initialFocus={cancelButtonRef}
         onClose={setOpen}
       >
@@ -32,7 +32,7 @@ export function UploadModalView({
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 overflow-y-auto">
+        <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
@@ -61,7 +61,10 @@ export function UploadModalView({
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          GeoJSON, KML, GPX, and zipped Shapefiles are supported
+                          GeoJSON, KML, GPX, and zipped Shapefiles are
+                          supported. Uploads for non-GeoJSON are capped at 20MB.
+                          You will have a chance to review your upload before
+                          syncing to your database.
                         </p>
                         {dropzone}
                       </div>
@@ -75,7 +78,7 @@ export function UploadModalView({
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                     onClick={() => onPublish()}
                   >
-                    Publish
+                    Upload
                   </button>
                   <button
                     type="button"

@@ -15,9 +15,6 @@ export type UserWithMembership = {
     last_login_at?: string;
     is_active: boolean;
     organization_id: string;
-    has_read?: boolean;
-    has_write?: boolean;
-    is_admin?: boolean;
     is_personal: boolean;
 };
 

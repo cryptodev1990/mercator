@@ -3,12 +3,10 @@ import { GeofencerContext } from "./context";
 import { Feature, GeoShapeCreate } from "../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
-import union from "@turf/union";
 
 import { useAddShapeMutation } from "./hooks/openapi-hooks";
 import { CommandPalette } from "../command-palette/component";
 import { useIsochrones } from "../../hooks/use-isochrones";
-import { featureEach, polygon } from "@turf/turf";
 
 export const GeofencerCommandPalette = () => {
   const { tentativeShapes, setTentativeShapes, setViewport } =
