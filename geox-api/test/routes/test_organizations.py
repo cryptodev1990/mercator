@@ -14,7 +14,6 @@ settings = get_settings()
 
 client = TestClient(app)
 
-
 here = pathlib.Path(__file__).parent.resolve()
 
 

@@ -3,7 +3,9 @@ import datetime
 from typing import Any, List, Optional
 
 from geojson_pydantic import Feature
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, Field
+
+from app.schemas.common import BaseModel
 
 
 class GeoShapeCreate(BaseModel):
@@ -32,9 +34,6 @@ class GeoShape(GeoShapeRead, GeoShapeCreate):
     updated_at: Optional[datetime.datetime] = Field(
         None, description="Date and time of most recent updater"
     )
-
-    class Config:
-        orm_mode = True
 
 
 class ShapeCountResponse(BaseModel):

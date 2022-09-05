@@ -16,14 +16,13 @@ from app.db.session import SessionLocal
 
 logger = get_task_logger(__name__)
 
+settings = get_settings()
+
 
 @celery_app.task(acks_late=True)
 def test_celery(word: str) -> str:
     """Dummy task to return a work in a Celery worker."""
     return f"test task return {word}"
-
-
-settings = get_settings()
 
 
 def send_data_to_s3(df: pd.DataFrame, org_id: UUID4):

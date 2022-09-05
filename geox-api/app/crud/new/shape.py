@@ -4,67 +4,74 @@ from typing import List, Optional, Sequence
 from uuid import UUID
 
 from sqlalchemy import func, insert, select, update
+from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
 from app import schemas
 from app.models import Shape
 
+shape_tbl = Shape.__table__
 
-def get_shape(db: Session, shape: schemas.GeoShapeRead) -> Optional[schemas.GeoShape]:
+
+def get_shape(
+    conn: Connection, shape: schemas.GeoShapeRead
+) -> Optional[schemas.GeoShape]:
     """Get a shape."""
-    query = (
-        select(Shape)  # type: ignore
-        .filter(Shape.deleted_at == None)
-        .filter(Shape.uuid == shape.uuid)
+    stmt = (
+        select(shape_tbl)
+        .where(shape_tbl.c.deleted_at == None, shape_tbl.c.uuid == shape.uuid)  # type: ignore
         .limit(1)
     )
-    res = db.execute(query).fetchone()
+    res = conn.execute(stmt).fetchone()
     if res:
-        return schemas.GeoShape.from_orm(res[0])
+        return schemas.GeoShape.from_orm(res)
     return None
 
 
-def get_all_shapes_by_user(db: Session, user_id: int) -> List[schemas.GeoShape]:
+def get_all_shapes_by_user(conn: Connection, user_id: int) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     stmt = (
-        select(Shape)
+        select(shape_tbl)
         .where(  # type: ignore
-            Shape.created_by_user_id == user_id, Shape.deleted_at == None
+            shape_tbl.c.created_by_user_id == user_id, shape_tbl.c.deleted_at == None
         )
-        .order_by(Shape.updated_at.desc())
+        .order_by(shape_tbl.c.updated_at.desc())
     )
-    res = db.execute(stmt).scalars().fetchall()
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
 def get_all_shapes_by_organization(
-    db: Session, organization_id: UUID
+    conn: Connection, organization_id: UUID
 ) -> List[schemas.GeoShape]:
     """Get all shapes for an organization."""
     # This is usually equivalent to getting all shapes by organization
     stmt = (
-        select(Shape)
+        select(shape_tbl)
         .where(  # type: ignore
-            Shape.organization_id == str(organization_id), Shape.deleted_at == None
+            shape_tbl.c.organization_id == str(organization_id),
+            shape_tbl.c.deleted_at.is_(None),
         )
-        .order_by(Shape.updated_at.desc())
+        .order_by(shape_tbl.c.updated_at.desc())
     )
-    res = db.execute(stmt).scalars().fetchall()
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
-def get_all_shapes(db: Session) -> List[schemas.GeoShape]:
+def get_all_shapes(conn: Connection) -> List[schemas.GeoShape]:
     """Get all shapes which the user has permission."""
     # This will effectively get all shapes for the organization given RLS
-    stmt = select(Shape).where(Shape.deleted_at == None)  # type: ignore
-    res = db.execute(stmt)
-    return [schemas.GeoShape.parse_obj(g) for g in res]
+    stmt = select(shape_tbl).where(shape_tbl.c.deleted_at.is_(None))  # type: ignore
+    res = conn.execute(stmt)
+    return [schemas.GeoShape.from_orm(g) for g in res]
 
 
-def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
+def create_shape(
+    conn: Connection, geoshape: schemas.GeoShapeCreate
+) -> schemas.GeoShape:
     """Create a new shape."""
     ins = (
-        insert(Shape)  # type: ignore
+        insert(shape_tbl)  # type: ignore
         .values(
             created_by_user_id=func.app_user_id(),
             updated_by_user_id=func.app_user_id(),
@@ -74,20 +81,19 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
             name=geoshape.name,
             geojson=geoshape.geojson.json(),
         )
-        .returning(Shape)  # type: ignore
+        .returning(shape_tbl)  # type: ignore
     )
-    new_shape = db.execute(ins).fetchone()
-    db.commit()
+    new_shape = conn.execute(ins).fetchone()
     res = schemas.GeoShape.from_orm(new_shape)
     return res
 
 
 def create_many_shapes(
-    db: Session, geoshapes: Sequence[schemas.GeoShapeCreate]
+    conn: Connection, geoshapes: Sequence[schemas.GeoShapeCreate]
 ) -> List[UUID]:
     """Create many new shapes."""
     ins = (
-        insert(Shape)  # type: ignore
+        insert(shape_tbl)  # type: ignore
         .values(
             created_by_user_id=func.app_user_id(),
             created_at=func.now(),
@@ -95,16 +101,17 @@ def create_many_shapes(
             updated_at=func.now(),
             organization_id=func.app_user_org(),
         )
-        .returning(Shape.uuid)
+        .returning(shape_tbl.c.uuid)
     )
-    new_shapes = db.execute(
+    new_shapes = conn.execute(
         ins, [{"name": s.name, "geojson": s.geojson.json()} for s in geoshapes]
-    ).scalars()
-    db.commit()
+    )
     return list(new_shapes)
 
 
-def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoShape:
+def update_shape(
+    conn: Connection, geoshape: schemas.GeoShapeUpdate
+) -> schemas.GeoShape:
     """Update a shape with additional information."""
     values = {
         "name": geoshape.name,
@@ -114,21 +121,20 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     if geoshape.geojson:
         values["geojson"] = geoshape.geojson.json()
     stmt = (
-        update(Shape)  # type: ignore
+        update(shape_tbl)  # type: ignore
         .values(**values)
-        .where(Shape.uuid == str(geoshape.uuid))
-        .returning(Shape)  # type: ignore
+        .where(shape_tbl.c.uuid == str(geoshape.uuid))
+        .returning(shape_tbl)  # type: ignore
     )
-    res = db.execute(stmt)
+    res = conn.execute(stmt)
     rows = res.rowcount
-    db.commit()
     if rows == 0:
         raise Exception("No rows updated")
     shape = res.fetchone()
-    return schemas.GeoShape.parse_obj(shape)
+    return schemas.GeoShape.from_orm(shape)
 
 
-def delete_shape(db: Session, uuid: UUID) -> int:
+def delete_shape(conn: Connection, uuid: UUID) -> Optional[schemas.GeoShape]:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
@@ -136,18 +142,19 @@ def delete_shape(db: Session, uuid: UUID) -> int:
         "deleted_by_user_id": func.app_user_id(),
     }
     stmt = (
-        update(Shape)
+        update(shape_tbl)
         .values(**values)
-        .where(Shape.uuid == str(uuid))
-        .returning(Shape.uuid)  # type: ignore
+        .where(shape_tbl.c.uuid == str(uuid))
+        .returning(shape_tbl)
     )
-    res = db.execute(stmt)
+    res = conn.execute(stmt)
     rows = res.rowcount
-    db.commit()
-    return rows
+    if rows == 0:
+        raise Exception("No rows updated")
+    return schemas.GeoShape.from_orm(res.fetchone())
 
 
-def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
+def delete_many_shapes(conn: Connection, uuids: Sequence[UUID]) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
@@ -155,11 +162,8 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
         "deleted_by_user_id": func.app_user_id(),
     }
     stmt = (
-        update(Shape)
-        .values(**values)
-        .where(Shape.uuid.in_(tuple([str(x) for x in uuids])))
+        update(shape_tbl).values(**values).where(shape_tbl.c.uuid.in_(uuids))
     )  # type: ignore
-    res = db.execute(stmt)
+    res = conn.execute(stmt)
     rows = res.rowcount
-    db.commit()
     return rows

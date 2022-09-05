@@ -16,7 +16,9 @@ class Shape(Base):
     __tablename__ = "shapes"
 
     uuid = Column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid(),
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid(),
     )
     name = Column(String, index=True)
     created_at = Column(
@@ -39,7 +41,7 @@ class Shape(Base):
         UUID(as_uuid=True),
         ForeignKey("organizations.id"),
         server_default=func.app_user_org(),
-        nullable=False
+        nullable=False,
     )
 
     __mapper_args__ = {"eager_defaults": True}

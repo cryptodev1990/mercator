@@ -19,7 +19,7 @@ def set_app_user_id(
 @overload
 def set_app_user_id(
     session: Connection, user_id: Optional[str], local: bool = False
-) -> LegacyCursorResult:
+) -> CursorResult:
     ...
 
 
@@ -36,7 +36,7 @@ def unset_app_user_id(session: Session, local: bool = False) -> CursorResult:
 
 
 @overload
-def unset_app_user_id(session: Connection, local: bool = False) -> LegacyCursorResult:
+def unset_app_user_id(session: Connection, local: bool = False) -> CursorResult:
     ...
 
 
