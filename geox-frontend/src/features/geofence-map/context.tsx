@@ -68,7 +68,14 @@ export const GeofencerContextContainer = ({
 
   useEffect(() => {
     // Store viewport in local storage
-    localStorage.setItem("viewport", JSON.stringify(viewport));
+    localStorage.setItem(
+      "viewport",
+      JSON.stringify({
+        latitude: viewport.latitude,
+        longitude: viewport.longitude,
+        zoom: viewport.zoom,
+      })
+    );
   }, [viewport]);
 
   const [options, setOptions] = useState<GlobalEditorOptions>({
