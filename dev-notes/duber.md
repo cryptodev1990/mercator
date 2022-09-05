@@ -752,10 +752,10 @@ Aug 16-19 2022
   - [X] Shape delete from right click does not work (1:59am on Sep 5)
     - Post-mortem: Frontend / backend client out of sync
   - [X] "The metadata editor needs a shape to edit" needs to be hidden
-  - [ ] Scroll on the shape bar needs to work
-    - Repro steps: Add enough shapes for a scroll
-    - [ ] Virtual windows: https://react-window.vercel.app/#/examples/list/fixed-size
-  - [ ] Weird properties count
+  - [X] Scroll on the shape bar needs to work
+    - Repro steps: Add enough shapes for a scroll (10:36am on Sep 5)
+    - [X] Virtual windows: https://react-window.vercel.app/#/examples/list/fixed-size
+  - [ ] Weird properties count 
     - Repro steps: Add a property on a shape, the New Key will have an odd number
   - [ ] Double tooltip issue
     - Repro steps: Hover over multiple tooltip'd properties, the tooltips accumulate
@@ -770,6 +770,7 @@ Aug 16-19 2022
 - [ ] DataDog
 - [ ] Feature: Ability to select multiple shapes for bulk edit, export, delete
 - [ ] Feature: Ability to publish
+- [ ] Feature: Arrange Z of shapes
 
 ## Tier 2
 

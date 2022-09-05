@@ -29,7 +29,7 @@ export function useEditFunction() {
   const operationRef = useRef<any>();
 
   useEffect(() => {
-    if (!tentativeShapes) {
+    if (tentativeShapes.length === 0) {
       return;
     }
     if (operationRef.current) {

@@ -30,6 +30,7 @@ export const useLayers = () => {
     selectedShapeUuids,
     selectOneShapeUuid,
     clearSelectedShapeUuids,
+    scrollToSelectedShape,
   } = useShapes();
   const { cursorMode } = useCursorMode();
 
@@ -82,6 +83,7 @@ export const useLayers = () => {
         new EditableGeoJsonLayer({
           id: "geojson",
           pickable: true,
+          // @ts-ignore
           data: featureToFeatureCollection(
             shapes.map((x: GeoShape) => x.geojson)
           ),
@@ -117,12 +119,12 @@ export const useLayers = () => {
               if (!selectedShapeUuids[data.object.properties.__uuid]) {
                 selectOneShapeUuid(data.object.properties.__uuid);
                 selectedFeatureIndexes = [data.index];
+                scrollToSelectedShape(data.index);
               } else {
                 clearSelectedShapeUuids();
                 selectedFeatureIndexes = [];
               }
             }
-            console.log("selectedFeatureIndexes", selectedFeatureIndexes);
           },
           // @ts-ignore
           mode: {

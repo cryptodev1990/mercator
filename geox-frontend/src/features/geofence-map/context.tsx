@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useRef, useState } from "react";
 import { ViewState } from "react-map-gl";
 import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 // @ts-ignore
@@ -22,6 +22,7 @@ interface GeofencerContextState {
   setTentativeShapes: (shapes: GeoShapeCreate[]) => void;
   uploadedGeojson: Feature[];
   setUploadedGeojson: (geojson: Feature[]) => void;
+  virtuosoRef: any;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -42,6 +43,7 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setTentativeShapes: () => {},
   uploadedGeojson: [],
   setUploadedGeojson: () => {},
+  virtuosoRef: null,
 });
 GeofencerContext.displayName = "GeofencerContext";
 
@@ -84,6 +86,7 @@ export const GeofencerContextContainer = ({
   const [tentativeShapes, setTentativeShapes] = useState<GeoShapeCreate[]>([]);
 
   const [uploadedGeojson, setUploadedGeojson] = useState<Feature[]>([]);
+  const virtuosoRef = useRef(null);
 
   return (
     <GeofencerContext.Provider
@@ -105,6 +108,7 @@ export const GeofencerContextContainer = ({
           setTentativeShapes(tentativeShapes),
         uploadedGeojson,
         setUploadedGeojson: (geojson: Feature[]) => setUploadedGeojson(geojson),
+        virtuosoRef,
       }}
     >
       {children}

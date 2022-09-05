@@ -1,4 +1,5 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 import { GeoShape, GetAllShapesRequestType } from "../../../client";
 import { GeofencerContext } from "../context";
 import { useGetAllShapesQuery } from "./openapi-hooks";
@@ -30,7 +31,6 @@ const useSelectedShapeUuids = () => {
   const removeSelectedShapeUuid = (uuid: string) => {
     const newSelectedShapeUuids = { ...selectedShapeUuids };
     delete newSelectedShapeUuids[uuid];
-    console.log(newSelectedShapeUuids);
     setSelectedShapeUuids(newSelectedShapeUuids);
   };
 
@@ -71,6 +71,17 @@ export const useShapes = () => {
     setShapes(remoteShapes);
   }, [remoteShapes]);
 
+  function scrollToSelectedShape(i: number) {
+    if (virtuosoRef.current === null) {
+      return;
+    }
+    virtuosoRef.current.scrollToIndex({
+      index: i,
+      align: "start",
+      behavior: "smooth",
+    });
+  }
+
   const {
     shapes,
     tentativeShapes,
@@ -80,6 +91,7 @@ export const useShapes = () => {
     shapeForMetadataEdit,
     setShapeForMetadataEdit,
     setShapes,
+    virtuosoRef,
   } = useContext(GeofencerContext);
 
   const {
@@ -113,5 +125,7 @@ export const useShapes = () => {
     setShapeForMetadataEdit,
     tentativeShapes,
     setTentativeShapes,
+    virtuosoRef,
+    scrollToSelectedShape,
   };
 };

@@ -6,13 +6,11 @@ import {
   usePollCopyTaskQuery,
   useTriggerCopyTaskMutation,
 } from "../../hooks/openapi-hooks";
-import { BiAddToQueue, BiLeftArrow, BiRightArrow } from "react-icons/bi";
+import { BiAddToQueue } from "react-icons/bi";
 import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
-import { useEffect, useState } from "react";
-import { TasksService } from "../../../../client";
-import toast from "react-hot-toast";
 import Loading from "react-loading";
+import { Virtuoso } from "react-virtuoso";
 
 const NewUserMessage = () => {
   return (
@@ -34,8 +32,6 @@ const NewUserMessage = () => {
     </div>
   );
 };
-
-const NUM_SHAPE_CARDS = 15;
 
 const TentativeButtonBank = () => {
   const { snapToCentroid } = useViewport();
@@ -84,24 +80,25 @@ const TentativeButtonBank = () => {
 };
 
 export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
-  const { shapes, tentativeShapes } = useShapes();
-  const [page, setPage] = useState(0);
+  const { shapes, tentativeShapes, virtuosoRef } = useShapes();
 
   const {
     data: triggerData,
     isLoading,
     mutate: triggerCopyTask,
   } = useTriggerCopyTaskMutation();
-  const { data: numShapes, isLoading: isPolling } = usePollCopyTaskQuery(
-    triggerData?.task_id
-  );
+  const { isLoading: isPolling } = usePollCopyTaskQuery(triggerData?.task_id);
 
   const loading = isLoading || isPolling;
 
   // Feature: Display card for each shape in the namespace
-  const shapeCards = shapes
-    ?.filter((shape, i) => i < NUM_SHAPE_CARDS)
-    .map((shape, i) => <ShapeCard shape={shape} key={i} />);
+  const Row = ({ index, style }: any) => {
+    return (
+      <div key={index}>
+        <ShapeCard shape={shapes[index]} />
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col">
@@ -159,19 +156,21 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
       <hr />
       {shapes?.length !== 0 ? (
         <div key={1} className="relative h-[80vh]">
-          {shapeCards}
+          <Virtuoso
+            ref={virtuosoRef}
+            className="h-full scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-700"
+            totalCount={shapes.length}
+            data={shapes}
+            itemContent={(index, shape) => <ShapeCard shape={shape} />}
+          />
         </div>
       ) : (
         <NewUserMessage />
       )}
       <footer className="flex flex-row">
-        <button>
-          <BiLeftArrow />
-        </button>{" "}
-        {NUM_SHAPE_CARDS} of {shapes.length}{" "}
-        <button>
-          <BiRightArrow />
-        </button>
+        <p className="text-xs m-1">
+          {shapes.length} of {shapes.length} shapes
+        </p>
       </footer>
     </div>
   );
