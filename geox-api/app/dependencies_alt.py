@@ -3,23 +3,40 @@ FastAPI dependencies
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
-from typing import Any, Dict, Generator
+from typing import Any, Dict, Generator, AsyncGenerator
 
 from fastapi import Depends
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
+from app.core.config import Settings, get_settings
+from app.core.security import VerifyToken, token_auth_scheme
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 
 from app import schemas
 from app.crud.new.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id, unset_app_user_id
 from app.db.session import engine
-from app.dependencies import verify_token
 from app.schemas.common import BaseModel
 
 
 def get_db_conn() -> Generator[Connection, None, None]:
     with engine.begin() as conn:
         yield conn
+
+async def verify_token(
+    token: HTTPAuthorizationCredentials = Depends(token_auth_scheme),
+    settings: Settings = Depends(get_settings),
+) -> Dict[str, Any]:
+    """Verify a JWT token."""
+    # When should this return 401 vs. 403 exceptions
+    exception = HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+    )
+    payload = VerifyToken(token.credentials, settings).verify()
+    if payload.get("status") == "error":
+        raise exception
+    return payload
 
 
 def get_current_user(
@@ -44,7 +61,7 @@ class UserConnection(BaseModel):
     connection: Connection
 
 
-def get_user_connection(
+async def get_user_connection(
     user: schemas.User = Depends(get_current_user),
     conn: Connection = Depends(get_db_conn),
 ) -> Generator[UserConnection, None, None]:
@@ -60,10 +77,8 @@ def get_user_connection(
     # This will run after event start of a transaction, the "after_begin" event
     # https://docs.sqlalchemy.org/en/14/orm/events.html#sqlalchemy.orm.SessionEvents.after_begin
 
+    # This is inside a transaction
     conn.execute(text("SET LOCAL ROLE app_user"))
-    set_app_user_id(conn, str(user_id))
+    set_app_user_id(conn, str(user_id), local=True)
 
-    try:
-        yield UserConnection(user=user, connection=conn)
-    finally:
-        unset_app_user_id(conn)
+    yield UserConnection(user=user, connection=conn)
