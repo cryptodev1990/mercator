@@ -96,7 +96,6 @@ def bulk_delete_shapes(
     user_conn: UserConnection = Depends(get_user_connection),
 ) -> ShapeCountResponse:
     """Create multiple shapes."""
-    row_count = crud.delete_many_shapes(
-        user_conn.connection, [UUID(u) for u in shape_uuids]
-    )
+    print(shape_uuids)
+    row_count = crud.delete_many_shapes(user_conn.connection, shape_uuids)
     return ShapeCountResponse(num_shapes=row_count)

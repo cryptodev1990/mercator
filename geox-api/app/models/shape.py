@@ -32,7 +32,10 @@ class Shape(Base):
     )
     updated_at = Column(DateTime, default=func.now(), server_default=func.now())
     updated_by_user_id = Column(
-        Integer, ForeignKey("users.id"), server_default=func.app_user_id()
+        Integer,
+        ForeignKey("users.id"),
+        server_default=func.app_user_id(),
+        nullable=False,
     )
     deleted_at = Column(DateTime, nullable=True)
     deleted_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)

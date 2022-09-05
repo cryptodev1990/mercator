@@ -416,3 +416,33 @@ def test_bulk_create_shapes(connection, dep_override_factory):
             ).rowcount
             == 1
         )
+
+
+def test_bulk_delete_shapes(connection, dep_override_factory):
+    user_id = 1
+    uuids = [
+        "4f974f2d-572b-46f1-8741-56bf7f357d12",
+        "a5da808f-b717-41cb-a566-603674172bf2",
+    ]
+
+    for uuid in uuids:
+        assert shape_exists(connection, uuid)
+
+    with dep_override_factory(user_id):
+        response = client.delete(f"/geofencer/shapes/bulk", json=uuids)
+        assert_ok(response)
+        body = response.json()
+        assert body
+        assert body["num_shapes"] == 2
+
+    for uuid in uuids:
+        res = connection.execute(
+            text(
+                "SELECT uuid, deleted_at, deleted_by_user_id FROM shapes WHERE uuid = :uuid"
+            ),
+            {"uuid": uuid},
+        )
+        row = res.fetchone()
+        assert row.uuid == UUID(uuid)
+        assert row.deleted_at is not None
+        assert row.deleted_by_user_id == user_id

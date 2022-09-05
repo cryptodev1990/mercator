@@ -23,7 +23,8 @@ def create_or_update_user_from_bearer_data(
     if values["sub"] == settings.machine_account_sub_id:
         values["email"] = settings.machine_account_email
 
-    stmt = text("""
+    stmt = text(
+        """
     INSERT INTO users
     (sub_id, email, is_active, given_name, family_name, nickname, name, picture, locale, updated_at, email_verified, iss, last_login_at)
     VALUES
@@ -32,8 +33,23 @@ def create_or_update_user_from_bearer_data(
     DO UPDATE
     SET last_login_at = :last_login_at
     RETURNING *
-    """)
-    cols = ("sub_id", "email", "is_active", "given_name", "family_name", "nickname", "name", "picture", "locale", "updated_at", "email_verified", "iss", "last_login_at")
+    """
+    )
+    cols = (
+        "sub_id",
+        "email",
+        "is_active",
+        "given_name",
+        "family_name",
+        "nickname",
+        "name",
+        "picture",
+        "locale",
+        "updated_at",
+        "email_verified",
+        "iss",
+        "last_login_at",
+    )
     params = {c: values.get(c) for c in cols}
     row = conn.execute(stmt, params).fetchone()
     out_user = schemas.User.from_orm(row)
