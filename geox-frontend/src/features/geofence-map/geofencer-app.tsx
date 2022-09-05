@@ -7,13 +7,37 @@ import Dropdown from "../../common/components/dropdown";
 import { ToolButtonBank } from "./tool-button-bank/component";
 import { GeofencerCommandPalette } from "./geofencer-command-palette";
 import { GeofencerContextMenu } from "./geofencer-context-menu";
-import { Toaster } from "react-hot-toast";
+import { UploadModal } from "./upload-modal";
+import toast, { Toaster } from "react-hot-toast";
+import { useEffect, useState } from "react";
 
 const GeofencerApp = () => {
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setUploadModalOpen(() => false);
+      }
+      if (e.ctrlKey && e.key === "u") {
+        setUploadModalOpen((prevState) => !prevState);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    toast.success("uploadModalOpen " + uploadModalOpen);
+  }, [uploadModalOpen]);
+
   return (
     <GeofencerContextContainer>
       <GeofencerCommandPalette />
       <GeofencerContextMenu />
+      {<UploadModal open={uploadModalOpen} setOpen={setUploadModalOpen} />}
       <div className="text-white h-screen relative flex flex-col">
         <div className="flex-auto w-screen relative">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
@@ -24,7 +48,7 @@ const GeofencerApp = () => {
             </div>
           </div>
           <div className="h-[95vh] px-5 py-5 flex flex-row relative">
-            <GeofenceSidebar />
+            <GeofenceSidebar setUploadModalOpen={setUploadModalOpen} />
           </div>
           <GeofenceMap />
         </div>

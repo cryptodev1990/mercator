@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState } from "react";
 import { ViewState } from "react-map-gl";
-import { GeoShape, GeoShapeCreate } from "../../client";
+import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 // @ts-ignore
 import { EditorMode } from "./cursor-modes";
 import { GlobalEditorOptions } from "./types";
@@ -20,6 +20,8 @@ interface GeofencerContextState {
   setShapeForMetadataEdit: (shape: GeoShape | null) => void;
   tentativeShapes: GeoShapeCreate[];
   setTentativeShapes: (shapes: GeoShapeCreate[]) => void;
+  uploadedGeojson: Feature[];
+  setUploadedGeojson: (geojson: Feature[]) => void;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -38,6 +40,8 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setShapeForMetadataEdit: () => {},
   tentativeShapes: [],
   setTentativeShapes: () => {},
+  uploadedGeojson: [],
+  setUploadedGeojson: () => {},
 });
 GeofencerContext.displayName = "GeofencerContext";
 
@@ -69,6 +73,8 @@ export const GeofencerContextContainer = ({
 
   const [tentativeShapes, setTentativeShapes] = useState<GeoShapeCreate[]>([]);
 
+  const [uploadedGeojson, setUploadedGeojson] = useState<Feature[]>([]);
+
   return (
     <GeofencerContext.Provider
       value={{
@@ -87,6 +93,8 @@ export const GeofencerContextContainer = ({
         tentativeShapes,
         setTentativeShapes: (tentativeShapes: GeoShapeCreate[]) =>
           setTentativeShapes(tentativeShapes),
+        uploadedGeojson,
+        setUploadedGeojson: (geojson: Feature[]) => setUploadedGeojson(geojson),
       }}
     >
       {children}

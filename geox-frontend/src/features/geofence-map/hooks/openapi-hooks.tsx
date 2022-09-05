@@ -65,3 +65,15 @@ export const useBulkDeleteShapesMutation = () => {
     }
   );
 };
+
+export const useBulkAddShapesMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
+    onSuccess(data: GeoShape) {
+      queryClient.fetchQuery("geofencer");
+    },
+    onError(error) {
+      toast.error(`Shapes failed to add (${error})`);
+    },
+  });
+};

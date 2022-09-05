@@ -1,9 +1,7 @@
 import { Navbar } from "../../common/components/navbar";
 import geofencer from "./icons/geofencer-logo.svg";
-import dbconfig from "./icons/dbconfig-logo.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { isAdmin } from "../../common";
 
 interface AppCardProps {
   css?: string;
@@ -58,21 +56,6 @@ const DashboardPage = () => {
           name="Geofencer"
           navlink={"/geofencer"}
           description="Draw geofences or edit existing ones"
-        />
-        <AppCard
-          tabindex={2}
-          svg={dbconfig}
-          navlink={"/db-config"}
-          name="DBConfig"
-          description="Configure database connections for your team"
-        />
-        <AppCard
-          hidden={!isAdmin(user)}
-          tabindex={3}
-          svg={dbconfig}
-          navlink={"/admin"}
-          name="Admin"
-          description="Admin"
         />
       </section>
     </main>

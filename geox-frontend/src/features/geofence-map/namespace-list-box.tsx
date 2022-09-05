@@ -20,7 +20,7 @@ export function NamespaceListBox() {
 
   return (
     <div className="text-white">
-      <Listbox value={namespace} onChange={setNamespace}>
+      <Listbox value={namespace} onChange={setNamespace} disabled>
         <input name="listbox" className="hidden"></input>
         <div className="relative w-[13rem]">
           <Listbox.Button className="cursor-pointer relative w-full rounded-lg bg-slate-500 py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">

@@ -7,6 +7,7 @@ import { ShapeCard } from "./shape-card";
 import { Transition } from "react-transition-group";
 import { useShapes } from "../../hooks/use-shapes";
 import Loading from "react-loading";
+import { useBulkAddShapesMutation } from "../../hooks/openapi-hooks";
 
 const NewUserMessage = () => {
   return (
@@ -42,32 +43,67 @@ const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   );
 };
 
-const GeofenceSidebar = () => {
-  const { shapes, shapeForMetadataEdit, isLoading } = useShapes();
+interface GeofencerSidebarProps {
+  setUploadModalOpen: any;
+}
 
+const GeofenceSidebar = ({ setUploadModalOpen }: GeofencerSidebarProps) => {
+  const { shapes, shapeForMetadataEdit, isLoading, tentativeShapes } =
+    useShapes();
   // Feature: Display card for each shape in the namespace
   const shapeCards = shapes?.map((shape, i) => (
     <ShapeCard shape={shape} key={i} />
   ));
+  const { mutate: addShapesBulk } = useBulkAddShapesMutation();
 
   return (
     <GeofenceSidebarView>
       {!isLoading && (
         <Tabs
           children={[
-            shapes?.length !== 0 ? (
-              <div key={0} className="overflow-y-scroll">
-                {shapeCards}
+            <>
+              <div className="flex flex-col">
+                <div>
+                  <button
+                    className="btn btn-xs"
+                    onClick={() => setUploadModalOpen(true)}
+                  >
+                    + Add your data
+                  </button>
+                </div>
+                {tentativeShapes.length > 0 && (
+                  <div className="mt-2">
+                    <button
+                      className="btn btn-xs bg-blue-400 text-white"
+                      onClick={() => {
+                        // TODO add shapes in bulk here
+                        addShapesBulk(
+                          tentativeShapes.map((shape) => ({
+                            ...shape,
+                          }))
+                        );
+                      }}
+                    >
+                      + Publish
+                    </button>
+                    <button className="btn btn-xs bg-blue-400 text-white">
+                      Zoom to centroid
+                    </button>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div key={0}>
+              {shapes?.length !== 0 ? (
+                <div key={1} className="overflow-y-scroll">
+                  {shapeCards}
+                </div>
+              ) : (
                 <NewUserMessage />
-              </div>
-            ),
-            <div key={1}>
-              <ShapeEditor />
-            </div>,
-          ]}
+              )}
+            </>,
+            <ShapeEditor />,
+          ].map((x, i) => (
+            <div key={i}>{x}</div>
+          ))}
           active={shapeForMetadataEdit ? 1 : 0}
           tabnames={["Shapes", "Metadata Editor"]}
         />

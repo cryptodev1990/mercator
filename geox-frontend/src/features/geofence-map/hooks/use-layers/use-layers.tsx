@@ -2,7 +2,6 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import { EditableGeoJsonLayer, SelectionLayer } from "@nebula.gl/layers";
 import { EditorMode } from "../../cursor-modes";
 import { useMapMatchMode } from "../use-map-match-mode";
-import { useIcDemoMode } from "../use-ic-demo-mode";
 
 import {
   ViewMode,
@@ -46,7 +45,6 @@ export const useLayers = () => {
     selectedFeatureIndexes,
   };
   const { layer: mapMatchModeLayer } = useMapMatchMode(modeArgs);
-  const { getLayers: getIcDemoLayers } = useIcDemoMode(modeArgs);
   const { onEdit } = useEditFunction();
 
   function onCanvasClick(data: any) {
@@ -174,7 +172,6 @@ export const useLayers = () => {
           mode: TranslateMode,
         }),
       cursorMode === EditorMode.DrawPolygonFromRouteMode && mapMatchModeLayer,
-      ...getIcDemoLayers(cursorMode === EditorMode.InstacartDemoMode),
     ],
   };
 };
