@@ -13,7 +13,8 @@ from fastapi import Depends, status
 from fastapi.testclient import TestClient
 from geojson_pydantic import Feature, Point
 from ruamel.yaml import YAML
-from sqlalchemy import insert, select, text
+from sqlalchemy import select, text
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection, Row  # type: ignore
 
 from app import schemas

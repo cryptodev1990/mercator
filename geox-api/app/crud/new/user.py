@@ -1,12 +1,10 @@
 """IMPORTANT: There are database triggers that affect this logic, see Alembic"""
 import datetime
-from typing import Any, Union
 
-from sqlalchemy import insert
+from sqlalchemy import text
 from sqlalchemy.engine import Connection
-from sqlalchemy.orm import Session
 
-from app import models, schemas
+from app import schemas
 from app.core.config import get_settings
 from app.models import User
 
@@ -25,12 +23,18 @@ def create_or_update_user_from_bearer_data(
     if values["sub"] == settings.machine_account_sub_id:
         values["email"] = settings.machine_account_email
 
-    stmt = (
-        user_tbl.insert()
-        .values(**values)
-        .on_conflict_do_update(index_elements=["sub_id"], set_={"last_login_at": now})
-        .returning(user_tbl)
-    )
-    row = conn.execute(stmt)
+    stmt = text("""
+    INSERT INTO users
+    (sub_id, email, is_active, given_name, family_name, nickname, name, picture, locale, updated_at, email_verified, iss, last_login_at)
+    VALUES
+    (:sub_id, :email, TRUE, :given_name, :family_name, :nickname, :name, :picture, :locale, :updated_at, :email_verified, :iss, :last_login_at)
+    ON CONFLICT (sub_id)
+    DO UPDATE
+    SET last_login_at = :last_login_at
+    RETURNING *
+    """)
+    cols = ("sub_id", "email", "is_active", "given_name", "family_name", "nickname", "name", "picture", "locale", "updated_at", "email_verified", "iss", "last_login_at")
+    params = {c: values.get(c) for c in cols}
+    row = conn.execute(stmt, params).fetchone()
     out_user = schemas.User.from_orm(row)
     return out_user
