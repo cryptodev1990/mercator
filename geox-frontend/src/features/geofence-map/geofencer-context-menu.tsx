@@ -58,7 +58,7 @@ export const GeofencerContextMenu = () => {
         return;
       case "Metadata":
         if (Object.keys(selectedShapeUuids).length > 1) {
-          alert("Please select only one shape to edit");
+          toast.error("Please select only one shape to edit");
         }
         const selectedShape = shapes.find(
           (shape) => shape.uuid === Object.keys(selectedShapeUuids)[0]

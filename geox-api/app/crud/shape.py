@@ -46,6 +46,10 @@ def get_all_shapes_by_organization(
 ) -> List[schemas.GeoShape]:
     """Get all shapes for an organization."""
     # This is usually equivalent to getting all shapes by organization
+    # TODO ordering by UUID just guarantees a sort order
+    # I am only doing this because the selected feature index in nebula.gl
+    # on the frontend needs consistent 
+    # We should find a better way of handling this
     stmt = (
         select(Shape)
         .where(  # type: ignore

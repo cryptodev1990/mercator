@@ -1244,10 +1244,10 @@
     mjolnir.js "^2.5.0"
     probe.gl "^3.4.0"
 
-"@deck.gl/extensions@^8.8.4":
-  version "8.8.4"
-  resolved "https://registry.yarnpkg.com/@deck.gl/extensions/-/extensions-8.8.4.tgz#ad95c1698e40d5a41d9e7b69cfb6676d0506708b"
-  integrity sha512-XIMqYfOZVeFqLd2/dyotVycLZ4wVaA8OTaPznKBrOoY18qwlI0pDMHGCtMe1Rnb8MJnCJCCNSBMy1Y28WlRcTQ==
+"@deck.gl/extensions@^8.8.9":
+  version "8.8.9"
+  resolved "https://registry.yarnpkg.com/@deck.gl/extensions/-/extensions-8.8.9.tgz#983199d1dfc2daf3b5609252e0077bfac81fc4fc"
+  integrity sha512-A91E5YQTh9eTzqmb+KB3ehARIqMosQkZz77TvnaMEWaRgrbRp4/lNZEBTtu0RenDnxy04lojCaYxRoh+kPidSg==
   dependencies:
     "@luma.gl/shadertools" "^8.5.16"
 

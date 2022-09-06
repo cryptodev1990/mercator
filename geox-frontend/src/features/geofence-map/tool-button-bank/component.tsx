@@ -8,12 +8,11 @@ import { CgEditMarkup } from "react-icons/cg";
 import { RiCursorLine } from "react-icons/ri";
 import { FaDrawPolygon } from "react-icons/fa";
 import { useTooltip } from "../../../hooks/use-tooltip";
-import ReactTooltip from "react-tooltip";
 import { useShapes } from "../hooks/use-shapes";
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
-  const { tooltip, tooltipEvents } = useTooltip();
+  const { tooltipEvents } = useTooltip();
   const { getNumSelectedShapes } = useShapes();
 
   const modes = [

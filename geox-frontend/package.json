@@ -6,7 +6,7 @@
     "@auth0/auth0-react": "^1.10.2",
     "@danmarshall/deckgl-typings": "^4.9.24",
     "@deck.gl/core": "8.5.8",
-    "@deck.gl/extensions": "^8.8.4",
+    "@deck.gl/extensions": "^8.8.9",
     "@deck.gl/geo-layers": "8.5.8",
     "@deck.gl/layers": "8.5.8",
     "@deck.gl/mesh-layers": "8.5.8",

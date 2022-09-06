@@ -67,7 +67,6 @@ export const useShapes = () => {
     for (const shape of remoteShapes) {
       shape.geojson.properties.__uuid = shape.uuid;
     }
-    console.log("remoteShapes", remoteShapes);
     setShapes(remoteShapes);
   }, [remoteShapes]);
 

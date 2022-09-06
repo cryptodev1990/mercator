@@ -12,23 +12,6 @@ import { AiFillDatabase } from "react-icons/ai";
 import Loading from "react-loading";
 import { Virtuoso } from "react-virtuoso";
 import { useCursorMode } from "../../hooks/use-cursor-mode";
-import { EditorMode } from "../../cursor-modes";
-import toast from "react-hot-toast";
-
-function hr(mode: string) {
-  switch (mode) {
-    case EditorMode.ViewMode:
-      return "View Mode. Right-click a shape to edit a geofence.";
-    case EditorMode.ModifyMode:
-      return "Modify Mode - Drag shape points to move.";
-    case EditorMode.EditMode:
-      return "Shape Add Mode - Draw a shape";
-    case EditorMode.LassoDrawMode:
-      return "Lasso Draw Mode";
-    case EditorMode.SplitMode:
-      return "Scissors Mode - Draw a line to split a shape";
-  }
-}
 
 const NewUserMessage = () => {
   return (
@@ -196,10 +179,6 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
         <p className="text-xs m-1">
           {shapes.length} of {shapes.length} shapes
         </p>
-        <p className="text-xs m-1">Currently in {hr(cursorMode)}</p>
-        {cursorMode !== "ViewMode" && (
-          <p className="text-xs m-1">Esc to return to View Mode</p>
-        )}
       </footer>
     </div>
   );

@@ -3,6 +3,8 @@ import { EditableGeoJsonLayer, SelectionLayer } from "@nebula.gl/layers";
 import { EditorMode } from "../../cursor-modes";
 import { useMapMatchMode } from "../use-map-match-mode";
 
+import { PathStyleExtension } from "@deck.gl/extensions";
+
 import {
   ViewMode,
   DrawPolygonMode,
@@ -30,11 +32,14 @@ export const useLayers = () => {
     setSelectedFeatureIndexes,
     guideShapes,
   } = useShapes();
-  const { cursorMode } = useCursorMode();
+  const { cursorMode, setCursorMode } = useCursorMode();
+
+  const SELECTED_RGB = [255, 0, 0, 150];
+  const GUIDE_SELECTED_RGB = [255, 0, 0, 75];
 
   function getFillColorFunc(datum: Feature) {
     if (selectedShapeUuids[datum?.properties?.__uuid]) {
-      return [255, 0, 0, 150];
+      return SELECTED_RGB;
     }
     return [36, 99, 235, 150];
   }
@@ -61,11 +66,17 @@ export const useLayers = () => {
           id: "geojson-i",
           pickable: true,
           // @ts-ignore
-          getFillColor: [0, 255, 255, 100],
+          getFillColor: GUIDE_SELECTED_RGB,
           getLineColor: [128, 128, 128, 255],
+          getPointRadius: 100,
+          getDashArray: [3, 2],
+          dashJustified: true,
+          dashGapPickable: true,
+          extensions: [new PathStyleExtension({ dash: true })],
           lineWidthMinPixels: 1,
           stroked: true,
           filled: true,
+          extruded: false,
           // @ts-ignore
           data: featureToFeatureCollection(guideShapes.map((x) => x.geojson)),
         }),
@@ -119,18 +130,28 @@ export const useLayers = () => {
             },
           },
           onClick: (data: any, event: any) => {
-            if (EditorMode.ViewMode !== cursorMode) {
+            if (
+              ![EditorMode.ModifyMode, EditorMode.ViewMode].includes(cursorMode)
+            ) {
               return;
             }
             if (event && event.rightButton) {
               selectOneShapeUuid(data.object.properties.__uuid);
+              setCursorMode(EditorMode.ModifyMode);
               return;
             }
             if (data && data.object) {
+              if (
+                data.object.properties.guideType === "editHandle" &&
+                selectedShapeUuids
+              ) {
+                return;
+              }
               if (!selectedShapeUuids[data.object.properties.__uuid]) {
                 selectOneShapeUuid(data.object.properties.__uuid);
                 setSelectedFeatureIndexes([data.index]);
                 scrollToSelectedShape(data.index);
+                setCursorMode(EditorMode.ModifyMode);
               } else {
                 clearSelectedShapeUuids();
                 setSelectedFeatureIndexes([]);

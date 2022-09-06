@@ -37,11 +37,21 @@ export function useEditFunction() {
       if (!uuid) {
         return;
       }
-      updateShape({
-        uuid,
-        geojson: guideShapes[0].geojson,
-      });
-    }, 100);
+      // You are building the flow to edit shapes
+      // The guide shape is correct, you're getting a 422 otherwise
+      // TODO this UUID is null for some reason
+      updateShape(
+        {
+          uuid,
+          geojson: guideShapes[0].geojson,
+        },
+        {
+          onSettled: () => {
+            setGuideShapes([]);
+          },
+        }
+      );
+    }, 50);
     return () => {
       if (operationRef.current) {
         clearTimeout(operationRef.current);
@@ -117,11 +127,15 @@ export function useEditFunction() {
     if (
       ["removePosition", "addPosition", "finishMovePosition"].includes(editType)
     ) {
-      setGuideShapes([]);
-      updateShape({
-        uuid: shapes[selectedFeatureIndexes[0]].uuid,
-        geojson: updatedData.features[selectedFeatureIndexes[0]],
-      });
+      let shape = shapes[selectedFeatureIndexes[0]];
+      let geojson = updatedData.features[selectedFeatureIndexes[0]];
+      geojson.properties = shape.geojson.properties;
+      setGuideShapes([
+        {
+          geojson,
+          name: shape.name,
+        } as GeoShapeCreate,
+      ]);
       return;
     }
 
