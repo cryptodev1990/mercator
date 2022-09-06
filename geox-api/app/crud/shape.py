@@ -28,7 +28,7 @@ def get_all_shapes_by_user(db: Session, user_id: int) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
     # I am only doing this because the selected feature index in nebula.gl
-    # on the frontend needs consistent 
+    # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
         select(Shape)
@@ -49,21 +49,12 @@ def get_all_shapes_by_organization(
     stmt = (
         select(Shape)
         .where(  # type: ignore
-            Shape.organization_id == str(
-                organization_id), Shape.deleted_at == None
+            Shape.organization_id == str(organization_id), Shape.deleted_at == None
         )
-        .order_by(Shape.updated_at.desc())
+        .order_by(Shape.uuid)
     )
     res = db.execute(stmt).scalars().fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
-
-
-def get_all_shapes(db: Session) -> List[schemas.GeoShape]:
-    """Get all shapes which the user has permission."""
-    # This will effectively get all shapes for the organization given RLS
-    stmt = select(Shape).where(Shape.deleted_at == None)  # type: ignore
-    res = db.execute(stmt)
-    return [schemas.GeoShape.parse_obj(g) for g in res]
 
 
 def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
@@ -118,13 +109,12 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     }
     if geoshape.geojson:
         values["geojson"] = geoshape.geojson.json()
-    stmt = (
+    update_stmt = (
         update(Shape)  # type: ignore
         .values(**values)
         .where(Shape.uuid == str(geoshape.uuid))
-        .returning(Shape)  # type: ignore
-    )
-    res = db.execute(stmt)
+        .returning(Shape))  # type: ignore
+    res = db.execute(update_stmt)
     rows = res.rowcount
     db.commit()
     if rows == 0:
@@ -141,8 +131,10 @@ def delete_shape(db: Session, uuid: UUID) -> int:
         "deleted_by_user_id": func.app_user_id(),
     }
     stmt = (
-        update(Shape).values(**values).where(Shape.uuid ==
-                                             str(uuid)).returning(Shape.uuid)  # type: ignore
+        update(Shape)
+        .values(**values)
+        .where(Shape.uuid == str(uuid))
+        .returning(Shape.uuid)  # type: ignore
     )
     res = db.execute(stmt)
     rows = res.rowcount
@@ -157,8 +149,11 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
         "deleted_at": datetime.datetime.now(),
         "deleted_by_user_id": func.app_user_id(),
     }
-    stmt = update(Shape).values(
-        **values).where(Shape.uuid.in_(tuple([str(x) for x in uuids])))  # type: ignore
+    stmt = (
+        update(Shape)
+        .values(**values)
+        .where(Shape.uuid.in_(tuple([str(x) for x in uuids])))
+    )  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
     db.commit()
