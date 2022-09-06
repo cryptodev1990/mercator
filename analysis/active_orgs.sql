@@ -26,6 +26,19 @@ END;
 
 
 BEGIN;
+  INSERT INTO organization_members (user_id, organization_id,
+	created_at, active, updated_at) VALUES
+    (4, 'e6cef492-5069-46d3-8431-fda523caf2f6', NOW(), true, NOW())
+  ;
+  UPDATE organization_members SET active = False
+    WHERE 1=1
+      AND user_id IN (4)
+      AND organization_id != 'e6cef492-5069-46d3-8431-fda523caf2f6'
+  ;
+END;
+
+
+BEGIN;
   UPDATE organization_members SET active = True WHERE organization_id != 'e6cef492-5069-46d3-8431-fda523caf2f6' AND user_id = 3;
   UPDATE organization_members SET active = False WHERE organization_id = 'e6cef492-5069-46d3-8431-fda523caf2f6' AND user_id = 3;
 END;
