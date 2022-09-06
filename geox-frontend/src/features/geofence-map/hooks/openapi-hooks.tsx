@@ -4,7 +4,6 @@ import {
   CeleryTaskResult,
   GeofencerService,
   GeoShape,
-  GeoShapeCreate,
   GetAllShapesRequestType,
   TasksService,
   ShapeCountResponse,

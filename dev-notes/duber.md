@@ -745,9 +745,11 @@ Aug 16-19 2022
   - [X] Cap upload of tentative shapes at 10MB (no-op)
   - [X] Enable zoom to tentative shapes (1:09am on Sep 5)
 - [ ] UI bugs
-  - [ ] Drag / drop edits have odd jumps
+  - [X] Drag / drop edits have odd jumps
     - Repro steps: Make a few of these, you'll see the shape doesn't always snap to the point
-  - [ ] "Tentative shape" shadow lingers
+    - Post-mortem: Issue is that an edit of the shapes locally triggers a refresh of the shapes from the server
+      and the shapes are ordered by updated timestamp
+  - [X] "Tentative shape" shadow lingers
     - Repro steps: Draw a shape, alter it, delete the shape. Shadow is still there.
   - [X] Shape delete from right click does not work (1:59am on Sep 5)
     - Post-mortem: Frontend / backend client out of sync
@@ -755,18 +757,18 @@ Aug 16-19 2022
   - [X] Scroll on the shape bar needs to work
     - Repro steps: Add enough shapes for a scroll (10:36am on Sep 5)
     - [X] Virtual windows: https://react-window.vercel.app/#/examples/list/fixed-size
-  - [ ] Weird properties count 
+  - [ ] Weird properties count  -- no op for now
     - Repro steps: Add a property on a shape, the New Key will have an odd number
-  - [ ] Double tooltip issue
+  - [ ] Double tooltip issue  -- no -op for now
     - Repro steps: Hover over multiple tooltip'd properties, the tooltips accumulate
-- [ ] Feature: Surface options to enable shape overlap (but deny by default)
-- [ ] Feature: Snap to roads
 - [X] Error snackbar needs to exist
 
 ## Tier 1
 
 - [ ] Alerting on 400s/500s
 - [ ] Organizations - Create an organization. For now, I can do this manually.
+- [ ] Feature: Surface options to enable shape overlap (but deny by default)
+- [ ] Feature: Snap to roads
 - [ ] DataDog
 - [ ] Feature: Ability to select multiple shapes for bulk edit, export, delete
 - [ ] Feature: Ability to publish

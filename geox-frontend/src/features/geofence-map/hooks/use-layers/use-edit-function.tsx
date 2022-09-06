@@ -5,11 +5,6 @@ import { Feature, difference, flatten, Geometry } from "@turf/turf";
 // @ts-ignore
 import { useCursorMode } from "../use-cursor-mode";
 
-import {
-  clearSelectedFeatureIndexes,
-  selectedFeatureIndexes,
-} from "./use-layers";
-
 import { useShapes } from "../use-shapes";
 import { useAddShapeMutation, useUpdateShapeMutation } from "../openapi-hooks";
 import { useEffect, useRef } from "react";
@@ -21,15 +16,17 @@ export function useEditFunction() {
     selectedShapeUuids,
     setShapeForMetadataEdit,
     clearSelectedShapeUuids,
-    tentativeShapes,
-    setTentativeShapes,
+    guideShapes,
+    setGuideShapes,
+    selectedFeatureIndexes,
+    clearSelectedFeatureIndexes,
   } = useShapes();
   const { mutate: addShape } = useAddShapeMutation();
   const { mutate: updateShape } = useUpdateShapeMutation();
   const operationRef = useRef<any>();
 
   useEffect(() => {
-    if (tentativeShapes.length === 0) {
+    if (guideShapes.length === 0) {
       return;
     }
     if (operationRef.current) {
@@ -42,7 +39,7 @@ export function useEditFunction() {
       }
       updateShape({
         uuid,
-        geojson: tentativeShapes[0].geojson,
+        geojson: guideShapes[0].geojson,
       });
     }, 100);
     return () => {
@@ -50,7 +47,7 @@ export function useEditFunction() {
         clearTimeout(operationRef.current);
       }
     };
-  }, [tentativeShapes]);
+  }, [guideShapes]);
 
   const addShapeAndEdit = async (shape: GeoShapeCreate) => {
     addShape(shape as any, {
@@ -68,6 +65,7 @@ export function useEditFunction() {
     updatedData: any;
     editType: string;
   }) {
+    console.log("editType", editType);
     if (editType === "split") {
       let editedShape: Feature<MultiPolygon> =
         updatedData.features[selectedFeatureIndexes[0]];
@@ -108,7 +106,7 @@ export function useEditFunction() {
       let editedShape: Feature<Geometry> =
         updatedData.features[selectedFeatureIndexes[0]];
       const uuid = editedShape?.properties?.__uuid;
-      setTentativeShapes([
+      setGuideShapes([
         {
           geojson: editedShape as any,
           name: shapes.find((x) => x.uuid === uuid)?.name,
@@ -119,7 +117,7 @@ export function useEditFunction() {
     if (
       ["removePosition", "addPosition", "finishMovePosition"].includes(editType)
     ) {
-      setTentativeShapes([]);
+      setGuideShapes([]);
       updateShape({
         uuid: shapes[selectedFeatureIndexes[0]].uuid,
         geojson: updatedData.features[selectedFeatureIndexes[0]],

@@ -1,5 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
-import toast from "react-hot-toast";
+import { useContext, useEffect } from "react";
 import { GeoShape, GetAllShapesRequestType } from "../../../client";
 import { GeofencerContext } from "../context";
 import { useGetAllShapesQuery } from "./openapi-hooks";
@@ -68,6 +67,7 @@ export const useShapes = () => {
     for (const shape of remoteShapes) {
       shape.geojson.properties.__uuid = shape.uuid;
     }
+    console.log("remoteShapes", remoteShapes);
     setShapes(remoteShapes);
   }, [remoteShapes]);
 
@@ -82,16 +82,24 @@ export const useShapes = () => {
     });
   }
 
+  function clearSelectedFeatureIndexes() {
+    setSelectedFeatureIndexes([]);
+  }
+
   const {
     shapes,
     tentativeShapes,
     setTentativeShapes,
+    guideShapes,
+    setGuideShapes,
     selectedShapeUuids,
     setSelectedShapeUuids,
     shapeForMetadataEdit,
     setShapeForMetadataEdit,
     setShapes,
     virtuosoRef,
+    selectedFeatureIndexes,
+    setSelectedFeatureIndexes,
   } = useContext(GeofencerContext);
 
   const {
@@ -127,5 +135,10 @@ export const useShapes = () => {
     setTentativeShapes,
     virtuosoRef,
     scrollToSelectedShape,
+    guideShapes,
+    setGuideShapes,
+    selectedFeatureIndexes,
+    setSelectedFeatureIndexes,
+    clearSelectedFeatureIndexes,
   };
 };

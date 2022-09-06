@@ -26,12 +26,16 @@ def get_shape(db: Session, shape: schemas.GeoShapeRead) -> Optional[schemas.GeoS
 
 def get_all_shapes_by_user(db: Session, user_id: int) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
+    # TODO ordering by UUID just guarantees a sort order
+    # I am only doing this because the selected feature index in nebula.gl
+    # on the frontend needs consistent 
+    # We should find a better way of handling this
     stmt = (
         select(Shape)
         .where(  # type: ignore
             Shape.created_by_user_id == user_id, Shape.deleted_at == None
         )
-        .order_by(Shape.updated_at.desc())
+        .order_by(Shape.uuid)
     )
     res = db.execute(stmt).scalars().fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]

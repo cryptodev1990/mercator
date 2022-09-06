@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { EditorMode } from "./cursor-modes";
 import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
 import { useCursorMode } from "./hooks/use-cursor-mode";
@@ -70,7 +71,7 @@ export const GeofencerContextMenu = () => {
         return;
       case "Edit":
         if (Object.keys(selectedShapeUuids).length > 1) {
-          alert("Please select only one shape to edit");
+          toast.error("Please select only one shape to edit");
         }
         setCursorMode(EditorMode.ModifyMode);
         closeMenu();
@@ -93,7 +94,7 @@ export const GeofencerContextMenu = () => {
   if (Object.keys(selectedShapeUuids).length === 0) {
     options = ["Draw"];
   } else if (Object.keys(selectedShapeUuids).length === 1) {
-    options = ["Metadata", "Edit", "Delete", "Duplicate"];
+    options = ["Metadata", "Edit", "Delete"];
   } else {
     options = [""];
   }

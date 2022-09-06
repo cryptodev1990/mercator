@@ -18,11 +18,6 @@ import { useEditFunction } from "./use-edit-function";
 import { useShapes } from "../use-shapes";
 import { Feature, GeoShape } from "../../../../client";
 
-export let selectedFeatureIndexes: any[] = [];
-export function clearSelectedFeatureIndexes() {
-  selectedFeatureIndexes = [];
-}
-
 export const useLayers = () => {
   const {
     shapes,
@@ -31,6 +26,9 @@ export const useLayers = () => {
     selectOneShapeUuid,
     clearSelectedShapeUuids,
     scrollToSelectedShape,
+    selectedFeatureIndexes,
+    setSelectedFeatureIndexes,
+    guideShapes,
   } = useShapes();
   const { cursorMode } = useCursorMode();
 
@@ -51,13 +49,26 @@ export const useLayers = () => {
   function onCanvasClick(data: any) {
     if (cursorMode === EditorMode.ViewMode && data && !data.object) {
       clearSelectedShapeUuids();
-      clearSelectedFeatureIndexes();
+      setSelectedFeatureIndexes([]);
     }
   }
 
   return {
     onCanvasClick,
     layers: [
+      guideShapes.length > 0 &&
+        new GeoJsonLayer({
+          id: "geojson-i",
+          pickable: true,
+          // @ts-ignore
+          getFillColor: [0, 255, 255, 100],
+          getLineColor: [128, 128, 128, 255],
+          lineWidthMinPixels: 1,
+          stroked: true,
+          filled: true,
+          // @ts-ignore
+          data: featureToFeatureCollection(guideShapes.map((x) => x.geojson)),
+        }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
           id: "geojson-i",
@@ -118,11 +129,11 @@ export const useLayers = () => {
             if (data && data.object) {
               if (!selectedShapeUuids[data.object.properties.__uuid]) {
                 selectOneShapeUuid(data.object.properties.__uuid);
-                selectedFeatureIndexes = [data.index];
+                setSelectedFeatureIndexes([data.index]);
                 scrollToSelectedShape(data.index);
               } else {
                 clearSelectedShapeUuids();
-                selectedFeatureIndexes = [];
+                setSelectedFeatureIndexes([]);
               }
             }
           },

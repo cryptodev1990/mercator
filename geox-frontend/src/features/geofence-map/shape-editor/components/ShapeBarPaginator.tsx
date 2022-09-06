@@ -11,6 +11,24 @@ import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
 import Loading from "react-loading";
 import { Virtuoso } from "react-virtuoso";
+import { useCursorMode } from "../../hooks/use-cursor-mode";
+import { EditorMode } from "../../cursor-modes";
+import toast from "react-hot-toast";
+
+function hr(mode: string) {
+  switch (mode) {
+    case EditorMode.ViewMode:
+      return "View Mode. Right-click a shape to edit a geofence.";
+    case EditorMode.ModifyMode:
+      return "Modify Mode - Drag shape points to move.";
+    case EditorMode.EditMode:
+      return "Shape Add Mode - Draw a shape";
+    case EditorMode.LassoDrawMode:
+      return "Lasso Draw Mode";
+    case EditorMode.SplitMode:
+      return "Scissors Mode - Draw a line to split a shape";
+  }
+}
 
 const NewUserMessage = () => {
   return (
@@ -81,6 +99,7 @@ const TentativeButtonBank = () => {
 
 export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
   const { shapes, tentativeShapes, virtuosoRef } = useShapes();
+  const { cursorMode } = useCursorMode();
 
   const {
     data: triggerData,
@@ -109,10 +128,12 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
             disabled: false,
             onClick: () => setUploadModalOpen(true),
             text: "Upload",
+            title: "Upload a GeoJSON or other shape file",
           },
           {
             icon: <VscJson className="fill-white" size={15} />,
             disabled: false,
+            title: "Export shapes as GeoJSON",
             onClick: () => {
               const dataStr =
                 "data:text/json;charset=utf-8," +
@@ -134,6 +155,7 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
             ) : (
               <AiFillDatabase className="fill-white" />
             ),
+            title: "Publish shapes to your Snowflake or Redshift database",
             disabled: loading,
             onClick: () => {
               triggerCopyTask();
@@ -155,7 +177,10 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
       <p className="font-bold text-xs mx-1">Geofences</p>
       <hr />
       {shapes?.length !== 0 ? (
-        <div key={1} className="relative h-[80vh]">
+        <div
+          key={1}
+          className="relative short-h:60vh md-h:65vh tall-h:h-[70vh]"
+        >
           <Virtuoso
             ref={virtuosoRef}
             className="h-full scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-700"
@@ -167,10 +192,14 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
       ) : (
         <NewUserMessage />
       )}
-      <footer className="flex flex-row">
+      <footer className="flex flex-col">
         <p className="text-xs m-1">
           {shapes.length} of {shapes.length} shapes
         </p>
+        <p className="text-xs m-1">Currently in {hr(cursorMode)}</p>
+        {cursorMode !== "ViewMode" && (
+          <p className="text-xs m-1">Esc to return to View Mode</p>
+        )}
       </footer>
     </div>
   );

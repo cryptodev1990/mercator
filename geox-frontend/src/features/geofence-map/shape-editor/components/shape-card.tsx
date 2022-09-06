@@ -39,6 +39,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
           <MetadataEditButton shape={shape} />
           <button
             className="btn btn-square btn-sm bg-slate-700 hover:bg-red-400 hover:border-red-400"
+            title="Delete"
             onClick={() => {
               if (!shape.uuid) toast.error("Delete shape failed");
               else updateShape({ uuid: shape.uuid, should_delete: true });
@@ -52,6 +53,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
           </button>
           <button
             className="btn btn-square btn-sm bg-slate-700 hover:bg-green-400 hover:border-green-400"
+            title="Zoom to"
             onClick={() => {
               snapToBounds({ category: "selected" });
             }}
