@@ -45,8 +45,7 @@ def get_all_shapes_by_organization(
     stmt = (
         select(Shape)
         .where(  # type: ignore
-            Shape.organization_id == str(
-                organization_id), Shape.deleted_at == None
+            Shape.organization_id == str(organization_id), Shape.deleted_at == None
         )
         .order_by(Shape.updated_at.desc())
     )
@@ -137,8 +136,10 @@ def delete_shape(db: Session, uuid: UUID) -> int:
         "deleted_by_user_id": func.app_user_id(),
     }
     stmt = (
-        update(Shape).values(**values).where(Shape.uuid ==
-                                             str(uuid)).returning(Shape.uuid)  # type: ignore
+        update(Shape)
+        .values(**values)
+        .where(Shape.uuid == str(uuid))
+        .returning(Shape.uuid)  # type: ignore
     )
     res = db.execute(stmt)
     rows = res.rowcount
@@ -153,8 +154,11 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
         "deleted_at": datetime.datetime.now(),
         "deleted_by_user_id": func.app_user_id(),
     }
-    stmt = update(Shape).values(
-        **values).where(Shape.uuid.in_(tuple([str(x) for x in uuids])))  # type: ignore
+    stmt = (
+        update(Shape)
+        .values(**values)
+        .where(Shape.uuid.in_(tuple([str(x) for x in uuids])))
+    )  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
     db.commit()
