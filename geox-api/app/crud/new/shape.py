@@ -44,7 +44,9 @@ def get_all_shapes_by_user(conn: Connection, user_id: int) -> List[schemas.GeoSh
 def get_all_shapes_by_organization(
     conn: Connection, organization_id: UUID
 ) -> List[schemas.GeoShape]:
-    """Get all shapes for an organization."""
+    """Get all shapes for an organization.
+
+    TODO hack for consistent order on frontend is sorting by UUID"""
     # This is usually equivalent to getting all shapes by organization
     stmt = (
         select(shape_tbl)
@@ -52,7 +54,7 @@ def get_all_shapes_by_organization(
             shape_tbl.c.organization_id == str(organization_id),
             shape_tbl.c.deleted_at.is_(None),
         )
-        .order_by(shape_tbl.c.updated_at.desc())
+        .order_by(shape_tbl.c.uuid)
     )
     res = conn.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]

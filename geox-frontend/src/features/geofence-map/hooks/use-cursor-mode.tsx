@@ -4,6 +4,7 @@ import { EditorMode } from "../cursor-modes";
 
 export const useCursorMode = () => {
   const { options, setOptions } = useContext(GeofencerContext);
+  const { setGuideShapes } = useContext(GeofencerContext);
 
   function escFunction(event: KeyboardEvent) {
     if (event.key === "Escape") {
@@ -14,6 +15,12 @@ export const useCursorMode = () => {
       });
     }
   }
+
+  useEffect(() => {
+    if (options.cursorMode === EditorMode.ViewMode) {
+      setGuideShapes([]);
+    }
+  }, [options.cursorMode]);
 
   const cursorMode = options.cursorMode;
   const setCursorMode = (mode: EditorMode) => {

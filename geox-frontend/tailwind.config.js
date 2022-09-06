@@ -4,6 +4,11 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      screens: {
+        'tall-h': { 'raw': '(min-height: 500px)' },
+        'md-h': { 'raw': '(min-height: 400px)' },
+        'short-h': { 'raw': '(min-height: 300px)' },
+      },
       colors: {
         "baby-blue": "#E7F2F8",
         primary: "#E7F2F8",

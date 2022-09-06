@@ -10,6 +10,7 @@ export const MetadataEditButton = ({ shape }: { shape: GeoShape }) => {
   return (
     <button
       className="btn btn-square btn-sm bg-slate-700 hover:bg-blue-400 hover:border-blue-400"
+      title="Edit metadata"
       onClick={() => setShapeForMetadataEdit(shape)}
     >
       <BsPencil className="fill-white" />
