@@ -8,10 +8,13 @@ import { useCursorMode } from "./hooks/use-cursor-mode";
 import { EditorMode } from "./cursor-modes";
 import { useLayers } from "./hooks/use-layers/use-layers";
 import { useViewport } from "./hooks/use-viewport";
+import { useShapes } from "./hooks/use-shapes";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
   const { cursorMode } = useCursorMode();
+
+  const { mapRef } = useShapes();
 
   const { layers, onCanvasClick } = useLayers();
 
@@ -29,7 +32,7 @@ const GeofenceMap = () => {
   };
 
   return (
-    <div>
+    <div ref={mapRef}>
       <DeckGL
         initialViewState={viewport}
         onViewStateChange={({ viewState, oldViewState }) =>

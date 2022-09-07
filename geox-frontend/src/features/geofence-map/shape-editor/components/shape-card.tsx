@@ -7,11 +7,15 @@ import { GeoShape } from "../../../../client";
 import toast from "react-hot-toast";
 import { TbTarget } from "react-icons/tb";
 import { useViewport } from "../../hooks/use-viewport";
+import { useCursorMode } from "../../hooks/use-cursor-mode";
+import { EditorMode } from "../../cursor-modes";
 
 export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
   const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
   const { selectOneShapeUuid, removeSelectedShapeUuid, shapeIsSelected } =
     useShapes();
+
+  const { setCursorMode } = useCursorMode();
   const { snapToBounds } = useViewport();
   if (!shape.uuid || shape.uuid === undefined) {
     return null;
@@ -42,7 +46,10 @@ export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
             title="Delete"
             onClick={() => {
               if (!shape.uuid) toast.error("Delete shape failed");
-              else updateShape({ uuid: shape.uuid, should_delete: true });
+              else {
+                updateShape({ uuid: shape.uuid, should_delete: true });
+                setCursorMode(EditorMode.ViewMode);
+              }
             }}
           >
             {isLoading ? (

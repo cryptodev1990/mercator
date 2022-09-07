@@ -5,12 +5,14 @@ import { Feature, difference, flatten, Geometry } from "@turf/turf";
 // @ts-ignore
 import { useCursorMode } from "../use-cursor-mode";
 
+import { EditorMode } from "../../cursor-modes";
+
 import { useShapes } from "../use-shapes";
 import { useAddShapeMutation, useUpdateShapeMutation } from "../openapi-hooks";
 import { useEffect, useRef } from "react";
 
 export function useEditFunction() {
-  const { options } = useCursorMode();
+  const { options, setCursorMode } = useCursorMode();
   const {
     shapes,
     selectedShapeUuids,

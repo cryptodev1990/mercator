@@ -23,6 +23,12 @@ function RequireAuth({
     }
   }, [authLoading, isTokenSet]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
+
   if (loading) {
     return (
       <div className="fixed bg-slate-600 h-screen w-screen">

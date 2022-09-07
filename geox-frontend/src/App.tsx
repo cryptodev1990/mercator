@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/landing";
 import DashboardPage from "./pages/dashboard";
-import AdminPage from "./pages/admin";
 import RequireAuth from "./common/components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
@@ -15,7 +14,7 @@ function Logout() {
 
 function Login() {
   const { loginWithRedirect } = useAuth0();
-  loginWithRedirect({ returnTo: window.location.origin });
+  loginWithRedirect({ returnTo: window.location.origin + "/dashboard" });
   return null;
 }
 
@@ -43,10 +42,6 @@ function RoutesIndex() {
         <Route path="/logout" element={<RequireAuth page={<Logout />} />} />
         <Route path="/health" element={<HealthRedirect />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={<RequireAuth page={<AdminPage />} adminOnly={true} />}
-        />
       </Routes>
     </BrowserRouter>
   );
