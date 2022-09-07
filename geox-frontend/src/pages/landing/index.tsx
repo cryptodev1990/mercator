@@ -1,3 +1,8 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
+
+import { useEffect } from "react";
+
 import { Navbar } from "../../common/components/navbar";
 import { EmailBox } from "./email-box";
 import { FooterSection } from "./footer-section";
@@ -7,6 +12,13 @@ import { HeroSection } from "./hero-section";
 import { ProductSection } from "./product-section";
 
 const LandingPage = () => {
+  const { isAuthenticated } = useAuth0();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard");
+  }, [isAuthenticated])
+
   return (
     <main
       className="

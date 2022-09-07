@@ -15,7 +15,10 @@ const LoginButton = () => {
       onClick={
         isAuthenticated
           ? () => navigate("/dashboard")
-          : () => loginWithRedirect()
+          : () =>
+              loginWithRedirect({
+                returnTo: window.location.origin + "/dashboard",
+              })
       }
     >
       {isLoading ? (

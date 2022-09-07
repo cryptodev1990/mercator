@@ -15,6 +15,7 @@ export const GeofencerContextMenu = () => {
     setShapeForMetadataEdit,
     shapes,
     clearSelectedShapeUuids,
+    mapRef,
   } = useShapes();
   const { mutate: bulkDelete } = useBulkDeleteShapesMutation();
 
@@ -40,12 +41,15 @@ export const GeofencerContextMenu = () => {
   };
 
   useEffect(() => {
-    document.addEventListener("contextmenu", listenerFunc, false);
+    if (mapRef?.current) {
+      let ref = mapRef.current;
+      ref.addEventListener("contextmenu", listenerFunc, false);
 
-    return () => {
-      document.removeEventListener("contextmenu", listenerFunc, false);
-    };
-  }, []);
+      return () => {
+        ref.removeEventListener("contextmenu", listenerFunc, false);
+      };
+    }
+  }, [mapRef]);
 
   if (!xPos || !yPos) {
     return null;
