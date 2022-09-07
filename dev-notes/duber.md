@@ -781,7 +781,28 @@ Aug 16-19 2022
 
 ## Tier 3
 
-- [ ] Add 403 page
+- [X] Add 403 page
   - Repro steps: Open up incognito browser to mercator.tech/geofencer
 - [ ] Add error snackbar to landing page
   - Right now when you sign up with an unauthorized user, you don't receive any notice indicating that you are doing so
+
+## Sep 7 2022
+
+
+### Progress
+- [ ] Added edit-on-shape select
+
+
+### Plans
+
+- [ ] Swimply
+  - [ ] Add Swimply organization to the database
+  - [ ] Finish Snowflake datashare
+- [ ] UI bug: Make the shape edit actually work
+
+### Problems
+
+Complexity on the frontend has gotten quite high. Might need a new data model.
+
+Allow selected shapes: Allow 1+ shapes to be selected
+Groupings: Allow groupings of multiple shapes
