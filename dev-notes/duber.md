@@ -800,6 +800,7 @@ Aug 16-19 2022
   - [ ] Finish Snowflake datashare
 - [ ] UI bug: Make the shape edit actually work
 - [ ] UI bug: No mode selected after shape cut
+- [ ] Move production of shapes to a tile server
 
 ### Problems
 
