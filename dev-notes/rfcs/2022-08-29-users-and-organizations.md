@@ -14,3 +14,6 @@ Assigning organizations to users
 
 - **Joining an org.** You sign up, and create an organization if yours does not already exist. Organization is determined by email domain, and you can add external parties via an email invite.
 - **User onboarding.** You sign up via Auth0 and instantly we know your account exists in our ``users`` table. It should not be possible for Auth0 and our own work to get out of sync.
+
+
+### How do we handle organizations?
