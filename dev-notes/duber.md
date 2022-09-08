@@ -798,8 +798,8 @@ Aug 16-19 2022
 - [ ] Swimply
   - [ ] Add Swimply organization to the database
   - [ ] Finish Snowflake datashare
-- [ ] UI bug: Make the shape edit actually work
-- [ ] UI bug: No mode selected after shape cut
+- [X] UI bug: Make the shape edit actually work
+- [X] UI bug: No mode selected after shape cut
 - [ ] Move production of shapes to a tile server
 
 ### Problems
