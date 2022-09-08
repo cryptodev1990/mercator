@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  MutationFunction,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import {
   CeleryTaskResponse,
   CeleryTaskResult,
@@ -10,6 +15,7 @@ import {
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
@@ -128,4 +134,22 @@ export const useTriggerCopyTaskMutation = () => {
       },
     }
   );
+};
+
+export const useDebouncedMutation = (mutationFn: any, options: any) => {
+  const mutation = useMutation(mutationFn, options);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+  let timer: any;
+
+  // @ts-ignore
+  const debouncedMutate = (variables: any, { debounceMs, ...options }) => {
+    clearTimeout(timer);
+    setIsDebouncing(true);
+    timer = setTimeout(() => {
+      mutation.mutate(variables, options);
+      setIsDebouncing(false);
+    }, debounceMs);
+  };
+
+  return { isDebouncing, debouncedMutate, ...mutation };
 };

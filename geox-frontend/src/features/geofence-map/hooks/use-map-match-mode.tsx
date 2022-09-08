@@ -44,6 +44,7 @@ export const useMapMatchMode = ({
   const layer = new EditableGeoJsonLayer({
     id: "geojson",
     pickable: true,
+    // @ts-ignore
     data: featureToFeatureCollection(shapes.map((x) => x.geojson)),
     // @ts-ignore
     getFillColor: getFillColorFunc,

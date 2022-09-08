@@ -1,9 +1,7 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { EditableGeoJsonLayer, SelectionLayer } from "@nebula.gl/layers";
+import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { EditorMode } from "../../cursor-modes";
 import { useMapMatchMode } from "../use-map-match-mode";
-
-import { PathStyleExtension } from "@deck.gl/extensions";
 
 import {
   ViewMode,
@@ -11,7 +9,6 @@ import {
   ModifyMode,
   SplitPolygonMode,
   DrawPolygonByDraggingMode,
-  TranslateMode,
 } from "@nebula.gl/edit-modes";
 import { featureToFeatureCollection } from "../../utils";
 // @ts-ignore
@@ -19,6 +16,8 @@ import { useCursorMode } from "../use-cursor-mode";
 import { useEditFunction } from "./use-edit-function";
 import { useShapes } from "../use-shapes";
 import { Feature, GeoShape } from "../../../../client";
+import { useEffect, useState } from "react";
+import { useUpdateShapeMutation } from "../openapi-hooks";
 
 export const useLayers = () => {
   const {
@@ -30,12 +29,28 @@ export const useLayers = () => {
     scrollToSelectedShape,
     selectedFeatureIndexes,
     setSelectedFeatureIndexes,
-    guideShapes,
   } = useShapes();
+
+  const { mutate: updateShape } = useUpdateShapeMutation();
+
+  // FeatureCollection
+  const [localData, setLocalData] = useState<any>();
+
+  useEffect(() => {
+    setLocalData(() =>
+      featureToFeatureCollection(shapes.map((s) => s.geojson))
+    );
+  }, [shapes]);
+
+  useEffect(() => {
+    setLocalData(() =>
+      featureToFeatureCollection(shapes.map((s) => s.geojson))
+    );
+  }, []);
+
   const { cursorMode, setCursorMode } = useCursorMode();
 
   const SELECTED_RGB = [255, 0, 0, 150];
-  const GUIDE_SELECTED_RGB = [255, 0, 0, 75];
 
   function getFillColorFunc(datum: Feature) {
     if (selectedShapeUuids[datum?.properties?.__uuid]) {
@@ -51,39 +66,12 @@ export const useLayers = () => {
   const { layer: mapMatchModeLayer } = useMapMatchMode(modeArgs);
   const { onEdit } = useEditFunction();
 
-  function onCanvasClick(data: any) {
-    if (cursorMode === EditorMode.ViewMode && data && !data.object) {
-      clearSelectedShapeUuids();
-      setSelectedFeatureIndexes([]);
-    }
-  }
-
   return {
-    onCanvasClick,
     layers: [
-      guideShapes.length > 0 &&
-        new GeoJsonLayer({
-          id: "geojson-i",
-          pickable: true,
-          // @ts-ignore
-          getFillColor: GUIDE_SELECTED_RGB,
-          getLineColor: [128, 128, 128, 255],
-          getPointRadius: 100,
-          getDashArray: [3, 2],
-          dashJustified: true,
-          dashGapPickable: true,
-          extensions: [new PathStyleExtension({ dash: true })],
-          lineWidthMinPixels: 1,
-          stroked: true,
-          filled: true,
-          extruded: false,
-          // @ts-ignore
-          data: featureToFeatureCollection(guideShapes.map((x) => x.geojson)),
-        }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
           id: "geojson-i",
-          pickable: true,
+          pickable: false,
           // @ts-ignore
           getFillColor: [0, 0, 255, 100],
           getLineColor: [128, 128, 128, 255],
@@ -95,15 +83,86 @@ export const useLayers = () => {
             tentativeShapes.map((x) => x.geojson)
           ),
         }),
+      [EditorMode.ModifyMode].includes(cursorMode) &&
+        new EditableGeoJsonLayer({
+          id: "geojson-modify",
+          pickable: true,
+          // @ts-ignore
+          data: localData || [],
+          // @ts-ignore
+          getFillColor: getFillColorFunc,
+          mode: ModifyMode,
+          // @ts-ignore
+          selectedFeatureIndexes,
+          useUpdateTriggers: {
+            getFillColor: [selectedShapeUuids],
+          },
+          onEdit: (e: any) => {
+            const { updatedData, editType, editContext } = e;
+            if (editType === "addFeature") {
+              return;
+            }
+            setLocalData(updatedData);
+            if (["addPosition", "removePosition"].includes(editType)) {
+              updateShape(
+                {
+                  geojson: updatedData.features[editContext.featureIndexes[0]],
+                  uuid: updatedData.features[editContext.featureIndexes[0]]
+                    .properties.__uuid,
+                },
+                {
+                  onSuccess: (data) => {
+                    console.log("updated shape because of", editType);
+                  },
+                }
+              );
+            }
+          },
+          onClick: (e: any) => {
+            if (e.object.properties.guideType) {
+              // Click should not affect removing or adding points
+              // This variable is only present if we are removing or adding points
+            }
+            if (e.object) {
+              // Click of a layer should make that layer selected
+              selectOneShapeUuid(e.object.properties.__uuid);
+              setSelectedFeatureIndexes([e.index]);
+            }
+          },
+          onDragEnd: (event: any, info: any) => {
+            // web call here
+            if (!event.object.properties.guideType) {
+              // Viewport drags should not affect moving points
+              // This variable is only absent if we are moving points
+              return;
+            }
+            // Move the points
+            const shapeInEdit = event.layer.state.selectedFeatures[0];
+            console.log("updated shape because of", "finishMove");
+            updateShape({
+              geojson: shapeInEdit,
+              uuid: shapeInEdit.properties.__uuid,
+            });
+          },
+          _subLayerProps: {
+            guides: {
+              stroked: true,
+              // https://deck.gl/docs/api-reference/layers/geojson-layer#pointtypecircle-options
+              pointRadiusMinPixels: 2,
+              getPointRadius: 5,
+              getFillColor: [255, 255, 255, 150],
+              getLineColor: [0, 150, 255],
+            },
+          },
+        }),
       [
-        EditorMode.EditMode,
         EditorMode.LassoDrawMode,
-        EditorMode.ModifyMode,
         EditorMode.SplitMode,
         EditorMode.ViewMode,
+        EditorMode.EditMode,
       ].includes(cursorMode) &&
         new EditableGeoJsonLayer({
-          id: "geojson",
+          id: "geojson-core",
           pickable: true,
           // @ts-ignore
           data: featureToFeatureCollection(
@@ -113,9 +172,6 @@ export const useLayers = () => {
           getFillColor: getFillColorFunc,
           // @ts-ignore
           selectedFeatureIndexes,
-          modeConfig: {
-            enableSnapping: true,
-          },
           useUpdateTriggers: {
             getFillColor: [selectedShapeUuids],
           },
@@ -131,22 +187,17 @@ export const useLayers = () => {
           },
           onClick: (data: any, event: any) => {
             if (
-              ![EditorMode.ModifyMode, EditorMode.ViewMode].includes(cursorMode)
+              !event?.object?.properties?.guideType &&
+              cursorMode === EditorMode.EditMode
             ) {
               return;
             }
-            if (event && event.rightButton) {
+
+            if (event && data?.object) {
               selectOneShapeUuid(data.object.properties.__uuid);
               setCursorMode(EditorMode.ModifyMode);
-              return;
             }
             if (data && data.object) {
-              if (
-                data.object.properties.guideType === "editHandle" &&
-                selectedShapeUuids
-              ) {
-                return;
-              }
               if (!selectedShapeUuids[data.object.properties.__uuid]) {
                 selectOneShapeUuid(data.object.properties.__uuid);
                 setSelectedFeatureIndexes([data.index]);
@@ -162,51 +213,10 @@ export const useLayers = () => {
           mode: {
             [EditorMode.EditMode]: DrawPolygonMode,
             [EditorMode.LassoDrawMode]: DrawPolygonByDraggingMode,
-            [EditorMode.ModifyMode]: ModifyMode,
             [EditorMode.SplitMode]: SplitPolygonMode,
             [EditorMode.ViewMode]: ViewMode,
           }[cursorMode],
           onEdit,
-        }),
-      cursorMode === EditorMode.LassoMode &&
-        new SelectionLayer({
-          id: "selection",
-          // @ts-ignore
-          selectionType: "rectangle",
-          onSelect: ({ pickingInfos }: { pickingInfos: any }) => {
-            const uuids = pickingInfos.map((x: any) => {
-              return { uuid: x.object.properties.uuid };
-            });
-            // TODO
-            // appendSelected(uuids, true);
-          },
-          layerIds: ["geojson-read"],
-          getTentativeFillColor: () => [255, 0, 255, 100],
-          getTentativeLineColor: () => [0, 0, 255, 255],
-          getTentativeLineDashArray: () => [0, 0],
-          lineWidthMinPixels: 3,
-        }),
-      cursorMode === EditorMode.LassoMode &&
-        new GeoJsonLayer({
-          id: "geojson-read",
-          // @ts-ignore
-          data: shapes.map((x) => x.shape),
-          pickable: true,
-          // @ts-ignore
-          getFillColor: getFillColorFunc,
-          lineWidthMinPixels: 3,
-        }),
-      cursorMode === EditorMode.TranslateMode &&
-        new EditableGeoJsonLayer({
-          id: "geojson",
-          pickable: true,
-          data: shapes.map((x) => x.geojson),
-          // @ts-ignore
-          getFillColor: getFillColorFunc,
-          // @ts-ignore
-          selectedFeatureIndexes,
-          // @ts-ignore
-          mode: TranslateMode,
         }),
       cursorMode === EditorMode.DrawPolygonFromRouteMode && mapMatchModeLayer,
     ],

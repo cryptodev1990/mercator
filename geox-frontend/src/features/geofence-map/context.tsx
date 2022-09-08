@@ -24,8 +24,6 @@ interface GeofencerContextState {
   setUploadedGeojson: (geojson: Feature[]) => void;
   virtuosoRef: any;
   mapRef: any;
-  guideShapes: GeoShapeCreate[];
-  setGuideShapes: (shapes: GeoShapeCreate[]) => void;
   selectedFeatureIndexes: number[];
   setSelectedFeatureIndexes: (indexes: number[]) => void;
 }
@@ -50,8 +48,6 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setUploadedGeojson: () => {},
   virtuosoRef: null,
   mapRef: null,
-  guideShapes: [],
-  setGuideShapes: () => {},
   selectedFeatureIndexes: [],
   setSelectedFeatureIndexes: () => {},
 });
@@ -101,7 +97,6 @@ export const GeofencerContextContainer = ({
     useState<GeoShape | null>(null);
 
   const [tentativeShapes, setTentativeShapes] = useState<GeoShapeCreate[]>([]);
-  const [guideShapes, setGuideShapes] = useState<GeoShapeCreate[]>([]);
 
   const [uploadedGeojson, setUploadedGeojson] = useState<Feature[]>([]);
   const virtuosoRef = useRef(null);
@@ -110,6 +105,13 @@ export const GeofencerContextContainer = ({
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<
     number[]
   >([]);
+
+  useEffect(() => {
+    if (selectedFeatureIndexes.length === 0) {
+      setShapeForMetadataEdit(null);
+      setSelectedFeatureIndexes([]);
+    }
+  }, [selectedShapeUuids, selectedFeatureIndexes]);
 
   return (
     <GeofencerContext.Provider
@@ -133,8 +135,6 @@ export const GeofencerContextContainer = ({
         setUploadedGeojson: (geojson: Feature[]) => setUploadedGeojson(geojson),
         virtuosoRef,
         mapRef,
-        guideShapes,
-        setGuideShapes: (shapes: GeoShapeCreate[]) => setGuideShapes(shapes),
         selectedFeatureIndexes,
         setSelectedFeatureIndexes: (indexes: number[]) =>
           setSelectedFeatureIndexes(indexes),

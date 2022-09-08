@@ -16,7 +16,7 @@ const GeofenceMap = () => {
 
   const { mapRef } = useShapes();
 
-  const { layers, onCanvasClick } = useLayers();
+  const { layers } = useLayers();
 
   const getTooltip = (info: any) => {
     if (!info || !info.object || !info.object.properties) {
@@ -42,7 +42,6 @@ const GeofenceMap = () => {
           // @ts-ignore
           doubleClickZoom: false,
         }}
-        onClick={onCanvasClick}
         useDevicePixels={true}
         // @ts-ignore
         layers={layers}
