@@ -1,4 +1,5 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
+import { MVTLayer } from "@deck.gl/geo-layers";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { EditorMode } from "../../cursor-modes";
 import { useMapMatchMode } from "../use-map-match-mode";
@@ -18,6 +19,7 @@ import { useShapes } from "../use-shapes";
 import { Feature, GeoShape } from "../../../../client";
 import { useEffect, useState } from "react";
 import { useUpdateShapeMutation } from "../openapi-hooks";
+import toast from "react-hot-toast";
 
 export const useLayers = () => {
   const {
@@ -68,6 +70,28 @@ export const useLayers = () => {
 
   return {
     layers: [
+      false &&
+        new MVTLayer({
+          id: "geofence-mvt",
+          // data: `https://a.tiles.mapbox.com/v4/mapbox.mapbox-streets-v7/{z}/{x}/{y}.vector.pbf?access_token=${MAPBOX_TOKEN}`,
+          data: process.env.REACT_APP_BACKEND_URL + "/osm/{z}/{x}/{y}.pbf",
+          minZoom: 15,
+          maxZoom: 23,
+          onHover: ({ object, x, y }) => {
+            if (object) {
+              // @ts-ignore
+              const { properties } = object;
+              toast.success(JSON.stringify(properties));
+              // @ts-ignore
+            }
+          },
+          pickable: true,
+          maxRequests: 6,
+          // @ts-ignore
+          getLineColor: [192, 192, 192],
+          getFillColor: [140, 170, 180],
+          lineWidthMinPixels: 1,
+        }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
           id: "geojson-i",

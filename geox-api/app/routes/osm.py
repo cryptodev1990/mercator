@@ -1,8 +1,8 @@
 # import aiohttp
 
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
 from geojson_pydantic import Feature
 from sqlalchemy import text
@@ -59,7 +59,6 @@ async def get_shapes_from_osm(query: str, geographic_reference: str) -> List[Fea
             {"query": query, "geographic_reference": geographic_reference},
         )
         rows = res.mappings().all()
-        print(rows)
         return [Feature(**row) for row in rows] if len(rows) > 0 else []
 
 
@@ -91,25 +90,70 @@ async def get_roads_by_bounding_box(
         )
 
 
-@router.get("/osm/isochrone")
-async def isochrone(latlngs: List[Tuple[float]], time_in_minutes: float, profile: str):
-    # https://docs.graphhopper.com/#tag/Isochrone-API
-    """Get shapes from OSM by amenity"""
-    # TODO: implement
-    # Maybe to best with a celery worker?
-    BASE_ROUTE = "https://graphhopper.com/api/1/isochrone"
-    # async def get(url, datum, session):
-    #     try:
-    #         async with session.get(url=BASE_ROUTE, params={
-    #           "point": datum["point"],
-    #           "time": time_in_minutes,
-    #           "profile": profile,
-    #         }) as response:
-    #             resp = await response.read()
-    #     except Exception as e:
-    #         print("Unable to get url {} due to {}.".format(url, e.__class__))
+def tile_to_envelope(x: float, y: float, z: float):
+    # Width of world in EPSG:3857
+    WORLD_MERC_MAX = 20037508.3427892
+    world_merc_min = -1 * WORLD_MERC_MAX
+    world_merc_size = WORLD_MERC_MAX - world_merc_min
+    # Width in tiles
+    world_tile_size = 2 ** z
+    # Tile width in EPSG:3857
+    tile_merc_size = world_merc_size / world_tile_size
+    # Calculate geographic bounds from tile coordinates
+    # XYZ tile coordinates are in "image space" so origin is
+    # top-left, not bottom right
+    bbox = dict()
+    bbox["xmin"] = world_merc_min + tile_merc_size * x
+    bbox["xmax"] = world_merc_min + tile_merc_size * (x + 1)
+    bbox["ymin"] = WORLD_MERC_MAX - tile_merc_size * (y + 1)
+    bbox["ymax"] = WORLD_MERC_MAX - tile_merc_size * y
+    return bbox
 
-    # async with aiohttp.ClientSession() as session:
-    #     ret = await asyncio.gather(*[get(url, session) for url in urls])
 
-    # asyncio.run(get(url, session))
+def bbox_to_sql(bbox: dict) -> str:
+    DENSIFY_FACTOR = 4
+    bbox['seg_size'] = (bbox['xmax'] - bbox['xmin']) / DENSIFY_FACTOR
+    sql_tmpl = 'ST_Segmentize(ST_MakeEnvelope({xmin}, {ymin}, {xmax}, {ymax}, 3857), {seg_size})'
+    return sql_tmpl.format(**bbox)
+
+
+TILE_RESPONSE_PARAMS: Dict[str, Any] = {
+    "responses": {200: {"content": {"application/x-protobuf": {}}}},
+    "response_class": Response,
+}
+
+
+@router.get("/osm/{z}/{x}/{y}.pbf", **TILE_RESPONSE_PARAMS)
+def get_tiles(response: Response, z: float, x: float, y: float):
+    if OsmSessionLocal is None:
+        raise Exception("OSM features not available")
+
+    if z > 15:
+        size = 2 ** z
+        if x >= size or y >= size or x < 0 or y < 0:
+            raise Exception("Request is invalid")
+        bbox = tile_to_envelope(x, y, z)
+        bbox_sql = bbox_to_sql(bbox)
+        sql = f"""
+    WITH
+    bounds AS (
+      SELECT {bbox_sql} AS geom
+      , {bbox_sql}::box2d AS b2d
+    )
+    , mvtgeom AS (
+      SELECT ST_AsMVTGeom(
+        ST_Transform(t.geom, 3857) , bounds.b2d
+      ) AS geom
+      , tags
+      FROM  points t, bounds
+      WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 3857))
+    )
+    SELECT ST_AsMVT(mvtgeom.*) FROM mvtgeom
+    """
+        with OsmSessionLocal() as db_osm:
+            res = db_osm.execute(sql)
+            rows = res.mappings().fetchone()
+            return Response(
+                media_type="application/x-protobuf",
+                content=bytes(rows["st_asmvt"])
+            )
