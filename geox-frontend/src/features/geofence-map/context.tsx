@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { ViewState } from "react-map-gl";
 import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 // @ts-ignore
@@ -88,6 +89,13 @@ export const GeofencerContextContainer = ({
     denyOverlap: true,
     cursorMode: EditorMode.ViewMode,
   });
+
+  useEffect(() => {
+    // If no mode is assigned, set to edit mode
+    if (!options.cursorMode) {
+      setOptions({ ...options, cursorMode: EditorMode.EditMode });
+    }
+  }, [options, options.cursorMode]);
 
   const [selectedShapeUuids, setSelectedShapeUuids] = useState<
     Record<string, boolean>
