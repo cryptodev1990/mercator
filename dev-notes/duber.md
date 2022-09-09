@@ -790,7 +790,7 @@ Aug 16-19 2022
 
 
 ### Progress
-- [ ] Added edit-on-shape select
+- [X] Added edit-on-shape select
 
 
 ### Plans
@@ -808,3 +808,12 @@ Complexity on the frontend has gotten quite high. Might need a new data model.
 
 Allow selected shapes: Allow 1+ shapes to be selected
 Groupings: Allow groupings of multiple shapes
+
+
+## Sep 9 2022
+
+### Progress
+
+- [X] Debugging the inconsistent shape modification behavior
+  - Some function internal to deck.gl gets interruped by the shape draw, though I'm not 100% sure yet on what
+- [ ] Require a click before a drag? This is a worse user experience (slightly) but guarantees consistent behavior
