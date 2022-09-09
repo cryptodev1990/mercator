@@ -146,8 +146,7 @@ export const useLayers = () => {
             if (e.object.properties.guideType) {
               // Click should not affect removing or adding points
               // This variable is only present if we are removing or adding points
-            }
-            if (e.object) {
+            } else if (e.object) {
               // Click of a layer should make that layer selected
               selectOneShapeUuid(e.object.properties.__uuid);
               setSelectedFeatureIndexes([e.index]);

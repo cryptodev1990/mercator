@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 import { ViewState } from "react-map-gl";
 import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 // @ts-ignore
@@ -60,18 +60,13 @@ export const GeofencerContextContainer = ({
   children: ReactNode[];
 }) => {
   const [shapes, setShapes] = useState<GeoShape[]>([]);
-  const storedViewport = localStorage.getItem("viewport");
-  const [viewport, setViewport] = useState<ViewState>(
-    storedViewport
-      ? JSON.parse(storedViewport)
-      : {
-          latitude: 37.762673511727435,
-          longitude: -122.40111919656555,
-          bearing: 0,
-          pitch: 0,
-          zoom: 11.363205994378514,
-        }
-  );
+  const [viewport, setViewport] = useState<ViewState>({
+    latitude: 37.762673511727435,
+    longitude: -122.40111919656555,
+    bearing: 0,
+    pitch: 0,
+    zoom: 11.363205994378514,
+  });
 
   useEffect(() => {
     // Store viewport in local storage
@@ -85,6 +80,14 @@ export const GeofencerContextContainer = ({
     );
   }, [viewport]);
 
+  useEffect(() => {
+    // Read viewport from local storage
+    const storedViewport = localStorage.getItem("viewport");
+    if (storedViewport) {
+      setViewport(JSON.parse(storedViewport));
+    }
+  }, []);
+
   const [options, setOptions] = useState<GlobalEditorOptions>({
     denyOverlap: true,
     cursorMode: EditorMode.ViewMode,
@@ -92,6 +95,7 @@ export const GeofencerContextContainer = ({
 
   useEffect(() => {
     // If no mode is assigned, set to edit mode
+
     if (!options.cursorMode) {
       setOptions({ ...options, cursorMode: EditorMode.EditMode });
     }
@@ -113,13 +117,6 @@ export const GeofencerContextContainer = ({
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<
     number[]
   >([]);
-
-  useEffect(() => {
-    if (selectedFeatureIndexes.length === 0) {
-      setShapeForMetadataEdit(null);
-      setSelectedFeatureIndexes([]);
-    }
-  }, [selectedShapeUuids, selectedFeatureIndexes]);
 
   return (
     <GeofencerContext.Provider

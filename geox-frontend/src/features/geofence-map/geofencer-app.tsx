@@ -33,7 +33,7 @@ const GeofencerApp = () => {
     <GeofencerContextContainer>
       <GeofencerCommandPalette />
       <GeofencerContextMenu />
-      {<UploadModal open={uploadModalOpen} setOpen={setUploadModalOpen} />}
+      <UploadModal open={uploadModalOpen} setOpen={setUploadModalOpen} />
       <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden">
         <div className="flex-auto w-screen relative">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
