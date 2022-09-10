@@ -816,4 +816,13 @@ Groupings: Allow groupings of multiple shapes
 
 - [X] Debugging the inconsistent shape modification behavior
   - Some function internal to deck.gl gets interruped by the shape draw, though I'm not 100% sure yet on what
-- [ ] Require a click before a drag? This is a worse user experience (slightly) but guarantees consistent behavior
+- [X] Require a click before a drag? This is a worse user experience (slightly) but guarantees consistent behavior
+
+
+## Sep 10 2022
+
+### Progress
+
+- [X] Workably patched modify mode
+- [ ] [URGENT] Need to re-activate network requests for modify mode
+
