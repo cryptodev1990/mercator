@@ -36,10 +36,12 @@ export function DropZone({
   return (
     <section className="relative w-full border border-dotted border-black space-x-3 my-5 text-black text-center h-[100px]">
       <div
-        {...getRootProps({ className: "dropzone m-auto flex justify-center" })}
+        {...getRootProps({ className: "dropzone" })}
+        className="flex items-center align-center justify-center h-full w-full cursor-pointer"
+        // onClick={(e) => toast.success("Click to select a file")}
       >
         <input {...getInputProps()} />
-        <p>Drag file here, or click to select a file</p>
+        <p>Drag file here to upload</p>
       </div>
     </section>
   );
