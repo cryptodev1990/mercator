@@ -825,4 +825,5 @@ Groupings: Allow groupings of multiple shapes
 
 - [X] Workably patched modify mode
 - [ ] [URGENT] Need to re-activate network requests for modify mode
-
+  - [ ] Make update return shapes
+- [ ] [URGENT] Uploads are broken
