@@ -394,7 +394,6 @@ export function getPickedExistingEditHandle(
   picks: Pick[] | null | undefined
 ): EditHandleFeature | null | undefined {
   const handles = getPickedEditHandles(picks);
-  console.log(handles.map((x) => x.properties.editHandleType));
   return handles.find(
     ({ properties }) =>
       properties.featureIndex >= 0 && properties.editHandleType === "existing"

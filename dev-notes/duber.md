@@ -827,3 +827,11 @@ Groupings: Allow groupings of multiple shapes
 - [ ] [URGENT] Need to re-activate network requests for modify mode
   - [ ] Make update return shapes
 - [ ] [URGENT] Uploads are broken
+
+## Sep 11 2022
+
+- [ ] [URGENT] Need to re-activate network requests for modify mode
+  - [ ] Make update return shapes?
+  - [ ] When the mode is switched or selection is changed or 5 seconds of inactivity are detected, fetch the latest shapes
+- [ ] [URGENT] Uploads are broken
+- [ ] Verify that property editor is not broken

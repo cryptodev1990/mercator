@@ -1,5 +1,4 @@
 import { createContext, ReactNode, useEffect, useRef, useState } from "react";
-import { AiOutlineConsoleSql } from "react-icons/ai";
 import { ViewState } from "react-map-gl";
 import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 // @ts-ignore
@@ -95,7 +94,6 @@ export const GeofencerContextContainer = ({
 
   useEffect(() => {
     // If no mode is assigned, set to edit mode
-
     if (!options.cursorMode) {
       setOptions({ ...options, cursorMode: EditorMode.EditMode });
     }
