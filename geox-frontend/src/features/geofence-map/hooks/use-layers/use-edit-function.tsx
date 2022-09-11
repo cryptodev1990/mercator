@@ -19,7 +19,7 @@ export function useEditFunction() {
     clearSelectedFeatureIndexes,
   } = useShapes();
   const { mutate: addShape } = useAddShapeMutation();
-  const { mutate: updateShape } = useUpdateShapeMutation();
+  const { mutate: updateShape } = useUpdateShapeMutation(false);
 
   const addShapeAndEdit = async (shape: GeoShapeCreate) => {
     addShape(shape as any, {

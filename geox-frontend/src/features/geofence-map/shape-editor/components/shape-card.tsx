@@ -11,7 +11,7 @@ import { useCursorMode } from "../../hooks/use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 
 export const ShapeCard = ({ shape }: { shape: GeoShape }) => {
-  const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
+  const { mutate: updateShape, isLoading } = useUpdateShapeMutation(false);
   const { selectOneShapeUuid, removeSelectedShapeUuid, shapeIsSelected } =
     useShapes();
 

@@ -45,10 +45,13 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
   );
 };
 
-export const useUpdateShapeMutation = () => {
+export const useUpdateShapeMutation = (optimistic = true) => {
   const queryClient = useQueryClient();
   return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
     onMutate: async (newShape: GeoShapeUpdate) => {
+      if (!optimistic) {
+        return;
+      }
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries(["geofencer"]);
       // Snapshot the previous value

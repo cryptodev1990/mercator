@@ -210,13 +210,16 @@ export class ModifyMode extends GeoJsonEditMode {
     event: DraggingEvent,
     props: ModeProps<FeatureCollection>
   ): void {
-    event.cancelPan();
-    const editHandle = getPickedExistingEditHandle(event.pointerDownPicks);
+    let editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
       // Cancel map panning if pointer went down on an edit handle
+      event.cancelPan();
 
-      this._dragEditHandle("movePosition", props, editHandle, event);
+      editHandle = getPickedExistingEditHandle(event.pointerDownPicks);
+      if (editHandle) {
+        this._dragEditHandle("movePosition", props, editHandle, event);
+      }
     }
   }
 
