@@ -137,9 +137,10 @@ export const useLayers = () => {
               viewport,
             },
             extruded: false,
-            opacity: isLoading ? 0.5 : 1,
             getLineColor: (d: any) =>
-              isLoading ? [255, 255, 255, 100] : [0, 0, 0, 255],
+              isLoading && selectedShapeUuids[d?.properties?.__uuid]
+                ? [255, 255, 255, 100]
+                : [0, 0, 0, 255],
             billboard: true,
             onEdit: (e: any) => {
               const { updatedData, editType, editContext } = e;
@@ -187,16 +188,17 @@ export const useLayers = () => {
               guides: {
                 stroked: true,
                 // https://deck.gl/docs/api-reference/layers/geojson-layer#pointtypecircle-options
-                pointRadiusMinPixels: 10,
+                pointRadiusMinPixels: 5,
                 getPointRadius: 1,
+                lineWidthMinPixels: 1,
                 getLineColor: (d: any) => {
                   if (
                     d.properties.editHandleType === "existing" &&
                     d.properties.guideType === "editHandle"
                   ) {
-                    return [0, 0, 0];
+                    return [0, 0, 0, 255];
                   }
-                  return [0, 0, 0];
+                  return [255, 0, 0, 200];
                 },
                 getFillColor: (d: any) => {
                   if (
@@ -211,7 +213,7 @@ export const useLayers = () => {
               geojson: {
                 stroked: true,
                 filled: true,
-                lineWidthMinPixels: 1,
+                lineWidthMaxPixels: 2,
                 pickingRadius: 20,
                 getLineColor: [0, 0, 0],
                 getFillColor: [0, 0, 0, 0],
@@ -296,6 +298,7 @@ export const useLayers = () => {
     getFillColorFunc,
     selectOneShapeUuid,
     clearSelectedShapeUuids,
+    isLoading,
     scrollToSelectedShape,
     updateShape,
   ]);
