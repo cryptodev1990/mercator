@@ -210,11 +210,11 @@ export class ModifyMode extends GeoJsonEditMode {
     event: DraggingEvent,
     props: ModeProps<FeatureCollection>
   ): void {
-    const editHandle = getPickedEditHandle(event.pointerDownPicks);
+    event.cancelPan();
+    const editHandle = getPickedExistingEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
       // Cancel map panning if pointer went down on an edit handle
-      event.cancelPan();
 
       this._dragEditHandle("movePosition", props, editHandle, event);
     }
@@ -293,41 +293,7 @@ export class ModifyMode extends GeoJsonEditMode {
   handleStartDragging(
     event: StartDraggingEvent,
     props: ModeProps<FeatureCollection>
-  ) {
-    const selectedFeatureIndexes = props.selectedIndexes;
-
-    const editHandle = getPickedIntermediateEditHandle(event.picks);
-    if (
-      selectedFeatureIndexes.length &&
-      editHandle &&
-      // @ts-ignore
-      // The bug was here, someone assumed
-      // editHandle was a single feature, but it is an array of features
-      // This change enforces consistent behavior
-      // but still not ideal
-      editHandle.length === 1
-    ) {
-      const editHandleProperties = editHandle.properties;
-
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .addPosition(
-          editHandleProperties.featureIndex,
-          editHandleProperties.positionIndexes,
-          event.mapCoords
-        )
-        .getObject();
-
-      props.onEdit({
-        updatedData,
-        editType: "addPosition",
-        editContext: {
-          featureIndexes: [editHandleProperties.featureIndex],
-          positionIndexes: editHandleProperties.positionIndexes,
-          position: event.mapCoords,
-        },
-      });
-    }
-  }
+  ) {}
 
   handleStopDragging(
     event: StopDraggingEvent,

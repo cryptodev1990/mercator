@@ -18,12 +18,10 @@ import { useEditFunction } from "./use-edit-function";
 import { useShapes } from "../use-shapes";
 import { Feature, GeoShape } from "../../../../client";
 import { useEffect, useMemo, useState } from "react";
-import { useUpdateShapeMutation } from "../openapi-hooks";
 import toast from "react-hot-toast";
-// import { useDebouncedUpdateShape } from "../openapi-hooks";
+import { useUpdateShapeMutation } from "../openapi-hooks";
 import { useViewport } from "../use-viewport";
 
-import { PickInfo } from "deck.gl";
 import { ModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
 
 export const useLayers = () => {
@@ -38,7 +36,7 @@ export const useLayers = () => {
     setSelectedFeatureIndexes,
   } = useShapes();
 
-  const { mutate: updateShape } = useUpdateShapeMutation();
+  const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
   const { viewport } = useViewport();
 
   // FeatureCollection
@@ -56,6 +54,8 @@ export const useLayers = () => {
     );
   }, []);
 
+  useEffect(() => {}, [localData]);
+
   const { cursorMode, setCursorMode } = useCursorMode();
 
   const SELECTED_RGB = [255, 0, 0, 150];
@@ -63,6 +63,9 @@ export const useLayers = () => {
   function getFillColorFunc(datum: Feature) {
     if (selectedShapeUuids[datum?.properties?.__uuid]) {
       return SELECTED_RGB;
+    }
+    if (isLoading) {
+      return [255, 255, 255, 100];
     }
     return [36, 99, 235, 150];
   }
@@ -128,33 +131,28 @@ export const useLayers = () => {
             pickingRadius: 20,
             pickingDepth: 5,
             useUpdateTriggers: {
-              getFillColor: [selectedShapeUuids],
+              getFillColor: [selectedShapeUuids, isLoading],
             },
             modeConfig: {
               viewport,
             },
             extruded: false,
+            opacity: isLoading ? 0.5 : 1,
+            getLineColor: (d: any) =>
+              isLoading ? [255, 255, 255, 100] : [0, 0, 0, 255],
             billboard: true,
             onEdit: (e: any) => {
               const { updatedData, editType, editContext } = e;
-              console.log("onEdit", editType);
               setLocalData(updatedData);
-              // if (["addPosition", "removePosition"].includes(editType)) {
-              //   updateShape(
-              //     {
-              //       geojson: updatedData.features[editContext.featureIndexes[0]],
-              //       uuid: updatedData.features[editContext.featureIndexes[0]]
-              //         .properties.__uuid,
-              //     },
-              //     {
-              //       onSuccess: (data) => {
-              //         console.log("updated shape because of", editType);
-              //       },
-              //     }
-              //   );
-              // }
+              if (["addPosition", "removePosition"].includes(editType)) {
+                updateShape({
+                  geojson: updatedData.features[editContext.featureIndexes[0]],
+                  uuid: updatedData.features[editContext.featureIndexes[0]]
+                    .properties.__uuid,
+                });
+              }
             },
-            onClick: (o: PickInfo<any>, e: HammerInput) => {
+            onClick: (o: any, e: any) => {
               if (
                 ["intermediate", "existing"].includes(
                   (o.object as any).properties.editHandleType
@@ -169,6 +167,21 @@ export const useLayers = () => {
                 selectOneShapeUuid((o.object as any).properties.__uuid);
                 setSelectedFeatureIndexes([o.index]);
               }
+            },
+            onDragEnd: (event: any, info: any) => {
+              // web call here
+              if (!event.object.properties.guideType) {
+                // Viewport drags should not affect moving points
+                // This variable is only absent if we are moving points
+                return;
+              }
+              // Move the points
+              const shapeInEdit = event.layer.state.selectedFeatures[0];
+              console.log("updated shape because of", "finishMove");
+              updateShape({
+                geojson: shapeInEdit,
+                uuid: shapeInEdit.properties.__uuid,
+              });
             },
             _subLayerProps: {
               guides: {

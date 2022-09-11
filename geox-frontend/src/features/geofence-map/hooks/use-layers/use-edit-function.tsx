@@ -1,13 +1,12 @@
 // EditableGeojsonLayer function
 import { GeoShape, GeoShapeCreate, MultiPolygon } from "../../../../client";
-import { Feature, difference, flatten, Geometry } from "@turf/turf";
+import { Feature, difference, flatten } from "@turf/turf";
 
 // @ts-ignore
 import { useCursorMode } from "../use-cursor-mode";
 
 import { useShapes } from "../use-shapes";
 import { useAddShapeMutation, useUpdateShapeMutation } from "../openapi-hooks";
-import toast from "react-hot-toast";
 
 export function useEditFunction() {
   const { options } = useCursorMode();

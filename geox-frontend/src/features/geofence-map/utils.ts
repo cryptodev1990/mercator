@@ -1,4 +1,4 @@
-import { Feature, GeoShape } from "../../client";
+import { GeoShape } from "../../client";
 
 export function geoShapesToFeatureCollection(shapes: GeoShape[] | undefined) {
   /**

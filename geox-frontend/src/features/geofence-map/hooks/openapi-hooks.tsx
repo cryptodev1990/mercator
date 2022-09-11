@@ -1,9 +1,4 @@
-import {
-  MutationFunction,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   CeleryTaskResponse,
   CeleryTaskResult,
@@ -12,6 +7,7 @@ import {
   GetAllShapesRequestType,
   TasksService,
   ShapeCountResponse,
+  GeoShapeUpdate,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
@@ -52,6 +48,30 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
 export const useUpdateShapeMutation = () => {
   const queryClient = useQueryClient();
   return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
+    onMutate: async (newShape: GeoShapeUpdate) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries(["geofencer"]);
+      // Snapshot the previous value
+      const previousValue = queryClient.getQueryData(["geofencer"]);
+      const optimisticNewShape = {
+        uuid: newShape.uuid,
+        geojson: newShape.geojson,
+        name: newShape.name,
+      } as GeoShape;
+      // Optimistically update to the new value
+      queryClient.setQueryData(["geofencer"], (old: GeoShape[] | undefined) => {
+        if (!old) {
+          return [optimisticNewShape];
+        }
+        return old.map((shape) => {
+          if (shape.uuid === newShape.uuid) {
+            return optimisticNewShape;
+          }
+          return shape;
+        });
+      });
+      return { previousValue };
+    },
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
     },
@@ -152,4 +172,15 @@ export const useDebouncedMutation = (mutationFn: any, options: any) => {
   };
 
   return { isDebouncing, debouncedMutate, ...mutation };
+};
+
+export const useDebouncedUpdateShape = () => {
+  const { isDebouncing, debouncedMutate, isLoading, isSuccess } =
+    useDebouncedMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
+      onError(error: any) {
+        toast.error(`Shapes failed to update (${error})`);
+      },
+    });
+
+  return { isDebouncing, debouncedMutate, isLoading, isSuccess };
 };
