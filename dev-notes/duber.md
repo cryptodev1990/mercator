@@ -832,3 +832,7 @@ Groupings: Allow groupings of multiple shapes
   - [X] When the mode is switched or selection is changed or 5 seconds of inactivity are detected, fetch the latest shapes
 - [X] [URGENT] Uploads are broken
 - [X] Verify that property editor is not broken
+
+## Sep 12 2022
+
+- [ ] Emails for users
