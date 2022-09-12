@@ -7,12 +7,10 @@ import { TbLasso } from "react-icons/tb";
 import { CgEditMarkup } from "react-icons/cg";
 import { RiCursorLine } from "react-icons/ri";
 import { FaDrawPolygon } from "react-icons/fa";
-import { useTooltip } from "../../../hooks/use-tooltip";
 import { useShapes } from "../hooks/use-shapes";
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
-  const { tooltipEvents } = useTooltip();
   const { getNumSelectedShapes } = useShapes();
 
   const modes = [
@@ -98,7 +96,6 @@ export const ToolButtonBank = () => {
             title={mode.dataTip}
             onClick={mode.onClick}
             className={classes}
-            {...tooltipEvents}
           >
             {mode.icon}
           </button>
