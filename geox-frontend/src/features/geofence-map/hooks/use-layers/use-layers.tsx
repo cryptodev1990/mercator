@@ -132,15 +132,12 @@ export const useLayers = () => {
             pickingDepth: 5,
             useUpdateTriggers: {
               getFillColor: [selectedShapeUuids, isLoading],
+              getLineColor: [selectedShapeUuids, isLoading],
             },
             modeConfig: {
               viewport,
             },
-            extruded: false,
-            getLineColor: (d: any) =>
-              isLoading && selectedShapeUuids[d?.properties?.__uuid]
-                ? [255, 255, 255, 100]
-                : [0, 0, 0, 255],
+            extruded: true,
             billboard: true,
             onEdit: (e: any) => {
               const { updatedData, editType, editContext } = e;
@@ -214,8 +211,12 @@ export const useLayers = () => {
                 stroked: true,
                 filled: true,
                 lineWidthMaxPixels: 2,
+                getLineColor: (d: any) => {
+                  return selectedShapeUuids[d?.properties?.__uuid]
+                    ? [0, 0, 0, 255]
+                    : [0, 0, 0, 100];
+                },
                 pickingRadius: 20,
-                getLineColor: [0, 0, 0],
                 getFillColor: [0, 0, 0, 0],
               },
             },
