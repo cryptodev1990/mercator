@@ -17,7 +17,8 @@ export const UploadModal = ({ open, setOpen }: any) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
       if (file.name.endsWith("json")) {
-        convertJsonFileToGeojson(file);
+        const opts: any = {};
+        convertJsonFileToGeojson(file, opts);
       } else {
         fetchGeoJson(file);
       }
@@ -26,8 +27,10 @@ export const UploadModal = ({ open, setOpen }: any) => {
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
+    useFsAccessApi: false,
     onDrop,
-    onDropRejected: () => {
+    onDropRejected: (e: any) => {
+      console.error(e);
       toast.error("Error with file upload, please try again");
     },
   });
