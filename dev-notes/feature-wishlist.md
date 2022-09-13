@@ -17,6 +17,7 @@
 
 - Migrating state to Redux
 - Integrate bug report tool
+- Timeouts for DB sync failures and uploads
 
 # Public release requirements
 
