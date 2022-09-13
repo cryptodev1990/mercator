@@ -39,6 +39,7 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
       refetchOnMount: false,
       enabled: isTokenSet,
       onError(error: any) {
+        toast.remove();
         toast.error(`Shapes failed to fetch (${error})`);
       },
     }
