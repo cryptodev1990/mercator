@@ -2,6 +2,7 @@
 
 - [ ] Large data uploads with high fidelity
  - [ ] Tiling the data that gets uploaded
+- [ ] Shape "namespaces" - provide a directory structure for shapes
 - [ ] Hosting OSM data?
 - [ ] Snapping in the UI
 - [ ] Search on shapes
@@ -24,3 +25,11 @@
 - Support automatic onboarding
 - User docs
 - Bug-filing: https://usersnap.com/
+
+
+## What functionality of Figma makes sense for us to copy?
+
+- [X] Edit on click
+- [ ] Send to back / bring to front
+- [ ] Setting colors of groups
+- [ ] Grouping shapes
