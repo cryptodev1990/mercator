@@ -4,7 +4,7 @@ import { BiUpload } from "react-icons/bi";
 
 export function UploadModalView({
   open,
-  setOpen,
+  close,
   dropzone,
   enabled,
   loading,
@@ -18,7 +18,7 @@ export function UploadModalView({
         as="div"
         className="relative z-50"
         initialFocus={cancelButtonRef}
-        onClose={setOpen}
+        onClose={close}
       >
         <Transition.Child
           as={Fragment}
@@ -83,7 +83,7 @@ export function UploadModalView({
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setOpen(false)}
+                    onClick={() => close()}
                     ref={cancelButtonRef}
                   >
                     Cancel

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { GeoShape, GetAllShapesRequestType } from "../../../client";
-import { GeofencerContext } from "../context";
+import { GeofencerContext } from "../contexts/geofencer-context";
 import { useGetAllShapesQuery } from "./openapi-hooks";
 
 const useSelectedShapeUuids = () => {

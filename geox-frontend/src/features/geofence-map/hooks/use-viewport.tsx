@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GeofencerContext } from "../context";
+import { GeofencerContext } from "../contexts/geofencer-context";
 import { centroid, featureCollection, bbox } from "@turf/turf";
 import { useShapes } from "./use-shapes";
 import { GeoShape, GeoShapeCreate } from "../../../client";

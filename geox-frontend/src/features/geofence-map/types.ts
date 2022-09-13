@@ -5,3 +5,9 @@ export interface GlobalEditorOptions {
   denyOverlap: boolean;
   cursorMode: EditorMode;
 }
+
+export enum UIModalEnum {
+  DeleteModal = "DeleteModal",
+  UploadShapesModal = "UploadShapesModal",
+  DbSyncModal = "DbSyncModal",
+}

@@ -11,7 +11,11 @@ import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
 import Loading from "react-loading";
 import { Virtuoso } from "react-virtuoso";
-import { useCursorMode } from "../../hooks/use-cursor-mode";
+import { useUiModals } from "../../hooks/use-ui-modals";
+import { UIModalEnum } from "../../types";
+import { useEffect } from "react";
+import { toast } from "react-hot-toast";
+import { useDbSync } from "../../hooks/use-db-sync";
 
 const NewUserMessage = () => {
   return (
@@ -80,18 +84,10 @@ const TentativeButtonBank = () => {
   );
 };
 
-export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
+export const ShapeBarPaginator = () => {
   const { shapes, tentativeShapes, virtuosoRef } = useShapes();
-  const { cursorMode } = useCursorMode();
-
-  const {
-    data: triggerData,
-    isLoading,
-    mutate: triggerCopyTask,
-  } = useTriggerCopyTaskMutation();
-  const { isLoading: isPolling } = usePollCopyTaskQuery(triggerData?.task_id);
-
-  const loading = isLoading || isPolling;
+  const { openModal } = useUiModals();
+  const { isLoading: isPolling } = useDbSync();
 
   // Feature: Display card for each shape in the namespace
   const Row = ({ index, style }: any) => {
@@ -109,7 +105,7 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
           {
             icon: <BiAddToQueue className="fill-white" />,
             disabled: false,
-            onClick: () => setUploadModalOpen(true),
+            onClick: () => openModal(UIModalEnum.UploadShapesModal),
             text: "Upload",
             title: "Upload a GeoJSON or other shape file",
           },
@@ -133,15 +129,16 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
             text: "Export",
           },
           {
-            icon: loading ? (
+            icon: isPolling ? (
               <Loading className="spin" height={20} width={20} />
             ) : (
               <AiFillDatabase className="fill-white" />
             ),
             title: "Publish shapes to your Snowflake or Redshift database",
-            disabled: loading,
+            disabled: isPolling,
             onClick: () => {
-              triggerCopyTask();
+              if (isPolling) return;
+              openModal(UIModalEnum.DbSyncModal);
             },
             text: "DB Sync",
           },

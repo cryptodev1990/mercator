@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
-import { useShapes } from "../hooks/use-shapes";
+import { useShapes } from "../../hooks/use-shapes";
 
 import { DropZone } from "./drop-zone";
 import { useConvertedGeojson } from "./use-converted-geojson";
 import { UploadModalView } from "./upload-modal-view";
+import { useUiModals } from "../../hooks/use-ui-modals";
 
-export const UploadModal = ({ open, setOpen }: any) => {
+export const UploadModal = () => {
   const { setTentativeShapes } = useShapes();
   const [files, setFiles] = useState<File[]>([]);
+  const { modal, closeModal } = useUiModals();
 
   const { fetchGeoJson, geojson, loading, error, convertJsonFileToGeojson } =
     useConvertedGeojson();
@@ -36,12 +38,6 @@ export const UploadModal = ({ open, setOpen }: any) => {
   });
 
   useEffect(() => {
-    if (!open) {
-      setFiles([]);
-    }
-  }, [open]);
-
-  useEffect(() => {
     if (error) {
       toast.error(error);
       setFiles([]);
@@ -56,16 +52,16 @@ export const UploadModal = ({ open, setOpen }: any) => {
       };
     });
     setTentativeShapes(prospects);
-    setOpen(false);
+    closeModal();
   }
 
   return (
     <div>
       <UploadModalView
-        open={open}
-        setOpen={setOpen}
         enabled={files.length > 0}
         onPublish={onPublish}
+        open={modal === "UploadShapesModal"}
+        close={closeModal}
         dropzone={
           <DropZone
             getRootProps={getRootProps}

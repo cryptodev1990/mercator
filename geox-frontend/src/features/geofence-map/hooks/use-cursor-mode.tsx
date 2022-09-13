@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GeofencerContext } from "../context";
+import { GeofencerContext } from "../contexts/geofencer-context";
 import { EditorMode } from "../cursor-modes";
 
 export const useCursorMode = () => {

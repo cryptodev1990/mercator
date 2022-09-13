@@ -1,9 +1,8 @@
 import { createContext, ReactNode, useEffect, useRef, useState } from "react";
 import { ViewState } from "react-map-gl";
-import { Feature, GeoShape, GeoShapeCreate } from "../../client";
-// @ts-ignore
-import { EditorMode } from "./cursor-modes";
-import { GlobalEditorOptions } from "./types";
+import { Feature, GeoShape, GeoShapeCreate } from "../../../client";
+import { EditorMode } from "../cursor-modes";
+import { GlobalEditorOptions } from "../types";
 
 interface GeofencerContextState {
   shapes: GeoShape[];
@@ -53,11 +52,7 @@ export const GeofencerContext = createContext<GeofencerContextState>({
 });
 GeofencerContext.displayName = "GeofencerContext";
 
-export const GeofencerContextContainer = ({
-  children,
-}: {
-  children: ReactNode[];
-}) => {
+export const GeofencerContextContainer = ({ children }: { children: any }) => {
   const [shapes, setShapes] = useState<GeoShape[]>([]);
   const [viewport, setViewport] = useState<ViewState>({
     latitude: 37.762673511727435,

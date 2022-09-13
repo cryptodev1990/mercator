@@ -3,10 +3,38 @@ import { useContext, useEffect, useState } from "react";
 
 import { _GeoJSONLoader as GeoJSONLoader } from "@loaders.gl/json";
 import { load } from "@loaders.gl/core";
-import { GeofencerContext } from "../context";
+import { GeofencerContext } from "../../contexts/geofencer-context";
 import { simplify } from "@turf/turf";
 import { toast } from "react-hot-toast";
-import { Feature } from "../../../client";
+import { Feature } from "../../../../client";
+
+function normalizeGeojson(
+  geojson: any,
+  handleError: any
+): Feature[] | undefined {
+  let out: Feature[];
+  if (geojson && geojson.type === "FeatureCollection") {
+    out = geojson.features;
+    return out;
+  } else if (geojson && geojson.type === "Feature") {
+    out = [geojson];
+    return out;
+  } else if (
+    geojson &&
+    Array.isArray(geojson) &&
+    geojson.length > 0 &&
+    geojson[0].type === "Feature"
+  ) {
+    out = geojson;
+    return out;
+  } else {
+    handleError(
+      "Invalid GeoJSON - must be a list of Features or FeatureCollection"
+    );
+  }
+}
+
+const MB_20 = 20 * 1024 * 1024;
 
 export const useConvertedGeojson = () => {
   const [loading, setLoading] = useState(false);
@@ -16,7 +44,7 @@ export const useConvertedGeojson = () => {
     useContext(GeofencerContext);
 
   useEffect(() => {
-    if (initialUploadSize > 20000000) {
+    if (initialUploadSize > MB_20) {
       toast("File is too large and will be simplified.");
       const res = [];
       for (let i = 0; i < geojson.length; i++) {
@@ -37,23 +65,13 @@ export const useConvertedGeojson = () => {
     reader.readAsText(blob);
     const bytes = blob.size;
     reader.onload = (e: any) => {
-      let out: Feature[] = [];
       load(jsonFile, [GeoJSONLoader]).then((geojsonRes: any) => {
-        if (geojsonRes && geojsonRes.type === "FeatureCollection") {
-          out = geojsonRes.features;
-        } else if (geojsonRes && geojsonRes.type === "Feature") {
-          out = [geojsonRes];
-        } else if (
-          geojsonRes &&
-          Array.isArray(geojsonRes) &&
-          geojsonRes.length > 0 &&
-          geojsonRes[0].type === "Feature"
-        ) {
-          out = geojsonRes;
-        } else {
+        const out = normalizeGeojson(geojsonRes, () => {});
+        if (!out) {
           setError(
             "Invalid GeoJSON - must be a list of Features or FeatureCollection"
           );
+          return;
         }
         if (transform && transform.nameKey) {
           for (let i = 0; i < out.length; i++) {
@@ -86,11 +104,15 @@ export const useConvertedGeojson = () => {
 
       data = response.data;
       data = data.data;
-      console.log(data);
       if (response.status !== 200 || data.status !== "success") {
         setError(data.error);
       }
-      setGeojson(data);
+      const out = normalizeGeojson(data, () => {});
+      if (!out) {
+        setError("Invalid file - upload failed");
+        return;
+      }
+      setGeojson(out);
     } catch (err: any) {
       setError(err.message);
     } finally {

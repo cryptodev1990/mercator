@@ -7,6 +7,7 @@ import { Transition } from "react-transition-group";
 import { useShapes } from "../../hooks/use-shapes";
 import Loading from "react-loading";
 import { ShapeBarPaginator } from "./ShapeBarPaginator";
+import { useUiModals } from "../../hooks/use-ui-modals";
 
 const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   return (
@@ -21,21 +22,14 @@ const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   );
 };
 
-interface GeofencerSidebarProps {
-  setUploadModalOpen: any;
-}
-
-const GeofenceSidebar = ({ setUploadModalOpen }: GeofencerSidebarProps) => {
+const GeofenceSidebar = () => {
   const { shapeForMetadataEdit, isLoading } = useShapes();
 
   return (
     <GeofenceSidebarView>
       {!isLoading && (
         <Tabs
-          children={[
-            <ShapeBarPaginator setUploadModalOpen={setUploadModalOpen} />,
-            <ShapeEditor />,
-          ].map((x, i) => (
+          children={[<ShapeBarPaginator />, <ShapeEditor />].map((x, i) => (
             <div key={i}>{x}</div>
           ))}
           active={shapeForMetadataEdit ? 1 : 0}
