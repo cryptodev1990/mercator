@@ -2,7 +2,6 @@ import { GeofenceMap } from "./geofence-map";
 import { GeofenceSidebar } from "./shape-editor/components/geofence-sidebar";
 // @ts-ignore
 import { GeofencerContextContainer } from "./context";
-import { NamespaceListBox } from "./namespace-list-box";
 import Dropdown from "../../common/components/dropdown";
 import { ToolButtonBank } from "./tool-button-bank/component";
 import { GeofencerCommandPalette } from "./geofencer-command-palette";
@@ -37,7 +36,6 @@ const GeofencerApp = () => {
       <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden">
         <div className="flex-auto w-screen relative">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
-            <NamespaceListBox />
             <div className="z-30 mx-2 right-0 flex flex-col gap-3">
               <Dropdown />
               <ToolButtonBank />

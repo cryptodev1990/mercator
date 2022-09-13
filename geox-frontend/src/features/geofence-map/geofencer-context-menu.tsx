@@ -15,6 +15,7 @@ export const GeofencerContextMenu = () => {
     setShapeForMetadataEdit,
     shapes,
     clearSelectedShapeUuids,
+    clearSelectedFeatureIndexes,
     mapRef,
   } = useShapes();
   const { mutate: bulkDelete } = useBulkDeleteShapesMutation();
@@ -26,11 +27,17 @@ export const GeofencerContextMenu = () => {
 
   function cleanup() {
     setShapeForMetadataEdit(null);
+    clearSelectedFeatureIndexes();
     clearSelectedShapeUuids();
     closeMenu();
+    setCursorMode(EditorMode.ViewMode);
   }
 
-  const { setCursorMode } = useCursorMode();
+  const {
+    setCursorMode,
+    options: editModeOptions,
+    setOptions,
+  } = useCursorMode();
 
   const listenerFunc = (event: MouseEvent) => {
     event.preventDefault();
@@ -61,7 +68,7 @@ export const GeofencerContextMenu = () => {
       case "Draw":
         setCursorMode(EditorMode.EditMode);
         return;
-      case "Metadata":
+      case "Edit Metadata":
         if (Object.keys(selectedShapeUuids).length > 1) {
           toast.error("Please select only one shape to edit");
         }
@@ -74,18 +81,40 @@ export const GeofencerContextMenu = () => {
         setShapeForMetadataEdit(selectedShape);
         closeMenu();
         return;
-      case "Edit":
-        if (Object.keys(selectedShapeUuids).length > 1) {
-          toast.error("Please select only one shape to edit");
+      case "Copy as GeoJSON":
+        // copies the selected shape as a geojson string to the clipboard
+        const selectedShapes = shapes.filter((shape) =>
+          Object.keys(selectedShapeUuids).includes(shape.uuid)
+        );
+        const geojson = selectedShapes.map((shape) => {
+          const g = { ...shape.geojson };
+          delete g.properties.__uuid;
+          delete g.id;
+          delete g.bbox;
+          return g;
+        })[0];
+        if (!geojson) {
+          return;
         }
-        setCursorMode(EditorMode.ModifyMode);
+        navigator.clipboard.writeText(JSON.stringify(geojson));
+        toast.success("Copied to clipboard");
         closeMenu();
         return;
-      case "Delete":
+      case "Delete (Backspace)":
         bulkDelete(Object.keys(selectedShapeUuids), {
           onSuccess: () => {
             cleanup();
           },
+        });
+        return;
+      case "Unselect (Esc)":
+        cleanup();
+        return;
+      case "Enable overlap":
+      case "Disable overlap":
+        // @ts-ignore
+        setOptions((prevOptions) => {
+          return { ...prevOptions, denyOverlap: !prevOptions.denyOverlap };
         });
         return;
       default:
@@ -97,9 +126,17 @@ export const GeofencerContextMenu = () => {
 
   let options;
   if (Object.keys(selectedShapeUuids).length === 0) {
-    options = ["Draw"];
+    options = [
+      "Draw",
+      editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
+    ];
   } else if (Object.keys(selectedShapeUuids).length === 1) {
-    options = ["Metadata", "Edit", "Delete"];
+    options = [
+      "Edit Metadata",
+      "Copy as GeoJSON",
+      "Delete (Backspace)",
+      "Unselect (Esc)",
+    ];
   } else {
     options = [""];
   }

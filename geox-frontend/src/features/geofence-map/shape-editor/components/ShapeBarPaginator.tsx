@@ -104,7 +104,7 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
 
   return (
     <div className="flex flex-col">
-      <div className="bg-slate-700 flex flex-row justify-between px-1">
+      <div className="bg-slate-700 flex flex-row justify-between cursor-pointer">
         {[
           {
             icon: <BiAddToQueue className="fill-white" />,
@@ -152,7 +152,8 @@ export const ShapeBarPaginator = ({ setUploadModalOpen }: any) => {
             className="btn btn-xs h-10 rounded-none bg-slate-700 text-white space-x-1 grow"
             onClick={button.onClick}
           >
-            {button.icon} <label>{button.text}</label>
+            {button.icon}{" "}
+            <label className="cursor-pointer">{button.text}</label>
           </button>
         ))}
       </div>

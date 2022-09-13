@@ -9,12 +9,52 @@ import { EditorMode } from "./cursor-modes";
 import { useLayers } from "./hooks/use-layers/use-layers";
 import { useViewport } from "./hooks/use-viewport";
 import { useShapes } from "./hooks/use-shapes";
+import { useEffect } from "react";
+import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
-  const { cursorMode } = useCursorMode();
+  const { cursorMode, setOptions } = useCursorMode();
+  const {
+    selectedShapeUuids,
+    mapRef,
+    clearSelectedShapeUuids,
+    clearSelectedFeatureIndexes,
+  } = useShapes();
 
-  const { mapRef } = useShapes();
+  const { mutate: deleteShapes } = useBulkDeleteShapesMutation();
+
+  // register the backspace key to delete a shape if a shape is selected
+  useEffect(() => {
+    const bspaceHandler = (event: KeyboardEvent) => {
+      if (event.key === "Backspace") {
+        if (selectedShapeUuids) {
+          const selectedShapeUuidsArray = Object.keys(selectedShapeUuids);
+          for (const uuid of selectedShapeUuidsArray) {
+            deleteShapes([uuid]);
+          }
+        }
+      }
+    };
+
+    function escFunction(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        // @ts-ignore
+        setOptions((prevOptions) => {
+          return { ...prevOptions, cursorMode: EditorMode.ViewMode };
+        });
+        clearSelectedFeatureIndexes();
+        clearSelectedShapeUuids();
+      }
+    }
+
+    document.addEventListener("keydown", bspaceHandler);
+    document.addEventListener("keydown", escFunction);
+    return () => {
+      document.removeEventListener("keydown", bspaceHandler);
+      document.removeEventListener("keydown", escFunction);
+    };
+  }, [selectedShapeUuids, deleteShapes]);
 
   const { layers } = useLayers();
 

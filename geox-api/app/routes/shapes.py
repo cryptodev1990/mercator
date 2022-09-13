@@ -1,9 +1,10 @@
 import logging
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends
 from pydantic import UUID4
+from geojson_pydantic import Point, Polygon, LineString, Feature
 from sqlalchemy import func, select, text
 
 from app.crud import shape as crud
@@ -103,3 +104,35 @@ def bulk_delete_shapes(
     """Create multiple shapes."""
     row_count = crud.delete_many_shapes(user_session.session, shape_uuids)
     return ShapeCountResponse(num_shapes=row_count)
+
+
+@router.get("/geofencer/shapes/op/count", response_model=ShapeCountResponse)
+def get_shape_count(
+    user_session: UserSession = Depends(get_app_user_session),
+) -> ShapeCountResponse:
+    """Get shape count."""
+    shape_count = crud.get_shape_count(user_session.session)
+    return ShapeCountResponse(num_shapes=shape_count)
+
+
+@router.get("/geofencer/shapes/op/contains", response_model=List[Feature])
+def get_shapes_containing_point(
+    lat: float,
+    lng: float,
+    user_session: UserSession = Depends(get_app_user_session),
+) -> List[Feature]:
+    """Get shapes containing a point."""
+    shapes = crud.get_shapes_containing_point(user_session.session, lat, lng)
+    return shapes
+
+
+@router.post("/geofencer/shapes/op/{operation}", response_model=List[Feature])
+def get_shapes_by_operation(
+    operation: crud.GeometryOperation,
+    geom: Union[Point, Polygon, LineString],
+    user_session: UserSession = Depends(get_app_user_session),
+) -> List[Feature]:
+    """Get shapes by operation."""
+    shapes = crud.get_shapes_related_to_geom(
+        user_session.session, operation, geom)
+    return shapes

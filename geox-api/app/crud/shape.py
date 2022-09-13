@@ -1,9 +1,12 @@
 """CRUD functions for interacting with shapes."""
 import datetime
-from typing import List, Optional, Sequence
+from enum import Enum
+from typing import List, Optional, Sequence, Union
 from uuid import UUID
+from geojson_pydantic import Point, Polygon, LineString, Feature
+import jinja2
 
-from sqlalchemy import func, insert, select, update
+from sqlalchemy import func, insert, select, update, text
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -48,12 +51,13 @@ def get_all_shapes_by_organization(
     # This is usually equivalent to getting all shapes by organization
     # TODO ordering by UUID just guarantees a sort order
     # I am only doing this because the selected feature index in nebula.gl
-    # on the frontend needs consistent 
+    # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
         select(Shape)
         .where(  # type: ignore
-            Shape.organization_id == str(organization_id), Shape.deleted_at == None
+            Shape.organization_id == str(
+                organization_id), Shape.deleted_at == None
         )
         .order_by(Shape.uuid)
     )
@@ -146,7 +150,7 @@ def delete_shape(db: Session, uuid: UUID) -> int:
     return rows
 
 
-def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
+def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
@@ -162,3 +166,58 @@ def delete_many_shapes(db: Session, uuids: Sequence[str]) -> int:
     rows = res.rowcount
     db.commit()
     return rows
+
+
+def get_shape_count(db: Session) -> int:
+    """Get the number of shapes in an organization."""
+    stmt = (
+        select(func.count(Shape.uuid))  # type: ignore
+        .where(Shape.organization_id == func.app_user_org(), Shape.deleted_at == None)
+    )
+    res = db.execute(stmt).fetchone()
+    return res[0]
+
+
+def get_shapes_containing_point(db: Session, lat: float, lng: float) -> List[Feature]:
+    """Get the shape that contains a point."""
+    stmt = """
+    SELECT *
+    FROM shapes
+    WHERE 1=1
+      AND ST_Contains(ST_GeomFromGeoJSON((geojson->>0)::JSON->'geometry'), ST_GeomFromText('POINT(:lng :lat)', 4326))
+      AND deleted_at IS NULL
+      AND organization_id = public.app_user_org()
+    """
+    res = db.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
+    if res:
+        return [schemas.GeoShape.from_orm(row).geojson for row in res]
+    return []
+
+
+class GeometryOperation(str, Enum):
+    """Valid geometry operations."""
+
+    contains = "contains"
+    intersects = "intersects"
+    touches = "touches"
+    crosses = "crosses"
+
+
+def get_shapes_related_to_geom(
+        db: Session,
+        operation: GeometryOperation,
+        geom: Union[Point, Polygon, LineString]) -> List[Feature]:
+    """Get the shape that contains a point."""
+    stmt = jinja2.Template("""
+    SELECT *
+    FROM shapes
+    WHERE 1=1
+      AND ST_{{operation}}(ST_GeomFromGeoJSON((geojson->>0)::JSON->'geometry'), ST_GeomFromGeoJSON(:geom))
+      AND deleted_at IS NULL
+      AND organization_id = public.app_user_org()
+    """).render(operation=operation.title())
+    res = db.execute(
+        stmt, {"geom": geom.json()}).fetchall()
+    if res:
+        return [schemas.GeoShape.from_orm(row).geojson for row in res]
+    return []

@@ -90,6 +90,7 @@ export const useBulkDeleteShapesMutation = () => {
     GeofencerService.bulkDeleteShapesGeofencerShapesBulkDelete,
     {
       onSuccess(data: ShapeCountResponse) {
+        toast.success(`Deleted ${data.num_shapes} shape(s)`);
         queryClient.fetchQuery("geofencer");
       },
       onError(error) {

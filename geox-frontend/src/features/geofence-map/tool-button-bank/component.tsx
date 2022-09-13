@@ -90,7 +90,7 @@ export const ToolButtonBank = () => {
         }
         return (
           <button
-            data-tip={mode.dataTip}
+            // data-tip={mode.dataTip}
             key={mode.name}
             disabled={mode.disabled}
             title={mode.dataTip}
