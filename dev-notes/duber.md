@@ -835,7 +835,9 @@ Groupings: Allow groupings of multiple shapes
 
 ## Sep 12 2022
 
-- [ ] Emails for users
+- [ ] Send emails for users
 - [X] Add parameter to toggle overlap (in context menu)
-- [ ] Add point-in-poly routes
-- Investigate options for API access
+- [X] Add point-in-poly routes
+- [X] Investigate options for API access
+
+## Sep 13 2022
