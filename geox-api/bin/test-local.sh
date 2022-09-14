@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run a tests locally.
-# This uses a docker container for postgis that it
+# This uses a docker container for postgis that it creates
 DOCKER_CONTAINER_NAME=geox-api-local-test
 
 # Run and start docker container
@@ -23,7 +23,7 @@ if [ ! "$(docker ps -q -f name=$DOCKER_CONTAINER_NAME)" ]; then
         -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
         -e POSTGRES_USER=$POSTGRES_USER \
         -e POSTGRES_DB=$POSTGRES_DB \
-        -d postgres
+        -d postgis/postgis
 fi
 
 # wait 10

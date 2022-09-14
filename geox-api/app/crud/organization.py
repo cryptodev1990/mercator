@@ -384,3 +384,12 @@ def get_personal_org_id(db: Session, user_id: int) -> UUID4:
         {"user_id": user_id},
     )
     return res.first()[0]
+
+
+def organization_s3_enabled(db: Session, organization_id: str) -> bool:
+    """Return whether the organization has s3 export enabled."""
+    stmt = text(
+        "SELECT s3_export_enabled FROM organizations WHERE id = :organization_id"
+    )
+    res = db.execute(stmt, {"organization_id": organization_id}).scalar()
+    return res

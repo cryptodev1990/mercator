@@ -1,10 +1,10 @@
 import datetime
+import json
 import pathlib
 from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import UUID
-import json
 
 import pytest
 from fastapi import Depends, status
@@ -117,11 +117,11 @@ def connection(test_data: Dict[str, Any]):
     with engine.connect() as conn:
         with conn.begin():
             conn.execute(insert(User), test_data["users"])  # type: ignore
-            conn.execute(insert(Organization),
-                         test_data["organizations"])  # type: ignore
+            conn.execute(
+                insert(Organization), test_data["organizations"]
+            )  # type: ignore
             for org_member in test_data["organization_members"]:
-                conn.execute(insert(OrganizationMember),
-                             org_member)  # type: ignore
+                conn.execute(insert(OrganizationMember), org_member)  # type: ignore
                 # Set these new organizations to the active organization
                 set_active_organization(
                     conn, org_member["user_id"], org_member["organization_id"]
@@ -312,8 +312,7 @@ def test_update_shape(connection, dep_override_factory):
 
     with engine.connect() as conn:
         shape_old = conn.execute(
-            text(
-                "SELECT * FROM shapes WHERE uuid = :uuid LIMIT 1"), {"uuid": shape_id}
+            text("SELECT * FROM shapes WHERE uuid = :uuid LIMIT 1"), {"uuid": shape_id}
         ).fetchone()
 
     new_name = "fuchsia-auditor"
@@ -322,8 +321,7 @@ def test_update_shape(connection, dep_override_factory):
     with dep_override_factory(user_id):
         response = client.put(
             f"/geofencer/shapes/{shape_id}",
-            json={"uuid": str(shape_id),
-                  "geojson": new_shape.dict(), "name": new_name},
+            json={"uuid": str(shape_id), "geojson": new_shape.dict(), "name": new_name},
         )
         assert_ok(response)
         body = response.json()
@@ -332,8 +330,7 @@ def test_update_shape(connection, dep_override_factory):
         assert body.get("name") == new_name, "Name should be updated"
         assert geom == new_shape, "GeoJSON should be updated"
         assert (
-            datetime.datetime.strptime(
-                body.get("created_at"), "%Y-%m-%dT%H:%M:%S")
+            datetime.datetime.strptime(body.get("created_at"), "%Y-%m-%dT%H:%M:%S")
             == shape_old.created_at
         ), "Created at should be the same"
         assert (
@@ -371,16 +368,13 @@ def test_create_shape(connection, dep_override_factory):
     user_id = 1
     shape = GeoShapeCreate(
         name="fuchsia-auditor",
-        geojson=Feature(id=None, geometry=Point(
-            coordinates=[-6.364088, -65.21654])),
+        geojson=Feature(id=None, geometry=Point(coordinates=[-6.364088, -65.21654])),
     )
 
     uuid = None
 
     with dep_override_factory(user_id):
-        response = client.post(
-            f"/geofencer/shapes", json=shape.dict()
-        )
+        response = client.post(f"/geofencer/shapes", json=shape.dict())
         assert_ok(response)
         body = response.json()
         uuid = body["uuid"]
@@ -392,8 +386,7 @@ def test_create_shape(connection, dep_override_factory):
 
     assert (
         connection.execute(
-            text("SELECT uuid FROM shapes WHERE uuid = :uuid"), {
-                "uuid": uuid}
+            text("SELECT uuid FROM shapes WHERE uuid = :uuid"), {"uuid": uuid}
         ).rowcount
         == 1
     )
@@ -404,13 +397,11 @@ def test_bulk_create_shapes(connection, dep_override_factory):
     shapes = [
         GeoShapeCreate(
             name="fuchsia-auditor",
-            geojson=Feature(geometry=Point(
-                coordinates=[-6.364088, -65.21654])),
+            geojson=Feature(geometry=Point(coordinates=[-6.364088, -65.21654])),
         ),
         GeoShapeCreate(
             name="acute-vignette",
-            geojson=Feature(geometry=Point(
-                coordinates=[-20.586622, 53.832401])),
+            geojson=Feature(geometry=Point(coordinates=[-20.586622, 53.832401])),
         ),
     ]
 
@@ -426,8 +417,7 @@ def test_bulk_create_shapes(connection, dep_override_factory):
     for shp in shapes:
         assert (
             connection.execute(
-                text("SELECT uuid FROM shapes WHERE name = :name"), {
-                    "name": shp.name}
+                text("SELECT uuid FROM shapes WHERE name = :name"), {"name": shp.name}
             ).rowcount
             == 1
         )

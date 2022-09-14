@@ -3,17 +3,16 @@ FastAPI dependencies
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
-from typing import Any, Dict, Generator, AsyncGenerator
+from typing import Any, AsyncGenerator, Dict, Generator
 
-from fastapi import Depends
-from sqlalchemy import text
-from sqlalchemy.engine import Connection
-from app.core.config import Settings, get_settings
-from app.core.security import VerifyToken, token_auth_scheme
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
+from sqlalchemy import text
+from sqlalchemy.engine import Connection
 
 from app import schemas
+from app.core.config import Settings, get_settings
+from app.core.security import VerifyToken, token_auth_scheme
 from app.crud.new.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id, unset_app_user_id
 from app.db.session import engine
@@ -23,6 +22,7 @@ from app.schemas.common import BaseModel
 def get_db_conn() -> Generator[Connection, None, None]:
     with engine.begin() as conn:
         yield conn
+
 
 async def verify_token(
     token: HTTPAuthorizationCredentials = Depends(token_auth_scheme),

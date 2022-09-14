@@ -26,6 +26,13 @@ class Organization(TimestampMixin, UUIDMixin, Base):
     )
     deleted_at = Column(DateTime)
     is_personal = Column(Boolean, default=False)
+    s3_export_enabled = Column(
+        Boolean, default=False, nullable=False, comment="Allow exporting data to S3."
+    )
+    snowflake_account_id = Column(
+        String,
+        comment="Snowflake Account ID. Used for data export. See https://docs.snowflake.com/en/user-guide/admin-account-identifier.html.",
+    )
 
     user = relationship(
         "User",

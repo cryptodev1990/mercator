@@ -96,7 +96,7 @@ def tile_to_envelope(x: float, y: float, z: float):
     world_merc_min = -1 * WORLD_MERC_MAX
     world_merc_size = WORLD_MERC_MAX - world_merc_min
     # Width in tiles
-    world_tile_size = 2 ** z
+    world_tile_size = 2**z
     # Tile width in EPSG:3857
     tile_merc_size = world_merc_size / world_tile_size
     # Calculate geographic bounds from tile coordinates
@@ -112,8 +112,8 @@ def tile_to_envelope(x: float, y: float, z: float):
 
 def bbox_to_sql(bbox: dict) -> str:
     DENSIFY_FACTOR = 4
-    bbox['seg_size'] = (bbox['xmax'] - bbox['xmin']) / DENSIFY_FACTOR
-    sql_tmpl = 'ST_Segmentize(ST_MakeEnvelope({xmin}, {ymin}, {xmax}, {ymax}, 3857), {seg_size})'
+    bbox["seg_size"] = (bbox["xmax"] - bbox["xmin"]) / DENSIFY_FACTOR
+    sql_tmpl = "ST_Segmentize(ST_MakeEnvelope({xmin}, {ymin}, {xmax}, {ymax}, 3857), {seg_size})"
     return sql_tmpl.format(**bbox)
 
 
@@ -129,7 +129,7 @@ def get_tiles(response: Response, z: float, x: float, y: float):
         raise Exception("OSM features not available")
 
     if z > 15:
-        size = 2 ** z
+        size = 2**z
         if x >= size or y >= size or x < 0 or y < 0:
             raise Exception("Request is invalid")
         bbox = tile_to_envelope(x, y, z)
@@ -154,6 +154,5 @@ def get_tiles(response: Response, z: float, x: float, y: float):
             res = db_osm.execute(sql)
             rows = res.mappings().fetchone()
             return Response(
-                media_type="application/x-protobuf",
-                content=bytes(rows["st_asmvt"])
+                media_type="application/x-protobuf", content=bytes(rows["st_asmvt"])
             )

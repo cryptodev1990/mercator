@@ -1,7 +1,7 @@
 """Celery worker."""
-import csv
+import datetime
 import json
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import awswrangler as wr
 import boto3
@@ -25,7 +25,10 @@ def test_celery(word: str) -> str:
     return f"test task return {word}"
 
 
-def send_data_to_s3(df: pd.DataFrame, org_id: UUID4):
+def send_data_to_s3(df: pd.DataFrame, organization_id: UUID4):
+    df["uuid"] = df.uuid.astype(str)
+    df["geojson"] = df.geojson.map(lambda x: json.dumps(x))
+    df["exported_at"] = datetime.datetime.utcnow()
 
     aws_secret_access_key: Optional[str]
     if settings.aws_s3_upload_secret_access_key:
@@ -41,64 +44,49 @@ def send_data_to_s3(df: pd.DataFrame, org_id: UUID4):
         aws_secret_access_key=aws_secret_access_key,
     )
 
-    res = wr.s3.to_csv(
+    bucket_name = settings.aws_s3_bucket
+    prefix = "geofencer/shapes"
+    res = wr.s3.to_parquet(
         df,
-        path=f"s3://snowflake-data-transfers/shapes/{org_id}-latest.csv.gz",
-        sep="\x01",
+        path=f"s3://{bucket_name}/{prefix}/{organization_id}/latest/data.parquet",
         index=False,
-        quoting=csv.QUOTE_NONE,
-        compression="gzip",
         boto3_session=session,
+        compression="snappy",
     )
-
     return res
 
 
 @celery_app.task(acks_late=True)
-def copy_to_s3(organization_id: UUID4) -> dict:
+def copy_to_s3(organization_id: UUID4) -> Dict[str, Any]:
     """Copy data from postgres shapes to S3.
-
-    TODO ideally this gets replaced by FiveTran
-    Currently, on Fly.io, I can't connect directly to FiveTran.
 
     Returns number of rows copied.
     """
-    db = SessionLocal()
-    print(f"Executing for organization {organization_id}")
-    logger.info(f"Executing for organization {organization_id}")
-    shapes = db.execute(
-        text(
-            """
-        SELECT uuid
-        , name
-        , created_at
-        , updated_at
-        , geojson
-        FROM shapes
-        WHERE 1=1
-          AND (
-            created_by_user_id IN (
-              SELECT user_id
-              FROM organization_members
-              WHERE organization_id = :organization_id
-            ) OR updated_by_user_id IN (
-              SELECT user_id
-              FROM organization_members
-              WHERE organization_id = :organization_id
-            )
-          )
-          AND deleted_at IS NULL
-        ORDER BY created_at
-    """
-        ),
-        {"organization_id": organization_id},
-    )
-    print(f"{shapes.rowcount} shapes found")
-    if shapes.rowcount == 0:
-        raise Exception("No shapes to publish")
-    df = pd.DataFrame(shapes.fetchall())
-    df.uuid = df.uuid.astype(str)
-    df["geojson"] = df.geojson.map(lambda x: json.dumps(x))
-    res = send_data_to_s3(df, organization_id)
-    logger.info(res)
-    return {"num_rows": len(df)}
+    with SessionLocal() as db:
+        logger.debug(f"Copy shapes for {organization_id}")
+        shapes = db.execute(
+            text(
+                """
+                    SELECT uuid
+                    , name
+                    , geojson
+                    , created_at
+                    , updated_at
+                    FROM shapes
+                    WHERE 1=1
+                        AND deleted_at IS NULL
+                        AND organization_id = :organization_id
+                    ORDER BY created_at
+                """
+            ),
+            {"organization_id": organization_id},
+        )
+        # The organization id is redundant
+        logger.debug(f"{shapes.rowcount} shapes found")
+        if shapes.rowcount == 0:
+            num_rows = 0
+        else:
+            df = pd.DataFrame(shapes.fetchall())
+            send_data_to_s3(df, organization_id)
+            num_rows = df.shape[0]
+        return {"num_rows": num_rows}

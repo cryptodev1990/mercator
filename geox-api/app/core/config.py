@@ -8,6 +8,7 @@ from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import (
     AnyHttpUrl,
+    AnyUrl,
     BaseSettings,
     EmailStr,
     Field,
@@ -58,13 +59,20 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(
-        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
     auth_algorithms: str = Field("RS256", env="AUTH0_ALGORITHMS")
     fernet_encryption_key: str = Field(..., env="FERNET_ENCRYPTION_KEY")
+
+    # Bucket to use for data exports
+    aws_s3_bucket: str = Field(
+        "snowflake-data-transfers",
+        description="S3 bucket used to store export data",
+        min_length=3,
+        max_length=63,
+    )
 
     aws_s3_upload_access_key_id: Optional[str] = Field(
         None, env="AWS_S3_UPLOAD_ACCESS_KEY_ID"
@@ -79,8 +87,7 @@ class Settings(BaseSettings):
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(
-                f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     @property

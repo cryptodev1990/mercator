@@ -3,10 +3,10 @@ import datetime
 from enum import Enum
 from typing import List, Optional, Sequence, Union
 from uuid import UUID
-from geojson_pydantic import Point, Polygon, LineString, Feature
-import jinja2
 
-from sqlalchemy import func, insert, select, update, text
+import jinja2
+from geojson_pydantic import Feature, LineString, Point, Polygon
+from sqlalchemy import func, insert, select, text, update
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -56,8 +56,7 @@ def get_all_shapes_by_organization(
     stmt = (
         select(Shape)
         .where(  # type: ignore
-            Shape.organization_id == str(
-                organization_id), Shape.deleted_at == None
+            Shape.organization_id == str(organization_id), Shape.deleted_at == None
         )
         .order_by(Shape.uuid)
     )
@@ -121,7 +120,8 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
         update(Shape)  # type: ignore
         .values(**values)
         .where(Shape.uuid == str(geoshape.uuid))
-        .returning(Shape))  # type: ignore
+        .returning(Shape)
+    )  # type: ignore
     res = db.execute(update_stmt)
     rows = res.rowcount
     db.commit()
@@ -170,9 +170,8 @@ def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
 
 def get_shape_count(db: Session) -> int:
     """Get the number of shapes in an organization."""
-    stmt = (
-        select(func.count(Shape.uuid))  # type: ignore
-        .where(Shape.organization_id == func.app_user_org(), Shape.deleted_at == None)
+    stmt = select(func.count(Shape.uuid)).where(  # type: ignore
+        Shape.organization_id == func.app_user_org(), Shape.deleted_at == None
     )
     res = db.execute(stmt).fetchone()
     return res[0]
@@ -204,20 +203,20 @@ class GeometryOperation(str, Enum):
 
 
 def get_shapes_related_to_geom(
-        db: Session,
-        operation: GeometryOperation,
-        geom: Union[Point, Polygon, LineString]) -> List[Feature]:
+    db: Session, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
+) -> List[Feature]:
     """Get the shape that contains a point."""
-    stmt = jinja2.Template("""
+    stmt = jinja2.Template(
+        """
     SELECT *
     FROM shapes
     WHERE 1=1
       AND ST_{{operation}}(ST_GeomFromGeoJSON((geojson->>0)::JSON->'geometry'), ST_GeomFromGeoJSON(:geom))
       AND deleted_at IS NULL
       AND organization_id = public.app_user_org()
-    """).render(operation=operation.title())
-    res = db.execute(
-        stmt, {"geom": geom.json()}).fetchall()
+    """
+    ).render(operation=operation.title())
+    res = db.execute(stmt, {"geom": geom.json()}).fetchall()
     if res:
         return [schemas.GeoShape.from_orm(row).geojson for row in res]
     return []
