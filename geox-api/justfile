@@ -105,6 +105,10 @@ pg:
 pg-osm:
 	pgcli -p5432 "osm" -u "osmuser"
 
+# Connect to production Postgres
+pg-prod:
+	fly pg connect restless-rain-538-db
+
 # Run an interactive shell for the project
 shell:
 	ipython
