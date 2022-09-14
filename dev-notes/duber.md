@@ -840,4 +840,19 @@ Groupings: Allow groupings of multiple shapes
 - [X] Add point-in-poly routes
 - [X] Investigate options for API access
 
-## Sep 13 2022
+## Sep 14 2022
+
+### Plans
+
+- [ ] Add Usersnap to the frontend
+- [ ] Search / sort for sidebar
+- [ ] Support tiling
+  - Create geometries on the backend
+    - Create geojson features from properties and geometries for certain parts of the API
+    - Index the geometeries
+    - API needs to request tile
+    - Load testing -- will this strategy work with many concurrent users?
+
+### Progress
+
+### Problems
