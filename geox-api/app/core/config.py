@@ -46,6 +46,21 @@ GitCommitHash = Annotated[
 """Pydantic type to validate git hashes."""
 
 
+class S3Uri(AnyUrl):
+    """Validate an S3 URI type.
+
+    Example: ``s3://bucket-name/path/to/file``.
+
+    """
+
+    allowed_schemes = {
+        "s3",
+    }
+    host_required = True
+
+    __slots__ = ()
+
+
 class Settings(BaseSettings):
     """Config settings."""
 
@@ -67,12 +82,17 @@ class Settings(BaseSettings):
     fernet_encryption_key: str = Field(..., env="FERNET_ENCRYPTION_KEY")
 
     # Bucket to use for data exports
-    aws_s3_bucket: str = Field(
-        "snowflake-data-transfers",
-        description="S3 bucket used to store export data",
-        min_length=3,
-        max_length=63,
+    aws_s3_uri: Optional[S3Uri] = Field(
+        None,
+        description="S3 used to store export data, e.g. 's3://bucket/path/as/prefix/'",
     )
+
+    @validator("aws_s3_uri", pre=True)
+    def _validate_aws_s3_uri(cls, v):
+        """Ensure the S3 URI always ends with a backslash."""
+        if v and not v.endswith("/"):
+            v = f"{v}/"
+        return v
 
     aws_s3_upload_access_key_id: Optional[str] = Field(
         None, env="AWS_S3_UPLOAD_ACCESS_KEY_ID"

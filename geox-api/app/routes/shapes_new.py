@@ -20,7 +20,7 @@ from app.schemas import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(tags=["geofencer"])
+router = APIRouter(tags=["geofencer"], include_in_schema=False)
 
 
 class GetAllShapesRequestType(str, Enum):

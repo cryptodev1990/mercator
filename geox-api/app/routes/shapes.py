@@ -7,16 +7,17 @@ from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 from sqlalchemy import func, select, text
 
+from app.core.config import Settings, get_settings
 from app.crud import shape as crud
 from app.crud.organization import get_active_org, organization_s3_enabled
 from app.dependencies import UserSession, get_app_user_session, verify_token
 from app.schemas import (
+    CeleryTaskResponse,
     GeoShape,
     GeoShapeCreate,
     GeoShapeRead,
     GeoShapeUpdate,
     ShapeCountResponse,
-    CeleryTaskResponse
 )
 from app.worker import copy_to_s3
 
@@ -138,21 +139,36 @@ def get_shapes_by_operation(
     return shapes
 
 
-@router.post("/shapes/export", response_model=CeleryTaskResponse,
-             responses = {403: {"description": "Data export not enabled for this account"}})
-def shapes_export(
-    user_session: UserSession = Depends(get_app_user_session),
-):
-    """Export shapes to S3.
+def _shapes_export(user_session: UserSession, settings: Settings):
 
-    This is an async task. Use `/tasks/results/{task_id}` to retieve the status and results.
-
-    """
     org_id = get_active_org(user_session.session, user_session.user.id)
     # TODO: this should be a permission on shapes
+    if settings.aws_s3_uri is None:
+        raise HTTPException(
+            status_code=501, detail="Data export is not configured."  # type: ignore
+        )
     if not organization_s3_enabled(user_session.session, str(org_id)):
         raise HTTPException(
             status_code=403, detail="Data export is not enabled for this account."  # type: ignore
         )
     task = copy_to_s3.delay(org_id)
     return CeleryTaskResponse(task_id=task.id)
+
+
+@router.post(
+    "/shapes/export",
+    response_model=CeleryTaskResponse,
+    responses={
+        403: {"description": "Data export not enabled for this account."},
+        501: {"description": "Shape export is not configured on the server."},
+    },
+)
+def shapes_export(
+    user_session: UserSession = Depends(get_app_user_session),
+    settings: Settings = Depends(get_settings),
+):
+    """Export shapes to S3.
+
+    This is an async task. Use `/tasks/results/{task_id}` to retieve the status and results.
+    """
+    return _shapes_export(user_session, settings)

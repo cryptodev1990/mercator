@@ -4,8 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import UUID4
 
 from app.core.celery_app import celery_app
+from app.core.config import Settings, get_settings
 from app.crud.organization import get_active_org, organization_s3_enabled
 from app.dependencies import UserSession, get_app_user_session, verify_token
+from app.routes.shapes import _shapes_export
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
 from app.worker import copy_to_s3, test_celery
 
@@ -26,16 +28,30 @@ def get_status(task_id: str):
     return result
 
 
-@router.post("/tasks/test", tags=["tasks"], response_model=CeleryTaskResponse)
+@router.post(
+    "/tasks/test",
+    tags=["tasks"],
+    response_model=CeleryTaskResponse,
+    include_in_schema=False,
+)
 def run_test_celery(word: str = "Hello"):
     """Run a test celery task."""
     task = test_celery.delay(word)
     return CeleryTaskResponse(task_id=task.id)
 
-@router.post("/tasks/copy_shapes", response_model=CeleryTaskResponse, deprecated=True,
-             responses = {403: {"description": "Data export not enabled for this account"}})
+
+@router.post(
+    "/tasks/copy_shapes",
+    response_model=CeleryTaskResponse,
+    deprecated=True,
+    responses={
+        403: {"description": "Data export not enabled for this account"},
+        501: {"description": "Shape export is not configured"},
+    },
+)
 def shapes_export(
     user_session: UserSession = Depends(get_app_user_session),
+    settings: Settings = Depends(get_settings),
 ):
     """Export shapes to S3.
 
@@ -44,11 +60,4 @@ def shapes_export(
     Use `POST /shapes/export` instead.
 
     """
-    org_id = get_active_org(user_session.session, user_session.user.id)
-    # TODO: this should be a permission on shapes
-    if not organization_s3_enabled(user_session.session, str(org_id)):
-        raise HTTPException(
-            status_code=403, detail="Data export is not enabled for this account."  # type: ignore
-        )
-    task = copy_to_s3.delay(org_id)
-    return CeleryTaskResponse(task_id=task.id)
+    return _shapes_export(user_session, settings)

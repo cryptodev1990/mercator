@@ -16,7 +16,7 @@ async def info(settings: Settings = Depends(get_settings)):
     return AppVersion(version=settings.version, git_commit=settings.git_commit)
 
 
-@router.get("/current_user")
+@router.get("/current_user", include_in_schema=False)
 async def current_user(user_session: UserSession = Depends(get_app_user_session)):
     user_id = get_app_user_id(user_session.session)
     return {"user_id": int(user_id) if user_id is not None else None}

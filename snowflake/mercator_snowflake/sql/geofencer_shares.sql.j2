@@ -6,54 +6,40 @@ the Snowflake account id of the organization.
 Jinja templated Snowflake SQL.
 
 -#}
-{% set db_name = 'org_' ~ (organization_id | replace("-", "") | lower) %}
-{% set share_name = 'org_' ~ (organization_id | replace("-", "") | lower) %}
+{%- set org_uuid_safe = (organization_id | replace("-", "") | lower) %}
+{%- set db_name = 'org_' ~ org_uuid_safe %}
 
 -- Only accountadmin can create shares
-USE ROLE accountadmin;
+USE ROLE sysadmin;
 
-CREATE SHARE {{ share_name }};
+CREATE OR REPLACE DATABASE {{ db_name }};
+CREATE OR REPLACE SCHEMA {{ db_name }}.geofencer;
 
-CREATE DATABASE {{ db_name }};
-CREATE SCHEMA {{ db_name }}.geofencer;
-GRANT USAGE ON DATABASE {{ db_name }} TO SHARE {{ db_name }};
-GRANT USAGE ON SCHEMA {{ db_name }}.geofencer TO SHARE {{ share_name }};
-ALTER SHARE {{ share_name }} ADD ACCOUNTS = {{ account_id }};
-
-/* Define external table and view to share with the user */
-
-USE SCHEMA {{ db_name }}.geofencer;
-
-CREATE OR REPLACE STAGE shapes_stage
-STORAGE_INTEGRATION = geox_s3_buckets
-URL = 's3://{{ s3_bucket }}/{{ s3_path }}/{{ organization_id }}/latest/';
-
--- Shared views can only refence objects in the same database so the external table
--- must be in the org database
-CREATE OR REPLACE EXTERNAL TABLE shapes_external
+{%- set shapes_external_table = "geofencer.exports.shapes_latest_" ~ org_uuid_safe  %}
+CREATE OR REPLACE EXTERNAL TABLE {{ shapes_external_table }}
 (
-    created_by_user_id NUMBER(38, 0) AS ($1:created_by_user_id::NUMBER(38, 0)),
+    id TEXT AS ($1:uuid::TEXT),
     name TEXT AS ($1:name::TEXT),
     geojson OBJECT AS (parse_json($1:geojson::TEXT)::OBJECT),
     created_at TIMESTAMP_NTZ AS ($1:created_at::TIMESTAMP_NTZ),
     updated_at TIMESTAMP_NTZ AS ($1:updated_at::TIMESTAMP_NTZ),
-    exported_at TIMESTAMP_NTZ AS ($1:exported_at::TIMESTAMP_NTZ),
-    uuid TEXT AS ($1:uuid::TEXT)
+    exported_at TIMESTAMP_NTZ AS ($1:exported_at::TIMESTAMP_NTZ)
 )
-LOCATION = @shapes_stage
+LOCATION = @geofencer.exports.shapes_stage/{{- organization_id -}}/latest/
 REFRESH_ON_CREATE = True
 AUTO_REFRESH = True
-FILE_FORMAT = (TYPE=parquet COMPRESSION=snappy);
+FILE_FORMAT = geofencer.exports.shapes_format
+COMMENT = $$Latest geofencer shapes exported from organization {{ organization_id }}.$$;
 
-CREATE OR REPLACE SECURE VIEW shapes
+CREATE OR REPLACE MATERIALIZED VIEW {{ db_name -}}.geofencer.shapes
+COMMENT = $$Latest geofencer shapes exported from organization {{ organization_id }}.$$
 AS
 SELECT
-    uuid,
-    geojson
+    id,
     name,
+    to_geometry(geojson) AS geometry,
     created_at,
     updated_at,
     exported_at
-FROM shapes_external;
-
-GRANT SELECT ON VIEW shapes TO SHARE {{ db_name }};
+FROM {{ shapes_external_table }}
+;

@@ -43,12 +43,11 @@ def send_data_to_s3(df: pd.DataFrame, organization_id: UUID4):
         aws_access_key_id=settings.aws_s3_upload_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
     )
-
-    bucket_name = settings.aws_s3_bucket
-    prefix = "geofencer/shapes"
+    aws_s3_uri = settings.aws_s3_uri
+    path: str = f"s3://{aws_s3_uri}export/shapes/{organization_id}/latest/data.parquet"
     res = wr.s3.to_parquet(
         df,
-        path=f"s3://{bucket_name}/{prefix}/{organization_id}/latest/data.parquet",
+        path=path,
         index=False,
         boto3_session=session,
         compression="snappy",

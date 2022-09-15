@@ -25,8 +25,8 @@ ENV = j2.Environment(
 )
 
 class Settings(BaseSettings):
-    snowflake_private_key_path: Optional[FilePath]
-    snowflake_private_key_passphrase: Optional[SecretStr]
+    # snowflake_private_key_path: Optional[FilePath]
+    # snowflake_private_key_passphrase: Optional[SecretStr]
     snowflake_database: Optional[str]
     snowflake_password: Optional[SecretStr]
     snowflake_schema: Optional[str]
@@ -35,8 +35,6 @@ class Settings(BaseSettings):
     snowflake_role: str
     snowflake_user: str
     snowflake_authenticator: str = Field("snowflake")
-    s3_bucket: str = Field("snowflake-data-transfers")
-    s3_path: str = Field("geofencer/shapes")
 
     class Config:
         env_file = '.env'
@@ -46,18 +44,18 @@ def get_settings():
 
 def create_snowflake_engine(settings: Settings):
     pkb: Optional[bytes] = None
-    if settings.snowflake_private_key_path:
-        with open(settings.snowflake_private_key_path, "rb") as key:
-            private_key_passphrase = settings.snowflake_private_key_passphrase.get_secret_value().encode() if settings.snowflake_private_key_passphrase else None
-            p_key= serialization.load_pem_private_key(
-                key.read(),
-                password=private_key_passphrase,
-                backend=default_backend())
+    # if settings.snowflake_private_key_path:
+    #     with open(settings.snowflake_private_key_path, "rb") as key:
+    #         private_key_passphrase = settings.snowflake_private_key_passphrase.get_secret_value().encode() if settings.snowflake_private_key_passphrase else None
+    #         p_key= serialization.load_pem_private_key(
+    #             key.read(),
+    #             password=private_key_passphrase,
+    #             backend=default_backend())
 
-            pkb = p_key.private_bytes(
-                encoding=serialization.Encoding.DER,
-                format=serialization.PrivateFormat.PKCS8,
-                encryption_algorithm=serialization.NoEncryption())
+    #         pkb = p_key.private_bytes(
+    #             encoding=serialization.Encoding.DER,
+    #             format=serialization.PrivateFormat.PKCS8,
+    #             encryption_algorithm=serialization.NoEncryption())
 
     url = URL(
         user=settings.snowflake_user,
@@ -83,14 +81,11 @@ def get_sql(
     return rendered
 
 
-def run(settings: Settings, organization_id: str, snowflake_account_id: str) -> None:
+def run(settings: Settings, organization_id: str) -> None:
     sql = get_sql(
         "geofencer_shares.sql.j2",
         {
             "organization_id": organization_id,
-            "account_id": snowflake_account_id,
-            "s3_bucket": settings.s3_bucket,
-            "s3_path": settings.s3_path
         },
     )
     engine = create_snowflake_engine(settings)
@@ -100,10 +95,10 @@ def run(settings: Settings, organization_id: str, snowflake_account_id: str) -> 
                 for ret in cur:
                     pass
 
-def main(organization_id: str, snowflake_account_id: str) -> None:
+def main(organization_id: str) -> None:
     """Create Snowflake share information."""
     settings = get_settings()
-    run(settings, organization_id, snowflake_account_id)
+    run(settings, organization_id)
 
 
 if __name__ == "__main__":
