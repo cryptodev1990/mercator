@@ -11,12 +11,14 @@ export const CommandPalette = ({
   onOSM,
   onBuffer,
   onPublish,
+  onDelete,
   onIsochrone,
 }: {
   onNominatim: any;
   onOSM: any;
   onBuffer: any;
   onPublish: any;
+  onDelete: any;
   onIsochrone: any;
 }) => {
   const [hidden, setHidden] = useState<boolean>(true);
@@ -65,6 +67,8 @@ export const CommandPalette = ({
         }
       } else if (value.startsWith("publish")) {
         onPublish();
+      } else if (value.startsWith("delete")) {
+        onDelete();
       } else {
         console.error("Not valid");
         setError("Not valid");

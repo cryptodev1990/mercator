@@ -1,23 +1,31 @@
 import { useContext } from "react";
 import { GeofencerContext } from "./contexts/geofencer-context";
-import { Feature, GeoShapeCreate } from "../../client";
+import { Feature, GeoShape, GeoShapeCreate } from "../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
 
-import { useAddShapeMutation } from "./hooks/openapi-hooks";
+import {
+  useAddShapeMutation,
+  useBulkDeleteShapesMutation,
+} from "./hooks/openapi-hooks";
 import { CommandPalette } from "../command-palette/component";
 import { useIsochrones } from "../../hooks/use-isochrones";
 
 export const GeofencerCommandPalette = () => {
-  const { tentativeShapes, setTentativeShapes, setViewport } =
+  const { tentativeShapes, shapes, setTentativeShapes, setViewport } =
     useContext(GeofencerContext);
   const { mutate: addShape } = useAddShapeMutation();
+  const { mutate: bulkDeleteShapes } = useBulkDeleteShapesMutation();
   const { getIsochrones, error: isochroneError } = useIsochrones();
 
   return (
     <CommandPalette
       onNominatim={(res: any) => {
         setViewport(res);
+      }}
+      onDelete={() => {
+        bulkDeleteShapes(shapes.map((s: any) => s.uuid));
+        setTentativeShapes([]);
       }}
       // Commit data to the server
       onPublish={() => {
