@@ -1,0 +1,5 @@
+app = "fly-log-shipper-example"
+
+[metrics]
+  port = 9598
+  path = "/metrics"
