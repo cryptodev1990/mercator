@@ -34,5 +34,6 @@ def downgrade() -> None:
                existing_type=postgresql.TIMESTAMP(),
                nullable=False,
                existing_server_default=sa.text('now()'))
+    conn = op.get_bind()
     conn.execute("DROP EXTENSION postgis;")
     # ### end Alembic commands ###
