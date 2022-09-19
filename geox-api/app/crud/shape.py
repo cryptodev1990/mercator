@@ -56,7 +56,8 @@ def get_all_shapes_by_organization(
     stmt = (
         select(Shape)
         .where(  # type: ignore
-            Shape.organization_id == str(organization_id), Shape.deleted_at == None
+            Shape.organization_id == str(
+                organization_id), Shape.deleted_at == None
         )
         .order_by(Shape.uuid)
     )
@@ -75,7 +76,7 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
             created_at=func.now(),
             organization_id=func.app_user_org(),
             name=geoshape.name,
-            geojson=geoshape.geojson.json(),
+            geojson=geoshape.geojson.dict(),
         )
         .returning(Shape)  # type: ignore
     )
@@ -101,7 +102,7 @@ def create_many_shapes(
         .returning(Shape.uuid)
     )
     new_shapes = db.execute(
-        ins, [{"name": s.name, "geojson": s.geojson.json()} for s in geoshapes]
+        ins, [{"name": s.name, "geojson": s.geojson.dict()} for s in geoshapes]
     ).scalars()
     db.commit()
     return list(new_shapes)
@@ -115,7 +116,7 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
         "updated_by_user_id": func.app_user_id(),
     }
     if geoshape.geojson:
-        values["geojson"] = geoshape.geojson.json()
+        values["geojson"] = geoshape.geojson.dict()
     update_stmt = (
         update(Shape)  # type: ignore
         .values(**values)
@@ -183,7 +184,7 @@ def get_shapes_containing_point(db: Session, lat: float, lng: float) -> List[Fea
     SELECT *
     FROM shapes
     WHERE 1=1
-      AND ST_Contains(ST_GeomFromGeoJSON((geojson->>0)::JSON->'geometry'), ST_GeomFromText('POINT(:lng :lat)', 4326))
+      AND ST_Contains(geom, ST_GeomFromText('POINT(:lng :lat)', 4326))
       AND deleted_at IS NULL
       AND organization_id = public.app_user_org()
     """
@@ -204,6 +205,8 @@ class GeometryOperation(str, Enum):
 
 def get_shapes_related_to_geom(
     db: Session, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
+
+
 ) -> List[Feature]:
     """Get the shape that contains a point."""
     stmt = jinja2.Template(
@@ -211,7 +214,7 @@ def get_shapes_related_to_geom(
     SELECT *
     FROM shapes
     WHERE 1=1
-      AND ST_{{operation}}(ST_GeomFromGeoJSON((geojson->>0)::JSON->'geometry'), ST_GeomFromGeoJSON(:geom))
+      AND ST_{{operation}}(geom, ST_GeomFromGeoJSON(:geom))
       AND deleted_at IS NULL
       AND organization_id = public.app_user_org()
     """

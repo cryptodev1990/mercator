@@ -5,6 +5,7 @@ authlib==1.0.1
 starlette-authlib==0.1.11
 SQLAlchemy==1.4.37
 sqlalchemy-json==0.5.0
+geoalchemy2==0.12.5
 psycopg2==2.9.3
 httpx==0.23.0
 PyJWT==2.4.0
