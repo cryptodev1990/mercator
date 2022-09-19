@@ -17,3 +17,7 @@ Assigning organizations to users
 
 
 ### How do we handle organizations?
+
+#### Altenratives
+
+- Use [warrant.dev](https://warrant.dev/)
