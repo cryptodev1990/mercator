@@ -1,5 +1,6 @@
 from lib2to3.pytree import Base
 import logging
+import re
 from sqlite3 import connect
 from typing import Any, Mapping, Optional
 from pydantic import BaseSettings, SecretStr, Field, FilePath
@@ -85,9 +86,14 @@ def run(settings: Settings, organization_id: str) -> None:
     sql = get_sql(
         "geofencer_shares.sql.j2",
         {
-            "organization_id": organization_id,
+            "org_id": organization_id,
+            "org_id_safe": re.sub("[^A-Za-z0-9]", "", str(organization_id)),
+            # Url should end in /
+            "aws_s3_url": "s3://mercator-geofencer-data/export/shapes/",
         },
     )
+    print(sql)
+    return
     engine = create_snowflake_engine(settings)
     with engine.connect() as conn:
         with conn.begin():

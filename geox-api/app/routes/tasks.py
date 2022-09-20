@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
 from app.dependencies import UserSession, get_app_user_session, verify_token
-# from app.routes.shapes import _shapes_export
+from app.routes.shapes import run_shapes_export
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
 
 from app.worker import test_celery
@@ -58,5 +58,4 @@ def copy_shapes(
     Use `POST /shapes/export` instead.
 
     """
-    pass
-    # return _shapes_export(user_session, settings)
+    return run_shapes_export(user_session, settings)

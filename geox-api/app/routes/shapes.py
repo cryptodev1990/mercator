@@ -65,10 +65,8 @@ def get_all_shapes(
     if rtype == GetAllShapesRequestType.user:
         shapes = crud.get_all_shapes_by_user(db_session, user.id)
     elif rtype == GetAllShapesRequestType.organization:
-        organization_id = db_session.execute(
-            select(func.app_user_org())).scalar()
-        shapes = crud.get_all_shapes_by_organization(
-            db_session, organization_id)
+        organization_id = db_session.execute(select(func.app_user_org())).scalar()
+        shapes = crud.get_all_shapes_by_organization(db_session, organization_id)
     return shapes
 
 
@@ -89,7 +87,9 @@ def update_shape(
     """Update a shape."""
     shape: Optional[GeoShape]
     if geoshape.should_delete:
-        logger.warning("PUT /geofencer/shapes for deleting a shape is deprecated. Use DELETE /geofencer/shapes/{uuid}")
+        logger.warning(
+            "PUT /geofencer/shapes for deleting a shape is deprecated. Use DELETE /geofencer/shapes/{uuid}"
+        )
         crud.delete_shape(user_session.session, geoshape.uuid)
         return None
     else:
@@ -144,20 +144,11 @@ def get_shapes_by_operation(
     user_session: UserSession = Depends(get_app_user_session),
 ) -> List[Feature]:
     """Get shapes by operation."""
-    shapes = crud.get_shapes_related_to_geom(
-        user_session.session, operation, geom)
+    shapes = crud.get_shapes_related_to_geom(user_session.session, operation, geom)
     return shapes
 
 
-@router.post("/shapes/export", response_model=CeleryTaskResponse,
-             responses={403: {"description": "Data export not enabled for this account"}})
-def shapes_export(
-    user_session: UserSession = Depends(get_app_user_session),
-):
-    """Export shapes to S3.
-
-    This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results."""
-
+def run_shapes_export(user_session: UserSession, settings: Settings):
     org_id = get_active_org(user_session.session, user_session.user.id)
     if org_id is None:
         raise HTTPException(
@@ -180,10 +171,29 @@ def shapes_export(
     else:
         aws_secret_access_key = None
     aws_access_key_id = settings.aws_s3_upload_access_key_id
-    task = copy_to_s3.delay(str(org_id),
-                        cast(str, settings.sqlalchemy_database_uri),
-                        settings.aws_s3_url,
-                        aws_access_key_id=aws_access_key_id,
-                        aws_secret_access_key=aws_secret_access_key
-                        )
+    task = copy_to_s3.delay(
+        str(org_id),
+        cast(str, settings.sqlalchemy_database_uri),
+        settings.aws_s3_url,
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+    )
     return CeleryTaskResponse(task_id=task.id)
+
+
+@router.post(
+    "/shapes/export",
+    response_model=CeleryTaskResponse,
+    responses={403: {"description": "Data export not enabled for this account"},
+               501: {"description": "Data export not supported on the server."}
+               },
+)
+def shapes_export(
+    user_session: UserSession = Depends(get_app_user_session),
+    settings: Settings = Depends(get_settings)
+):
+    """Export shapes to S3.
+
+    This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
+    """
+    return run_shapes_export(user_session, settings)
