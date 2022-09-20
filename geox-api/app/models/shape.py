@@ -1,6 +1,7 @@
 """Shape model."""
+from typing import Any, Dict
+
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.orm import column_property
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.sql import func
 

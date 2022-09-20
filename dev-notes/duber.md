@@ -862,17 +862,11 @@ Groupings: Allow groupings of multiple shapes
 - [X] Add tiling support to our shapes
   - [X] Support auth with tiling - did this with deck.gl + the Auth0 API itself
   - [X] Add geom column to our backend
-- [ ] Modify the shape edit flow to work with tiling
-  - [ ] Get count of all available shapes and display that in the shape sidebar
-  - [ ] Stop calling "get all shape by org" and start calling the tile server
-    - [X] Support tile server calls in the UI and backend
-      - [ ] TODO why is it slow? I imagine this is something to do with the Postgres query, or something that could be alleviated with multiple boxes. How do I figure out which?
-  - [ ] On the selection of a shape, push the shape into a local EditableGeoJsonLayer. Shapes / sidebar should mostly populate from the backend though, and we should never keep all shapes on the FE.
-  - [ ] (optional) Compress the communications with FastAPI?
-  - [ ] On an update, refresh the current tile, rather than all the shapes in the react-query cache
 
 ## Sep 20, 2000
 
 Plans:
 
 - [ ] Finish PR: https://github.com/mercatorhq/mercator/pull/261
+  - [ ] Support auth with tiling - did this with deck.gl + the Auth0 API itself
+  - I think I'm probably good to add the tile server without modifying the frontend to accept it, as an incremental upgrade

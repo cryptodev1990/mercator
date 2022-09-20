@@ -18,6 +18,8 @@
 - Migrating state to Redux
 - Integrate bug report tool
 - Timeouts for DB sync failures and uploads
+- Move sessions to sessions for FastAPI / Postgres
+- Add exceptions to FastAPI / Swagger client
 
 # Public release requirements
 
@@ -34,3 +36,13 @@
 - [ ] Send to back / bring to front
 - [ ] Setting colors of groups
 - [ ] Grouping shapes
+
+## Large conversations
+
+- What should organizations/multitenancy look like?
+- What should the frontend look like?
+- How should NLP work?
+- What data sets do we want?
+- What could we build that's a novel entry?
+  - ML-accelerated labeling
+  - Pipelines for the text labeling, image labeling, geolabeling

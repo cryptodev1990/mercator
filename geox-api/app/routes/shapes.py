@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import List, Optional, Union, cast
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 from sqlalchemy import func, select
@@ -20,6 +20,11 @@ from app.schemas import (
     ShapeCountResponse,
 )
 from app.worker import copy_to_s3
+from app.routes.tile_utils import (
+    bbox_to_sql,
+    tile_to_envelope,
+    TILE_RESPONSE_PARAMS,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -60,8 +65,10 @@ def get_all_shapes(
     if rtype == GetAllShapesRequestType.user:
         shapes = crud.get_all_shapes_by_user(db_session, user.id)
     elif rtype == GetAllShapesRequestType.organization:
-        organization_id = db_session.execute(select(func.app_user_org())).scalar()
-        shapes = crud.get_all_shapes_by_organization(db_session, organization_id)
+        organization_id = db_session.execute(
+            select(func.app_user_org())).scalar()
+        shapes = crud.get_all_shapes_by_organization(
+            db_session, organization_id)
     return shapes
 
 
@@ -137,10 +144,20 @@ def get_shapes_by_operation(
     user_session: UserSession = Depends(get_app_user_session),
 ) -> List[Feature]:
     """Get shapes by operation."""
-    shapes = crud.get_shapes_related_to_geom(user_session.session, operation, geom)
+    shapes = crud.get_shapes_related_to_geom(
+        user_session.session, operation, geom)
     return shapes
 
-def run_shapes_export(user_session: UserSession, settings: Settings) -> CeleryTaskResponse:
+
+@router.post("/shapes/export", response_model=CeleryTaskResponse,
+             responses={403: {"description": "Data export not enabled for this account"}})
+def shapes_export(
+    user_session: UserSession = Depends(get_app_user_session),
+):
+    """Export shapes to S3.
+
+    This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results."""
+
     org_id = get_active_org(user_session.session, user_session.user.id)
     if org_id is None:
         raise HTTPException(
@@ -170,22 +187,3 @@ def run_shapes_export(user_session: UserSession, settings: Settings) -> CeleryTa
                         aws_secret_access_key=aws_secret_access_key
                         )
     return CeleryTaskResponse(task_id=task.id)
-
-
-@router.post(
-    "/shapes/export",
-    response_model=CeleryTaskResponse,
-    responses={
-        403: {"description": "Data export not enabled for this account."},
-        501: {"description": "Shape export is not configured on the server."},
-    },
-)
-def shapes_export(
-    user_session: UserSession = Depends(get_app_user_session),
-    settings: Settings = Depends(get_settings),
-) -> CeleryTaskResponse:
-    """Export shapes to S3.
-
-    This is an async task. Use `/tasks/results/{task_id}` to retieve the status and results.
-    """
-    return run_shapes_export(user_session, settings)

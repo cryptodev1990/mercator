@@ -57,6 +57,8 @@ if OSM_DATABASE_URI:
     osm_engine = create_engine(OSM_DATABASE_URI)
     OsmSessionLocal = sessionmaker(bind=osm_engine, future=True)
 else:
-    logger.warning("OSM_DATABASE_URI is not set, OSM features will be disabled")
+    logger.warning(
+        "OSM_DATABASE_URI is not set, OSM features will be disabled")
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, future=True)
