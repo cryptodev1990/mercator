@@ -1,18 +1,14 @@
-from http.client import HTTPException
-
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import UUID4
+from fastapi import APIRouter, Depends
 
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
-from app.crud.organization import get_active_org, organization_s3_enabled
 from app.dependencies import UserSession, get_app_user_session, verify_token
-from app.routes.shapes import _shapes_export
+from app.routes.shapes import run_shapes_export
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
-from app.worker import copy_to_s3, test_celery
+
+from app.worker import test_celery
 
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
-
 
 @router.get(
     "/tasks/results/{task_id}",
@@ -32,7 +28,6 @@ def get_status(task_id: str):
     "/tasks/test",
     tags=["tasks"],
     response_model=CeleryTaskResponse,
-    include_in_schema=False,
 )
 def run_test_celery(word: str = "Hello"):
     """Run a test celery task."""
@@ -49,15 +44,18 @@ def run_test_celery(word: str = "Hello"):
         501: {"description": "Shape export is not configured"},
     },
 )
-def shapes_export(
+def copy_shapes(
     user_session: UserSession = Depends(get_app_user_session),
-    settings: Settings = Depends(get_settings),
-):
+    settings: Settings = Depends(get_settings)
+) -> CeleryTaskResponse:
     """Export shapes to S3.
 
     This is an async task. Use `/tasks/results/{task_id}` to retieve the status and results.
 
+    Exports all shapes in the user's organization to Snowflake, if the user's account is
+    enabled for shape export, and the user has provided Snowflake account information for sharing.
+
     Use `POST /shapes/export` instead.
 
     """
-    return _shapes_export(user_session, settings)
+    return run_shapes_export(user_session, settings)

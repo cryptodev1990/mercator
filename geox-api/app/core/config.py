@@ -46,7 +46,7 @@ GitCommitHash = Annotated[
 """Pydantic type to validate git hashes."""
 
 
-class S3Uri(AnyUrl):
+class S3Url(AnyUrl):
     """Validate an S3 URI type.
 
     Example: ``s3://bucket-name/path/to/file``.
@@ -79,17 +79,16 @@ class Settings(BaseSettings):
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
     auth_algorithms: str = Field("RS256", env="AUTH0_ALGORITHMS")
-    fernet_encryption_key: str = Field(..., env="FERNET_ENCRYPTION_KEY")
 
     # Bucket to use for data exports
-    aws_s3_uri: Optional[S3Uri] = Field(
+    aws_s3_url: Optional[S3Url] = Field(
         None,
         description="S3 used to store export data, e.g. 's3://bucket/path/as/prefix/'",
     )
 
-    @validator("aws_s3_uri", pre=True)
-    def _validate_aws_s3_uri(cls, v):
-        """Ensure the S3 URI always ends with a backslash."""
+    @validator("aws_s3_url", pre=True)
+    def _validate_aws_s3_url(cls, v):
+        """Ensure the S3 URL always ends with a backslash."""
         if v and not v.endswith("/"):
             v = f"{v}/"
         return v
@@ -146,6 +145,8 @@ class Settings(BaseSettings):
         None, env="SQLALCHEMY_OSM_DATABASE_URI"
     )
 
+    # validation is done in the order fields are defined. sqlalchemy_database_uri
+    # needs to be defined after its subcomponents
     @validator("sqlalchemy_database_uri", pre=True)
     def _validate_sqlalchemy_database_uri(
         cls, v: Optional[str], values: Dict[str, Any]
@@ -163,9 +164,6 @@ class Settings(BaseSettings):
             path=f"/{values.get('postgres_db', '')}",
         )
         return dsn
-
-    # validateion is done in the order fields are defined. sqlalchemy_database_uri
-    # needs to be defined after everything
 
     redis_connection: RedisDsn = Field(
         "redis://localhost:6379/0", description="Redis DSN to use for celery"

@@ -1,11 +1,11 @@
 import logging
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Union, cast
 
 from fastapi import APIRouter, Depends, HTTPException
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select
 
 from app.core.config import Settings, get_settings
 from app.crud import shape as crud
@@ -20,6 +20,7 @@ from app.schemas import (
     ShapeCountResponse,
 )
 from app.worker import copy_to_s3
+
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +82,7 @@ def update_shape(
     """Update a shape."""
     shape: Optional[GeoShape]
     if geoshape.should_delete:
+        logger.warning("PUT /geofencer/shapes for deleting a shape is deprecated. Use DELETE /geofencer/shapes/{uuid}")
         crud.delete_shape(user_session.session, geoshape.uuid)
         return None
     else:
@@ -138,20 +140,35 @@ def get_shapes_by_operation(
     shapes = crud.get_shapes_related_to_geom(user_session.session, operation, geom)
     return shapes
 
-
-def _shapes_export(user_session: UserSession, settings: Settings):
-
+def run_shapes_export(user_session: UserSession, settings: Settings) -> CeleryTaskResponse:
     org_id = get_active_org(user_session.session, user_session.user.id)
-    # TODO: this should be a permission on shapes
-    if settings.aws_s3_uri is None:
+    if org_id is None:
         raise HTTPException(
-            status_code=501, detail="Data export is not configured."  # type: ignore
+            status_code=403, detail="No organization found."  # type: ignore
         )
     if not organization_s3_enabled(user_session.session, str(org_id)):
         raise HTTPException(
             status_code=403, detail="Data export is not enabled for this account."  # type: ignore
         )
-    task = copy_to_s3.delay(org_id)
+    # TODO: this should be a permission on shapes
+    if settings.aws_s3_url is None:
+        raise HTTPException(
+            status_code=501, detail="Data export is not configured."  # type: ignore
+        )
+    aws_secret_access_key: Optional[str]
+    if settings.aws_s3_upload_secret_access_key:
+        aws_secret_access_key = (
+            settings.aws_s3_upload_secret_access_key.get_secret_value()
+        )
+    else:
+        aws_secret_access_key = None
+    aws_access_key_id = settings.aws_s3_upload_access_key_id
+    task = copy_to_s3.delay(str(org_id),
+                        cast(str, settings.sqlalchemy_database_uri),
+                        settings.aws_s3_url,
+                        aws_access_key_id=aws_access_key_id,
+                        aws_secret_access_key=aws_secret_access_key
+                        )
     return CeleryTaskResponse(task_id=task.id)
 
 
@@ -166,9 +183,9 @@ def _shapes_export(user_session: UserSession, settings: Settings):
 def shapes_export(
     user_session: UserSession = Depends(get_app_user_session),
     settings: Settings = Depends(get_settings),
-):
+) -> CeleryTaskResponse:
     """Export shapes to S3.
 
     This is an async task. Use `/tasks/results/{task_id}` to retieve the status and results.
     """
-    return _shapes_export(user_session, settings)
+    return run_shapes_export(user_session, settings)
