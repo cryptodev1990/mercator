@@ -1,11 +1,12 @@
 """App settings and configuration management."""
+import collections
+import json
 import logging
 import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
-from timvt.db import PostgresSettings as TimVTPostgresSettings
 
 from pydantic import (
     AnyHttpUrl,
@@ -20,6 +21,7 @@ from pydantic import (
     validator,
 )
 from sqlalchemy import desc
+from timvt.db import PostgresSettings as TimVTPostgresSettings
 
 logger = logging.getLogger(__name__)
 
@@ -75,8 +77,7 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(
-        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
@@ -108,8 +109,7 @@ class Settings(BaseSettings):
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(
-                f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     @property
@@ -118,18 +118,24 @@ class Settings(BaseSettings):
         return f"{self.management_client_id}@clients"
 
     backend_cors_origins: List[AnyHttpURLorAsterisk] = Field(
-        ["*"], description="Valid CORS origin domains."
+        ["*"],
+        description="""Values of CORS access-control-allow-origins header
+
+    The setting is a list of URLs. In addition, the input accepts the following values:
+
+    In an environment variable, this must be set as a JSON encoded array, for example: `["http://localhost.tiangolo.com", "https://localhost.tiangolo.com", "http://localhost", "http//localhost:8080"]`
+    """,
     )
 
     @validator("backend_cors_origins", pre=True)
-    def _assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
-        if v is None:
+    def _assemble_cors_origins(cls, v) -> List[str]:
+        # Note - pre validation is done AFTER environment variable parsing
+        # environment variables are parsed as JSON.
+        # See https://pydantic-docs.helpmanual.io/usage/settings/#parsing-environment-variable-values for what to do
+        # to handle comma-separated values as inputs
+        if v is None or v == "":
             return ["*"]
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
+        return v
 
     # db connection info
     # These are named so that the same environment variables can be used between the postgres docker container
@@ -142,10 +148,6 @@ class Settings(BaseSettings):
     # If provided POSTGRES_CONNECTION will be override the individual postgres components
     sqlalchemy_database_uri: Optional[PostgresDsn] = Field(
         None, env="POSTGRES_CONNECTION"
-    )
-
-    sqlalchemy_osm_database_uri: Optional[PostgresDsn] = Field(
-        None, env="SQLALCHEMY_OSM_DATABASE_URI"
     )
 
     # validation is done in the order fields are defined. sqlalchemy_database_uri
@@ -167,6 +169,10 @@ class Settings(BaseSettings):
             path=f"/{values.get('postgres_db', '')}",
         )
         return dsn
+
+    sqlalchemy_osm_database_uri: Optional[PostgresDsn] = Field(
+        None, env="SQLALCHEMY_OSM_DATABASE_URI"
+    )
 
     redis_connection: RedisDsn = Field(
         "redis://localhost:6379/0", description="Redis DSN to use for celery"
@@ -191,7 +197,7 @@ class Settings(BaseSettings):
             )
             if git_repo.is_dirty():
                 logger.warning(
-                    "Git repo is dirty. The git commit does not reflect local changes."
+                    "Git repo is dirty. The setting `git_commit` does not reflect local changes."
                 )
             branch = str(git_repo.active_branch.commit).lower()
             return branch
@@ -217,8 +223,11 @@ def get_settings() -> Settings:
 @lru_cache()
 def get_tiler_settings() -> TimVTPostgresSettings:
     settings = get_settings()
-    password = settings.postgres_password.get_secret_value(
-    ) if settings.postgres_password else ""
+    password = (
+        settings.postgres_password.get_secret_value()
+        if settings.postgres_password
+        else ""
+    )
     return TimVTPostgresSettings(
         postgres_host=settings.postgres_server,
         postgres_port=str(settings.postgres_port),
