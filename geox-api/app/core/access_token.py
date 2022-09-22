@@ -1,5 +1,6 @@
 """Functions to generate an auth tokens."""
 import requests
+import typer
 
 from app.core.config import get_settings
 
@@ -32,6 +33,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    import typer
-
     typer.run(main)
