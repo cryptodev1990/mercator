@@ -107,7 +107,7 @@ pg-osm:
 
 # Connect to production Postgres
 pg-prod:
-	fly pg connect restless-rain-538-db
+	fly pg connect -a restless-rain-538-db
 
 # Run an interactive shell for the project
 shell:
