@@ -6,6 +6,9 @@
   - [ ] Define a hierarchy of relationships between shapes
 - [ ] Hosting OSM data?
 - [ ] Snapping in the UI
+ - [ ] Snap to roads
+ - [ ] Snap to water
+ - [ ] Snap to admin boundaries
 - [ ] Search on shapes
 - [ ] Metadata modification (e.g. setting the shape name)
 - [ ] Shape transformations
