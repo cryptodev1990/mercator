@@ -3,10 +3,13 @@
 - [ ] Large data uploads with high fidelity
  - [ ] Tiling the data that gets uploaded
 - [ ] Shape "namespaces" - provide a directory structure for shapes
+  - [ ] Define a hierarchy of relationships between shapes
 - [ ] Hosting OSM data?
 - [ ] Snapping in the UI
 - [ ] Search on shapes
-- [ ] Transformations (e.g. setting the shape name)
+- [ ] Metadata modification (e.g. setting the shape name)
+- [ ] Shape transformations
+ - [ ] Union/intersection/difference of shapes
 - [ ] Command palette?
 - [ ] API keys for access?
 - [ ] Large scale isochrones support (drawing 10s or 100s at once)
