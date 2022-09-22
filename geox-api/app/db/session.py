@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 SQLALCHEMY_DATABASE_URI: Any = get_settings().sqlalchemy_database_uri
 OSM_DATABASE_URI: Any = get_settings().sqlalchemy_osm_database_uri
 
-engine = create_engine(SQLALCHEMY_DATABASE_URI, future=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, future=True, pool_pre_ping=True)
 
 
 def _set_default_app_user_id(dbapi_connection):
