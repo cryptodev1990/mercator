@@ -57,7 +57,7 @@ FROM (
         $1:uuid::TEXT,
         $1:name::TEXT,
         -- geo is stored in wkb format
-        st_geographyfromwkb($1:geom::BINARY),
+        try_to_geography($1:geom::BINARY),
         coalesce(parse_json($1:properties::TEXT)::OBJECT, object_construct()),
         -- this seems to work for reading timestamps from parquet.
         -- the scale is important - the wrong scale
