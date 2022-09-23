@@ -27,6 +27,9 @@ const GeofenceMap = () => {
   // register the backspace key to delete a shape if a shape is selected
   useEffect(() => {
     const bspaceHandler = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLInputElement) {
+        return;
+      }
       if (event.key === "Backspace") {
         if (selectedShapeUuids) {
           const selectedShapeUuidsArray = Object.keys(selectedShapeUuids);

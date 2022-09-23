@@ -1,6 +1,6 @@
 // EditableGeojsonLayer function
 import { GeoShape, GeoShapeCreate, MultiPolygon } from "../../../../client";
-import { Feature, difference, flatten } from "@turf/turf";
+import { Feature, difference, flatten, unkinkPolygon, kinks } from "@turf/turf";
 
 // @ts-ignore
 import { useCursorMode } from "../use-cursor-mode";
@@ -97,6 +97,10 @@ export function useEditFunction() {
         }
         mostRecentShape = diffShape as Feature;
       }
+    }
+
+    if (kinks(mostRecentShape as any).features.length > 0) {
+      mostRecentShape = unkinkPolygon(mostRecentShape as any) as any;
     }
 
     const newShape = {
