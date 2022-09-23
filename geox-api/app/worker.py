@@ -86,11 +86,11 @@ def query_shapes_table(
                     -- ensure that there is no timezone
                     created_at::TIMESTAMP AS created_at,
                     updated_at::TIMESTAMP AS updated_at,
+                    deleted_at::TIMESTAMP AS deleted_at,
                     (now() at time zone 'utc')::TIMESTAMP AS exported_at,
                     organization_id :: TEXT AS organization_id
                 FROM shapes
                 WHERE 1=1
-                    AND deleted_at IS NULL
                     AND organization_id = :organization_id
                 ORDER BY created_at
                 """
