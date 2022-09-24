@@ -7,7 +7,6 @@ import { Transition } from "react-transition-group";
 import { useShapes } from "../../hooks/use-shapes";
 import Loading from "react-loading";
 import { ShapeBarPaginator } from "./ShapeBarPaginator";
-import { useUiModals } from "../../hooks/use-ui-modals";
 
 const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   return (

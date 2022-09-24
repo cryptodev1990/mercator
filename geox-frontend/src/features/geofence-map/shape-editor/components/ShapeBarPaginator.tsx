@@ -1,11 +1,7 @@
 import { useShapes } from "../../hooks/use-shapes";
 import { useViewport } from "../../hooks/use-viewport";
 import { ShapeCard } from "./shape-card";
-import {
-  useBulkAddShapesMutation,
-  usePollCopyTaskQuery,
-  useTriggerCopyTaskMutation,
-} from "../../hooks/openapi-hooks";
+import { useBulkAddShapesMutation } from "../../hooks/openapi-hooks";
 import { BiAddToQueue } from "react-icons/bi";
 import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
@@ -13,8 +9,6 @@ import Loading from "react-loading";
 import { Virtuoso } from "react-virtuoso";
 import { useUiModals } from "../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../types";
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
 import { useDbSync } from "../../hooks/use-db-sync";
 
 const NewUserMessage = () => {

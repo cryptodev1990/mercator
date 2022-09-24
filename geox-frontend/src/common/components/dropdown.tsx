@@ -3,6 +3,8 @@ import { BsGearFill } from "react-icons/bs";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router";
 import { SmoothTransition } from "./smooth-transition";
+import { useUiModals } from "../../features/geofence-map/hooks/use-ui-modals";
+import { UIModalEnum } from "../../features/geofence-map/types";
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
@@ -11,6 +13,7 @@ function classNames(...classes: any[]) {
 export default function Dropdown() {
   const { user } = useAuth0();
   const nav = useNavigate();
+  const { openModal } = useUiModals();
 
   return (
     <Menu as="div" className="relative z-40 inline-block text-left">
@@ -44,15 +47,17 @@ export default function Dropdown() {
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <a
-                  href="#"
+                <button
                   className={classNames(
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "block px-4 py-2 text-sm"
+                    "block px-4 py-2 text-sm w-full text-left"
                   )}
+                  onClick={() => {
+                    openModal(UIModalEnum.SupportModal);
+                  }}
                 >
                   Support
-                </a>
+                </button>
               )}
             </Menu.Item>
             <Menu.Item>

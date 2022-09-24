@@ -10,4 +10,5 @@ export enum UIModalEnum {
   DeleteModal = "DeleteModal",
   UploadShapesModal = "UploadShapesModal",
   DbSyncModal = "DbSyncModal",
+  SupportModal = "SupportModal",
 }
