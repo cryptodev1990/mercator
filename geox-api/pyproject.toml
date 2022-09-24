@@ -21,3 +21,8 @@ allow_untyped_defs = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
+filterwarnings = [
+    # ignore this warning in botocore
+    # ./mercator/geox-api/env/lib/python3.9/site-packages/botocore/httpsession.py:41: DeprecationWarning: 'urllib3.contrib.pyopenssl' module is deprecated and will be removed in a future release of urllib3 2.x. Read more in this issue: https://github.com/urllib3/urllib3/issues/2680
+    "ignore:'urllib3\\.contrib\\.pyopenssl' module is deprecated:DeprecationWarning"
+]
