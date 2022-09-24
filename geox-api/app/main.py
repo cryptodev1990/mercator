@@ -34,7 +34,6 @@ app = FastAPI(
 app.include_router(routes.osm.router)
 app.include_router(routes.health.router)
 app.include_router(routes.shapes.router)
-app.include_router(routes.shapes_new.router)
 app.include_router(routes.tasks.router)
 app.include_router(routes.info.router)
 
