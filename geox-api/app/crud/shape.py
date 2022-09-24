@@ -66,7 +66,6 @@ def get_all_shapes_by_organization(
             Shape.deleted_at == None
         )
         .order_by(Shape.uuid)
-        .limit(100)
         .offset(offset)
     )
     res = db.execute(stmt).scalars().fetchall()
