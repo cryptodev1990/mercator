@@ -14,35 +14,32 @@ from app.db.base import Organization, OrganizationMember, User
 from app.db.session import SessionLocal, engine
 from app.dependencies import get_current_user, get_db, verify_token
 from app.main import app
+from app.crud.organization import set_active_org
 
 
-def set_active_organization(
-    conn: Connection, user_id: int, organization_id: UUID4
-) -> None:
-    stmt = (
-        update(OrganizationMember)  # type: ignore
-        .where(OrganizationMember.user_id == user_id)
-        .values(active=(OrganizationMember.organization_id == organization_id))
-    )
-    return conn.execute(stmt)
-
+org_tbl = Organization.__table__
+om_tbl = OrganizationMember.__table__
+shape_tbl = Shape.__table__
+user_tbl = User.__table__
 
 @pytest.fixture()
 def connection(test_data: Dict[str, Any]):
     with engine.connect() as conn:
         with conn.begin():
-            conn.execute(insert(User), test_data["users"])  # type: ignore
+            for tbl in (shape_tbl, om_tbl, org_tbl, user_tbl):
+                conn.execute(delete(tbl))
+            conn.execute(insert(user_tbl), test_data["users"])  # type: ignore
             conn.execute(
-                insert(Organization), test_data["organizations"]
+                insert(org_tbl), test_data["organizations"]
             )  # type: ignore
             for org_member in test_data["organization_members"]:
-                conn.execute(insert(OrganizationMember),
+                conn.execute(insert(om_tbl),
                              org_member)  # type: ignore
                 # Set these new organizations to the active organization
-                set_active_organization(
+                set_active_org(
                     conn, org_member["user_id"], org_member["organization_id"]
                 )
-            conn.execute(insert(Shape), test_data["shapes"])  # type: ignore
+            conn.execute(insert(shape_tbl), test_data["shapes"])  # type: ignore
             conn.commit()
 
         yield conn
@@ -55,7 +52,7 @@ def connection(test_data: Dict[str, Any]):
             pass
 
         with conn.begin():
-            for tbl in (Shape, OrganizationMember, Organization, User):
+            for tbl in (shape_tbl, om_tbl, org_tbl, user_tbl):
                 conn.execute(delete(tbl))  # type: ignore
             conn.commit()
 

@@ -37,7 +37,6 @@ app.include_router(routes.shapes.router)
 app.include_router(routes.shapes_new.router)
 app.include_router(routes.tasks.router)
 app.include_router(routes.info.router)
-app.include_router(routes.organizations.router)
 
 add_tiler_routes(app)
 
