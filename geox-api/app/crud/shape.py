@@ -42,8 +42,6 @@ def get_all_shapes_by_user(db: Session, user_id: int, offset=0) -> List[schemas.
             Shape.deleted_at == None
         )
         .order_by(Shape.uuid)
-        .limit(100)
-        .offset(offset)
     )
     res = db.execute(stmt).scalars().fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
