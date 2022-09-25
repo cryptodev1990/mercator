@@ -77,6 +77,5 @@ def create_or_update_user_from_bearer_data(
     )
     params = {c: values.get(c) for c in cols}
     row = db.execute(stmt, params).fetchone()
-    db.commit()
     out_user = schemas.User.from_orm(row)
     return out_user

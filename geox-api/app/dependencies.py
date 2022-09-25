@@ -10,6 +10,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from sqlalchemy import event, text
+from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -17,21 +18,38 @@ from app.core.config import Settings, get_settings
 from app.core.security import VerifyToken, token_auth_scheme
 from app.crud.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, engine
 
 
-async def get_db() -> AsyncGenerator[Session, None]:
-    """
-    Yields a SQLAlchemy session.
+async def get_engine() -> Engine:
+    """Return an engine to generate connections to the app database."""
+    return engine
+
+
+async def get_connection(
+    engine: Engine = Depends(get_engine),
+) -> AsyncGenerator[Connection, None]:
+    """Yield a connection with an open transaction."""
+    # engine.begin() yields a connection and opens a transaction.
+    with engine.begin() as conn:
+        yield conn
+
+
+async def get_session(
+    conn: Connection = Depends(get_connection),
+) -> AsyncGenerator[Session, None]:
+    """Yield a SQLAlchemy session.
+
+    Args:
+        conn: Connection. The session will be bound to this connection, which is also expected to
+            to have an open transaction.
 
     Yields:
-        Generator[Session, None, None]: Yields a SQLAlchemy session
+        Generator[Session, None, None]: Yields a SQLAlchemy session. This session is
     """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    # Yield a session bound to a specific CONNECTION and TRANSACTION
+    session = SessionLocal(bind=conn)
+    return session
 
 
 async def verify_token(
@@ -50,17 +68,16 @@ async def verify_token(
 
 
 async def get_current_user(
-    db_session: Session = Depends(get_db),
+    session: Session = Depends(get_session),
     auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
 ) -> schemas.User:
-    """
-    Returns the current user from the bearer token
+    """Return the current user from the bearer token.
 
     This function checks whether the JWT is valid and creates the user
     from the bearer information if they are now.
     """
     # TODO: I think it would be better if this returned the model user
-    user = create_or_update_user_from_bearer_data(db_session, auth_jwt_payload)
+    user = create_or_update_user_from_bearer_data(session, auth_jwt_payload)
     return user
 
 
@@ -75,9 +92,14 @@ class UserSession(BaseModel):
         arbitrary_types_allowed = True
 
 
+def set_app_user_settings(session: Session, user_id: int):
+    session.execute(text("SET LOCAL ROLE app_user"))
+    set_app_user_id(session, str(user_id), local=True)
+
+
 async def get_app_user_session(
     user: schemas.User = Depends(get_current_user),
-    db_session: Session = Depends(get_db),
+    session: Session = Depends(get_session),
 ) -> UserSession:
     """Configure database session for an authorized user.
 
@@ -87,16 +109,15 @@ async def get_app_user_session(
     """
     user_id = user.id
 
+    set_app_user_settings(session, user_id)
+
     # Attaches a listener to the session object.
     # This will run after event start of a transaction, the "after_begin" event
     # https://docs.sqlalchemy.org/en/14/orm/events.html#sqlalchemy.orm.SessionEvents.after_begin
 
-    @event.listens_for(db_session, "after_begin")
+    # this is paranoid. It shouldn't be invoked because the session should be bound to a connection and a transaction
+    @event.listens_for(session, "after_begin")
     def receive_after_begin(session, transaction, connection):
-        session.execute(text("SET LOCAL ROLE app_user"))
-        set_app_user_id(session, user_id, local=True)
+        set_app_user_settings(session, user_id)
 
-    # Need to commit any remaining transactions prior to exiting
-    db_session.commit()
-
-    return UserSession(user=user, session=db_session)
+    return UserSession(user=user, session=session)

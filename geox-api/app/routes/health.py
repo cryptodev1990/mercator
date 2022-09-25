@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_current_user, get_db, verify_token
+from app.dependencies import get_current_user, get_session, verify_token
 from app.schemas.user import User
 
 router = APIRouter()
@@ -15,14 +15,14 @@ async def health():
 
 
 @router.get("/protected_health", tags=["health"], dependencies=[Depends(verify_token)])
-async def protected_health(user: User = Depends(get_current_user)):
+async def protected_health():
     return {"message": "OK"}
 
 
 @router.get("/db-health", tags=["health"])
-async def db_health(db_session: Session = Depends(get_db)):
+async def db_health(session: Session = Depends(get_session)):
     try:
-        res = db_session.execute(text("SELECT 1")).scalar()
+        res = session.execute(text("SELECT 1")).scalar()
         assert res == 1
         return JSONResponse({"message": "OK"})
     except Exception as e:

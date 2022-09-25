@@ -13,21 +13,23 @@ from app import schemas
 from app.models import Shape
 
 
-def get_shape(db: Session, shape: schemas.GeoShapeRead) -> Optional[schemas.GeoShape]:
+def get_shape(db: Session, shape_id: str) -> Optional[schemas.GeoShape]:
     """Get a shape."""
     query = (
         select(Shape)
         .where(Shape.deleted_at == None)
-        .where(Shape.uuid == shape.uuid)
+        .where(Shape.uuid == shape_id)
         .limit(1)
     )
-    res = db.execute(query).fetchone()
+    res = db.execute(query).first()
     if res:
         return schemas.GeoShape.from_orm(res[0])
     return None
 
 
-def get_all_shapes_by_user(db: Session, user_id: int, offset=0) -> List[schemas.GeoShape]:
+def get_all_shapes_by_user(
+    db: Session, user_id: int, offset=0
+) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
     # I am only doing this because the selected feature index in nebula.gl
@@ -35,12 +37,8 @@ def get_all_shapes_by_user(db: Session, user_id: int, offset=0) -> List[schemas.
     # We should find a better way of handling this
     stmt = (
         select(Shape)
-        .where(
-            Shape.created_by_user_id == user_id
-        )
-        .where(
-            Shape.deleted_at == None
-        )
+        .where(Shape.created_by_user_id == user_id)
+        .where(Shape.deleted_at == None)
         .order_by(Shape.uuid)
     )
     res = db.execute(stmt).scalars().fetchall()
@@ -58,13 +56,8 @@ def get_all_shapes_by_organization(
     # We should find a better way of handling this
     stmt = (
         select(Shape)
-        .where(  # type: ignore
-            Shape.organization_id == str(
-                organization_id)
-        )
-        .where(
-            Shape.deleted_at == None
-        )
+        .where(Shape.organization_id == str(organization_id))  # type: ignore
+        .where(Shape.deleted_at == None)
         .order_by(Shape.uuid)
         .offset(offset)
     )
@@ -88,7 +81,6 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
         .returning(Shape)  # type: ignore
     )
     new_shape = db.execute(ins).fetchone()
-    db.commit()
     res = schemas.GeoShape.from_orm(new_shape)
     return res
 
@@ -111,7 +103,6 @@ def create_many_shapes(
     new_shapes = db.execute(
         ins, [{"name": s.name, "geojson": s.geojson.dict()} for s in geoshapes]
     ).scalars()
-    db.commit()
     return list(new_shapes)
 
 
@@ -132,7 +123,6 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     )
     res = db.execute(update_stmt)
     rows = res.rowcount
-    db.commit()
     if rows == 0:
         raise Exception("No rows updated")
     shape = res.fetchone()
@@ -154,7 +144,6 @@ def delete_shape(db: Session, uuid: UUID) -> int:
     )
     res = db.execute(stmt)
     rows = res.rowcount
-    db.commit()
     return rows
 
 
@@ -172,16 +161,15 @@ def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
     )  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
-    db.commit()
     return rows
 
 
 def get_shape_count(db: Session) -> int:
     """Get the number of shapes in an organization."""
-    stmt = select(func.count(Shape.uuid)).where(
-        Shape.organization_id == func.app_user_org()
-    ).where(
-        Shape.deleted_at == None
+    stmt = (
+        select(func.count(Shape.uuid))
+        .where(Shape.organization_id == func.app_user_org())
+        .where(Shape.deleted_at == None)
     )
     res = db.execute(stmt).fetchone()
     return res[0]
@@ -214,8 +202,6 @@ class GeometryOperation(str, Enum):
 
 def get_shapes_related_to_geom(
     db: Session, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
-
-
 ) -> List[Feature]:
     """Get the shape that contains a point."""
     stmt = jinja2.Template(

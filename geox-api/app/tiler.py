@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
+from timvt.db import PostgresSettings as TimVTPostgresSettings
+from timvt.db import close_db_connection, connect_to_db, register_table_catalog
+from timvt.factory import VectorTilerFactory
+from timvt.layer import FunctionRegistry
 
 from app.core.config import get_tiler_settings
 from app.dependencies import verify_token
-
-from timvt.db import close_db_connection, connect_to_db, PostgresSettings as TimVTPostgresSettings, register_table_catalog
-from timvt.factory import VectorTilerFactory
-from timvt.layer import FunctionRegistry
 
 
 def add_tiler_routes(app: FastAPI) -> None:
@@ -36,7 +36,5 @@ def add_tiler_routes(app: FastAPI) -> None:
     )
 
     app.include_router(
-        mvt_tiler.router,
-        tags=["tiles"],
-        dependencies=[Depends(verify_token)]
+        mvt_tiler.router, tags=["tiles"], dependencies=[Depends(verify_token)]
     )

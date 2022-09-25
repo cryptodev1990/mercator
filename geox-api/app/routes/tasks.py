@@ -5,10 +5,10 @@ from app.core.config import Settings, get_settings
 from app.dependencies import UserSession, get_app_user_session, verify_token
 from app.routes.shapes import run_shapes_export
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
-
 from app.worker import test_celery
 
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
+
 
 @router.get(
     "/tasks/results/{task_id}",
@@ -46,7 +46,7 @@ def run_test_celery(word: str = "Hello"):
 )
 def copy_shapes(
     user_session: UserSession = Depends(get_app_user_session),
-    settings: Settings = Depends(get_settings)
+    settings: Settings = Depends(get_settings),
 ) -> CeleryTaskResponse:
     """Export shapes to S3.
 

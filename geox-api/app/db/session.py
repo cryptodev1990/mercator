@@ -2,20 +2,19 @@
 
 import logging
 from asyncio.log import logger
-from typing import Any, Optional
+from functools import lru_cache
+from typing import Any, Dict, Optional
 
-from sqlalchemy import create_engine, event
+import sqlalchemy as sa
+from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
-SQLALCHEMY_DATABASE_URI: Any = get_settings().sqlalchemy_database_uri
 OSM_DATABASE_URI: Any = get_settings().sqlalchemy_osm_database_uri
-
-engine = create_engine(SQLALCHEMY_DATABASE_URI, future=True, pool_pre_ping=True)
 
 
 def _set_default_app_user_id(dbapi_connection):
@@ -27,28 +26,54 @@ def _set_default_app_user_id(dbapi_connection):
         c.execute(stmt)
 
 
-# Called when a connection is created
-# https://docs.sqlalchemy.org/en/14/core/events.html#sqlalchemy.events.PoolEvents.connect
-@event.listens_for(engine, "connect")
-def receive_connect(dbapi_connection, connection_record):
-    """Ensure connections have the setting app.user_id defined."""
-    _set_default_app_user_id(dbapi_connection)
+def create_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
+    """Return an engine for the app database.
+
+    Args
+    ----
+    settings:
+        App settings used to setup the engine. Uses
+        ``sqlalchemy_database_uri``.
+
+    Returns
+    -------
+        A SQLAlchemy engine for connections to the app database.
+
+    """
+    uri = settings.sqlalchemy_database_uri
+    params: Dict[str, Any] = {"future": True, "pool_pre_ping": True}
+    params.update(kwargs)
+    engine = sa.create_engine(uri, **params)
+
+    # Adds events to set/reset values of app_user_id settings
+    # Called when a connection is created
+    # https://docs.sqlalchemy.org/en/14/core/events.html#sqlalchemy.events.PoolEvents.connect
+    @event.listens_for(engine, "connect")
+    def receive_connect(dbapi_connection, connection_record):
+        """Ensure connections have the setting app.user_id defined."""
+        _set_default_app_user_id(dbapi_connection)
+
+    # Called when a connection is checked out from the pool - before a session uses it
+    @event.listens_for(engine, "checkout")
+    def receive_checkout(dbapi_connection, connection_record, connection_proxy):
+        """Ensure that connections checked from the pool have app.user_id in the default state."""
+        # This is a redundancy in case somehow app.user_id was not cleared
+        _set_default_app_user_id(dbapi_connection)
+
+    # engine returned to pool - after a session uses it
+    @event.listens_for(engine, "reset")
+    def receive_reset(dbapi_connection, connection_record):
+        """Ensure that connections returned to the pool have app.user_id reset default state."""
+        # This is a redundancy in case somehow app.user_id was not cleared
+        _set_default_app_user_id(dbapi_connection)
+
+    return engine
 
 
-# Called when a connection is checked out from the pool - before a session uses it
-@event.listens_for(engine, "checkout")
-def receive_checkout(dbapi_connection, connection_record, connection_proxy):
-    """Ensure that connections checked from the pool have app.user_id in the default state."""
-    # This is a redundancy in case somehow app.user_id was not cleared
-    _set_default_app_user_id(dbapi_connection)
+# deprecated:  remove this global; use create_engine instead
+engine = create_engine()
 
-
-# engine returned to pool - after a session uses it
-@event.listens_for(engine, "reset")
-def receive_reset(dbapi_connection, connection_record):
-    """Ensure that connections returned to the pool have app.user_id reset default state."""
-    # This is a redundancy in case somehow app.user_id was not cleared
-    _set_default_app_user_id(dbapi_connection)
+SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
 
 
 OsmSessionLocal: Optional[sessionmaker] = None
@@ -57,8 +82,4 @@ if OSM_DATABASE_URI:
     osm_engine = create_engine(OSM_DATABASE_URI)
     OsmSessionLocal = sessionmaker(bind=osm_engine, future=True)
 else:
-    logger.warning(
-        "OSM_DATABASE_URI is not set, OSM features will be disabled")
-
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine, future=True)
+    logger.warning("OSM_DATABASE_URI is not set, OSM features will be disabled")

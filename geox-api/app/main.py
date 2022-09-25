@@ -4,9 +4,10 @@ import logging
 from fastapi import FastAPI
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
+
 from app import routes
-from app.tiler import add_tiler_routes
 from app.core.config import get_settings
+from app.tiler import add_tiler_routes
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -20,7 +21,8 @@ app = FastAPI(
     contact={
         "email": settings.machine_account_email,
     },
-    version=settings.version, middleware=[
+    version=settings.version,
+    middleware=[
         Middleware(
             CORSMiddleware,
             allow_origins=settings.backend_cors_origins,
