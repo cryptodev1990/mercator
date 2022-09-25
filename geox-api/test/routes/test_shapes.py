@@ -1,10 +1,5 @@
-import datetime
 import json
-import pathlib
 from pathlib import Path
-from test.routes.route_utils import connection  # type: ignore
-from test.routes.route_utils import dep_override_factory  # type: ignore
-from typing import List, Optional
 from uuid import UUID
 
 import pytest
@@ -13,27 +8,34 @@ from fastapi.testclient import TestClient
 from geojson_pydantic import Feature, Point
 from pydantic import UUID4
 from ruamel.yaml import YAML
-from sqlalchemy import MetaData, select, text, update
-from sqlalchemy.engine import Connection, Row  # type: ignore
+from sqlalchemy import select, text, update
+from sqlalchemy.engine import Connection
 
 from app.core.config import get_settings
-from app.db.base import Organization, OrganizationMember
 from app.main import app
 from app.models import Organization, OrganizationMember, Shape
 from app.schemas import GeoShapeCreate
+from app.crud.organization import get_user_personal_org
+
+# used in fixtures
+from .route_utils import connection, dep_override_factory  # type: ignore
 
 client = TestClient(app)
-
-
-def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
-    stmt = select(Shape).filter(Shape.uuid == shape_id)  # type: ignore
-    return bool(conn.execute(stmt).fetchone())
-
 
 yaml = YAML(typ="safe")
 
 
 settings = get_settings()
+
+# Use the table objects when writing queries to avoid using ORM features
+org_tbl = Organization.__table__
+org_mbr_tbl = OrganizationMember.__table__
+shape_tbl = Shape.__table__
+
+
+def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
+    stmt = select(shape_tbl).filter(shape_tbl.c.uuid == shape_id)  # type: ignore
+    return bool(conn.execute(stmt).first())
 
 
 def ymd(x):
@@ -77,38 +79,22 @@ def set_active_organization(
     conn: Connection, user_id: int, organization_id: UUID
 ) -> None:
     stmt = (
-        update(OrganizationMember)  # type: ignore
-        .where(OrganizationMember.user_id == user_id)
-        .values(active=(OrganizationMember.organization_id == organization_id))
+        update(org_mbr_tbl)  # type: ignore
+        .where(org_mbr_tbl.c.user_id == user_id)
+        .values(active=(org_mbr_tbl.c.organization_id == organization_id))
     )
     return conn.execute(stmt)
 
 
-def get_user_orgs(conn: Connection, user_id: int) -> List[Row]:
-    stmt = select(
-        Organization.id.label("organization_id"),  # type: ignore
-        Organization.is_personal,
-    ).join(OrganizationMember.organization.and_(OrganizationMember.user_id == user_id))
-    return conn.execute(stmt).fetchall()
 
-
-def get_user_personal_org(conn: Connection, user_id: int) -> Optional[UUID4]:
-    stmt = (
-        select(Organization)
-        .with_only_columns([Organization.id])
-        .where(Organization.is_personal)
-        .limit(1)
-        .join(OrganizationMember, OrganizationMember.organization_id == Organization.id)
-    )
-    return conn.execute(stmt).scalar()
 
 
 def test_policy_exists(connection):
     assert connection.execute(
         text(
             """
-        SELECT exists(select 1 from pg_policies where tablename = 'shapes' and policyname = 'same_org')
-        """
+            SELECT exists(select 1 from pg_policies where tablename = 'shapes' and policyname = 'same_org')
+            """
         )
     ).scalar()
 

@@ -1,11 +1,29 @@
-from typing import List, Optional, Set, Union, cast
+from typing import Optional, Union, List
 
 from pydantic import UUID4
 from sqlalchemy import text
 import sqlalchemy as sa
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
+from sqlalchemy import select
+from app.models import Organization, OrganizationMember, User
 
+org_mbr_tbl = OrganizationMember.__table__
+org_tbl = Organization.__table__
+user_tbl = User.__table__
+
+
+
+def get_user_personal_org(db: Union[Connection, Session], user_id: int) -> Optional[UUID4]:
+    """Return user personal org."""
+    stmt = (
+        select(org_tbl)
+        .with_only_columns([org_tbl.c.id])
+        .where(org_tbl.c.is_personal)
+        .limit(1)
+        .join(org_mbr_tbl, org_mbr_tbl.c.organization_id == org_tbl.c.id)
+    )
+    return db.execute(stmt).scalar()
 
 def set_active_org(
     db: Union[Session, Connection], user_id: int, organization_id: UUID4

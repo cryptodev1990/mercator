@@ -5,11 +5,9 @@ from typing import Any, Union
 from sqlalchemy import insert, text
 from sqlalchemy.orm import Session
 
-from app import models, schemas
+from app import models
+from app.schemas import User
 from app.core.config import Settings, get_settings
-from app.models import User
-
-UserType = Union[schemas.User, models.User]
 
 
 class NoUserException(Exception):
@@ -28,16 +26,21 @@ class NoUserWithIdException(NoUserException):
         return f"No user with user_id={self.user_id}"
 
 
-def get_user(db: Session, user_id: int) -> schemas.User:
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
+def get_user(db: Session, user_id: int) -> User:
+    stmt = text("""
+    SELECT *
+    FROM user
+    WHERE user_id = :user_id
+    """)
+    user = db.execute(stmt, {"user_id": user_id}).first()
+    if user is None:
         raise NoUserWithIdException(user_id)
-    return schemas.User.from_orm(user)
+    return User.from_orm(user)
 
 
 def create_or_update_user_from_bearer_data(
     db: Session, auth_jwt_payload: dict, settings: Settings = get_settings()
-) -> schemas.User:
+) -> User:
     values = dict(auth_jwt_payload)  # This is pulled from auth0
     now = datetime.datetime.utcnow()
     values["sub_id"] = values["sub"]
@@ -77,5 +80,5 @@ def create_or_update_user_from_bearer_data(
     )
     params = {c: values.get(c) for c in cols}
     row = db.execute(stmt, params).fetchone()
-    out_user = schemas.User.from_orm(row)
+    out_user = User.from_orm(row)
     return out_user

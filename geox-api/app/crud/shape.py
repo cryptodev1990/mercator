@@ -2,7 +2,7 @@
 import datetime
 from enum import Enum
 from typing import List, Optional, Sequence, Union
-from uuid import UUID
+from pydantic import UUID4
 
 import jinja2
 from geojson_pydantic import Feature, LineString, Point, Polygon
@@ -12,18 +12,21 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.models import Shape
 
+shape_tbl = Shape.__table__
+## NOTE: ALL queries use Shape table and no ORM features
 
-def get_shape(db: Session, shape_id: str) -> Optional[schemas.GeoShape]:
+
+def get_shape(db: Session, shape_id: UUID4) -> Optional[schemas.GeoShape]:
     """Get a shape."""
     query = (
-        sa.select(Shape)
-        .where(Shape.deleted_at == None)
-        .where(Shape.uuid == shape_id)
+        sa.select(shape_tbl)
+        .where(shape_tbl.c.deleted_at == None)
+        .where(shape_tbl.c.uuid == shape_id)
         .limit(1)
     )
     res = db.execute(query).first()
     if res:
-        return schemas.GeoShape.from_orm(res[0])
+        return schemas.GeoShape.from_orm(res)
     return None
 
 
@@ -36,20 +39,20 @@ def get_all_shapes_by_user(
     # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
-        sa.select(Shape)
-        .where(Shape.created_by_user_id == user_id)
-        .where(Shape.deleted_at == None)
-        .order_by(Shape.uuid)
+        sa.select(shape_tbl)
+        .where(shape_tbl.c.created_by_user_id == user_id)
+        .where(shape_tbl.c.deleted_at == None)
+        .order_by(shape_tbl.c.uuid)
         .offset(offset)
     )
     if limit is not None:
         stmt = stmt.limit(limit)
-    res = db.execute(stmt).scalars().fetchall()
+    res = db.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
 def get_all_shapes_by_organization(
-    db: Session, organization_id: UUID, offset: int=0, limit: Optional[int] = 100
+    db: Session, organization_id: UUID4, offset: int=0, limit: Optional[int] = 100
 ) -> List[schemas.GeoShape]:
     # This is usually equivalent to getting all shapes by organization
     # TODO ordering by UUID just guarantees a sort order
@@ -57,22 +60,22 @@ def get_all_shapes_by_organization(
     # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
-        sa.select(Shape)
-        .where(Shape.organization_id == str(organization_id))  # type: ignore
-        .where(Shape.deleted_at == None)
-        .order_by(Shape.uuid)
+        sa.select(shape_tbl)
+        .where(shape_tbl.c.organization_id == str(organization_id))  # type: ignore
+        .where(shape_tbl.c.deleted_at == None)
+        .order_by(shape_tbl.c.uuid)
         .offset(offset)
     )
     if limit is not None:
         stmt = stmt.limit(limit)
-    res = db.execute(stmt).scalars().fetchall()
+    res = db.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
 def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
-    """Create a new shape."""
+    """Create a new shape_tbl.c."""
     ins = (
-        sa.insert(Shape)  # type: ignore
+        sa.insert(shape_tbl)  # type: ignore
         .values(
             created_by_user_id=sa.func.app_user_id(),
             updated_by_user_id=sa.func.app_user_id(),
@@ -82,7 +85,7 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
             name=geoshape.name,
             geojson=geoshape.geojson.dict(),
         )
-        .returning(Shape)  # type: ignore
+        .returning(shape_tbl)  # type: ignore
     )
     new_shape = db.execute(ins).fetchone()
     res = schemas.GeoShape.from_orm(new_shape)
@@ -91,10 +94,10 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
 
 def create_many_shapes(
     db: Session, geoshapes: Sequence[schemas.GeoShapeCreate]
-) -> List[UUID]:
+) -> List[UUID4]:
     """Create many new shapes."""
     ins = (
-        sa.insert(Shape)  # type: ignore
+        sa.insert(shape_tbl)  # type: ignore
         .values(
             created_by_user_id=sa.func.app_user_id(),
             created_at=sa.func.now(),
@@ -102,7 +105,7 @@ def create_many_shapes(
             updated_at=sa.func.now(),
             organization_id=sa.func.app_user_org(),
         )
-        .returning(Shape.uuid)
+        .returning(shape_tbl.c.uuid)
     )
     new_shapes = db.execute(
         ins, [{"name": s.name, "geojson": s.geojson.dict()} for s in geoshapes]
@@ -120,20 +123,20 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     if geoshape.geojson:
         values["geojson"] = geoshape.geojson.dict()
     update_stmt = (
-        sa.update(Shape)
+        sa.update(shape_tbl)
         .values(**values)
-        .where(Shape.uuid == str(geoshape.uuid))
-        .returning(Shape)
+        .where(shape_tbl.c.uuid == str(geoshape.uuid))
+        .returning(shape_tbl)
     )
     res = db.execute(update_stmt)
     rows = res.rowcount
     if rows == 0:
         raise Exception("No rows updated")
     shape = res.fetchone()
-    return schemas.GeoShape.parse_obj(shape)
+    return schemas.GeoShape.from_orm(shape)
 
 
-def delete_shape(db: Session, uuid: UUID) -> int:
+def delete_shape(db: Session, uuid: UUID4) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
@@ -141,17 +144,17 @@ def delete_shape(db: Session, uuid: UUID) -> int:
         "deleted_by_user_id": sa.func.app_user_id(),
     }
     stmt = (
-        sa.update(Shape)
+        sa.update(shape_tbl)
         .values(**values)
-        .where(Shape.uuid == str(uuid))
-        .returning(Shape.uuid)  # type: ignore
+        .where(shape_tbl.c.uuid == str(uuid))
+        .returning(shape_tbl.c.uuid)  # type: ignore
     )
     res = db.execute(stmt)
     rows = res.rowcount
     return rows
 
 
-def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
+def delete_many_shapes(db: Session, uuids: Sequence[UUID4]) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
@@ -159,9 +162,9 @@ def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
         "deleted_by_user_id": sa.func.app_user_id(),
     }
     stmt = (
-        sa.update(Shape)
+        sa.update(shape_tbl)
         .values(**values)
-        .where(Shape.uuid.in_(tuple([str(x) for x in uuids])))
+        .where(shape_tbl.c.uuid.in_(tuple([str(x) for x in uuids])))
     )  # type: ignore
     res = db.execute(stmt)
     rows = res.rowcount
@@ -171,9 +174,9 @@ def delete_many_shapes(db: Session, uuids: Sequence[UUID]) -> int:
 def get_shape_count(db: Session) -> int:
     """Get the number of shapes in an organization."""
     stmt = (
-        sa.select(sa.func.count(Shape.uuid))
-        .where(Shape.organization_id == sa.func.app_user_org())
-        .where(Shape.deleted_at == None)
+        sa.select(sa.func.count(shape_tbl.c.uuid))
+        .where(shape_tbl.c.organization_id == sa.func.app_user_org())
+        .where(shape_tbl.c.deleted_at == None)
     )
     res = db.execute(stmt).fetchone()
     return res[0]
