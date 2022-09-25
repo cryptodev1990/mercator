@@ -2,6 +2,7 @@ from typing import List, Optional, Set, Union, cast
 
 from pydantic import UUID4
 from sqlalchemy import text
+import sqlalchemy as sa
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
