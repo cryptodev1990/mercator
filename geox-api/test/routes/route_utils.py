@@ -31,6 +31,8 @@ def set_active_organization(
 def connection(test_data: Dict[str, Any]):
     with engine.connect() as conn:
         with conn.begin():
+            for tbl in (Shape, OrganizationMember, Organization, User):
+                            conn.execute(delete(tbl))
             conn.execute(insert(User), test_data["users"])  # type: ignore
             conn.execute(
                 insert(Organization), test_data["organizations"]
