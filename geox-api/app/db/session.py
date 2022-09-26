@@ -39,6 +39,7 @@ def create_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     """
     uri = settings.sqlalchemy_database_uri
     params: Dict[str, Any] = {"future": True, "pool_pre_ping": True}
+
     params.update(kwargs)
     engine = sa.create_engine(uri, **params)
 
@@ -67,7 +68,6 @@ def create_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     return engine
 
 
-# deprecated:  remove this global; use create_engine instead
 engine = create_engine()
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)

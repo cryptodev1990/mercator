@@ -21,23 +21,7 @@ from app.db.app_user import set_app_user_id
 from app.db.session import SessionLocal, engine
 
 
-async def get_engine() -> Engine:
-    """Return an engine to generate connections to the app database."""
-    return engine
-
-
-async def get_connection(
-    engine: Engine = Depends(get_engine),
-) -> AsyncGenerator[Connection, None]:
-    """Yield a connection with an open transaction."""
-    # engine.begin() yields a connection and opens a transaction.
-    with engine.begin() as conn:
-        yield conn
-
-
-async def get_session(
-    conn: Connection = Depends(get_connection),
-) -> AsyncGenerator[Session, None]:
+async def get_session() -> AsyncGenerator[Session, None]:
     """Yield a SQLAlchemy session.
 
     Args:
@@ -48,8 +32,12 @@ async def get_session(
         Generator[Session, None, None]: Yields a SQLAlchemy session. This session is
     """
     # Yield a session bound to a specific CONNECTION and TRANSACTION
-    session = SessionLocal(bind=conn)
-    return session
+    session = SessionLocal()
+
+    try:
+        yield session
+    finally:
+        session.close()
 
 
 async def verify_token(
@@ -68,7 +56,7 @@ async def verify_token(
 
 
 async def get_current_user(
-    session: Session = Depends(get_session),
+    session: Session = Depends(get_session, use_cache=False),
     auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
 ) -> schemas.User:
     """Return the current user from the bearer token.
@@ -77,7 +65,8 @@ async def get_current_user(
     from the bearer information if they are now.
     """
     # TODO: I think it would be better if this returned the model user
-    user = create_or_update_user_from_bearer_data(session, auth_jwt_payload)
+    with session.begin():
+       user = create_or_update_user_from_bearer_data(session, auth_jwt_payload)
     return user
 
 
@@ -99,7 +88,7 @@ def set_app_user_settings(session: Session, user_id: int):
 
 async def get_app_user_session(
     user: schemas.User = Depends(get_current_user),
-    session: Session = Depends(get_session),
+    session: Session = Depends(get_session, use_cache=False),
 ) -> UserSession:
     """Configure database session for an authorized user.
 
@@ -108,8 +97,6 @@ async def get_app_user_session(
 
     """
     user_id = user.id
-
-    set_app_user_settings(session, user_id)
 
     # Attaches a listener to the session object.
     # This will run after event start of a transaction, the "after_begin" event
@@ -120,4 +107,6 @@ async def get_app_user_session(
     def receive_after_begin(session, transaction, connection):
         set_app_user_settings(session, user_id)
 
-    return UserSession(user=user, session=session)
+    # start transaction
+    with session.begin():
+        yield UserSession(user=user, session=session)
