@@ -29,19 +29,16 @@ def _set_default_app_user_id(dbapi_connection):
 def create_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     """Return an engine for the app database.
 
-    Args
-    ----
-    settings:
-        App settings used to setup the engine. Uses
+    Args:
+        settings: App settings used to setup the engine. Uses
         ``sqlalchemy_database_uri``.
 
-    Returns
-    -------
+    Returns:
         A SQLAlchemy engine for connections to the app database.
 
     """
     uri = settings.sqlalchemy_database_uri
-    params: Dict[str, Any] = {"future": True, "pool_pre_ping": True, "echo": True}
+    params: Dict[str, Any] = {"future": True, "pool_pre_ping": True}
     params.update(kwargs)
     engine = sa.create_engine(uri, **params)
 
