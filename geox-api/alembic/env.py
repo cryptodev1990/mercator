@@ -35,6 +35,10 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+exclude_objects = (
+    ("table", "spatial_ref_sys"),
+    ("index", "organization_members_id_seq")
+)
 
 def get_url() -> str:
     """Return the database URL."""
@@ -44,6 +48,14 @@ def get_url() -> str:
     uri = str(settings.sqlalchemy_database_uri)
     return uri
 
+def include_object(object, name, type_, reflected, compare_to):
+    """Exclude objects from Alembic's consideration."""
+    if type_ not in ("table", "column"):
+        print(object, name, type_, reflected, compare_to)
+    for obj_typ, obj_name in exclude_objects:
+        if type_ == obj_typ and obj_name == name:
+            return False
+    return True
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -57,7 +69,8 @@ def run_migrations_offline() -> None:
     """
     url = get_url()
     context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True
+        url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True,
+        include_object=include_object
     )
 
     with context.begin_transaction():
@@ -82,7 +95,8 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata, compare_type=True
+            connection=connection, target_metadata=target_metadata, compare_type=True,
+            include_object=include_object
         )
 
         with context.begin_transaction():
