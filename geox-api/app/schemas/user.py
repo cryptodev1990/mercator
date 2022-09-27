@@ -5,6 +5,8 @@ from pydantic import UUID4, Field
 
 from app.schemas.common import BaseModel
 
+# This is imported by __init__ with *
+# Append all objects to exported in __all__
 __all__ = []
 
 

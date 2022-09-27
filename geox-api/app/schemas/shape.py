@@ -7,6 +7,8 @@ from pydantic import UUID4, Field
 
 from app.schemas.common import BaseModel
 
+# This is imported by __init__ with *
+# Append all objects to exported in __all__
 __all__ = []
 
 
@@ -22,8 +24,7 @@ __all__.append("ViewportBounds")
 
 class GeoShapeCreate(BaseModel):
     name: Optional[str] = Field(None, description="Name of the shape")
-    geojson: Feature = Field(...,
-                             description="GeoJSON representation of the shape")
+    geojson: Feature = Field(..., description="GeoJSON representation of the shape")
 
 
 __all__.append("GeoShapeCreate")
@@ -49,8 +50,7 @@ __all__.append("GeoShapeUpdate")
 
 class GeoShape(GeoShapeRead, GeoShapeCreate):
     created_by_user_id: int = Field(..., description="User ID of the creator")
-    created_at: datetime.datetime = Field(...,
-                                          description="Date and time of creation")
+    created_at: datetime.datetime = Field(..., description="Date and time of creation")
     updated_by_user_id: Optional[int] = Field(
         None, description="User ID of the most recent updater"
     )
@@ -63,8 +63,7 @@ __all__.append("GeoShape")
 
 
 class ShapeCountResponse(BaseModel):
-    num_shapes: int = Field(...,
-                            description="Number of shapes affected by transaction")
+    num_shapes: int = Field(..., description="Number of shapes affected by transaction")
 
 
 __all__.append("ShapeCountResponse")
@@ -113,12 +112,11 @@ class GeoShapeMetadata(GeoShapeRead):
     """Metadata about a shape."""
 
     name: Optional[str] = Field(None, description="Name of the shape")
-    properties: Optional[dict] = Field(
-        None, description="Properties of the shape")
-    created_at: datetime.datetime = Field(...,
-                                          description="Date and time of creation")
+    properties: Optional[dict] = Field(None, description="Properties of the shape")
+    created_at: datetime.datetime = Field(..., description="Date and time of creation")
     updated_at: Optional[datetime.datetime] = Field(
-        None, description="Date and time of most recent updater")
+        None, description="Date and time of most recent updater"
+    )
 
 
 __all__.append("GeoShapeMetadata")
