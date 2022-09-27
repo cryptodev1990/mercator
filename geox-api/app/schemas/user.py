@@ -4,10 +4,12 @@ from typing import Optional
 from pydantic import Field, UUID4
 from app.schemas.common import BaseModel
 
+__all__ = []
 
 class UserBase(BaseModel):
     email: str
 
+__all__.append("UserBase")
 
 class UserCreate(UserBase):
     # All from Auth0
@@ -24,6 +26,7 @@ class UserCreate(UserBase):
     email_verified: bool
     iss: str
 
+__all__.append("UserCreate")
 
 class User(UserBase):
     id: int
@@ -40,7 +43,10 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
+__all__.append("User")
 
 class UserWithMembership(User):
     organization_id: UUID4
     is_personal: bool
+
+__all__.append("UserWithMembership")
