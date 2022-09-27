@@ -17,16 +17,6 @@ function _mypy() {
     mypy .
 }
 
-function _black() {
-    echo "Running black"
-    black --check .
-}
-
-function _isort() {
-    echo "Running isort"
-    isort -q --check-only .
-}
-
 # Lint shell scripts (*.sh)
 function _shellcheck() {
     echo "Running shellcheck"
@@ -43,7 +33,7 @@ function _yamllint() {
 
 # TODO: could customize which are run
 
-cmds="_mypy _black _isort _shellcheck _yamllint"
+cmds="_mypy _shellcheck _yamllint"
 num_failures=0
 for cmd in $cmds;
 do

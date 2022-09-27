@@ -1,6 +1,4 @@
 alembic
-black[jupyter]
-isort
 ipython
 jupyterlab
 mypy

@@ -115,10 +115,6 @@ shell:
 
 ## Developer experience stuff
 
-# Format files in the project
-format:
-	./bin/format.sh
-
 # Lint the project
 lint: ## Lint the project
 	./bin/lint.sh
