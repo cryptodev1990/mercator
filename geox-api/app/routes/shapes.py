@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import List, Optional, Union, cast
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 from sqlalchemy import func, select
@@ -60,7 +60,7 @@ def get_all_shapes(
         shapes = crud.get_all_shapes_by_user(db_session, user.id)
     elif rtype == GetAllShapesRequestType.organization:
         organization_id = db_session.execute(select(func.app_user_org())).scalar()
-        shapes = crud.get_all_shapes_by_organization(db_session, organization_id)
+        shapes = crud.get_all_shapes_by_organization(db_session, organization_id=organization_id)
     return shapes
 
 

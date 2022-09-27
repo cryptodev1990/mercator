@@ -863,10 +863,46 @@ Groupings: Allow groupings of multiple shapes
   - [X] Support auth with tiling - did this with deck.gl + the Auth0 API itself
   - [X] Add geom column to our backend
 
-## Sep 20, 2000
+## Sep 20, 2022
 
 Plans:
 
 - [ ] Finish PR: https://github.com/mercatorhq/mercator/pull/261
   - [ ] Support auth with tiling - did this with deck.gl + the Auth0 API itself
   - I think I'm probably good to add the tile server without modifying the frontend to accept it, as an incremental upgrade
+
+
+## Sep 25, 2022
+
+Goal: Modify the tile server to use our authorization scheme correctly.
+
+Issue: The API for TiMVT still feels very raw. While the core product behaves correctly and we can get authentication,
+we can't get authorization because it doesn't anticipate our multitenancy strategy -- though only authenticated users
+can log in, any user can still view any other users' shapes.
+
+#### Attempt 1: Actually using the TiMVT API
+
+TiMVT's ``connect_to_db`` function includes ``kwargs`` [here](https://github.com/developmentseed/timvt/blob/fc12bd6a879f0ef23d427efa76fe91e47b3f8330/timvt/db.py#L32)
+and one of them is a [connection class that I may be able to override](https://github.com/samuelcolvin/buildpg/blob/456fbe13a119a58850dc8e4c257d026fc94da372/buildpg/asyncpg.py#L100).
+The [connection is here](https://github.com/MagicStack/asyncpg/blob/master/asyncpg/connection.py#L42) but appears to lack the event
+hooks that SQLAlchemy provides.
+
+It turns out that the version of TiMVT that allows you to forward kwargs to asyncpg has not yet been released,
+so I could add the GitHub hash manually to the requirements.txt, but without the SQLAlchemy transaction hooks,
+I feel this is likely an uphill battle.
+
+#### Attempt 2: Cook up a shim aka Operation Shimothy Cook
+
+I can use a [TiMVT function layer](https://developmentseed.org/timvt/function_layers/) that accepts query params.
+I'll wrap the endpoint with the query params in a FastAPI route of our own. The top-level route will do what many of our other routes do -- 
+read the JWT, extract the user ID, get the org ID, pass that org ID to a function, and return a response. In this case, however, the function is
+a TiMVT route.
+
+#### Attempt 3: Actually use the TiMVT API, but a layer deeper
+
+Although it's poorly documented, it does seem like there's no real magic in TiMVT, just async Postgres and FastAPI.
+What if we just read the code and potentially use their internal functions and classes?
+
+This worked. This is what I did.
+
+The tile server is slow--potentially because of the RLS lookup before each query

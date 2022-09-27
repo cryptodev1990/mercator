@@ -35,7 +35,8 @@ const NewUserMessage = () => {
 const TentativeButtonBank = () => {
   const { snapToCentroid } = useViewport();
   const { tentativeShapes, setTentativeShapes } = useShapes();
-  const { mutate: addShapesBulk } = useBulkAddShapesMutation();
+  const { mutate: addShapesBulk, isLoading: bulkAddLoading } =
+    useBulkAddShapesMutation();
 
   return (
     <div className="mt-2 space-x-1">
@@ -46,6 +47,7 @@ const TentativeButtonBank = () => {
       </h3>
       <button
         className="btn btn-xs bg-blue-400 text-white rounded-none"
+        disabled={bulkAddLoading}
         onClick={() => {
           addShapesBulk(
             tentativeShapes.map((shape) => ({

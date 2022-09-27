@@ -8,7 +8,6 @@ import { toast } from "react-hot-toast";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import { BiBug } from "react-icons/bi";
-import Loading from "react-loading";
 
 interface SupportTicket {
   email: string;
