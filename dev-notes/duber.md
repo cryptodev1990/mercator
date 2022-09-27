@@ -943,3 +943,36 @@ and handle it.
 - search endpoint + pagination -- let users search by relevant metadata
 - get all shape metadata + pagination
 - get shape metadata by bounding box + pagination
+
+### TODO
+
+- I need to register these new endpoints for use on the frontend
+- For edit:
+  - Option 1: Hide the tile
+	1) A clicked shape in a tile gets duplicated
+	2) The selected shape in the tile gets hidden (to not create visibility conflicts),
+	3) The whole tile gets refreshed when the edit is successfully posted
+  - Option 2: Copy shapes intersecting with the tile to a EditableGeoJsonLayer
+        1) On click, get the shapes that overlap with the tile and copy them into an EditableGeoJsonLayer 
+	2) Proceed with the work as normal
+	3) On mode exit / deselection, refresh the tile and remove the editable geojsonlayer
+  - Option 3: EditableGeoJsonLayer tiles
+       1) This one is kind of on the crazy side, but could we make tiles themselves editable? Difficult but likely effective.
+- For delete:
+    Option A: Refresh whole tile
+      1) Just simply refresh the entire tile
+    Option B: Create a GeoJsonLayer with some of the shapes
+      1) Create a GeoJsonLayer with some of the shapes
+      2) Delete the shape from that layer
+      3) Refresh the tile
+      4) Remove the shapes
+- For create:
+    1) On create, refresh the whole tile
+
+
+Rendered features: https://stackoverflow.com/questions/68536418/react-mapbox-sample-implementation-of-getrenderedfeatures-in-deck-gl
+
+WIP PRs: 
+
+https://github.com/mercatorhq/mercator/pull/327
+https://github.com/mercatorhq/mercator/pull/328
