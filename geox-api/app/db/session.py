@@ -26,7 +26,7 @@ def _set_default_app_user_id(dbapi_connection):
         c.execute(stmt)
 
 
-def create_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
+def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     """Return an engine for the app database.
 
     Args:
@@ -68,7 +68,7 @@ def create_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     return engine
 
 
-engine = create_engine()
+engine = create_app_engine()
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
 
@@ -76,7 +76,7 @@ SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, futu
 OsmSessionLocal: Optional[sessionmaker] = None
 osm_engine: Optional[Engine] = None
 if OSM_DATABASE_URI:
-    osm_engine = create_engine(OSM_DATABASE_URI)
+    osm_engine = sa.create_engine(OSM_DATABASE_URI)
     OsmSessionLocal = sessionmaker(bind=osm_engine, future=True)
 else:
     logger.warning("OSM_DATABASE_URI is not set, OSM features will be disabled")
