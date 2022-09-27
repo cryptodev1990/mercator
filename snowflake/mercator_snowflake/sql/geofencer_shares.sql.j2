@@ -49,6 +49,7 @@ COMMENT ON STAGE {{ shapes_stage}} IS $$Staging location of exported files with 
 {%- set shapes_pipe = full_schema_name ~ ".shapes_pipe" %}
 CREATE OR REPLACE PIPE {{ shapes_pipe }}
 AUTO_INGEST=TRUE
+ERROR_INTEGRATION=sns_
 AS
 COPY INTO {{ shapes_exports_table }}
 (uuid, name, geom, properties, created_at, updated_at, deleted_at, exported_at, organization_id, export_id)
