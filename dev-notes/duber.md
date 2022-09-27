@@ -971,8 +971,13 @@ and handle it.
 
 
 Rendered features: https://stackoverflow.com/questions/68536418/react-mapbox-sample-implementation-of-getrenderedfeatures-in-deck-gl
+These could be used to copy a bunch of data to a more malleable deck.gl layer
+
+[To remove]
 
 WIP PRs: 
 
 https://github.com/mercatorhq/mercator/pull/327
 https://github.com/mercatorhq/mercator/pull/328
+
+Active branch ajd/tiling-iv-fe
