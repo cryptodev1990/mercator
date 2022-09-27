@@ -1,4 +1,5 @@
-from typing import Optional, Union, List
+"""CRUD functions for organizations."""
+from typing import Optional, Union, Literal
 
 from pydantic import UUID4
 from sqlalchemy import text
@@ -27,7 +28,7 @@ def get_user_personal_org(db: Union[Connection, Session], user_id: int) -> Optio
 
 def set_active_org(
     db: Union[Session, Connection], user_id: int, organization_id: UUID4
-) -> True:
+) -> Literal[True]:
     """Set the active organization for a user.
 
     Args:

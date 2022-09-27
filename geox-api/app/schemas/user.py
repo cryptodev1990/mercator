@@ -1,7 +1,8 @@
 import datetime
 from typing import Optional
 
-from pydantic import UUID4, BaseModel, Field
+from pydantic import Field, UUID4
+from app.schemas.common import BaseModel
 
 
 class UserBase(BaseModel):

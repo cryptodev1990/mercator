@@ -1,2 +1,2 @@
-from .shape import *
-from .user import *
+from app.schemas.shape import *
+from app.schemas.user import *

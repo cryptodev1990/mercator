@@ -1,12 +1,10 @@
 """App settings and configuration management."""
-import collections
-import json
 import logging
 import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Literal, Optional, Union, cast
 
 from pydantic import (
     AnyHttpUrl,
@@ -103,8 +101,8 @@ class Settings(BaseSettings):
         None, env="AWS_S3_UPLOAD_SECRET_ACCESS_KEY"
     )
 
-    machine_account_email: EmailStr = Field(DEFAULT_MACHINE_ACCOUNT_EMAIL)
-    contact_email: EmailStr = Field(CONTACT_EMAIL)
+    machine_account_email: EmailStr = Field(cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
+    contact_email: EmailStr = Field(cast(EmailStr, CONTACT_EMAIL))
 
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
@@ -175,7 +173,7 @@ class Settings(BaseSettings):
     )
 
     redis_connection: RedisDsn = Field(
-        "redis://localhost:6379/0", description="Redis DSN to use for celery"
+        cast(RedisDsn, "redis://localhost:6379/0"), description="Redis DSN to use for celery"
     )
 
     git_commit: Optional[GitCommitHash] = Field(

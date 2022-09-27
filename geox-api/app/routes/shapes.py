@@ -152,7 +152,7 @@ def run_shapes_export(user_session: UserSession, settings: Settings):
         raise HTTPException(
             status_code=403, detail="No organization found."  # type: ignore
         )
-    if not organization_s3_enabled(user_session.session, str(org_id)):
+    if not organization_s3_enabled(user_session.session, org_id):
         raise HTTPException(
             status_code=403, detail="Data export is not enabled for this account."  # type: ignore
         )

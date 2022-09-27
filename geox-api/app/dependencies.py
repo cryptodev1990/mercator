@@ -1,16 +1,13 @@
-"""
-FastAPI dependencies
+"""FastAPI dependencies.
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
-from multiprocessing import connection
-from typing import Any, AsyncGenerator, Dict, Generator, Iterator
+from typing import Any, AsyncGenerator, Dict
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from sqlalchemy import event, text
-from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -66,7 +63,7 @@ async def get_current_user(
     """
     # TODO: I think it would be better if this returned the model user
     with session.begin():
-       user = create_or_update_user_from_bearer_data(session, auth_jwt_payload)
+        user = create_or_update_user_from_bearer_data(session, auth_jwt_payload)
     return user
 
 
@@ -89,7 +86,7 @@ def set_app_user_settings(session: Session, user_id: int):
 async def get_app_user_session(
     user: schemas.User = Depends(get_current_user),
     session: Session = Depends(get_session, use_cache=False),
-) -> UserSession:
+) -> AsyncGenerator[UserSession, None]:
     """Configure database session for an authorized user.
 
     Adds a hook which inserts ``SET LOCAL app.user_id = :user_id``
