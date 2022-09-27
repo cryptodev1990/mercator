@@ -909,6 +909,8 @@ The tile server is slow--potentially because of the RLS lookup before each query
 
 ## Sep 27, 2022
 
+### Redis caching
+
 Getting a user's organization can take a while, which is why I'm going to just cache this on Redis with a 12 hour TTL.
 We should have more caching, anyway, so this is probably a good step regardless.
 
@@ -936,4 +938,8 @@ redis> HGET userId:2 organizationId
 
 and handle it.
 
-I'll see if I can turn this into a decorator.
+### New endpoints
+
+- search endpoint + pagination -- let users search by relevant metadata
+- get all shape metadata + pagination
+- get shape metadata by bounding box + pagination

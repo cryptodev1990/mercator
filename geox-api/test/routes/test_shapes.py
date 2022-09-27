@@ -34,7 +34,8 @@ shape_tbl = Shape.__table__
 
 
 def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
-    stmt = select(shape_tbl).filter(shape_tbl.c.uuid == shape_id)  # type: ignore
+    stmt = select(shape_tbl).filter(
+        shape_tbl.c.uuid == shape_id)  # type: ignore
     return bool(conn.execute(stmt).first())
 
 
@@ -259,8 +260,7 @@ def test_create_shape(connection, dep_override_factory):
     shape = GeoShapeCreate(
         name="fuchsia-auditor",
         geojson=Feature(
-            id=None, geometry=Point(coordinates=[-6.364088, -65.21654], properties={})
-        ),
+            id="1", type="Feature", geometry=Point(type="Point", coordinates=(-6.364088, -65.21654)), properties={"test": "test"})
     )
 
     uuid = None
@@ -289,11 +289,13 @@ def test_bulk_create_shapes(connection, dep_override_factory):
     shapes = [
         GeoShapeCreate(
             name="fuchsia-auditor",
-            geojson=Feature(geometry=Point(coordinates=[-6.364088, -65.21654])),
+            geojson=Feature(id="1", type="Feature", properties={"test": 1}, geometry=Point(
+                type="Point", coordinates=(-6.364088, -65.21654))),
         ),
         GeoShapeCreate(
             name="acute-vignette",
-            geojson=Feature(geometry=Point(coordinates=[-20.586622, 53.832401])),
+            geojson=Feature(id="2", type="Feature", properties={"test": 1}, geometry=Point(
+                type="Point", coordinates=(-20.586622, 53.832401))),
         ),
     ]
 
@@ -309,7 +311,8 @@ def test_bulk_create_shapes(connection, dep_override_factory):
     for shp in shapes:
         assert (
             connection.execute(
-                text("SELECT uuid FROM shapes WHERE name = :name"), {"name": shp.name}
+                text("SELECT uuid FROM shapes WHERE name = :name"), {
+                    "name": shp.name}
             ).rowcount
             == 1
         )

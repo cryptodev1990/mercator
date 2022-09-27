@@ -1,4 +1,7 @@
-"""CRUD functions for interacting with shapes."""
+"""CRUD functions for interacting with shapes.
+
+NOTE: All queries use Shape table and no ORM features
+"""
 import datetime
 from enum import Enum
 from typing import List, Optional, Sequence, Union
@@ -12,8 +15,18 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.models import Shape
 
+
 shape_tbl = Shape.__table__
-## NOTE: ALL queries use Shape table and no ORM features
+
+
+DEFAULT_LIMIT = 200
+METADATA_COLS = [
+    shape_tbl.c.uuid,
+    shape_tbl.c.name,
+    shape_tbl.c.properties,
+    shape_tbl.c.created_at,
+    shape_tbl.c.updated_at,
+]
 
 
 def get_shape(db: Session, shape_id: UUID4) -> Optional[schemas.GeoShape]:
@@ -31,7 +44,7 @@ def get_shape(db: Session, shape_id: UUID4) -> Optional[schemas.GeoShape]:
 
 
 def get_all_shapes_by_user(
-    db: Session, user_id: int, offset: int = 0, limit: Optional[int] = 100
+    db: Session, user_id: int, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
 ) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
@@ -51,8 +64,63 @@ def get_all_shapes_by_user(
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
+def get_shape_metadata_by_bounding_box(db: Session, bbox: schemas.ViewportBounds, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
+    """Get all shapes within a bounding box
+
+    Used on the frontend to determine which shapes to show details on in the sidebar
+    """
+    geom = Polygon(type="Polygon", coordinates=[[
+        (bbox.minX, bbox.minY),
+        (bbox.minX, bbox.maxY),
+        (bbox.maxX, bbox.maxY),
+        (bbox.maxX, bbox.minY),
+        (bbox.minX, bbox.minY)
+    ]])
+    stmt = (
+        sa.select(shape_tbl)
+        .with_only_columns(METADATA_COLS)
+        .where(
+            shape_tbl.c.deleted_at == None
+        )
+        .where(
+            sa.func.ST_Intersects(
+                shape_tbl.c.geom, sa.func.ST_Transform(geom, 4326))
+        )
+        .order_by(shape_tbl.c.uuid)
+        .offset(offset)
+        .limit(limit)
+    )
+    res = db.execute(stmt).fetchall()
+    return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
+
+
+def get_shape_metadata_matching_search(db: Session, query: str, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
+    """Get all shapes matching a search string."""
+    stmt = sa.text("""
+        SELECT uuid
+        , name
+        , properties
+        , created_at
+        , updated_at
+        , ts_rank_cd(fts, query, 12) AS rank
+        FROM shapes
+        , websearch_to_tsquery(:query_text) query
+        , SIMILARITY(:query_text, properties::VARCHAR) similarity
+        WHERE 1=1
+          AND (query @@ fts OR similarity > 0)
+        ORDER BY rank DESC, similarity DESC
+        LIMIT 20
+        OFFSET :offset
+    """)
+    res = db.execute(stmt, {
+        "query_text": query,
+        "offset": offset
+    }).scalars().fetchall()
+    return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
+
+
 def get_all_shapes_by_organization(
-    db: Session, organization_id: UUID4, offset: int = 0, limit: Optional[int] = 100
+    db: Session, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
 ) -> List[schemas.GeoShape]:
     # This is usually equivalent to getting all shapes by organization
     # TODO ordering by UUID just guarantees a sort order
@@ -65,15 +133,30 @@ def get_all_shapes_by_organization(
         .where(shape_tbl.c.deleted_at == None)
         .order_by(shape_tbl.c.uuid)
         .offset(offset)
+        .limit(limit)
     )
-    if limit is not None:
-        stmt = stmt.limit(limit)
     res = db.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
+def get_all_shape_metadata_by_organization(
+    db: Session, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
+) -> List[schemas.GeoShapeMetadata]:
+    stmt = (
+        sa.select(shape_tbl)
+        .with_only_columns(METADATA_COLS)
+        .where(shape_tbl.c.organization_id == str(organization_id))  # type: ignore
+        .where(shape_tbl.c.deleted_at == None)
+        .order_by(shape_tbl.c.uuid)
+        .offset(offset)
+        .limit(limit)
+    )
+    res = db.execute(stmt).fetchall()
+    return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
+
+
 def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
-    """Create a new shape_tbl.c."""
+    """Create a new shape"""
     ins = (
         sa.insert(shape_tbl)  # type: ignore
         .values(

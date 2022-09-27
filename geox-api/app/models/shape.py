@@ -1,12 +1,18 @@
 """Shape model."""
+from app.db.base_class import Base
+from geoalchemy2 import Geometry
 from typing import Any, Dict
 
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Index, Computed  # type: ignore
+from sqlalchemy.dialects.postgresql import JSONB, UUID, TSVECTOR
 from sqlalchemy.sql import func
+from sqlalchemy.types import TypeDecorator
 
 from app.db.base_class import Base
+
+class TSVector(TypeDecorator):
+    impl = TSVECTOR
 
 
 class Shape(Base):
@@ -48,5 +54,12 @@ class Shape(Base):
         index=True,
         nullable=False,
     )
+    # full text search
+    fts = Column(TSVector(), Computed(
+        "to_tsvector('english', properties)",
+        persisted=True))
+    __table_args__ = (Index('ix_properties_fts',
+                            fts, postgresql_using='gin'),)
+
 
     __mapper_args__ = {"eager_defaults": True}
