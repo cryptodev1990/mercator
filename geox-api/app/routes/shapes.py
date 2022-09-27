@@ -45,6 +45,8 @@ def create_shape(
 @router.get("/geofencer/shapes", response_model=List[GeoShape])
 def get_all_shapes(
     rtype: GetAllShapesRequestType,
+    offset: int = 0,
+    limit: int = 100,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[List[GeoShape]]:
     """Read shapes."""
@@ -56,11 +58,12 @@ def get_all_shapes(
     db_session = user_session.session
     shapes = []
     if rtype == GetAllShapesRequestType.user:
-        shapes = crud.get_all_shapes_by_user(db_session, user.id)
+        shapes = crud.get_all_shapes_by_user(db_session, user.id, offset=offset, limit=limit)
     elif rtype == GetAllShapesRequestType.organization:
         organization_id = db_session.execute(select(func.app_user_org())).scalar()
         shapes = crud.get_all_shapes_by_organization(
-            db_session, organization_id=organization_id
+            db_session, organization_id=organization_id,
+            offset=offset, limit=limit
         )
     return shapes
 
