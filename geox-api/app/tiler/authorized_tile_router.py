@@ -17,6 +17,8 @@ from app.dependencies import UserSession, get_app_user_session, verify_token
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
 # Borrowed from https://github.com/developmentseed/timvt/blob/master/timvt/factory.py#L112
+
+
 @router.get(
     "/backsplash/{layer}/{z}/{x}/{y}",
     **TILE_RESPONSE_PARAMS,

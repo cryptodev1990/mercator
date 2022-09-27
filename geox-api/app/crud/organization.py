@@ -8,11 +8,11 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models import Organization, OrganizationMember, User
+from app.db.cache import check_cache
 
 org_mbr_tbl = OrganizationMember.__table__
 org_tbl = Organization.__table__
 user_tbl = User.__table__
-
 
 
 def get_user_personal_org(db: Union[Connection, Session], user_id: int) -> Optional[UUID4]:
@@ -25,6 +25,7 @@ def get_user_personal_org(db: Union[Connection, Session], user_id: int) -> Optio
         .join(org_mbr_tbl, org_mbr_tbl.c.organization_id == org_tbl.c.id)
     )
     return db.execute(stmt).scalar()
+
 
 def set_active_org(
     db: Union[Session, Connection], user_id: int, organization_id: UUID4
@@ -52,8 +53,18 @@ def set_active_org(
     return True
 
 
-# TODO make this consistent with the other get_* functions, use user instead of user_id
 def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
+    return UUID4(check_cache(
+        user_id,
+        "organization_id",
+        _get_active_org,
+        db,
+        user_id
+    ))
+
+
+# TODO make this consistent with the other get_* functions, use user instead of user_id
+def _get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
     """Get the acttive organization of a user.
 
     A user will only have one active organization at a time.

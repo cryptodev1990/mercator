@@ -872,7 +872,7 @@ Plans:
   - I think I'm probably good to add the tile server without modifying the frontend to accept it, as an incremental upgrade
 
 
-## Sep 25, 2022
+## Sep 25-26, 2022
 
 Goal: Modify the tile server to use our authorization scheme correctly.
 
@@ -906,3 +906,34 @@ What if we just read the code and potentially use their internal functions and c
 This worked. This is what I did.
 
 The tile server is slow--potentially because of the RLS lookup before each query
+
+## Sep 27, 2022
+
+Getting a user's organization can take a while, which is why I'm going to just cache this on Redis with a 12 hour TTL.
+We should have more caching, anyway, so this is probably a good step regardless.
+
+[Redis describes how to connect to a Python program here.](https://developer.redis.com/develop/python/)
+We already have Redis as a part of our project for Celery.
+For the write, I'll do something like 
+
+```
+redis> HSET userId:1 organizationId "org-uuid-here"
+```
+
+For the retrieval success, I'll do something like
+
+```
+redis> HGET userId:1 organizationId
+"org-uuid-here"
+```
+
+For the retrieval failure, I'll get something like
+
+```
+redis> HGET userId:2 organizationId
+(nil)
+```
+
+and handle it.
+
+I'll see if I can turn this into a decorator.

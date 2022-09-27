@@ -7,7 +7,6 @@ from fastapi import FastAPI, Depends
 from app.core.config import get_tiler_settings
 
 from timvt.db import close_db_connection, connect_to_db, register_table_catalog
-from timvt.factory import VectorTilerFactory
 from timvt.layer import FunctionRegistry
 
 from app.tiler.authorized_tile_function import AuthorizedTileFunction

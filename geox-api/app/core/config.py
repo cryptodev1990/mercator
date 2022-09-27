@@ -75,7 +75,8 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(
+        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
@@ -101,13 +102,15 @@ class Settings(BaseSettings):
         None, env="AWS_S3_UPLOAD_SECRET_ACCESS_KEY"
     )
 
-    machine_account_email: EmailStr = Field(cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
+    machine_account_email: EmailStr = Field(
+        cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
     contact_email: EmailStr = Field(cast(EmailStr, CONTACT_EMAIL))
 
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(
+                f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     @property
@@ -215,7 +218,7 @@ def get_settings() -> Settings:
     env_file: Optional[str] = os.environ.get("ENV_FILE", ".env")
     if env_file and os.path.isfile(env_file):
         return Settings(_env_file=env_file)  # type: ignore
-    return Settings()
+    return Settings()  # type: ignore
 
 
 @lru_cache()
@@ -232,4 +235,5 @@ def get_tiler_settings() -> TimVTPostgresSettings:
         postgres_user=settings.postgres_user,
         postgres_pass=password,
         postgres_dbname=settings.postgres_db,
+        db_tables=None,
     )

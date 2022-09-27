@@ -111,7 +111,7 @@ pg-prod:
 
 # Run an interactive shell for the project
 shell:
-	ipython
+	ENV_FILE=.env.local ipython
 
 ## Developer experience stuff
 
