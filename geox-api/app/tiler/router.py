@@ -1,17 +1,13 @@
 import os
 
-from app.dependencies import verify_token
-
-from fastapi import FastAPI, Depends
-
-from app.core.config import get_tiler_settings
-
+from fastapi import Depends, FastAPI
 from timvt.db import close_db_connection, connect_to_db, register_table_catalog
 from timvt.layer import FunctionRegistry
 
+from app.core.config import get_tiler_settings
+from app.dependencies import verify_token
 from app.tiler.authorized_tile_function import AuthorizedTileFunction
 from app.tiler.authorized_tile_router import router
-
 
 dir = os.path.dirname(__file__)
 
@@ -42,8 +38,4 @@ def add_tiler_routes(app: FastAPI) -> None:
         )
     )
 
-    app.include_router(
-        router,
-        tags=["tiles"],
-        dependencies=[Depends(verify_token)]
-    )
+    app.include_router(router, tags=["tiles"], dependencies=[Depends(verify_token)])

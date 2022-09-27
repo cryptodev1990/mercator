@@ -1,21 +1,23 @@
 """CRUD functions for organizations."""
-from typing import Optional, Union, Literal
+from typing import Literal, Optional, Union
 
-from pydantic import UUID4
-from sqlalchemy import text
 import sqlalchemy as sa
+from pydantic import UUID4
+from sqlalchemy import select, text
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
-from sqlalchemy import select
-from app.models import Organization, OrganizationMember, User
+
 from app.db.cache import check_cache
+from app.models import Organization, OrganizationMember, User
 
 org_mbr_tbl = OrganizationMember.__table__
 org_tbl = Organization.__table__
 user_tbl = User.__table__
 
 
-def get_user_personal_org(db: Union[Connection, Session], user_id: int) -> Optional[UUID4]:
+def get_user_personal_org(
+    db: Union[Connection, Session], user_id: int
+) -> Optional[UUID4]:
     """Return user personal org."""
     stmt = (
         select(org_tbl)
@@ -54,13 +56,7 @@ def set_active_org(
 
 
 def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
-    return UUID4(check_cache(
-        user_id,
-        "organization_id",
-        _get_active_org,
-        db,
-        user_id
-    ))
+    return UUID4(check_cache(user_id, "organization_id", _get_active_org, db, user_id))
 
 
 # TODO make this consistent with the other get_* functions, use user instead of user_id

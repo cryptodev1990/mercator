@@ -6,8 +6,8 @@ from sqlalchemy import insert, text
 from sqlalchemy.orm import Session
 
 from app import models
-from app.schemas import User
 from app.core.config import Settings, get_settings
+from app.schemas import User
 
 
 class NoUserException(Exception):
@@ -27,11 +27,13 @@ class NoUserWithIdException(NoUserException):
 
 
 def get_user(db: Session, user_id: int) -> User:
-    stmt = text("""
+    stmt = text(
+        """
     SELECT *
     FROM user
     WHERE user_id = :user_id
-    """)
+    """
+    )
     user = db.execute(stmt, {"user_id": user_id}).first()
     if user is None:
         raise NoUserWithIdException(user_id)

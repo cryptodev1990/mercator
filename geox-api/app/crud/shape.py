@@ -2,11 +2,11 @@
 import datetime
 from enum import Enum
 from typing import List, Optional, Sequence, Union
-from pydantic import UUID4
 
 import jinja2
-from geojson_pydantic import Feature, LineString, Point, Polygon
 import sqlalchemy as sa
+from geojson_pydantic import Feature, LineString, Point, Polygon
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import schemas
@@ -31,7 +31,7 @@ def get_shape(db: Session, shape_id: UUID4) -> Optional[schemas.GeoShape]:
 
 
 def get_all_shapes_by_user(
-    db: Session, user_id: int, offset: int=0, limit: Optional[int]=100
+    db: Session, user_id: int, offset: int = 0, limit: Optional[int] = 100
 ) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
@@ -52,7 +52,7 @@ def get_all_shapes_by_user(
 
 
 def get_all_shapes_by_organization(
-    db: Session, organization_id: UUID4, offset: int=0, limit: Optional[int] = 100
+    db: Session, organization_id: UUID4, offset: int = 0, limit: Optional[int] = 100
 ) -> List[schemas.GeoShape]:
     # This is usually equivalent to getting all shapes by organization
     # TODO ordering by UUID just guarantees a sort order
@@ -184,14 +184,16 @@ def get_shape_count(db: Session) -> int:
 
 def get_shapes_containing_point(db: Session, lat: float, lng: float) -> List[Feature]:
     """Get the shape that contains a point."""
-    stmt = sa.text("""
+    stmt = sa.text(
+        """
     SELECT *
     FROM shapes
     WHERE 1=1
       AND ST_Contains(geom, ST_GeomFromText('POINT(:lng :lat)', 4326))
       AND deleted_at IS NULL
       AND organization_id = public.app_user_org()
-    """)
+    """
+    )
     res = db.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
     if res:
         return [schemas.GeoShape.from_orm(row).geojson for row in res]
@@ -211,8 +213,9 @@ def get_shapes_related_to_geom(
     db: Session, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
 ) -> List[Feature]:
     """Get the shape that contains a point."""
-    stmt = sa.text(jinja2.Template(
-        """
+    stmt = sa.text(
+        jinja2.Template(
+            """
     SELECT *
     FROM shapes
     WHERE 1=1
@@ -220,7 +223,8 @@ def get_shapes_related_to_geom(
       AND deleted_at IS NULL
       AND organization_id = public.app_user_org()
     """
-    ).render(operation=operation.title()))
+        ).render(operation=operation.title())
+    )
     res = db.execute(stmt, {"geom": geom.json()}).fetchall()
     if res:
         return [schemas.GeoShape.from_orm(row).geojson for row in res]

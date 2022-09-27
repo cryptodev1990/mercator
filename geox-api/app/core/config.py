@@ -4,7 +4,17 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Any, Dict, List, Literal, Optional, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Annotated,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    cast,
+)
 
 from pydantic import (
     AnyHttpUrl,
@@ -75,8 +85,7 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(
-        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
@@ -103,14 +112,14 @@ class Settings(BaseSettings):
     )
 
     machine_account_email: EmailStr = Field(
-        cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
+        cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL)
+    )
     contact_email: EmailStr = Field(cast(EmailStr, CONTACT_EMAIL))
 
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(
-                f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     @property
@@ -176,7 +185,8 @@ class Settings(BaseSettings):
     )
 
     redis_connection: RedisDsn = Field(
-        cast(RedisDsn, "redis://localhost:6379/0"), description="Redis DSN to use for celery"
+        cast(RedisDsn, "redis://localhost:6379/0"),
+        description="Redis DSN to use for celery",
     )
 
     git_commit: Optional[GitCommitHash] = Field(

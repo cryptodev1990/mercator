@@ -1,7 +1,7 @@
 from typing import Any
-import morecantile
-from buildpg import asyncpg, clauses, render, Func
 
+import morecantile
+from buildpg import Func, asyncpg, clauses, render
 from timvt import layer
 
 

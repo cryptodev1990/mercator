@@ -1,18 +1,12 @@
-from timvt.resources.enums import MimeTypes
-from timvt.dependencies import (
-    LayerParams,
-    TileParams,
-    TileMatrixSetParams
-)
-
-from timvt.layer import Layer
 from fastapi import APIRouter, Depends, Request, Response
 from morecantile import Tile, TileMatrixSet
+from timvt.dependencies import LayerParams, TileMatrixSetParams, TileParams
 from timvt.factory import TILE_RESPONSE_PARAMS
+from timvt.layer import Layer
+from timvt.resources.enums import MimeTypes
 
 from app.crud.organization import get_active_org
 from app.dependencies import UserSession, get_app_user_session, verify_token
-
 
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 

@@ -23,7 +23,7 @@ CACHE_TTL = 60 * 60 * 12
 
 def set_cache_value_for_user(user_id: int, key: str, value: str, ttl=CACHE_TTL):
     """Sets a cache value for a user. Deletes the key if value is None.
-    Default cache TTL is 12 hours. 
+    Default cache TTL is 12 hours.
     """
     if value is None:
         redis.delete(f"user:{user_id}:{key}")

@@ -4,16 +4,15 @@ from typing import Any, AsyncGenerator, Callable, Dict, List
 import pytest
 from fastapi import Depends
 from sqlalchemy import delete, insert, select
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, Row  # type: ignore
 from sqlalchemy.orm import Session
 
 from app import models
-from app.schemas import User
 from app.crud.organization import set_active_org
 from app.db.session import SessionLocal, engine
 from app.dependencies import get_current_user, get_session, verify_token
 from app.main import app
-from sqlalchemy.engine import Connection, Row  # type: ignore
+from app.schemas import User
 
 org_tbl = models.Organization.__table__
 org_mbr_tbl = models.OrganizationMember.__table__

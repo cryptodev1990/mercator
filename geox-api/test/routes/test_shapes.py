@@ -12,10 +12,10 @@ from sqlalchemy import select, text, update
 from sqlalchemy.engine import Connection
 
 from app.core.config import get_settings
+from app.crud.organization import get_user_personal_org
 from app.main import app
 from app.models import Organization, OrganizationMember, Shape
 from app.schemas import GeoShapeCreate
-from app.crud.organization import get_user_personal_org
 
 # used in fixtures
 from .route_utils import connection, dep_override_factory  # type: ignore
@@ -84,9 +84,6 @@ def set_active_organization(
         .values(active=(org_mbr_tbl.c.organization_id == organization_id))
     )
     return conn.execute(stmt)
-
-
-
 
 
 def test_policy_exists(connection):
