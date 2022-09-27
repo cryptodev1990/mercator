@@ -46,7 +46,7 @@ def create_shape(
 def get_all_shapes(
     rtype: GetAllShapesRequestType,
     offset: int = 0,
-    limit: int = 100,
+    limit: int = 300,
     user_session: UserSession = Depends(get_app_user_session),
 ) -> Optional[List[GeoShape]]:
     """Read shapes."""
