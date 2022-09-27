@@ -56,18 +56,23 @@ def set_active_org(
 
 
 def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
-    return UUID4(check_cache(user_id, "organization_id", _get_active_org, db, user_id))
-
-
-# TODO make this consistent with the other get_* functions, use user instead of user_id
-def _get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
     """Get the acttive organization of a user.
+
+    This will check a cache for the value of the user's active organization before running
+    a query against the database.
 
     A user will only have one active organization at a time.
 
     Returns:
         Id of the active organization if one exists. ``None`` if there is no active org.
+        Users of this function are responsible for raising exceptions or otherwise
+        handling the case of no active organization for the user.
     """
+    return UUID4(check_cache(user_id, "organization_id", _get_active_org, db, user_id))
+
+
+# TODO make this consistent with the other get_* functions, use user instead of user_id
+def _get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
     stmt = text(
         """
     SELECT organization_id
