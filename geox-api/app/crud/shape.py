@@ -19,7 +19,7 @@ from app.models import Shape
 shape_tbl = Shape.__table__
 
 
-DEFAULT_LIMIT = 200
+DEFAULT_LIMIT = 300
 METADATA_COLS = [
     shape_tbl.c.uuid,
     shape_tbl.c.name,
