@@ -1,13 +1,12 @@
-"""IMPORTANT: There are database triggers that affect this logic, see Alembic"""
+"""IMPORTANT: There are database triggers that affect this logic, see Alembic."""
 import datetime
-from typing import Optional
+from typing import Optional, Union
 
-from sqlalchemy import insert, text
-from sqlalchemy.orm import Session
-
-from app import models
 from app.core.config import Settings, get_settings
 from app.schemas import User
+from sqlalchemy import text
+from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
 
 
 class NoUserException(Exception):
@@ -26,7 +25,7 @@ class NoUserWithIdException(NoUserException):
         return f"No user with user_id={self.user_id}"
 
 
-def get_user(db: Session, user_id: int) -> User:
+def get_user(db: Union[Session, Connection], user_id: int) -> User:
     stmt = text(
         """
     SELECT *
@@ -39,7 +38,7 @@ def get_user(db: Session, user_id: int) -> User:
         raise NoUserWithIdException(user_id)
     return User.from_orm(user)
 
-def get_user_by_sub_id(db: Session, sub_id: str) -> Optional[User]:
+def get_user_by_sub_id(db: Union[Session, Connection], sub_id: str) -> Optional[User]:
     """Get a user by their Auth0 `sub_id`.
 
     Returns:
@@ -56,7 +55,7 @@ def get_user_by_sub_id(db: Session, sub_id: str) -> Optional[User]:
     return User.from_orm(user) if user else None
 
 def create_or_update_user_from_bearer_data(
-    db: Session, auth_jwt_payload: dict, settings: Settings = get_settings()
+    db: Union[Session, Connection], auth_jwt_payload: dict, settings: Settings = get_settings()
 ) -> User:
     values = dict(auth_jwt_payload)  # This is pulled from auth0
     now = datetime.datetime.utcnow()
