@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from geojson_pydantic import Feature
 from sqlalchemy import text
 
-from app.db.session import OsmSessionLocal
+from app.db.osm import OsmSessionLocal
 
 router = APIRouter(tags=["osm"])
 
