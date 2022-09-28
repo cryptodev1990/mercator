@@ -68,3 +68,13 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
 engine = create_app_engine()
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+
+OSM_DATABASE_URI: Any = get_settings().sqlalchemy_osm_database_uri
+
+OsmSessionLocal: Optional[sessionmaker] = None
+osm_engine: Optional[Engine] = None
+if OSM_DATABASE_URI:
+    osm_engine = sa.create_engine(OSM_DATABASE_URI)
+    OsmSessionLocal = sessionmaker(bind=osm_engine, future=True)
+else:
+    logger.warning("OSM_DATABASE_URI is not set, OSM features will be disabled")
