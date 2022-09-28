@@ -68,7 +68,14 @@ def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
         Users of this function are responsible for raising exceptions or otherwise
         handling the case of no active organization for the user.
     """
-    return UUID4(check_cache(user_id, "organization_id", _get_active_org, db, user_id))
+    try:
+        return UUID4(check_cache(user_id, "organization_id", _get_active_org, db, user_id))
+    except ValueError:
+        # in the case of no active org - check_cache returns "None", which
+        # raises exception
+        # ValueError: badly formed hexadecimal UUID string.
+        # Instead of raising an exception, return None and let caller handle the value
+        return None
 
 
 # TODO make this consistent with the other get_* functions, use user instead of user_id

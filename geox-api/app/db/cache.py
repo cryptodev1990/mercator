@@ -39,7 +39,7 @@ def check_cache(user_id, key, func, *args, **kwargs) -> str:
     if value is None:
         value = func(*args, **kwargs)
         set_cache_value_for_user(user_id, key, str(value))
-    return value
+    return str(value)
 
 
 def clear_cache_for_user(user_id, key):
