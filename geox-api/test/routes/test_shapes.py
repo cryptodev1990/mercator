@@ -34,9 +34,8 @@ shape_tbl = Shape.__table__
 
 
 def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
-    stmt = select(shape_tbl).filter(
-        shape_tbl.c.uuid == shape_id)  # type: ignore
-    return bool(conn.execute(stmt).first())
+    stmt = text("SELECT 1 FROM shapes WHERE uuid = :id")
+    return bool(conn.execute(stmt, {"id": shape_id}).first())
 
 
 def ymd(x):
