@@ -45,7 +45,6 @@ class User(UserBase):
     name: Optional[str]
     locale: Optional[str]
     picture: Optional[str]
-    last_login_at: Optional[datetime.datetime]
     is_active: bool
 
     class Config:

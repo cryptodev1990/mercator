@@ -1,6 +1,6 @@
 """IMPORTANT: There are database triggers that affect this logic, see Alembic"""
 import datetime
-from typing import Any, Union
+from typing import Optional
 
 from sqlalchemy import insert, text
 from sqlalchemy.orm import Session
@@ -30,7 +30,7 @@ def get_user(db: Session, user_id: int) -> User:
     stmt = text(
         """
     SELECT *
-    FROM user
+    FROM users
     WHERE user_id = :user_id
     """
     )
@@ -39,6 +39,21 @@ def get_user(db: Session, user_id: int) -> User:
         raise NoUserWithIdException(user_id)
     return User.from_orm(user)
 
+def get_user_by_sub_id(db: Session, sub_id: str) -> Optional[User]:
+    """Get a user by their Auth0 `sub_id`.
+
+    Returns:
+        A user object if the user exists, and `None` if they do not.
+    """
+    stmt = text(
+        """
+    SELECT *
+    FROM users
+    WHERE sub_id = :sub_id
+    """
+    )
+    user = db.execute(stmt, {"sub_id": sub_id}).first()
+    return User.from_orm(user) if user else None
 
 def create_or_update_user_from_bearer_data(
     db: Session, auth_jwt_payload: dict, settings: Settings = get_settings()
@@ -53,18 +68,19 @@ def create_or_update_user_from_bearer_data(
     if values["sub"] == settings.machine_account_sub_id:
         values["email"] = settings.machine_account_email
 
-    stmt = text(
-        """
+    # see if user exists
+    existing_user = get_user_by_sub_id(db, values["sub_id"])
+    if existing_user:
+        return User.from_orm(existing_user)
+    # try to insert
+    ins_stmt = """
         INSERT INTO users
-        (sub_id, email, is_active, given_name, family_name, nickname, name, picture, locale, updated_at, email_verified, iss, last_login_at)
+        (sub_id, email, is_active, given_name, family_name, nickname, name, picture, locale, updated_at, email_verified, iss)
         VALUES
-        (:sub_id, :email, TRUE, :given_name, :family_name, :nickname, :name, :picture, :locale, :updated_at, :email_verified, :iss, :last_login_at)
-        ON CONFLICT (sub_id)
-        DO UPDATE
-        SET last_login_at = :last_login_at
+        (:sub_id, :email, TRUE, :given_name, :family_name, :nickname, :name, :picture, :locale, :updated_at, :email_verified, :iss)
+        ON CONFLICT (sub_id) DO NOTHING
         RETURNING *
         """
-    )
     cols = (
         "sub_id",
         "email",
@@ -78,9 +94,10 @@ def create_or_update_user_from_bearer_data(
         "updated_at",
         "email_verified",
         "iss",
-        "last_login_at",
     )
     params = {c: values.get(c) for c in cols}
-    row = db.execute(stmt, params).fetchone()
-    out_user = User.from_orm(row)
-    return out_user
+    new_user = db.execute(ins_stmt, params).first()
+    # try again if race condition
+    if not new_user:
+        new_user = get_user_by_sub_id(db, values["sub_id"])
+    return User.from_orm(new_user)
