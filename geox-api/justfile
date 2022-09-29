@@ -159,3 +159,8 @@ access-token:
 # Run an interactive shell for the project
 ssh:
 	fly ssh console
+
+## Create empty .env files
+create-dotenv:
+	PYTHONPATH=. settings-doc generate --class app.core.config.Settings --output-format dotenv > .env.local
+	PYTHONPATH=. settings-doc generate --class app.core.config.Settings --output-format dotenv > .env.docker
