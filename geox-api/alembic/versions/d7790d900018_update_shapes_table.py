@@ -38,7 +38,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_constraint('shapes_deleted_by_user_id_fkey', 'shapes', type_='foreignkey')
+    op.drop_constraint('shapes_deleted_by_user_id', 'shapes', type_='foreignkey')
     op.alter_column('shapes', "deleted_by_user_id",  new_column_name="deleted_at_by_user_id")
     op.create_foreign_key('shapes_deleted_at_by_user_id_fkey', 'shapes', 'users', ['deleted_at_by_user_id'], ['id'])
     op.alter_column('shapes', 'created_at',
@@ -56,6 +56,4 @@ def downgrade() -> None:
                existing_type=postgresql.JSONB(astext_type=sa.Text()),
                type_=postgresql.JSON(astext_type=sa.Text()),
                existing_nullable=False)
-    op.create_foreign_key(None, 'shapes', 'users', ['deleted_by_user_id'], ['id'])
-    op.create_foreign_key(None, 'shapes', 'users', ['deleted_by_user_id'], ['id'])
 

@@ -43,11 +43,12 @@ def upgrade() -> None:
     op.drop_column('organization_members', 'is_admin')
 
 def downgrade() -> None:
+    conn = op.get_bind()
     op.add_column('organization_members', sa.Column('is_admin', sa.BOOLEAN(), autoincrement=False, nullable=False))
     op.add_column('organization_members', sa.Column('has_write', sa.BOOLEAN(), autoincrement=False, nullable=False))
     op.add_column('organization_members', sa.Column('has_read', sa.BOOLEAN(), autoincrement=False, nullable=False))
-    conn.execute(text("""
-        CREATE FUNCTION create_default_organization()
+    conn.execute(sa.text("""
+        CREATE OR REPLACE FUNCTION create_default_organization()
           RETURNS trigger AS
           $_$
           DECLARE

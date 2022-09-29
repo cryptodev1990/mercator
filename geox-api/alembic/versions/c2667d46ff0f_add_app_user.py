@@ -18,6 +18,7 @@ depends_on = None
 
 def downgrade() -> None:
     conn = op.get_bind()
+    conn.execute(sa.text("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM app_user"))
     conn.execute(sa.text("DROP ROLE IF EXISTS app_user"))
 
 
