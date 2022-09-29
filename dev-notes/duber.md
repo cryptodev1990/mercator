@@ -973,11 +973,14 @@ and handle it.
 Rendered features: https://stackoverflow.com/questions/68536418/react-mapbox-sample-implementation-of-getrenderedfeatures-in-deck-gl
 These could be used to copy a bunch of data to a more malleable deck.gl layer
 
-[To remove]
+## 09-30-2022
 
-WIP PRs: 
+Reading shapes from the tile server works
+Creating shapes is untested
+Updating shapes seems to work correctly (the next read from other non-tiling endpoints has the correct data) but the updates never appear in the tiles
+Deleting shapes works correctly but the tile refresh does not happen
 
-https://github.com/mercatorhq/mercator/pull/327
-https://github.com/mercatorhq/mercator/pull/328
 
-Active branch ajd/tiling-iv-fe
+[TO REMOVE]
+Active branch ``ajd/tiling-v-fe``
+
