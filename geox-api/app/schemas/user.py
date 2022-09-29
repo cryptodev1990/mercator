@@ -39,13 +39,13 @@ __all__.append("UserCreate")
 class User(UserBase):
     id: int
     sub_id: str
-    given_name: Optional[str]
-    family_name: Optional[str]
-    nickname: Optional[str]
-    name: Optional[str]
-    locale: Optional[str]
-    picture: Optional[str]
-    is_active: bool
+    given_name: Optional[str] = None
+    family_name: Optional[str] = None
+    nickname: Optional[str] = None
+    name: Optional[str] = None
+    locale: Optional[str] = None
+    picture: Optional[str] = None
+    is_active: bool = True
 
     class Config:
         orm_mode = True

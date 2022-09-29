@@ -15,3 +15,11 @@ filterwarnings = [
     # ./mercator/geox-api/env/lib/python3.9/site-packages/botocore/httpsession.py:41: DeprecationWarning: 'urllib3.contrib.pyopenssl' module is deprecated and will be removed in a future release of urllib3 2.x. Read more in this issue: https://github.com/urllib3/urllib3/issues/2680
     "ignore:'urllib3\\.contrib\\.pyopenssl' module is deprecated:DeprecationWarning"
 ]
+
+[tool.pyright]
+include = ["app", "test"]
+exclude = ["**/node_modules",
+    "**/__pycache__",
+    "**/.ipynb_checkpoints"
+]
+pythonVersion = "3.9"

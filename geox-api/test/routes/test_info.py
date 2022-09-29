@@ -19,7 +19,7 @@ git_commit = "da6c97c1411ba2e80e427fbf18502281c1b015f4"
 
 def get_settings_override():
     env_file = os.environ.get("ENV_FILE")
-    return Settings(git_commit=git_commit, version=version, _env_file=env_file)
+    return Settings(git_commit=git_commit, version=version, _env_file=env_file) # type: ignore
 
 
 def test_into(fastapi_dep):
@@ -31,7 +31,7 @@ def test_into(fastapi_dep):
 
 def get_current_user_override():
     """Skip JWT authorization and return test user info."""
-    return schemas.User(id=42, email="foo@example.com", is_active=True, sub_id=1)
+    return schemas.User(id=42, email="foo@example.com", is_active=True, sub_id=1) # type: ignore
 
 
 def test_current_user(fastapi_dep):

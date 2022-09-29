@@ -14,7 +14,7 @@ def test_app_auth_user_id_default():
 
 
 def test_app_auth_user_id_default_in_session():
-    """The setting app\.user_id is set."""
+    """The setting app.user_id is set."""
     with SessionLocal() as session:
         res = session.execute(sa.text("SELECT current_setting('app.user_id')")).scalar()
     assert res == ""

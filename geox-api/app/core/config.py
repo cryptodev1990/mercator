@@ -174,7 +174,7 @@ class Settings(BaseSettings):
             scheme="postgresql+psycopg2",
             user=values.get("postgres_user"),
             password=str(values.get("postgres_password", "")),
-            host=values.get("postgres_server"),
+            host=cast(str, values.get("postgres_server")),
             port=str(values.get("postgres_port")),
             path=f"/{values.get('postgres_db', '')}",
         )
@@ -200,10 +200,10 @@ class Settings(BaseSettings):
             return str(v).lower()
         # Case in which GIT_COMMIT does not exist
         try:
-            import git
+            from git.repo import Repo
 
             # TODO: be more careful about where this is searching and handling specific errors
-            git_repo = git.Repo(
+            git_repo = Repo(
                 Path(__file__).resolve(), search_parent_directories=True
             )
             if git_repo.is_dirty():
