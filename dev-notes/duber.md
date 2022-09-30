@@ -980,6 +980,12 @@ Creating shapes is untested
 Updating shapes seems to work correctly (the next read from other non-tiling endpoints has the correct data) but the updates never appear in the tiles
 Deleting shapes works correctly but the tile refresh does not happen
 
+## 10-1-2022
+
+- Tile refresh now happens on shape delete, did this by allowing the delete API request to update the tile cache key, forcing tiles to regenerate
+- Updating shapes appears in the tiles. The error was because the GeoJSON in our database would update, but those updates would not sync back to the geom column
+- in the same table.
+- Still needed: creating shapes
 
 [TO REMOVE]
 Active branch ``ajd/tiling-v-fe``
