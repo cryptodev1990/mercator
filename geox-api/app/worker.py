@@ -79,10 +79,10 @@ def query_shapes_table(
                     uuid :: TEXT AS uuid,
                     name,
                     -- WKB Format in WG84 projection
-                    geom,
+                    ST_GeomFromGeoJson(geojson->'geometry') AS geom,
                     -- to avoid certain issues writing to parquet like
                     -- ArrowNotImplementedError: Cannot write struct type 'properties' with no child field to Parquet. Consider adding a dummy child field.
-                    properties::TEXT AS properties,
+                    geojson->>'properties' AS properties,
                     -- ensure that there is no timezone
                     created_at::TIMESTAMP AS created_at,
                     updated_at::TIMESTAMP AS updated_at,
@@ -98,6 +98,8 @@ def query_shapes_table(
         df = gpd.read_postgis(
             query, conn, geom_col="geom", params={"organization_id": organization_id}
         )
+        print(df['properties'])
+        print(df['geom'])
         logger.debug(f"Retrieved {df.shape[0]} rows")
         return df
 
