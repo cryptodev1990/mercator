@@ -19,6 +19,21 @@ from app.db.app_user import set_app_user_id
 from app.db.session import SessionLocal, engine
 
 
+
+async def get_engine() -> Engine:
+    """Return an engine to generate connections to the app database."""
+    return engine
+
+
+async def get_connection(
+    engine: Engine = Depends(get_engine),
+) -> AsyncGenerator[Connection, None]:
+    """Yield a connection with an open transaction."""
+    # engine.begin() yields a connection and opens a transaction.
+    with engine.begin() as conn:
+        yield conn
+
+
 async def get_session() -> AsyncGenerator[Session, None]:
     """Yield a SQLAlchemy session.
 
@@ -68,6 +83,25 @@ async def get_current_user(
     return user
 
 
+async def get_current_user_conn(
+    conn: Connection = Depends(get_connection, use_cache=False),
+    auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
+) -> schemas.User:
+    """Return the current user from the bearer (connection version).
+
+    This function checks whether the JWT is valid and creates the user
+    from the bearer information if they are now.
+    """
+    # TODO: I think it would be better if this returned the model user
+    user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
+    return user
+
+
+def set_app_user_settings(session: Union[Session, Connection], user_id: int):
+    session.execute(text("SET LOCAL ROLE app_user"))
+    set_app_user_id(session, str(user_id), local=True)
+
+
 # dependencies were split out over multiple functions so that each dependency would do one and only one thing
 class UserSession(BaseModel):
     """User and database session to use in routes."""
@@ -77,12 +111,6 @@ class UserSession(BaseModel):
 
     class Config:  # noqa
         arbitrary_types_allowed = True
-
-
-def set_app_user_settings(session: Union[Session, Connection], user_id: int):
-    session.execute(text("SET LOCAL ROLE app_user"))
-    set_app_user_id(session, str(user_id), local=True)
-
 
 async def get_app_user_session(
     user: schemas.User = Depends(get_current_user),
@@ -108,41 +136,6 @@ async def get_app_user_session(
     # start transaction
     with session.begin():
         yield UserSession(user=user, session=session)
-
-
-"""FastAPI dependencies.
-
-See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
-"""
-
-
-
-async def get_engine() -> Engine:
-    """Return an engine to generate connections to the app database."""
-    return engine
-
-
-async def get_connection(
-    engine: Engine = Depends(get_engine),
-) -> AsyncGenerator[Connection, None]:
-    """Yield a connection with an open transaction."""
-    # engine.begin() yields a connection and opens a transaction.
-    with engine.begin() as conn:
-        yield conn
-
-
-async def get_current_user_conn(
-    conn: Connection = Depends(get_connection, use_cache=False),
-    auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
-) -> schemas.User:
-    """Return the current user from the bearer (connection version).
-
-    This function checks whether the JWT is valid and creates the user
-    from the bearer information if they are now.
-    """
-    # TODO: I think it would be better if this returned the model user
-    user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
-    return user
 
 
 # dependencies were split out over multiple functions so that each dependency would do one and only one thing

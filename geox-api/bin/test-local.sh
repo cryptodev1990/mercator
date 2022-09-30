@@ -23,7 +23,7 @@ if [ ! "$(docker ps -q -f name=$DOCKER_CONTAINER_NAME)" ]; then
         -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
         -e POSTGRES_USER=$POSTGRES_USER \
         -e POSTGRES_DB=$POSTGRES_DB \
-        -d postgres:14
+        -d "postgis/postgis"
 fi
 
 # wait 10
