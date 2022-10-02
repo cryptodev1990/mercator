@@ -987,6 +987,12 @@ Deleting shapes works correctly but the tile refresh does not happen
 - in the same table.
 - Still needed: creating shapes
 
-[TO REMOVE]
-Active branch ``ajd/tiling-v-fe``
+## 10-2-2022
 
+- Shapes correctly add now. Overlap denial is supported too.
+- Property edit is supported again
+
+Status, then: Create, read, update, delete all work :)
+
+A couple random features still have bugs, naming shape split and zoom to shape
+I'll get to those tomorrow
