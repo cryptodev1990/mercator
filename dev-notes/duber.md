@@ -994,5 +994,11 @@ Deleting shapes works correctly but the tile refresh does not happen
 
 Status, then: Create, read, update, delete all work :)
 
-A couple random features still have bugs, naming shape split and zoom to shape
-I'll get to those tomorrow
+A couple random features still have bugs:
+
+- shape split
+- zoom to shape
+- export geojson (might want to build an endpoint for this)
+- copy on geojson shape to the clipboard
+
+I'll get to those next
