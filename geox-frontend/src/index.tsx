@@ -5,6 +5,18 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { startDatadogRUM } from './lib/datadog-rum';
+
+startDatadogRUM({
+  /**
+   * @TODO use a proper env config manager for frontend app
+   */
+  environment: process.env.VERCEL_ENV || 'development',
+  /**
+   * @TODO use a proper env config manager for frontend app
+   */
+  gitSha: process.env.VERCEL_GIT_COMMIT_SHA || 'local-development',
+});
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
