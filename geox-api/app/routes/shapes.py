@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from app.core.config import Settings, get_settings
 from app.crud import shape as crud
 from app.crud.organization import get_active_org, organization_s3_enabled
-from app.dependencies import UserSession, get_app_user_session, verify_token
+from app.dependencies import UserConnection, get_app_user_connection, verify_token
 from app.schemas import (
     CeleryTaskResponse,
     GeoShape,
@@ -35,10 +35,10 @@ class GetAllShapesRequestType(str, Enum):
 @router.post("/geofencer/shapes", response_model=GeoShape)
 def create_shape(
     geoshape: GeoShapeCreate,
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> GeoShape:
     """Create a shape."""
-    shape = crud.create_shape(user_session.session, geoshape)
+    shape = crud.create_shape(user_conn.connection, geoshape)
     return shape
 
 
@@ -47,22 +47,22 @@ def get_all_shapes(
     rtype: GetAllShapesRequestType,
     offset: int = 0,
     limit: int = 300,
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> Optional[List[GeoShape]]:
     """Read shapes."""
     # Failure cases:
     # No shapes
     # Invalid user_id, organization_id
     # Unable to authorize for organization
-    user = user_session.user
-    db_session = user_session.session
+    user = user_conn.user
+    conn = user_conn.connection
     shapes = []
     if rtype == GetAllShapesRequestType.user:
-        shapes = crud.get_all_shapes_by_user(db_session, user.id, offset=offset, limit=limit)
+        shapes = crud.get_all_shapes_by_user(conn, user.id, offset=offset, limit=limit)
     elif rtype == GetAllShapesRequestType.organization:
-        organization_id = db_session.execute(select(func.app_user_org())).scalar()
+        organization_id = conn.execute(select(func.app_user_org())).scalar()
         shapes = crud.get_all_shapes_by_organization(
-            db_session, organization_id=organization_id,
+            conn, organization_id=organization_id,
             offset=offset, limit=limit
         )
     return shapes
@@ -71,11 +71,11 @@ def get_all_shapes(
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def get_shape(
     uuid: UUID4,
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
     responses={404: {"details": "No shape with that ID found."}},
 ) -> Optional[GeoShape]:
     """Read a shape."""
-    shape = crud.get_shape(user_session.session, uuid)
+    shape = crud.get_shape(user_conn.connection, uuid)
     if shape is None:
         raise HTTPException(404)
     return shape
@@ -84,7 +84,7 @@ def get_shape(
 @router.put("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def update_shape(
     geoshape: GeoShapeUpdate,
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> Optional[GeoShape]:
     """Update a shape."""
     shape: Optional[GeoShape]
@@ -92,39 +92,39 @@ def update_shape(
         logger.warning(
             "PUT /geofencer/shapes for deleting a shape is deprecated. Use DELETE /geofencer/shapes/{uuid}"
         )
-        crud.delete_shape(user_session.session, geoshape.uuid)
+        crud.delete_shape(user_conn.connection, geoshape.uuid)
         return None
     else:
-        shape = crud.update_shape(user_session.session, geoshape)
+        shape = crud.update_shape(user_conn.connection, geoshape)
         return shape
 
 
 @router.post("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_create_shapes(
     geoshapes: List[GeoShapeCreate],
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
     """Create multiple shapes."""
-    shapes_uuid = crud.create_many_shapes(user_session.session, geoshapes)
+    shapes_uuid = crud.create_many_shapes(user_conn.connection, geoshapes)
     return ShapeCountResponse(num_shapes=len(shapes_uuid))
 
 
 @router.delete("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_delete_shapes(
     shape_uuids: List[UUID4],
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
     """Create multiple shapes."""
-    row_count = crud.delete_many_shapes(user_session.session, shape_uuids)
+    row_count = crud.delete_many_shapes(user_conn.connection, shape_uuids)
     return ShapeCountResponse(num_shapes=row_count)
 
 
 @router.get("/geofencer/shapes/op/count", response_model=ShapeCountResponse)
 def get_shape_count(
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
     """Get shape count."""
-    shape_count = crud.get_shape_count(user_session.session)
+    shape_count = crud.get_shape_count(user_conn.connection)
     return ShapeCountResponse(num_shapes=shape_count)
 
 
@@ -132,10 +132,10 @@ def get_shape_count(
 def get_shapes_containing_point(
     lat: float,
     lng: float,
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes containing a point."""
-    shapes = crud.get_shapes_containing_point(user_session.session, lat, lng)
+    shapes = crud.get_shapes_containing_point(user_conn.connection, lat, lng)
     return shapes
 
 
@@ -143,20 +143,20 @@ def get_shapes_containing_point(
 def get_shapes_by_operation(
     operation: crud.GeometryOperation,
     geom: Union[Point, Polygon, LineString],
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes by operation."""
-    shapes = crud.get_shapes_related_to_geom(user_session.session, operation, geom)
+    shapes = crud.get_shapes_related_to_geom(user_conn.connection, operation, geom)
     return shapes
 
 
-def run_shapes_export(user_session: UserSession, settings: Settings):
-    org_id = get_active_org(user_session.session, user_session.user.id)
+def run_shapes_export(user_conn: UserConnection, settings: Settings):
+    org_id = get_active_org(user_conn.connection, user_conn.user.id)
     if org_id is None:
         raise HTTPException(
             status_code=403, detail="No organization found."  # type: ignore
         )
-    if not organization_s3_enabled(user_session.session, org_id):
+    if not organization_s3_enabled(user_conn.connection, org_id):
         raise HTTPException(
             status_code=403, detail="Data export is not enabled for this account."  # type: ignore
         )
@@ -192,11 +192,11 @@ def run_shapes_export(user_session: UserSession, settings: Settings):
     },
 )
 def shapes_export(
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection  = Depends(get_app_user_connection),
     settings: Settings = Depends(get_settings),
 ):
     """Export shapes to S3.
 
     This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
     """
-    return run_shapes_export(user_session, settings)
+    return run_shapes_export(user_conn, settings)

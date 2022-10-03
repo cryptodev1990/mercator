@@ -1,14 +1,11 @@
-"""SQLAlchemy session objects and functions."""
+"""SQLAlchemy engine for the the app database."""
 
 import logging
-from asyncio.log import logger
-from functools import lru_cache
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import sqlalchemy as sa
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker
 
 from app.core.config import Settings, get_settings
 
@@ -48,14 +45,14 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
         """Ensure connections have the setting app.user_id defined."""
         _set_default_app_user_id(dbapi_connection)
 
-    # Called when a connection is checked out from the pool - before a session uses it
+    # Called when a connection is checked out from the pool before it is used
     @event.listens_for(engine, "checkout")
     def receive_checkout(dbapi_connection, connection_record, connection_proxy):
         """Ensure that connections checked from the pool have app.user_id in the default state."""
         # This is a redundancy in case somehow app.user_id was not cleared
         _set_default_app_user_id(dbapi_connection)
 
-    # engine returned to pool - after a session uses it
+    # conn returned to pool
     @event.listens_for(engine, "reset")
     def receive_reset(dbapi_connection, connection_record):
         """Ensure that connections returned to the pool have app.user_id reset default state."""
@@ -66,5 +63,3 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
 
 
 engine = create_app_engine()
-
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)

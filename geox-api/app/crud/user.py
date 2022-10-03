@@ -1,12 +1,11 @@
 """IMPORTANT: There are database triggers that affect this logic, see Alembic."""
 import datetime
-from typing import Optional, Union
+from typing import Optional
 
 from app.core.config import Settings, get_settings
 from app.schemas import User
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
-from sqlalchemy.orm import Session
 
 
 class NoUserException(Exception):
@@ -25,7 +24,7 @@ class NoUserWithIdException(NoUserException):
         return f"No user with user_id={self.user_id}"
 
 
-def get_user(db: Union[Session, Connection], user_id: int) -> User:
+def get_user(conn: Connection, user_id: int) -> User:
     stmt = text(
         """
     SELECT *
@@ -33,12 +32,12 @@ def get_user(db: Union[Session, Connection], user_id: int) -> User:
     WHERE user_id = :user_id
     """
     )
-    user = db.execute(stmt, {"user_id": user_id}).first()
+    user = conn.execute(stmt, {"user_id": user_id}).first()
     if user is None:
         raise NoUserWithIdException(user_id)
     return User.from_orm(user)
 
-def get_user_by_sub_id(db: Union[Session, Connection], sub_id: str) -> Optional[User]:
+def get_user_by_sub_id(conn: Connection, sub_id: str) -> Optional[User]:
     """Get a user by their Auth0 `sub_id`.
 
     Returns:
@@ -51,11 +50,11 @@ def get_user_by_sub_id(db: Union[Session, Connection], sub_id: str) -> Optional[
     WHERE sub_id = :sub_id
     """
     )
-    user = db.execute(stmt, {"sub_id": sub_id}).first()
+    user = conn.execute(stmt, {"sub_id": sub_id}).first()
     return User.from_orm(user) if user else None
 
 def create_or_update_user_from_bearer_data(
-    db: Union[Session, Connection], auth_jwt_payload: dict, settings: Settings = get_settings()
+    conn: Connection, auth_jwt_payload: dict, settings: Settings = get_settings()
 ) -> User:
     values = dict(auth_jwt_payload)  # This is pulled from auth0
     now = datetime.datetime.utcnow()
@@ -68,18 +67,18 @@ def create_or_update_user_from_bearer_data(
         values["email"] = settings.machine_account_email
 
     # see if user exists
-    existing_user = get_user_by_sub_id(db, values["sub_id"])
+    existing_user = get_user_by_sub_id(conn, values["sub_id"])
     if existing_user:
         return User.from_orm(existing_user)
     # try to insert
-    ins_stmt = """
+    ins_stmt = text("""
         INSERT INTO users
         (sub_id, email, is_active, given_name, family_name, nickname, name, picture, locale, updated_at, email_verified, iss)
         VALUES
         (:sub_id, :email, TRUE, :given_name, :family_name, :nickname, :name, :picture, :locale, :updated_at, :email_verified, :iss)
         ON CONFLICT (sub_id) DO NOTHING
         RETURNING *
-        """
+        """)
     cols = (
         "sub_id",
         "email",
@@ -95,8 +94,8 @@ def create_or_update_user_from_bearer_data(
         "iss",
     )
     params = {c: values.get(c) for c in cols}
-    new_user = db.execute(ins_stmt, params).first()
+    new_user = conn.execute(ins_stmt, params).first()
     # try again if race condition
     if not new_user:
-        new_user = get_user_by_sub_id(db, values["sub_id"])
+        new_user = get_user_by_sub_id(conn, values["sub_id"])
     return User.from_orm(new_user)

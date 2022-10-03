@@ -6,7 +6,7 @@ from timvt.layer import Layer
 from timvt.resources.enums import MimeTypes
 
 from app.crud.organization import get_active_org
-from app.dependencies import UserSession, get_app_user_session, verify_token
+from app.dependencies import UserConnection, get_app_user_connection, verify_token
 
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
@@ -23,10 +23,10 @@ async def get_shape_tile(
     tile: Tile = Depends(TileParams),
     tms: TileMatrixSet = Depends(TileMatrixSetParams),
     layer: Layer = Depends(LayerParams),
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ):
     """Get a tile of shape"""
-    org_id = get_active_org(user_session.session, user_session.user.id)
+    org_id = get_active_org(user_conn.connection, user_conn.user.id)
     pool = request.app.state.pool
 
     kwargs = {"organization_id": org_id}

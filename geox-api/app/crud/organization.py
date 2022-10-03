@@ -1,41 +1,35 @@
 """CRUD functions for organizations."""
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
-import sqlalchemy as sa
 from pydantic import UUID4
-from sqlalchemy import select, text
+from sqlalchemy import text
 from sqlalchemy.engine import Connection
-from sqlalchemy.orm import Session
 
 from app.db.cache import check_cache
-from app.models import Organization, OrganizationMember, User
 
-org_mbr_tbl = OrganizationMember.__table__
-org_tbl = Organization.__table__
-user_tbl = User.__table__
-
-
-def get_user_personal_org(
-    db: Union[Connection, Session], user_id: int
+def get_user_personal_org_id(
+    conn: Connection, user_id: int
 ) -> Optional[UUID4]:
     """Return user personal org."""
-    stmt = (
-        select(org_tbl)
-        .with_only_columns([org_tbl.c.id])
-        .where(org_tbl.c.is_personal)
-        .limit(1)
-        .join(org_mbr_tbl, org_mbr_tbl.c.organization_id == org_tbl.c.id)
-    )
-    return db.execute(stmt).scalar()
+    stmt = text("""
+    SELECT o.id
+    FROM organizations AS o
+    INNER JOIN organization_members AS om
+    ON o.id = om.organization_id
+    WHERE om.user_id = :user_id
+        AND o.is_personal
+        AND om.deleted_at IS NULL
+    """)
+    return conn.execute(stmt, {"user_id": user_id}).scalar()
 
 
 def set_active_org(
-    db: Union[Session, Connection], user_id: int, organization_id: UUID4
+    conn: Connection, user_id: int, organization_id: UUID4
 ) -> Literal[True]:
     """Set the active organization for a user.
 
     Args:
-        db: Database connection or session.
+        conn: Database connection
         user_id: ID of the user.
         organization_id: Organization to set for the user.
 
@@ -48,14 +42,15 @@ def set_active_org(
         """
         UPDATE organization_members
         SET active = (organization_id = :organization_id)
-        WHERE user_id = :user_id;
+        WHERE user_id = :user_id
+            AND deleted_at IS NULL
         """
     )
-    db.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
+    conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
     return True
 
 
-def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
+def get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
     """Get the acttive organization of a user.
 
     This will check a cache for the value of the user's active organization before running
@@ -69,7 +64,7 @@ def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
         handling the case of no active organization for the user.
     """
     try:
-        return UUID4(check_cache(user_id, "organization_id", _get_active_org, db, user_id))
+        return UUID4(check_cache(user_id, "organization_id", _get_active_org, conn, user_id))
     except ValueError:
         # in the case of no active org - check_cache returns "None", which
         # raises exception
@@ -79,22 +74,22 @@ def get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
 
 
 # TODO make this consistent with the other get_* functions, use user instead of user_id
-def _get_active_org(db: Session, user_id: int) -> Optional[UUID4]:
+def _get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
     stmt = text(
         """
-    SELECT organization_id
-    FROM organization_members
-    WHERE user_id = :user_id
-        AND deleted_at IS NULL
-        AND active
-    """
+        SELECT organization_id
+        FROM organization_members
+        WHERE user_id = :user_id
+            AND deleted_at IS NULL
+            AND active
+        """
     )
-    res = db.execute(stmt, {"user_id": user_id}).first()
+    res = conn.execute(stmt, {"user_id": user_id}).first()
     return res.organization_id if res else None
 
 
-def get_personal_org_id(db: Session, user_id: int) -> UUID4:
-    res = db.execute(
+def get_personal_org_id(conn: Connection, user_id: int) -> UUID4:
+    res = conn.execute(
         text(
             """
         SELECT og.id
@@ -111,10 +106,10 @@ def get_personal_org_id(db: Session, user_id: int) -> UUID4:
     return res.first()[0]
 
 
-def organization_s3_enabled(db: Session, organization_id: UUID4) -> bool:
+def organization_s3_enabled(conn: Connection, organization_id: UUID4) -> bool:
     """Return whether the organization has s3 export enabled."""
     stmt = text(
         "SELECT s3_export_enabled FROM organizations WHERE id = :organization_id"
     )
-    res = db.execute(stmt, {"organization_id": organization_id}).scalar()
+    res = conn.execute(stmt, {"organization_id": organization_id}).scalar()
     return res

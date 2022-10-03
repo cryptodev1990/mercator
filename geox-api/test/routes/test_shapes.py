@@ -12,10 +12,11 @@ from sqlalchemy import select, text, update
 from sqlalchemy.engine import Connection
 
 from app.core.config import get_settings
-from app.crud.organization import get_user_personal_org
+from app.crud.organization import get_personal_org_id
 from app.main import app
-from app.models import Organization, OrganizationMember, Shape
 from app.schemas import GeoShapeCreate
+from app.db.metadata import shapes as shapes_tbl
+from app.db.metadata import organization_members as org_mbr_tbl
 
 # used in fixtures
 from .route_utils import connection, dep_override_factory  # type: ignore
@@ -26,11 +27,6 @@ yaml = YAML(typ="safe")
 
 
 settings = get_settings()
-
-# Use the table objects when writing queries to avoid using ORM features
-org_tbl = Organization.__table__
-org_mbr_tbl = OrganizationMember.__table__
-shape_tbl = Shape.__table__
 
 
 def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
@@ -111,7 +107,7 @@ def test_read_shape_self_wrong_org(connection, dep_override_factory):
     user_id = 1
     shape_id = UUID("4f974f2d-572b-46f1-8741-56bf7f357d12")
     # Change the org to the user's personal org
-    personal_org = get_user_personal_org(connection, user_id)
+    personal_org = get_personal_org_id(connection, user_id)
     assert personal_org
     set_active_organization(connection, user_id, personal_org)
     assert shape_exists(connection, shape_id)
@@ -192,40 +188,6 @@ def test_get_all_shapes_by_organization(connection, dep_override_factory):
         body = response.json()
         assert body
         assert {shape["uuid"] for shape in body} == user_shapes
-
-
-# def test_update_shape(connection, dep_override_factory):
-#     user_id = 1
-#     shape_id = "4f974f2d-572b-46f1-8741-56bf7f357d12"
-
-#     new_name = "fuchsia-auditor"
-#     new_shape = Feature(geometry=Point(coordinates=[-6.364088, -65.21654]))
-
-#     with dep_override_factory(user_id):
-
-#         shape_old = connection.execute(text(
-#                 "SELECT * FROM shapes WHERE uuid = :uuid LIMIT 1"), {"uuid": shape_id}
-#         ).fetchone()
-
-#         response = client.put(
-#             f"/geofencer/shapes/{shape_id}",
-#             json={"uuid": str(shape_id),
-#                   "geojson": new_shape.dict(), "name": new_name},
-#         )
-#         assert_ok(response)
-#         body = response.json()
-#         assert body
-#         geom = Feature.parse_obj(body.get("geojson"))
-#         assert body.get("name") == new_name, "Name should be updated"
-#         assert geom == new_shape, "GeoJSON should be updated"
-#         assert (
-#             datetime.datetime.strptime(
-#                 body.get("created_at"), "%Y-%m-%dT%H:%M:%S")
-#             == shape_old.created_at
-#         ), "Created at should be the same"
-#         assert (
-#             body.get("updated_at") != shape_old.updated_at
-#         ), "Updated at should be different"
 
 
 def test_delete_shape(connection, dep_override_factory):

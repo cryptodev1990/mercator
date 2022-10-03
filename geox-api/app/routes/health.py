@@ -1,10 +1,10 @@
+"""Health routes."""
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.engine import Connection
 
-from app.dependencies import get_current_user, get_session, verify_token
-from app.schemas.user import User
+from app.dependencies import get_connection, verify_token
 
 router = APIRouter()
 
@@ -20,9 +20,9 @@ async def protected_health():
 
 
 @router.get("/db-health", tags=["health"])
-async def db_health(session: Session = Depends(get_session)):
+async def db_health(conn: Connection = Depends(get_connection)):
     try:
-        res = session.execute(text("SELECT 1")).scalar()
+        res = conn.execute(text("SELECT 1")).scalar()
         assert res == 1
         return JSONResponse({"message": "OK"})
     except Exception as e:

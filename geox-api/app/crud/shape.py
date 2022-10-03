@@ -10,41 +10,39 @@ import jinja2
 import sqlalchemy as sa
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
-from sqlalchemy.orm import Session
+from sqlalchemy.engine import Connection
 
 from app import schemas
-from app.models import Shape
-
-
-shape_tbl = Shape.__table__
+from app.db.metadata import shapes as shapes_tbl
 
 
 DEFAULT_LIMIT = 300
 METADATA_COLS = [
-    shape_tbl.c.uuid,
-    shape_tbl.c.name,
-    shape_tbl.c.properties,
-    shape_tbl.c.created_at,
-    shape_tbl.c.updated_at,
+    shapes_tbl.c.uuid,
+    shapes_tbl.c.name,
+    shapes_tbl.c.properties,
+    shapes_tbl.c.created_at,
+    shapes_tbl.c.updated_at,
 ]
 
 
-def get_shape(db: Session, shape_id: UUID4) -> Optional[schemas.GeoShape]:
+def get_shape(conn: Connection, shape_id: UUID4) -> Optional[schemas.GeoShape]:
     """Get a shape."""
     query = (
-        sa.select(shape_tbl)
-        .where(shape_tbl.c.deleted_at == None)
-        .where(shape_tbl.c.uuid == shape_id)
+        shapes_tbl
+        .select()
+        .where(shapes_tbl.c.deleted_at == None)
+        .where(shapes_tbl.c.uuid == shape_id)
         .limit(1)
     )
-    res = db.execute(query).first()
+    res = conn.execute(query).first()
     if res:
         return schemas.GeoShape.from_orm(res)
     return None
 
 
 def get_all_shapes_by_user(
-    db: Session, user_id: int, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
+    conn: Connection, user_id: int, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
 ) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
@@ -52,20 +50,21 @@ def get_all_shapes_by_user(
     # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
-        sa.select(shape_tbl)
-        .where(shape_tbl.c.created_by_user_id == user_id)
-        .where(shape_tbl.c.deleted_at == None)
-        .order_by(shape_tbl.c.uuid)
+        shapes_tbl
+        .select()
+        .where(shapes_tbl.c.created_by_user_id == user_id)
+        .where(shapes_tbl.c.deleted_at == None)
+        .order_by(shapes_tbl.c.uuid)
         .offset(offset)
     )
     if limit is not None:
         stmt = stmt.limit(limit)
-    res = db.execute(stmt).fetchall()
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
-def get_shape_metadata_by_bounding_box(db: Session, bbox: schemas.ViewportBounds, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
-    """Get all shapes within a bounding box
+def get_shape_metadata_by_bounding_box(conn: Connection, bbox: schemas.ViewportBounds, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
+    """Get all shapes within a bounding box.
 
     Used on the frontend to determine which shapes to show details on in the sidebar
     """
@@ -77,24 +76,24 @@ def get_shape_metadata_by_bounding_box(db: Session, bbox: schemas.ViewportBounds
         (bbox.minX, bbox.minY)
     ]])
     stmt = (
-        sa.select(shape_tbl)
+        sa.select(shapes_tbl) # type: ignore
         .with_only_columns(METADATA_COLS)
         .where(
-            shape_tbl.c.deleted_at == None
+            shapes_tbl.c.deleted_at == None
         )
         .where(
             sa.func.ST_Intersects(
-                shape_tbl.c.geom, sa.func.ST_Transform(geom, 4326))
+                shapes_tbl.c.geom, sa.func.ST_Transform(geom, 4326))
         )
-        .order_by(shape_tbl.c.uuid)
+        .order_by(shapes_tbl.c.uuid)
         .offset(offset)
         .limit(limit)
     )
-    res = db.execute(stmt).fetchall()
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
 
 
-def get_shape_metadata_matching_search(db: Session, query: str, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
+def get_shape_metadata_matching_search(conn: Connection, query: str, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
     """Get all shapes matching a search string."""
     stmt = sa.text("""
         SELECT uuid
@@ -112,7 +111,7 @@ def get_shape_metadata_matching_search(db: Session, query: str, offset: int = 0,
         LIMIT 20
         OFFSET :offset
     """)
-    res = db.execute(stmt, {
+    res = conn.execute(stmt, {
         "query_text": query,
         "offset": offset
     }).scalars().fetchall()
@@ -120,7 +119,7 @@ def get_shape_metadata_matching_search(db: Session, query: str, offset: int = 0,
 
 
 def get_all_shapes_by_organization(
-    db: Session, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
+    conn: Connection, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
 ) -> List[schemas.GeoShape]:
     # This is usually equivalent to getting all shapes by organization
     # TODO ordering by UUID just guarantees a sort order
@@ -128,37 +127,39 @@ def get_all_shapes_by_organization(
     # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
-        sa.select(shape_tbl)
-        .where(shape_tbl.c.organization_id == str(organization_id))  # type: ignore
-        .where(shape_tbl.c.deleted_at == None)
-        .order_by(shape_tbl.c.uuid)
+        shapes_tbl
+        .select()
+        .where(shapes_tbl.c.organization_id == str(organization_id))  # type: ignore
+        .where(shapes_tbl.c.deleted_at == None)
+        .order_by(shapes_tbl.c.uuid)
         .offset(offset)
         .limit(limit)
     )
-    res = db.execute(stmt).fetchall()
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
 def get_all_shape_metadata_by_organization(
-    db: Session, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
+    conn: Connection, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
 ) -> List[schemas.GeoShapeMetadata]:
     stmt = (
-        sa.select(shape_tbl)
+        sa.select(shapes_tbl) # type: ignore
         .with_only_columns(METADATA_COLS)
-        .where(shape_tbl.c.organization_id == str(organization_id))  # type: ignore
-        .where(shape_tbl.c.deleted_at == None)
-        .order_by(shape_tbl.c.uuid)
+        .where(shapes_tbl.c.organization_id == str(organization_id))  # type: ignore
+        .where(shapes_tbl.c.deleted_at == None)
+        .order_by(shapes_tbl.c.uuid)
         .offset(offset)
         .limit(limit)
     )
-    res = db.execute(stmt).fetchall()
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
 
 
-def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
+def create_shape(conn: Connection, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
     """Create a new shape"""
     ins = (
-        sa.insert(shape_tbl)  # type: ignore
+        shapes_tbl
+        .insert()
         .values(
             created_by_user_id=sa.func.app_user_id(),
             updated_by_user_id=sa.func.app_user_id(),
@@ -168,19 +169,20 @@ def create_shape(db: Session, geoshape: schemas.GeoShapeCreate) -> schemas.GeoSh
             name=geoshape.name,
             geojson=geoshape.geojson.dict(),
         )
-        .returning(shape_tbl)  # type: ignore
+        .returning(shapes_tbl)  # type: ignore
     )
-    new_shape = db.execute(ins).fetchone()
+    new_shape = conn.execute(ins).fetchone()
     res = schemas.GeoShape.from_orm(new_shape)
     return res
 
 
 def create_many_shapes(
-    db: Session, geoshapes: Sequence[schemas.GeoShapeCreate]
+    conn: Connection, geoshapes: Sequence[schemas.GeoShapeCreate]
 ) -> List[UUID4]:
     """Create many new shapes."""
     ins = (
-        sa.insert(shape_tbl)  # type: ignore
+        shapes_tbl
+        .insert()
         .values(
             created_by_user_id=sa.func.app_user_id(),
             created_at=sa.func.now(),
@@ -188,15 +190,15 @@ def create_many_shapes(
             updated_at=sa.func.now(),
             organization_id=sa.func.app_user_org(),
         )
-        .returning(shape_tbl.c.uuid)
+        .returning(shapes_tbl.c.uuid)
     )
-    new_shapes = db.execute(
+    new_shapes = conn.execute(
         ins, [{"name": s.name, "geojson": s.geojson.dict()} for s in geoshapes]
     ).scalars()
     return list(new_shapes)
 
 
-def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoShape:
+def update_shape(conn: Connection, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoShape:
     """Update a shape with additional information."""
     values = {
         "name": geoshape.name,
@@ -206,12 +208,13 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     if geoshape.geojson:
         values["geojson"] = geoshape.geojson.dict()
     update_stmt = (
-        sa.update(shape_tbl)
+        shapes_tbl
+        .update()
         .values(**values)
-        .where(shape_tbl.c.uuid == str(geoshape.uuid))
-        .returning(shape_tbl)
+        .where(shapes_tbl.c.uuid == str(geoshape.uuid))
+        .returning(shapes_tbl)
     )
-    res = db.execute(update_stmt)
+    res = conn.execute(update_stmt)
     rows = res.rowcount
     if rows == 0:
         raise Exception("No rows updated")
@@ -219,25 +222,25 @@ def update_shape(db: Session, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoSh
     return schemas.GeoShape.from_orm(shape)
 
 
-def delete_shape(db: Session, uuid: UUID4) -> int:
+def delete_shape(conn: Connection, uuid: UUID4) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
         "deleted_at": datetime.datetime.now(),
         "deleted_by_user_id": sa.func.app_user_id(),
     }
-    stmt = (
-        sa.update(shape_tbl)
+    stmt = (shapes_tbl
+        .update()
         .values(**values)
-        .where(shape_tbl.c.uuid == str(uuid))
-        .returning(shape_tbl.c.uuid)  # type: ignore
+        .where(shapes_tbl.c.uuid == str(uuid))
+        .returning(shapes_tbl.c.uuid)  # type: ignore
     )
-    res = db.execute(stmt)
+    res = conn.execute(stmt)
     rows = res.rowcount
     return rows
 
 
-def delete_many_shapes(db: Session, uuids: Sequence[UUID4]) -> int:
+def delete_many_shapes(conn: Connection, uuids: Sequence[UUID4]) -> int:
     """Delete a shape."""
     # TODO: What to do if exists?
     values = {
@@ -245,27 +248,28 @@ def delete_many_shapes(db: Session, uuids: Sequence[UUID4]) -> int:
         "deleted_by_user_id": sa.func.app_user_id(),
     }
     stmt = (
-        sa.update(shape_tbl)
+        shapes_tbl
+        .update()
         .values(**values)
-        .where(shape_tbl.c.uuid.in_(tuple([str(x) for x in uuids])))
+        .where(shapes_tbl.c.uuid.in_(tuple([str(x) for x in uuids])))
     )  # type: ignore
-    res = db.execute(stmt)
+    res = conn.execute(stmt)
     rows = res.rowcount
     return rows
 
 
-def get_shape_count(db: Session) -> int:
+def get_shape_count(conn: Connection) -> int:
     """Get the number of shapes in an organization."""
     stmt = (
-        sa.select(sa.func.count(shape_tbl.c.uuid))
-        .where(shape_tbl.c.organization_id == sa.func.app_user_org())
-        .where(shape_tbl.c.deleted_at == None)
+        sa.select(sa.func.count(shapes_tbl.c.uuid))
+        .where(shapes_tbl.c.organization_id == sa.func.app_user_org())
+        .where(shapes_tbl.c.deleted_at == None)
     )
-    res = db.execute(stmt).fetchone()
+    res = conn.execute(stmt).fetchone()
     return res[0]
 
 
-def get_shapes_containing_point(db: Session, lat: float, lng: float) -> List[Feature]:
+def get_shapes_containing_point(conn: Connection, lat: float, lng: float) -> List[Feature]:
     """Get the shape that contains a point."""
     stmt = sa.text(
         """
@@ -277,7 +281,7 @@ def get_shapes_containing_point(db: Session, lat: float, lng: float) -> List[Fea
       AND organization_id = public.app_user_org()
     """
     )
-    res = db.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
+    res = conn.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
     if res:
         return [schemas.GeoShape.from_orm(row).geojson for row in res]
     return []
@@ -293,7 +297,7 @@ class GeometryOperation(str, Enum):
 
 
 def get_shapes_related_to_geom(
-    db: Session, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
+    conn: Connection, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
 ) -> List[Feature]:
     """Get the shape that contains a point."""
     stmt = sa.text(
@@ -308,7 +312,7 @@ def get_shapes_related_to_geom(
     """
         ).render(operation=operation.title())
     )
-    res = db.execute(stmt, {"geom": geom.json()}).fetchall()
+    res = conn.execute(stmt, {"geom": geom.json()}).fetchall()
     if res:
         return [schemas.GeoShape.from_orm(row).geojson for row in res]
     return []

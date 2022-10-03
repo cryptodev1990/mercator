@@ -133,10 +133,6 @@ test-local-db *FLAGS=".":
 db-revision message *FLAGS:
 	#!/usr/bin/env zsh
 	set -e
-	echo "Check that all the models were included in app/db/base.py"
-	echo "--- Start of app/db/base.py"
-	cat ./app/db/base.py
-	echo "--- End of app/db/base.py"
 	ENV_FILE=.env.local alembic revision --autogenerate -m "{{ message }}" {{ FLAGS }}
 
 # Remove untracked alembic versions

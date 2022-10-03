@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
-from app.dependencies import UserSession, get_app_user_session, verify_token
+from app.dependencies import UserConnection, get_app_user_connection, verify_token
 from app.routes.shapes import run_shapes_export
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
 from app.worker import test_celery
@@ -45,7 +45,7 @@ def run_test_celery(word: str = "Hello"):
     },
 )
 def copy_shapes(
-    user_session: UserSession = Depends(get_app_user_session),
+    user_conn: UserConnection = Depends(get_app_user_connection),
     settings: Settings = Depends(get_settings),
 ) -> CeleryTaskResponse:
     """Export shapes to S3.
@@ -58,4 +58,4 @@ def copy_shapes(
     Use `POST /shapes/export` instead.
 
     """
-    return run_shapes_export(user_session, settings)
+    return run_shapes_export(user_conn, settings)

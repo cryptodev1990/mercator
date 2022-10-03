@@ -9,46 +9,22 @@ from sqlalchemy.orm import Session
 # https://www.postgresql.org/docs/current/runtime-config-custom.html
 
 
-@overload
-def set_app_user_id(
-    session: Session, user_id: Optional[str], local: bool = False
-) -> CursorResult:
-    ...
-
-
-@overload
-def set_app_user_id(
-    session: Connection, user_id: Optional[str], local: bool = False
-) -> CursorResult:
-    ...
-
-
-def set_app_user_id(session, user_id, local=False):
+def set_app_user_id( conn: Connection, user_id: Optional[int], local: bool = False) -> CursorResult:
     """Set Postgres setting ``app.auth_user_id`` to ``auth_user_id``."""
     scope = "LOCAL" if local else "SESSION"
     stmt = text(f"SET {scope} app.user_id = :user_id")
-    return session.execute(stmt, {"user_id": str(user_id)})
+    return conn.execute(stmt, {"user_id": str(user_id)})
 
 
-@overload
-def unset_app_user_id(session: Session, local: bool = False) -> CursorResult:
-    ...
-
-
-@overload
-def unset_app_user_id(session: Connection, local: bool = False) -> CursorResult:
-    ...
-
-
-def unset_app_user_id(session, local=False) -> CursorResult:
+def unset_app_user_id(conn: Connection, local: bool = False) -> CursorResult:
     """Reset Posrgres setting ``app.auth_user_id`` to default."""
     scope = "LOCAL" if local else "SESSION"
     stmt = text(f"SET {scope} app.user_id = DEFAULT")
-    return session.execute(stmt)
+    return conn.execute(stmt)
 
 
-def get_app_user_id(session: Union[Session, Connection]) -> Optional[str]:
+def get_app_user_id(conn: Connection) -> Optional[str]:
     """Reset Postgres setting ``app.auth_user_id`` to ``auth_user_id``."""
     stmt = text(f"SELECT nullif(current_setting('app.user_id', TRUE), '')")
-    res = session.execute(stmt).scalar()
+    res = conn.execute(stmt).scalar()
     return res if res else None

@@ -4,15 +4,15 @@
 import logging
 
 from app.db.init_db import init_db
-from app.db.session import SessionLocal
+from app.db.engine import engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def init() -> None:
-    with SessionLocal() as db, db.begin():
-        init_db(db)
+    with engine.begin() as conn:
+        init_db(conn)
 
 
 def main() -> None:

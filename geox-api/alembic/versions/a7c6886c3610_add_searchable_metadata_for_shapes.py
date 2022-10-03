@@ -9,7 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-from app import models
+from app.db.metadata.shapes import TSVector
 
 # revision identifiers, used by Alembic.
 revision = 'a7c6886c3610'
@@ -20,7 +20,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.add_column('shapes', sa.Column(
-        'fts', models.shape.TSVector(), sa.Computed("to_tsvector('english', properties - '__uuid')", persisted=True), nullable=True))
+        'fts', TSVector(), sa.Computed("to_tsvector('english', properties - '__uuid')", persisted=True), nullable=True))
     op.create_index('ix_properties_fts', 'shapes', [
                     'fts'], unique=False, postgresql_using='gin')
     conn = op.get_bind()
