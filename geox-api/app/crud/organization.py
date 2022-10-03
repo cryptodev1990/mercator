@@ -68,6 +68,10 @@ def get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
     if value is None:
         return None
     try:
+        # If value is valid UUID string - str(str) str('c90981e7-ba7b-4299-9a07-b689bdb03d3a') = 'c90981e7-ba7b-4299-9a07-b689bdb03d3a'
+        # If value is somehow already a UUID, then str(UUID('c90981e7-ba7b-4299-9a07-b689bdb03d3a')) = 'c90981e7-ba7b-4299-9a07-b689bdb03d3a'
+        # Case of None handled above
+        # Otherwise it must be an illformed string
         return UUID4(str(value))
     except ValueError:
         return None
