@@ -996,7 +996,7 @@ Status, then: Create, read, update, delete all work :)
 
 A couple random features still have bugs:
 
-- shape split
+[X] shape split
 - zoom to shape
 - export geojson (might want to build an endpoint for this)
 - copy on geojson shape to the clipboard
