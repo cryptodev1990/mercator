@@ -18,15 +18,15 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_index("ix_namespaces_id", table_name="namespaces")
+    op.drop_index("ix_namespaces_id", table_name=op.f("namespaces"))
     op.drop_index(
-        "ix_namespace_members_added_by_user_id", table_name="namespace_members"
+        "ix_namespace_members_added_by_user_id", table_name=op.f("namespace_members")
     )
-    op.drop_index("ix_namespace_members_id", table_name="namespace_members")
-    op.drop_index("ix_namespace_members_namespace_id", table_name="namespace_members")
-    op.drop_index("ix_namespace_members_user_id", table_name="namespace_members")
+    op.drop_index("ix_namespace_members_id", table_name=op.f("namespace_members"))
+    op.drop_index("ix_namespace_members_namespace_id", table_name=op.f("namespace_members"))
+    op.drop_index("ix_namespace_members_user_id", table_name=op.f("namespace_members"))
     op.drop_table("namespace_members")
-    op.drop_constraint("shapes_namespace_id_fkey", "shapes", type_="foreignkey")
+    op.drop_constraint(op.f("shapes_namespace_id_fkey"), "shapes", type_="foreignkey")
     op.drop_column("shapes", "namespace_id")
     op.drop_table("namespaces")
 
@@ -51,14 +51,14 @@ def downgrade() -> None:
         sa.ForeignKeyConstraint(
             ["created_by_user_id"],
             ["users.id"],
-            name="namespaces_created_by_user_id_fkey",
+            name=op.f("namespaces_created_by_user_id_fkey"),
         ),
         sa.ForeignKeyConstraint(
             ["organization_id"],
             ["organizations.id"],
-            name="namespaces_organization_id_fkey",
+            name=op.f("namespaces_organization_id_fkey"),
         ),
-        sa.PrimaryKeyConstraint("id", name="namespaces_pkey"),
+        sa.PrimaryKeyConstraint("id", name=op.f("namespaces_pkey")),
     )
     op.add_column(
         "shapes",
@@ -72,9 +72,9 @@ def downgrade() -> None:
         sa.Column(
             "updated_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
         ),
-        sa.Column("has_read", sa.BOOLEAN(), autoincrement=False, nullable=False),
-        sa.Column("has_write", sa.BOOLEAN(), autoincrement=False, nullable=False),
-        sa.Column("is_admin", sa.BOOLEAN(), autoincrement=False, nullable=False),
+        sa.Column("has_read", sa.BOOLEAN(), autoincrement=False, nullable=False, server_default=sa.text("TRUE")),
+        sa.Column("has_write", sa.BOOLEAN(), autoincrement=False, nullable=False, server_default=sa.text("TRUE")),
+        sa.Column("is_admin", sa.BOOLEAN(), autoincrement=False, nullable=False, server_default=sa.text("FALSE")),
         sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column("user_id", sa.INTEGER(), autoincrement=False, nullable=False),
         sa.Column("namespace_id", sa.INTEGER(), autoincrement=False, nullable=False),
@@ -82,17 +82,17 @@ def downgrade() -> None:
         sa.ForeignKeyConstraint(
             ["added_by_user_id"],
             ["users.id"],
-            name="namespace_members_added_by_user_id_fkey",
+            name=op.f("namespace_members_added_by_user_id_fkey"),
         ),
         sa.ForeignKeyConstraint(
             ["namespace_id"],
             ["namespaces.id"],
-            name="namespace_members_namespace_id_fkey",
+            name=op.f("namespace_members_namespace_id_fkey"),
         ),
         sa.ForeignKeyConstraint(
-            ["user_id"], ["users.id"], name="namespace_members_user_id_fkey"
+            ["user_id"], ["users.id"], name=op.f("namespace_members_user_id_fkey")
         ),
-        sa.PrimaryKeyConstraint("id", name="namespace_members_pkey"),
+        sa.PrimaryKeyConstraint("id", name=op.f("namespace_members_pkey")),
     )
     op.create_index("ix_namespaces_id", "namespaces", ["id"], unique=False)
     op.create_foreign_key(

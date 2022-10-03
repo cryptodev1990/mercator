@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_constraint('shapes_deleted_at_by_user_id_fkey', 'shapes', type_='foreignkey')
+    op.drop_constraint(op.f("shapes_deleted_at_by_user_id_fkey"), 'shapes', type_='foreignkey')
     op.alter_column('shapes', "deleted_at_by_user_id",  new_column_name="deleted_by_user_id")
     op.create_foreign_key("shapes_deleted_by_user_id", 'shapes', 'users', ['deleted_by_user_id'], ['id'])
     op.alter_column('shapes', 'created_at',
@@ -38,7 +38,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_constraint('shapes_deleted_by_user_id', 'shapes', type_='foreignkey')
+    op.drop_constraint(op.f("shapes_deleted_by_user_id"), 'shapes', type_='foreignkey')
     op.alter_column('shapes', "deleted_by_user_id",  new_column_name="deleted_at_by_user_id")
     op.create_foreign_key('shapes_deleted_at_by_user_id_fkey', 'shapes', 'users', ['deleted_at_by_user_id'], ['id'])
     op.alter_column('shapes', 'created_at',

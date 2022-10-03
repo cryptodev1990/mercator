@@ -21,7 +21,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_index("ix_db_credentials_name", table_name="db_credentials")
+    op.drop_index("ix_db_credentials_name", table_name=op.f("db_credentials"))
     op.drop_table("db_credentials")
 
 
@@ -62,21 +62,21 @@ def downgrade() -> None:
         sa.ForeignKeyConstraint(
             ["created_by_user_id"],
             ["users.id"],
-            name="db_credentials_created_by_user_id_fkey",
+            name=op.f("db_credentials_created_by_user_id_fkey"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["organization_id"],
             ["organizations.id"],
-            name="db_credentials_organization_id_fkey",
+            name=op.f("db_credentials_organization_id_fkey"),
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["updated_by_user_id"],
             ["users.id"],
-            name="db_credentials_updated_by_user_id_fkey",
+            name=op.f("db_credentials_updated_by_user_id_fkey"),
             ondelete="SET NULL",
         ),
-        sa.PrimaryKeyConstraint("id", name="db_credentials_pkey"),
+        sa.PrimaryKeyConstraint("id", name=op.f("db_credentials_pkey")),
     )
     op.create_index("ix_db_credentials_name", "db_credentials", ["name"], unique=False)
