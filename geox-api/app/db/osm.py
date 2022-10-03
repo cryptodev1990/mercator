@@ -17,5 +17,3 @@ def create_osm_engine(settings: Settings = get_settings()) -> Optional[Engine]:
     return create_engine(osm_database_uri, pool_pre_ping=True, future=True)
 
 osm_engine = create_osm_engine()
-
-OsmSessionLocal = sessionmaker(bind=osm_engine, autocommit=False, autoflush=False, future=True)

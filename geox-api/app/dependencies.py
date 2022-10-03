@@ -2,6 +2,7 @@
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
+from functools import lru_cache
 from typing import Any, AsyncGenerator, Dict
 
 from fastapi import Depends, HTTPException, status
@@ -16,7 +17,7 @@ from app.core.security import VerifyToken, token_auth_scheme
 from app.crud.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id
 from app.db.engine import engine
-
+from app.db.osm import osm_engine
 
 
 async def get_engine() -> Engine:
@@ -105,3 +106,16 @@ async def get_app_user_connection(
     # https://docs.sqlalchemy.org/en/14/orm/events.html#sqlalchemy.orm.SessionEvents.after_begin
 
     return UserConnection(user=user, connection=conn)
+
+@lru_cache(None)
+def get_osm_engine() -> Engine:
+    """Return OSM Engine."""
+    if osm_engine is None:
+        raise HTTPException(501, detail="OSM database not found.")
+    return osm_engine
+
+async def get_osm_conn(engine = Depends(get_osm_engine)) -> AsyncGenerator[Connection, None]:
+    """Return a connection to an OSM database."""
+    # TODO: should we disallow writes to it?
+    with engine.begin():
+        yield engine
