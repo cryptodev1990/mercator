@@ -63,18 +63,17 @@ def get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
         Users of this function are responsible for raising exceptions or otherwise
         handling the case of no active organization for the user.
     """
+    # _get_active_org will return str not UUID to make it more
+    value = check_cache(user_id, "organization_id", _get_active_org, conn, user_id)
+    if value is None:
+        return None
     try:
-        return UUID4(check_cache(user_id, "organization_id", _get_active_org, conn, user_id))
+        return UUID4(str(value))
     except ValueError:
-        # in the case of no active org - check_cache returns "None", which
-        # raises exception
-        # ValueError: badly formed hexadecimal UUID string.
-        # Instead of raising an exception, return None and let caller handle the value
         return None
 
 
-# TODO make this consistent with the other get_* functions, use user instead of user_id
-def _get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
+def _get_active_org(conn: Connection, user_id: int) -> Optional[str]:
     stmt = text(
         """
         SELECT organization_id
@@ -85,7 +84,9 @@ def _get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
         """
     )
     res = conn.execute(stmt, {"user_id": user_id}).first()
-    return res.organization_id if res else None
+    # Return str intead of UUID because UUID can't natively be cached in redis
+    # Also this function is consistent with the return type of check_cache() if converted to str
+    return str(res.organization_id) if res else None
 
 
 def get_personal_org_id(conn: Connection, user_id: int) -> UUID4:

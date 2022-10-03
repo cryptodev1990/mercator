@@ -1,6 +1,10 @@
+from asyncio.log import logger
+from multiprocessing.util import get_logger
 import redis as _redis
 
 from app.core.config import get_settings
+
+logger = get_logger()
 
 settings = get_settings()
 conn_info = settings.redis_connection
@@ -21,7 +25,7 @@ redis = _redis.Redis(
 CACHE_TTL = 60 * 60 * 12
 
 
-def set_cache_value_for_user(user_id: int, key: str, value: str, ttl=CACHE_TTL):
+def set_cache_value_for_user(user_id: int, key: str, value: str, ttl=CACHE_TTL) -> None:
     """Sets a cache value for a user. Deletes the key if value is None.
     Default cache TTL is 12 hours.
     """
@@ -34,13 +38,15 @@ def get_cache_value_for_user(user_id, key):
     return redis.get(f"user:{user_id}:{key}")
 
 
-def check_cache(user_id, key, func, *args, **kwargs) -> str:
+def check_cache(user_id, key, func, *args, **kwargs):
     value = get_cache_value_for_user(user_id, key)
+    print(f"Cached value: {value}")
     if value is None:
         value = func(*args, **kwargs)
-        set_cache_value_for_user(user_id, key, str(value))
-    return str(value)
+        if value:
+            set_cache_value_for_user(user_id, key, value)
+    return value
 
 
-def clear_cache_for_user(user_id, key):
+def clear_cache_for_user(user_id, key) -> None:
     redis.delete(f"user:{user_id}:{key}")
