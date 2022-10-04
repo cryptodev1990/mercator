@@ -47,4 +47,11 @@ then
     RELOAD_OPT="--reload"
 fi;
 
-exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"
+if [ -z ${FLY_APP_NAME+x} ]
+then
+  # Production -- use hypercorn
+  exec hypercorn "$APP_MODULE" --workers 8 --worker-class asyncio --bind "$APP_HOST":"$APP_PORT"
+else
+  # Development -- use uvicorn
+  exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-config=log_config.yaml "$APP_MODULE" --workers 8
+fi;
