@@ -245,5 +245,5 @@ def get_tiler_settings() -> TimVTPostgresSettings:
         postgres_user=settings.postgres_user,
         postgres_pass=password,
         postgres_dbname=settings.postgres_db,
-        db_tables=None,
+        # db_tables=None,
     )

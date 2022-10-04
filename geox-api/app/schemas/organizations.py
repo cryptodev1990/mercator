@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from pydantic import Field
+from pydantic import Field, UUID4
 
 from app.schemas.common import BaseModel
 
@@ -13,9 +13,10 @@ __all__ = ["Organization"]
 class Organization(BaseModel):
     """Represents an Organization."""
 
+    id: UUID4
     name: str = Field(..., description="Organization name")
-    created_by_uesr_id: int
-    deleted_at: Optional[datetime.datetime]
+    created_by_user_id: Optional[int] = Field(None)
+    deleted_at: Optional[datetime.datetime] = Field(None)
     is_personal: bool = Field(False)
     s3_export_enabled: bool = Field(False)
-    snowflake_account_id: Optional[str]
+    snowflake_account_id: Optional[str] = Field(None)

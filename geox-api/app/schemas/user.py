@@ -14,11 +14,9 @@ class UserBase(BaseModel):
     email: str
 
 
-__all__.append("UserBase")
-
-
 class UserCreate(UserBase):
-    # All from Auth0
+    """All user fields included from Auth0."""
+
     sub_id: str
     given_name: Optional[str] = None
     family_name: Optional[str] = None
@@ -46,9 +44,6 @@ class User(UserBase):
     locale: Optional[str] = None
     picture: Optional[str] = None
     is_active: bool = True
-
-    class Config:
-        orm_mode = True
 
 
 __all__.append("User")

@@ -30,7 +30,7 @@ settings = get_settings()
 
 
 def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
-    stmt = text("SELECT 1 FROM shapes WHERE uuid = :id")
+    stmt = text("SELECT 1 FROM shapes where uuid = :id")
     return bool(conn.execute(stmt, {"id": shape_id}).first())
 
 

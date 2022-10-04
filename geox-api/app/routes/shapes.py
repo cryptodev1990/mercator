@@ -2,25 +2,19 @@ import logging
 from enum import Enum
 from typing import List, Optional, Union, cast
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from app.core.config import Settings, get_settings
+from app.crud import shape as crud
+from app.crud.organization import get_active_org
+from app.dependencies import (UserConnection, get_app_user_connection,
+                              verify_token)
+from app.schemas import (CeleryTaskResponse, GeoShape, GeoShapeCreate,
+                         GeoShapeMetadata, GeoShapeUpdate, ShapeCountResponse,
+                         ViewportBounds)
+from app.worker import copy_to_s3
+from fastapi import APIRouter, Depends, HTTPException
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 from sqlalchemy import func, select
-
-from app.core.config import Settings, get_settings
-from app.crud import shape as crud
-from app.crud.organization import get_active_org, organization_s3_enabled
-from app.dependencies import UserConnection, get_app_user_connection, verify_token
-from app.schemas import (
-    CeleryTaskResponse,
-    GeoShape,
-    GeoShapeCreate,
-    GeoShapeUpdate,
-    ShapeCountResponse,
-    GeoShapeMetadata,
-    ViewportBounds
-)
-from app.worker import copy_to_s3
 
 logger = logging.getLogger(__name__)
 
@@ -163,12 +157,8 @@ def get_shapes_by_operation(
 
 
 def run_shapes_export(user_conn: UserConnection, settings: Settings):
-    org_id = get_active_org(user_conn.connection, user_conn.user.id)
-    if org_id is None:
-        raise HTTPException(
-            status_code=403, detail="No organization found."  # type: ignore
-        )
-    if not organization_s3_enabled(user_conn.connection, org_id):
+    org = user_conn.organization
+    if not org.s3_export_enabled:
         raise HTTPException(
             status_code=403, detail="Data export is not enabled for this account."  # type: ignore
         )
@@ -186,7 +176,7 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
         aws_secret_access_key = None
     aws_access_key_id = settings.aws_s3_upload_access_key_id
     task = copy_to_s3.delay(
-        str(org_id),
+        org.id,
         cast(str, settings.sqlalchemy_database_uri),
         settings.aws_s3_url,
         aws_access_key_id=aws_access_key_id,

@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
 from app.db.cache import check_cache
+from app.schemas import Organization
 
 def get_user_personal_org_id(
     conn: Connection, user_id: int
@@ -50,13 +51,20 @@ def set_active_org(
     return True
 
 
-def get_active_org(conn: Connection, user_id: int) -> Optional[UUID4]:
+def get_active_org(conn: Connection, user_id: int, use_cache: bool=True) -> Optional[UUID4]:
     """Get the acttive organization of a user.
 
     This will check a cache for the value of the user's active organization before running
     a query against the database.
 
     A user will only have one active organization at a time.
+
+    Args:
+        conn: Database connection
+        user_id: User id
+        use_cache: If ``True`` looks in cache for the organization, otherwise
+            runs a query to retrieve the information.
+
 
     Returns:
         Id of the active organization if one exists. ``None`` if there is no active org.
@@ -92,6 +100,38 @@ def _get_active_org(conn: Connection, user_id: int) -> Optional[str]:
     # Also this function is consistent with the return type of check_cache() if converted to str
     return str(res.organization_id) if res else None
 
+def get_organization(conn: Connection, id: UUID4) -> Optional[Organization]:
+    """Get an organization by id.
+
+    Returns:
+        An organization with that id. If there is no such organization,
+        then ``None`` is returned. It is up to caller to handle ``None``
+        values.
+
+    """
+    stmt = text("""
+        SELECT *
+        FROM organizations
+        WHERE id = :id
+    """)
+    res = conn.execute(stmt, {"id": id}).first()
+    return Organization.from_orm(res) if res else None
+
+
+def get_active_org_data(db: Connection, user_id: int, use_cache: bool=True) -> Optional[Organization]:
+    """Get the acttive organization of a user.
+
+    A user will only have one active organization at a time.
+
+    Returns:
+        Data on the user's active org. ``None`` if no active organization is found.
+        User must handle a missing active org.
+    """
+    org_id = get_active_org(db, user_id, use_cache=use_cache)
+    if org_id:
+        return get_organization(db, org_id)
+    return None
+
 
 def get_personal_org_id(conn: Connection, user_id: int) -> UUID4:
     res = conn.execute(
@@ -109,12 +149,3 @@ def get_personal_org_id(conn: Connection, user_id: int) -> UUID4:
         {"user_id": user_id},
     )
     return res.first()[0]
-
-
-def organization_s3_enabled(conn: Connection, organization_id: UUID4) -> bool:
-    """Return whether the organization has s3 export enabled."""
-    stmt = text(
-        "SELECT s3_export_enabled FROM organizations WHERE id = :organization_id"
-    )
-    res = conn.execute(stmt, {"organization_id": organization_id}).scalar()
-    return res

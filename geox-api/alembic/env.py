@@ -35,10 +35,11 @@ target_metadata = metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-exclude_objects = (
+exclude_objects = [
+    # (type_, name)
     ("table", "spatial_ref_sys"),
     ("index", "organization_members_id_seq"),
-)
+]
 
 
 def get_url() -> str:
@@ -51,11 +52,15 @@ def get_url() -> str:
 
 
 def include_object(object, name, type_, reflected, compare_to):
-    """Exclude objects from Alembic's consideration."""
-    if type_ not in ("table", "column"):
-        print(object, name, type_, reflected, compare_to)
+    """Exclude objects from Alembic's consideration.
+
+    - Tables and columns are included by default. Exclude them with ``exclude_objects``.
+    - Other object types are excluded by default. Include them with ``include_objects``.
+
+    """
+    # Tables and columns include by default
     for obj_typ, obj_name in exclude_objects:
-        if type_ == obj_typ and obj_name == name:
+        if type_ == obj_typ and name == obj_name:
             return False
     return True
 

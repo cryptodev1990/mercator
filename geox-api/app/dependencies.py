@@ -2,24 +2,24 @@
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
-from functools import lru_cache
 import os
-
-from typing import Any, AsyncGenerator, Dict
+from functools import lru_cache
+from typing import Any, AsyncGenerator, Dict, Tuple, Union
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
-from pydantic import BaseModel
-from sqlalchemy import text
+from pydantic import UUID4, BaseModel
+from sqlalchemy import event, text
 from sqlalchemy.engine import Connection, Engine
 
-from app import schemas
 from app.core.config import Settings, get_settings
 from app.core.security import VerifyToken, token_auth_scheme
+from app.crud.organization import get_active_org_data
 from app.crud.user import create_or_update_user_from_bearer_data
-from app.db.app_user import set_app_user_id
+from app.db.app_user import set_app_user_id, set_app_user_org
 from app.db.engine import engine
 from app.db.osm import osm_engine
+from app.schemas import UserOrganization
 
 
 async def get_engine() -> Engine:
@@ -55,11 +55,15 @@ async def verify_token(
 async def get_current_user(
     engine: Engine = Depends(get_engine),
     auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
-) -> schemas.User:
-    """Return the current user from the bearer (connection version).
+) -> UserOrganization:
+    """Return the current user from the bearer token.
 
     This function checks whether the JWT is valid and creates the user
     from the bearer information if they are now.
+
+    Returns:
+        An object with the current user and their active organization.
+
     """
     # this function does not use the same connection as used later because it
     # needs / should commit it's result prior to the logic in the request.
@@ -71,44 +75,49 @@ async def get_current_user(
     # until the end of the request so each request would use 2 connections.
     with engine.begin() as conn:
         user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
-    return user
+        # Get the user's active org
+        org = get_active_org_data(conn, user.id)
+        # if no organization found, then raise an exception
+        if org is None:
+            raise HTTPException(403)
+    return UserOrganization(user=user, organization=org)
 
 
-# dependencies were split out over multiple functions so that each dependency would do one and only one thing
-class UserConnection(BaseModel):
-    """User and database connection to use in API routes."""
+class UserConnection(UserOrganization):
+    """User, organization, and a database connecction all in one place."""
 
-    user: schemas.User
     connection: Connection
 
-    class Config:  # noqa
-        arbitrary_types_allowed = True
 
+def set_app_user_settings(conn: Connection, user_id: int, org_id: UUID4):
+    """Set up a SQLAlchemy session for RLS.
 
-def set_app_user_settings(conn: Connection, user_id: int) -> None:
+    - Set role to `app_user`
+    - Set `app.user_id` setting to the ``user_id``
+    - Set `app.user_org` setting to the ``org_id``
+
+    """
     conn.execute(text("SET LOCAL ROLE app_user"))
     set_app_user_id(conn, user_id, local=True)
+    set_app_user_org(conn, org_id, local=True)
 
 
 async def get_app_user_connection(
-    user: schemas.User = Depends(get_current_user),
-    conn: Connection = Depends(get_connection, use_cache=False),
+    user_org: UserOrganization = Depends(get_current_user),
+    conn=Depends(get_connection, use_cache=False),
 ) -> UserConnection:
-    """Configure database conn for an authorized user.
+    """Configure database session for an authorized user.
 
     Adds a hook which inserts ``SET LOCAL app.user_id = :user_id``
     at the start of each transaction.
 
     """
-    user_id = user.id
+    set_app_user_settings(conn, user_org.user.id, user_org.organization.id)
 
-    set_app_user_settings(conn, user_id)
-
-    # Attaches a listener to the conn object.
-    # This will run after event start of a transaction, the "after_begin" event
-    # https://docs.sqlalchemy.org/en/14/orm/events.html#sqlalchemy.orm.SessionEvents.after_begin
-
-    return UserConnection(user=user, connection=conn)
+    # start transaction
+    return UserConnection(
+        user=user_org.user, connection=conn, organization=user_org.organization
+    )
 
 
 @lru_cache(None)

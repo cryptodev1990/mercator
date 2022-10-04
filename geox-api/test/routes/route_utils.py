@@ -1,23 +1,20 @@
 """Common functions and fixtures used in testing API routes."""
 from functools import partial
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict
 
 import pytest
-from fastapi import Depends
-from sqlalchemy import delete, insert, select, text
-from sqlalchemy.engine import Connection, Row  # type: ignore
-
-from app.crud.organization import set_active_org
+from app.crud.organization import get_active_org_data, set_active_org
 from app.db.engine import engine
-from app.dependencies import get_current_user, get_connection, verify_token
-from app.main import app
-from app.schemas import User
-
-from app.db.metadata import organizations as org_tbl
 from app.db.metadata import organization_members as org_mbr_tbl
+from app.db.metadata import organizations as org_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.db.metadata import users as users_tbl
-
+from app.dependencies import get_connection, get_current_user, verify_token
+from app.main import app
+from app.schemas import User, UserOrganization
+from fastapi import Depends
+from sqlalchemy import delete, insert, text
+from sqlalchemy.engine import Connection
 
 
 @pytest.fixture()
@@ -49,9 +46,13 @@ def get_current_user_override(
 
     This skips authentication of users to allow fake users.
     """
-    stmt = text("SELECT * FROM users WHERE id = :id")
-    user = conn.execute(stmt, {"id": int(user_id)}).fetchone()
-    return User.from_orm(user)
+    user_res = conn.execute(text("SELECT * FROM users WHERE id = :id"), {"id": user_id}).fetchone()
+    user = User.from_orm(user_res)
+    # Redis isn't available for tests so instead do this
+    org = get_active_org_data(conn, user.id, use_cache=False)
+    if org is None:
+        raise ValueError(f"No active organization found for user = {user.id}")
+    return UserOrganization(user = user, organization = org)
 
 
 def get_connection_override(

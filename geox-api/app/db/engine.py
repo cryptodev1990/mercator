@@ -16,7 +16,7 @@ def _set_default_app_user_id(dbapi_connection):
     # instance(dbapi_connection, 'psycopg2.extensions.cursor')
     with dbapi_connection.cursor() as c:
         # instance(c, 'psycopg2.extensions.cursor')
-        stmt = "SET app.user_id TO DEFAULT"
+        stmt = "SET SESSION app.user_id TO DEFAULT"
         c.execute(stmt)
 
 
