@@ -1,74 +1,26 @@
-import { useContext, useEffect } from "react";
-import { GeoShape, GetAllShapesRequestType } from "../../../client";
+import { useContext } from "react";
 import { GeofencerContext } from "../contexts/geofencer-context";
-import { useGetAllShapesQuery } from "./openapi-hooks";
-
-const useSelectedShapeUuids = () => {
-  const { selectedShapeUuids, setSelectedShapeUuids } =
-    useContext(GeofencerContext);
-
-  const addSelectedShapeUuid = (uuid: string) => {
-    const output = { ...selectedShapeUuids };
-    output[uuid] = true;
-    setSelectedShapeUuids(output);
-  };
-
-  const selectOneShapeUuid = (uuid: string) => {
-    const res: Record<string, boolean> = {};
-    res[uuid] = true;
-    setSelectedShapeUuids(res);
-  };
-
-  const addManySelectedShapeUuids = (uuids: string[]) => {
-    const newSelectedShapeUuids = { ...selectedShapeUuids };
-    for (const uuid of uuids) {
-      newSelectedShapeUuids[uuid] = true;
-    }
-    setSelectedShapeUuids(newSelectedShapeUuids);
-  };
-
-  const removeSelectedShapeUuid = (uuid: string) => {
-    const newSelectedShapeUuids = { ...selectedShapeUuids };
-    delete newSelectedShapeUuids[uuid];
-    setSelectedShapeUuids(newSelectedShapeUuids);
-  };
-
-  const clearSelectedShapeUuids = () => {
-    setSelectedShapeUuids({});
-  };
-
-  const shapeIsSelected = (shape: GeoShape) => {
-    if (shape.uuid === undefined) {
-      return false;
-    }
-    return selectedShapeUuids[shape.uuid];
-  };
-
-  return {
-    shapeIsSelected,
-    addSelectedShapeUuid,
-    selectOneShapeUuid,
-    addManySelectedShapeUuids,
-    removeSelectedShapeUuid,
-    clearSelectedShapeUuids,
-  };
-};
+import { useBulkAddShapesMutation } from "./openapi-hooks";
+import { useSelectedShapes } from "./use-selected-shapes";
 
 export const useShapes = () => {
-  // TODO this needs to be global state
-  const { data: remoteShapes, isLoading } = useGetAllShapesQuery(
-    GetAllShapesRequestType.ORGANIZATION
-  );
-
-  useEffect(() => {
-    if (remoteShapes === undefined) {
-      return;
-    }
-    for (const shape of remoteShapes) {
-      shape.geojson.properties.__uuid = shape.uuid;
-    }
-    setShapes(remoteShapes);
-  }, [remoteShapes]);
+  const {
+    // Information about a shape, such as its name and UUID. It does not contain the shape's geometry.
+    shapeMetadata,
+    setShapeMetadata,
+    // Used as a temporary storage for shapes that are being added to the map, either through uploads or the command palette
+    tentativeShapes,
+    setTentativeShapes,
+    shapeForPropertyEdit,
+    setShapeForPropertyEdit,
+    mapRef,
+    shapeMetadataIsLoading,
+    virtuosoRef,
+    selectedFeatureIndexes,
+    setSelectedFeatureIndexes,
+    numShapes,
+    numShapesIsLoading,
+  } = useContext(GeofencerContext);
 
   function scrollToSelectedShape(i: number) {
     if (virtuosoRef.current === null) {
@@ -85,53 +37,32 @@ export const useShapes = () => {
     setSelectedFeatureIndexes([]);
   }
 
-  const {
-    shapes,
-    tentativeShapes,
-    setTentativeShapes,
-    selectedShapeUuids,
-    setSelectedShapeUuids,
-    shapeForMetadataEdit,
-    setShapeForMetadataEdit,
-    setShapes,
-    mapRef,
-    virtuosoRef,
-    selectedFeatureIndexes,
-    setSelectedFeatureIndexes,
-  } = useContext(GeofencerContext);
+  const selectedShapeFunctions = useSelectedShapes();
 
-  const {
-    addManySelectedShapeUuids,
-    addSelectedShapeUuid,
-    selectOneShapeUuid,
-    removeSelectedShapeUuid,
-    clearSelectedShapeUuids,
-    shapeIsSelected,
-  } = useSelectedShapeUuids();
-
-  const getNumSelectedShapes = () => {
-    return Object.keys(selectedShapeUuids).length;
-  };
+  const { mutate: addShapesBulk, isLoading: bulkAddLoading } =
+    useBulkAddShapesMutation();
 
   return {
-    shapes,
-    isLoading,
+    shapeMetadata,
+    setShapeMetadata,
+    shapeMetadataIsLoading,
+    // API - num shapes
+    numShapes,
+    numShapesIsLoading,
+    // API call - bulk load
+    addShapesBulk,
+    bulkAddLoading,
     // selection
-    getNumSelectedShapes,
-    selectedShapeUuids,
-    setSelectedShapeUuids,
-    addSelectedShapeUuid,
-    selectOneShapeUuid,
-    addManySelectedShapeUuids,
-    removeSelectedShapeUuid,
-    clearSelectedShapeUuids,
-    shapeIsSelected,
+    ...selectedShapeFunctions,
     // metadata editing
-    shapeForMetadataEdit,
-    setShapeForMetadataEdit,
+    shapeForPropertyEdit,
+    setShapeForPropertyEdit,
+    // Shapes that could be added to the map
     tentativeShapes,
     setTentativeShapes,
+    // Ref for the sidebar elements
     virtuosoRef,
+    // Ref for the deck.gl container itself
     mapRef,
     scrollToSelectedShape,
     selectedFeatureIndexes,

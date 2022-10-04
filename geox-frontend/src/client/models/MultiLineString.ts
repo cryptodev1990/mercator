@@ -6,7 +6,6 @@
  * MultiLineString Model
  */
 export type MultiLineString = {
-    coordinates: Array<Array<Number>>;
-    type?: string;
+  coordinates: Array<Array<Number>>;
+  type?: string;
 };
-

@@ -4,10 +4,11 @@
  */
 
 CREATE OR REPLACE FUNCTION generate_shape_tile(
-    z integer,
-    x integer,
-    y integer,
-    filter_organization_id UUID
+    z INTEGER,
+    x INTEGER,
+    y INTEGER,
+    filter_organization_id UUID,
+    cache_id INTEGER
 )
 RETURNS bytea
 AS $$
@@ -21,6 +22,7 @@ BEGIN
     , mvtgeom AS (
       SELECT ST_AsMVTGeom(ST_Transform(sh.geom, 3857), bounds.geom) AS geom
       , sh.properties - '__uuid' AS properties
+      , sh.uuid AS "__uuid"
       FROM public.shapes sh, bounds
       WHERE 1=1
         AND sh.organization_id = filter_organization_id

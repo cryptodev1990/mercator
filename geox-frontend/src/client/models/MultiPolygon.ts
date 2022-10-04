@@ -6,7 +6,6 @@
  * MultiPolygon Model
  */
 export type MultiPolygon = {
-    coordinates: Array<Array<Array<Number>>>;
-    type?: string;
+  coordinates: Array<Array<Array<Number>>>;
+  type?: string;
 };
-

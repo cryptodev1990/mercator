@@ -9,8 +9,10 @@ import { EditorMode } from "./cursor-modes";
 import { useLayers } from "./hooks/use-layers/use-layers";
 import { useViewport } from "./hooks/use-viewport";
 import { useShapes } from "./hooks/use-shapes";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
+import { toast } from "react-hot-toast";
+import { DeckContext } from "./contexts/deck-context";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -21,6 +23,8 @@ const GeofenceMap = () => {
     clearSelectedShapeUuids,
     clearSelectedFeatureIndexes,
   } = useShapes();
+
+  const { deckRef } = useContext(DeckContext);
 
   const { mutate: deleteShapes } = useBulkDeleteShapesMutation();
 
@@ -40,6 +44,12 @@ const GeofenceMap = () => {
       }
     };
 
+    function undoHandler(event: KeyboardEvent) {
+      if (event.key === "z" && event.metaKey) {
+        toast.error("Undo is not currently supported.");
+      }
+    }
+
     function escFunction(event: KeyboardEvent) {
       if (event.key === "Escape") {
         // @ts-ignore
@@ -53,9 +63,11 @@ const GeofenceMap = () => {
 
     document.addEventListener("keydown", bspaceHandler);
     document.addEventListener("keydown", escFunction);
+    document.addEventListener("keydown", undoHandler);
     return () => {
       document.removeEventListener("keydown", bspaceHandler);
       document.removeEventListener("keydown", escFunction);
+      document.removeEventListener("keydown", undoHandler);
     };
   }, [selectedShapeUuids, deleteShapes]);
 
@@ -77,6 +89,7 @@ const GeofenceMap = () => {
   return (
     <div ref={mapRef}>
       <DeckGL
+        ref={deckRef}
         initialViewState={viewport}
         onViewStateChange={({ viewState, oldViewState }) =>
           setViewport(viewState)

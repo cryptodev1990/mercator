@@ -6,7 +6,6 @@
  * Polygon Model
  */
 export type Polygon = {
-    coordinates: Array<Array<Number>>;
-    type?: string;
+  coordinates: Array<Array<Number>>;
+  type?: string;
 };
-

@@ -46,4 +46,8 @@ if [ "$APP_RELOAD" = "1" ] || [ "$(echo \"$APP_RELOAD\" | tr '[:upper:]' '[:lowe
 then
     RELOAD_OPT="--reload"
 fi;
-exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"
+
+# TODO get hypercorn working, this requires dev certificates
+# echo 'NOTE: Running with development certificates'
+# exec hypercorn --certfile cert.pem --keyfile key.pem $RELOAD_OPT --bind "$APP_HOST":"$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"
+exec hypercorn $RELOAD_OPT --bind "$APP_HOST":"$APP_PORT" --log-level "$APP_LOG_LEVEL" "$APP_MODULE"

@@ -4,22 +4,26 @@ import { centroid, featureCollection, bbox } from "@turf/turf";
 import { useShapes } from "./use-shapes";
 import { GeoShape, GeoShapeCreate } from "../../../client";
 import { bboxToZoom } from "../utils";
+import { useSelectedShapes } from "./use-selected-shapes";
 
 export const useViewport = () => {
   const { viewport, setViewport } = useContext(GeofencerContext);
-  const { shapes, tentativeShapes, shapeIsSelected } = useShapes();
-  const selectedShapes = shapes?.filter((shape) =>
-    shapeIsSelected(shape)
-  ) as GeoShape[];
+  const { shapeMetadata, tentativeShapes, isSelected } = useShapes();
+  const { selectedFeatureCollection } = useSelectedShapes();
 
   function _genShapes(category: string) {
+    const selectedShapes = shapeMetadata?.filter((shape) =>
+      isSelected(shape)
+    ) as GeoShape[];
+
     let shapesForOperation: GeoShapeCreate[] | GeoShape[] = [];
     if (category === "tentative") {
       shapesForOperation = tentativeShapes;
     } else if (category === "selected") {
       shapesForOperation = selectedShapes;
     } else {
-      shapesForOperation = shapes;
+      // TODO what was this code path?
+      // shapesForOperation = shapes;
     }
     return shapesForOperation;
   }
@@ -37,10 +41,9 @@ export const useViewport = () => {
   };
 
   const snapToBounds = ({ category }: { category: string }) => {
-    let shapesForBounds: GeoShapeCreate[] | GeoShape[] = _genShapes(category);
     // get bounding box of all shapes
-    const flattened = shapesForBounds.map((shape) => shape.geojson);
-    const bounds = bbox(featureCollection(flattened as any));
+    if (!selectedFeatureCollection) return;
+    const bounds = bbox(selectedFeatureCollection);
     const centroid = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
     const [latMin, latMax, lngMin, lngMax] = [
       bounds[1],
@@ -49,6 +52,9 @@ export const useViewport = () => {
       bounds[2],
     ];
     const zoom = bboxToZoom([latMin, latMax, lngMin, lngMax]);
+
+    if (!zoom) return;
+    if (!Number.isFinite(centroid[0]) || !Number.isFinite(centroid[1])) return;
 
     setViewport({
       ...viewport,

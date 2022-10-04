@@ -1,25 +1,58 @@
+import { useContext } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import simplur from "simplur";
 import {
   CeleryTaskResponse,
   CeleryTaskResult,
   GeofencerService,
   GeoShape,
-  GetAllShapesRequestType,
   TasksService,
   ShapeCountResponse,
-  GeoShapeUpdate,
+  GeoShapeCreate,
+  GetAllShapesRequestType,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { GeoShapeMetadata } from "../../../client/models/GeoShapeMetadata";
+import { DeckContext } from "../contexts/deck-context";
+import { useCursorMode } from "./use-cursor-mode";
+import { difference } from "@turf/turf";
 
 export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
+  const { options } = useCursorMode();
   const post = GeofencerService.createShapeGeofencerShapesPost;
+  const { triggerTileRefresh, deckRef } = useContext(DeckContext);
 
   return useMutation(post, {
+    onMutate: async (newData: GeoShapeCreate) => {
+      const shouldRemoveOverlap =
+        options?.denyOverlap &&
+        typeof deckRef.current !== "undefined" &&
+        deckRef.current.deck &&
+        deckRef.current.deck.layerManager;
+
+      // feature remove overlap
+      if (shouldRemoveOverlap) {
+        const layerManager = deckRef.current.deck.layerManager;
+        const mvtLayer = layerManager
+          .getLayers()
+          .find((x: any) => x.id === "geofence-mvt");
+        // TODO this produces way more features than it needs to, what gives?
+        const currentFeatures = mvtLayer.getRenderedFeatures();
+        for (const feat of currentFeatures) {
+          const diffShape = difference(newData.geojson as any, feat);
+          if (diffShape === null) {
+            return;
+          }
+          newData.geojson = diffShape as any;
+        }
+      }
+    },
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
+      triggerTileRefresh();
     },
     onError(error: any) {
       toast.error(`Shape failed to add`);
@@ -28,12 +61,15 @@ export const useAddShapeMutation = () => {
   });
 };
 
-export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
+export const useGetAllShapesMetadata = () => {
   const { isTokenSet } = useTokenInOpenApi();
-  return useQuery<GeoShape[]>(
+  return useQuery<GeoShapeMetadata[]>(
     ["geofencer"],
     () => {
-      return GeofencerService.getAllShapesGeofencerShapesGet(queryType);
+      return GeofencerService.getAllShapeMetadataGeofencerShapeMetadataGet(
+        10000, // limit
+        0 // offset
+      );
     },
     {
       refetchOnMount: false,
@@ -46,53 +82,50 @@ export const useGetAllShapesQuery = (queryType: GetAllShapesRequestType) => {
   );
 };
 
-export const useUpdateShapeMutation = (optimistic = true) => {
-  const queryClient = useQueryClient();
-  return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
-    onMutate: async (newShape: GeoShapeUpdate) => {
-      if (!optimistic) {
-        return;
+export const useGetOneShapeByUuid = (uuid: string) => {
+  return useQuery<GeoShape | null>(
+    ["shape", uuid],
+    ({ meta }) => {
+      if (!uuid) {
+        return Promise.resolve(null);
       }
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries(["geofencer"]);
-      // Snapshot the previous value
-      const previousValue = queryClient.getQueryData(["geofencer"]);
-      const optimisticNewShape = {
-        uuid: newShape.uuid,
-        geojson: newShape.geojson,
-        name: newShape.name,
-      } as GeoShape;
-      // Optimistically update to the new value
-      queryClient.setQueryData(["geofencer"], (old: GeoShape[] | undefined) => {
-        if (!old) {
-          return [optimisticNewShape];
-        }
-        return old.map((shape) => {
-          if (shape.uuid === newShape.uuid) {
-            return optimisticNewShape;
-          }
-          return shape;
-        });
-      });
-      return { previousValue };
+      return GeofencerService.getShapeGeofencerShapesUuidGet(uuid);
     },
+    {
+      staleTime: 0,
+      cacheTime: 0,
+      onError(error: any) {
+        toast.error(`Shapes failed to fetch (${error.detail})`);
+      },
+    }
+  );
+};
+
+export const useUpdateShapeMutation = () => {
+  const queryClient = useQueryClient();
+  const { triggerTileRefresh } = useContext(DeckContext);
+  return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
+      // Optimistically update to the new value
+      triggerTileRefresh();
     },
-    onError(error) {
-      toast.error(`Shapes failed to update (${error})`);
+    onError(error: any) {
+      toast.error(`Shapes failed to update (${error.detail ?? error})`);
     },
   });
 };
 
 export const useBulkDeleteShapesMutation = () => {
   const queryClient = useQueryClient();
+  const { triggerTileRefresh } = useContext(DeckContext);
   return useMutation(
     GeofencerService.bulkDeleteShapesGeofencerShapesBulkDelete,
     {
       onSuccess(data: ShapeCountResponse) {
-        toast.success(`Deleted ${data.num_shapes} shape(s)`);
+        toast.success(simplur`Deleted ${data.num_shapes} shape[|s]`);
         queryClient.fetchQuery("geofencer");
+        triggerTileRefresh();
       },
       onError(error) {
         toast.error(`Shapes failed to delete (${error})`);
@@ -103,15 +136,54 @@ export const useBulkDeleteShapesMutation = () => {
 
 export const useBulkAddShapesMutation = () => {
   const queryClient = useQueryClient();
+  const { triggerTileRefresh } = useContext(DeckContext);
 
   return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
     onSuccess(data: ShapeCountResponse) {
       queryClient.fetchQuery("geofencer");
+      triggerTileRefresh();
     },
-    onError(error) {
-      toast.error(`Shapes failed to add (${error})`);
+    onError(error: any) {
+      toast.error(`Shapes failed to add (${error?.detail})`);
     },
   });
+};
+
+export const useNumShapesQuery = () => {
+  return useQuery<ShapeCountResponse>(
+    ["numShapes"],
+    () => {
+      return GeofencerService.getShapeCountGeofencerShapesOpCountGet();
+    },
+    {
+      refetchOnWindowFocus: true,
+      refetchOnMount: true,
+      onError(error) {
+        toast.error(`Shapes failed to fetch (${error})`);
+      },
+    }
+  );
+};
+
+export const useGetAllShapes = (limit: number, offset: number) => {
+  return useQuery<GeoShape[] | null>(
+    ["allshapes"],
+    () => {
+      return GeofencerService.getAllShapesGeofencerShapesGet(
+        GetAllShapesRequestType.ORGANIZATION,
+        offset,
+        limit
+      );
+    },
+    {
+      retry: false,
+      cacheTime: 0,
+      staleTime: 0,
+      onError(error) {
+        toast.error(`Shapes failed to fetch (${error})`);
+      },
+    }
+  );
 };
 
 export const usePollCopyTaskQuery = (taskId: string | undefined) => {
@@ -149,13 +221,19 @@ export const usePollCopyTaskQuery = (taskId: string | undefined) => {
 export const useTriggerCopyTaskMutation = () => {
   const queryClient = useQueryClient();
   return useMutation<CeleryTaskResponse>(
-    TasksService.runCopyTaskTasksCopyShapesPost,
+    GeofencerService.shapesExportShapesExportPost,
     {
       onSuccess(data: CeleryTaskResponse) {
         queryClient.fetchQuery(["copyTask", data.task_id]);
       },
-      onError(error) {
-        toast.error(`Copy task failed (${error})`);
+      onError(error: any, variables: any, context: any) {
+        if (error.status === 403) {
+          toast.error(
+            "Copy task failed. Contact support@mercator.tech to enable this feature"
+          );
+        } else {
+          toast.error(`Copy task failed (${error.detail ?? error})`);
+        }
       },
     }
   );

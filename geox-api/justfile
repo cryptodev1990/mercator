@@ -164,3 +164,7 @@ ssh:
 create-dotenv:
 	PYTHONPATH=. settings-doc generate --class app.core.config.Settings --output-format dotenv > .env.local
 	PYTHONPATH=. settings-doc generate --class app.core.config.Settings --output-format dotenv > .env.docker
+
+# Generate dev http cert
+generate-https-cert:
+	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes

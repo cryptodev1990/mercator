@@ -1,4 +1,7 @@
-import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
+import {
+  useGetOneShapeByUuid,
+  useUpdateShapeMutation,
+} from "../../hooks/openapi-hooks";
 
 import { JsonEditor } from "./json-editor";
 import { useShapes } from "../../hooks/use-shapes";
@@ -8,50 +11,56 @@ interface IDictionary<T> {
   [index: string]: T;
 }
 
+// Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
-  const { mutate: updateShape } = useUpdateShapeMutation();
-
-  const { shapeForMetadataEdit, setShapeForMetadataEdit } = useShapes();
+  const { mutate: updateShape, isLoading: editIsLoading } =
+    useUpdateShapeMutation();
+  // add update shape mutation that only modifies shape metadata
+  const { shapeForPropertyEdit, setShapeForPropertyEdit } = useShapes();
+  const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
+    shapeForPropertyEdit?.uuid || ""
+  );
 
   const handleSubmit = (properties: IDictionary<string>) => {
     if (
-      !shapeForMetadataEdit ||
-      !shapeForMetadataEdit.uuid ||
-      !shapeForMetadataEdit.geojson
+      !shapeForPropertyEdit ||
+      !shapeForPropertyEdit.uuid ||
+      !oneShape ||
+      oneShapeIsLoading
     ) {
       return;
     }
-    const shapeUuid = shapeForMetadataEdit.uuid;
+    const shapeUuid = shapeForPropertyEdit.uuid;
     updateShape(
       {
         name: properties.name,
         geojson: {
-          ...(shapeForMetadataEdit.geojson as any),
+          ...(oneShape?.geojson as any),
           properties,
         },
         uuid: shapeUuid,
         should_delete: false,
       },
       {
-        onSuccess: () => setShapeForMetadataEdit(null),
+        onSuccess: () => setShapeForPropertyEdit(null),
       }
     );
   };
 
   const reformattedProperties = useMemo(() => {
-    if (!shapeForMetadataEdit?.uuid) {
+    if (!shapeForPropertyEdit?.uuid) {
       return {};
     }
-    const { properties } = shapeForMetadataEdit?.geojson ?? {};
+    const { properties } = shapeForPropertyEdit;
     properties.name = properties.name || "New shape";
     return properties
       ? Object.keys(properties).map((k) => {
           return { key: k, value: properties[k] };
         })
       : [];
-  }, [shapeForMetadataEdit]);
+  }, [shapeForPropertyEdit]);
 
-  if (!shapeForMetadataEdit) {
+  if (!shapeForPropertyEdit) {
     return <div>The metadata editor needs a shape to edit</div>;
   }
 
@@ -64,6 +73,7 @@ export const ShapeEditor = () => {
         <JsonEditor
           properties={reformattedProperties as any}
           handleResults={handleSubmit}
+          disableSubmit={editIsLoading || oneShapeIsLoading}
         />
       </div>
     </div>

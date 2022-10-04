@@ -10,3 +10,4 @@ docker-stack.yml
 .envrc
 !.env.template
 Untitled*.ipynb
+*.pem

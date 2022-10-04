@@ -40,7 +40,6 @@ def get_cache_value_for_user(user_id, key):
 
 def check_cache(user_id, key, func, *args, **kwargs):
     value = get_cache_value_for_user(user_id, key)
-    print(f"Cached value: {value}")
     if value is None:
         value = func(*args, **kwargs)
         if value:

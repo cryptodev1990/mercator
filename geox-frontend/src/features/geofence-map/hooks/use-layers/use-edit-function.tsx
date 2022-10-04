@@ -1,31 +1,42 @@
 // EditableGeojsonLayer function
-import { GeoShape, GeoShapeCreate, MultiPolygon } from "../../../../client";
-import { Feature, difference, flatten, unkinkPolygon, kinks } from "@turf/turf";
-
-// @ts-ignore
-import { useCursorMode } from "../use-cursor-mode";
+import {
+  GeoShape,
+  GeoShapeCreate,
+  MultiPolygon,
+  GeoShapeMetadata,
+} from "../../../../client";
+import { Feature, flatten, unkinkPolygon, kinks } from "@turf/turf";
 
 import { useShapes } from "../use-shapes";
-import { useAddShapeMutation, useUpdateShapeMutation } from "../openapi-hooks";
+import {
+  useAddShapeMutation,
+  useBulkAddShapesMutation,
+  useUpdateShapeMutation,
+} from "../openapi-hooks";
+import { toast } from "react-hot-toast";
 
 export function useEditFunction() {
-  const { options } = useCursorMode();
   const {
-    shapes,
+    shapeMetadata,
     selectedShapeUuids,
-    setShapeForMetadataEdit,
+    setShapeForPropertyEdit,
     clearSelectedShapeUuids,
     selectedFeatureIndexes,
     clearSelectedFeatureIndexes,
   } = useShapes();
   const { mutate: addShape } = useAddShapeMutation();
-  const { mutate: updateShape } = useUpdateShapeMutation(false);
+  const { mutate: bulkAdd } = useBulkAddShapesMutation();
+  const { mutate: updateShape } = useUpdateShapeMutation();
 
   const addShapeAndEdit = async (shape: GeoShapeCreate) => {
     addShape(shape as any, {
       onSuccess: (data: any) => {
         const geoshape = data as GeoShape;
-        setShapeForMetadataEdit(geoshape);
+        const metadata = {
+          properties: geoshape.geojson.properties,
+          ...geoshape,
+        } as GeoShapeMetadata;
+        setShapeForPropertyEdit(metadata);
       },
     });
   };
@@ -39,66 +50,89 @@ export function useEditFunction() {
     editType: string;
     editContext: any;
   }) {
+    // Feature: split a shape
     if (editType === "split") {
-      let editedShape: Feature<MultiPolygon> =
-        updatedData.features[selectedFeatureIndexes[0]];
+      // TODO this has to be rethought
+      // we either split the shape on the server or
+      // we have an EditableGeojsonLayer that only has the selected shapes in it
+      let multiPolygon: Feature<MultiPolygon> = updatedData.features[0];
+      const cut = multiPolygon.geometry.coordinates[0];
+      const rest = multiPolygon.geometry.coordinates.slice(1);
 
-      // There should be no split that selects more than one shape
       if (
         Object.keys(selectedShapeUuids).length > 1 ||
-        selectedFeatureIndexes.length > 1 ||
-        shapes[selectedFeatureIndexes[0]].uuid !==
-          Object.keys(selectedShapeUuids)[0]
+        selectedFeatureIndexes.length > 1
       ) {
-        throw new Error("Split should not select more than one shape");
+        toast.error("Split should not select more than one shape");
+        return;
       }
-      const uuid = editedShape?.properties?.__uuid;
-      const flattenedShapes = flatten(editedShape as any);
+      const uuid = Object.keys(selectedShapeUuids)[0];
 
-      for (const shape of flattenedShapes.features) {
-        addShape({
-          geojson: shape as any,
-          name: shapes.find((x) => x.uuid === uuid)?.name,
-        });
-      }
-      updateShape(
+      const name = shapeMetadata.find((x) => x.uuid === uuid)?.name;
+      const payload = [
         {
-          uuid,
-          should_delete: true,
+          geojson: {
+            type: "Feature",
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: [cut] as any,
+            },
+            properties: {
+              ...multiPolygon.properties,
+              __parent_uuid: uuid,
+            },
+          },
+          name,
         },
         {
-          onSettled: () => {
-            clearSelectedFeatureIndexes();
-            clearSelectedShapeUuids();
+          geojson: {
+            type: "Feature",
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: rest as any,
+            },
+            properties: {
+              ...multiPolygon.properties,
+              __parent_uuid: uuid,
+            },
           },
-        }
-      );
+          name,
+        },
+      ];
+
+      bulkAdd(payload, {
+        onSuccess: ({ num_shapes: numShapes }) => {
+          // Remove previous shape
+          updateShape(
+            {
+              uuid,
+              should_delete: true,
+            },
+            {
+              onSuccess: () => {
+                toast.success(`Created ${numShapes} new shapes`);
+                clearSelectedFeatureIndexes();
+                clearSelectedShapeUuids();
+              },
+              onError: (error) => {
+                toast.error(error);
+              },
+            }
+          );
+        },
+      });
       return;
     }
-    console.log(editType);
+
     if (editType !== "addFeature") {
       return;
     }
 
+    // Feature: Add a shape
     const { featureIndexes } = editContext;
     let mostRecentShape: Feature = updatedData.features[featureIndexes[0]];
 
-    if (options.denyOverlap && shapes) {
-      for (const shape of shapes) {
-        if (shape.uuid === mostRecentShape?.properties?.uuid) {
-          continue;
-        }
-        const diffShape = difference(
-          mostRecentShape as any,
-          shape.geojson as any
-        );
-        if (diffShape === null) {
-          return;
-        }
-        mostRecentShape = diffShape as Feature;
-      }
-    }
-
+    // Feature: edit kinked shapes
     if (kinks(mostRecentShape as any).features.length > 0) {
       mostRecentShape = unkinkPolygon(mostRecentShape as any) as any;
     }
@@ -107,7 +141,7 @@ export function useEditFunction() {
       geojson: mostRecentShape,
       name: "New shape",
     } as GeoShapeCreate;
-    // TODO Correct type issue
+
     addShapeAndEdit(newShape);
   }
   return { onEdit };

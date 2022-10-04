@@ -1,3 +1,4 @@
+// Patch to get around race condition bug in Nebula
 import { point, lineString as toLineString } from "@turf/helpers";
 import {
   recursivelyTraverseNestedArrays,

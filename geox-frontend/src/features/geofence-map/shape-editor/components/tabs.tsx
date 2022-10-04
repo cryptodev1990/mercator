@@ -17,7 +17,7 @@ export function Tabs({
   active: number;
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { shapeForMetadataEdit, setShapeForMetadataEdit } = useShapes();
+  const { shapeForPropertyEdit, setShapeForPropertyEdit } = useShapes();
 
   useEffect(() => {
     setSelectedIndex(active);
@@ -25,7 +25,7 @@ export function Tabs({
 
   useEffect(() => {
     if (active !== selectedIndex) {
-      setShapeForMetadataEdit(null);
+      setShapeForPropertyEdit(null);
     }
   }, [selectedIndex]);
 
@@ -46,7 +46,7 @@ export function Tabs({
               {tabnames.map((tabname: string, index: number) => (
                 <Tab
                   key={index}
-                  disabled={index === 1 && !shapeForMetadataEdit}
+                  disabled={index === 1 && !shapeForPropertyEdit}
                   className={
                     "transition px-2 hover:text-porsche selection:bg-porsche mx-2"
                   }

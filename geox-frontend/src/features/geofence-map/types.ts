@@ -8,6 +8,7 @@ export interface GlobalEditorOptions {
 
 export enum UIModalEnum {
   DeleteModal = "DeleteModal",
+  ExportShapesModal = "ExportShapesModal",
   UploadShapesModal = "UploadShapesModal",
   DbSyncModal = "DbSyncModal",
   SupportModal = "SupportModal",

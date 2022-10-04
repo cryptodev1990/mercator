@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { GeofencerContext } from "./contexts/geofencer-context";
-import { Feature, GeoShape, GeoShapeCreate } from "../../client";
+import { Feature, GeoShapeCreate } from "../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
 
@@ -12,7 +12,7 @@ import { CommandPalette } from "../command-palette/component";
 import { useIsochrones } from "../../hooks/use-isochrones";
 
 export const GeofencerCommandPalette = () => {
-  const { tentativeShapes, shapes, setTentativeShapes, setViewport } =
+  const { tentativeShapes, shapeMetadata, setTentativeShapes, setViewport } =
     useContext(GeofencerContext);
   const { mutate: addShape } = useAddShapeMutation();
   const { mutate: bulkDeleteShapes } = useBulkDeleteShapesMutation();
@@ -24,7 +24,7 @@ export const GeofencerCommandPalette = () => {
         setViewport(res);
       }}
       onDelete={() => {
-        bulkDeleteShapes(shapes.map((s: any) => s.uuid));
+        bulkDeleteShapes(shapeMetadata.map((s: any) => s.uuid));
         setTentativeShapes([]);
       }}
       // Commit data to the server
@@ -86,14 +86,13 @@ export const GeofencerCommandPalette = () => {
               timeInSeconds,
               "car"
             );
-            console.log(chrone.polygons[0]);
 
             newShapes.push({
               ...s,
               geojson: chrone.polygons[0] as any,
             });
           } catch (err) {
-            console.log(err);
+            console.error(err);
             continue;
           }
         }

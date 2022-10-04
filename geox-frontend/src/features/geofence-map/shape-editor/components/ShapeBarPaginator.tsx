@@ -1,7 +1,6 @@
 import { useShapes } from "../../hooks/use-shapes";
 import { useViewport } from "../../hooks/use-viewport";
 import { ShapeCard } from "./shape-card";
-import { useBulkAddShapesMutation } from "../../hooks/openapi-hooks";
 import { BiAddToQueue } from "react-icons/bi";
 import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
@@ -10,6 +9,7 @@ import { Virtuoso } from "react-virtuoso";
 import { useUiModals } from "../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../types";
 import { useDbSync } from "../../hooks/use-db-sync";
+import { toast } from "react-hot-toast";
 
 const NewUserMessage = () => {
   return (
@@ -33,11 +33,10 @@ const NewUserMessage = () => {
 };
 
 const TentativeButtonBank = () => {
+  // Button bank that pops up for uploaded shapes or shapes from the command palette
   const { snapToCentroid } = useViewport();
-  const { tentativeShapes, setTentativeShapes } = useShapes();
-  const { mutate: addShapesBulk, isLoading: bulkAddLoading } =
-    useBulkAddShapesMutation();
-
+  const { tentativeShapes, setTentativeShapes, bulkAddLoading, addShapesBulk } =
+    useShapes();
   return (
     <div className="mt-2 space-x-1">
       <p className="font-bold text-xs mx-1">External data</p>
@@ -81,18 +80,15 @@ const TentativeButtonBank = () => {
 };
 
 export const ShapeBarPaginator = () => {
-  const { shapes, tentativeShapes, virtuosoRef } = useShapes();
+  const {
+    shapeMetadata,
+    tentativeShapes,
+    numShapes,
+    numShapesIsLoading,
+    virtuosoRef,
+  } = useShapes();
   const { openModal } = useUiModals();
   const { isLoading: isPolling } = useDbSync();
-
-  // Feature: Display card for each shape in the namespace
-  const Row = ({ index, style }: any) => {
-    return (
-      <div key={index}>
-        <ShapeCard shape={shapes[index]} />
-      </div>
-    );
-  };
 
   return (
     <div className="flex flex-col">
@@ -107,21 +103,9 @@ export const ShapeBarPaginator = () => {
           },
           {
             icon: <VscJson className="fill-white" size={15} />,
-            disabled: false,
+            disabled: numShapes === 0,
             title: "Export shapes as GeoJSON",
-            onClick: () => {
-              const dataStr =
-                "data:text/json;charset=utf-8," +
-                encodeURIComponent(
-                  JSON.stringify(shapes.map((x) => x.geojson))
-                );
-              const downloadAnchorNode = document.createElement("a");
-              downloadAnchorNode.setAttribute("href", dataStr);
-              downloadAnchorNode.setAttribute("download", "geofence.json");
-              document.body.appendChild(downloadAnchorNode); // required for firefox
-              downloadAnchorNode.click();
-              downloadAnchorNode.remove();
-            },
+            onClick: () => openModal(UIModalEnum.ExportShapesModal),
             text: "Export",
           },
           {
@@ -131,7 +115,7 @@ export const ShapeBarPaginator = () => {
               <AiFillDatabase className="fill-white" />
             ),
             title: "Publish shapes to your Snowflake or Redshift database",
-            disabled: isPolling,
+            disabled: isPolling || numShapes === 0,
             onClick: () => {
               if (isPolling) return;
               openModal(UIModalEnum.DbSyncModal);
@@ -153,7 +137,7 @@ export const ShapeBarPaginator = () => {
       {tentativeShapes.length > 0 && <TentativeButtonBank />}
       <p className="font-bold text-xs mx-1">Geofences</p>
       <hr />
-      {shapes?.length !== 0 ? (
+      {shapeMetadata?.length !== 0 ? (
         <div
           key={1}
           className="relative short-h:60vh md-h:65vh tall-h:h-[70vh]"
@@ -161,9 +145,9 @@ export const ShapeBarPaginator = () => {
           <Virtuoso
             ref={virtuosoRef}
             className="h-full scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-700"
-            totalCount={shapes.length}
-            data={shapes}
-            itemContent={(index, shape) => <ShapeCard shape={shape} />}
+            totalCount={shapeMetadata.length}
+            data={shapeMetadata}
+            itemContent={(_, shape) => <ShapeCard shape={shape} />}
           />
         </div>
       ) : (
@@ -171,7 +155,8 @@ export const ShapeBarPaginator = () => {
       )}
       <footer className="flex flex-col">
         <p className="text-xs m-1">
-          {shapes.length} of {shapes.length} shapes
+          {shapeMetadata.length} of {numShapesIsLoading ? "..." : numShapes}
+          {" shapes"}
         </p>
       </footer>
     </div>

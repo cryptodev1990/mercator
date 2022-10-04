@@ -1,22 +1,24 @@
-import { createContext, ReactNode, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { ViewState } from "react-map-gl";
-import { Feature, GeoShape, GeoShapeCreate } from "../../../client";
+import { Feature, GeoShapeCreate } from "../../../client";
+import { GeoShapeMetadata } from "../../../client/models/GeoShapeMetadata";
 import { EditorMode } from "../cursor-modes";
+import {
+  useGetAllShapesMetadata,
+  useNumShapesQuery,
+} from "../hooks/openapi-hooks";
 import { GlobalEditorOptions } from "../types";
 
 interface GeofencerContextState {
-  shapes: GeoShape[];
-  setShapes:
-    | ((shapes: GeoShape[]) => void)
-    | ((prevShapes: GeoShape[]) => GeoShape[]);
+  shapeMetadata: GeoShapeMetadata[];
+  setShapeMetadata: (metadata: GeoShapeMetadata[]) => void;
+  shapeMetadataIsLoading: boolean;
   viewport: any;
   setViewport: (viewport: any) => void;
   options: GlobalEditorOptions;
   setOptions: (options: GlobalEditorOptions) => void;
-  selectedShapeUuids: Record<string, boolean>;
-  setSelectedShapeUuids: (selectedShapes: Record<string, boolean>) => void;
-  shapeForMetadataEdit: GeoShape | null;
-  setShapeForMetadataEdit: (shape: GeoShape | null) => void;
+  shapeForPropertyEdit: GeoShapeMetadata | null;
+  setShapeForPropertyEdit: (shape: GeoShapeMetadata | null) => void;
   tentativeShapes: GeoShapeCreate[];
   setTentativeShapes: (shapes: GeoShapeCreate[]) => void;
   uploadedGeojson: Feature[];
@@ -25,11 +27,14 @@ interface GeofencerContextState {
   mapRef: any;
   selectedFeatureIndexes: number[];
   setSelectedFeatureIndexes: (indexes: number[]) => void;
+  numShapes: number;
+  numShapesIsLoading: boolean;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
-  shapes: [],
-  setShapes: () => {},
+  shapeMetadata: [],
+  setShapeMetadata: () => {},
+  shapeMetadataIsLoading: false,
   options: {
     denyOverlap: true,
     cursorMode: EditorMode.ViewMode,
@@ -37,10 +42,8 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setOptions: (newState: GlobalEditorOptions) => {},
   viewport: {},
   setViewport: () => {},
-  selectedShapeUuids: {},
-  setSelectedShapeUuids: () => {},
-  shapeForMetadataEdit: null,
-  setShapeForMetadataEdit: () => {},
+  shapeForPropertyEdit: null,
+  setShapeForPropertyEdit: () => {},
   tentativeShapes: [],
   setTentativeShapes: () => {},
   uploadedGeojson: [],
@@ -49,21 +52,48 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   mapRef: null,
   selectedFeatureIndexes: [],
   setSelectedFeatureIndexes: () => {},
+  numShapes: 0,
+  numShapesIsLoading: false,
 });
 GeofencerContext.displayName = "GeofencerContext";
 
 export const GeofencerContextContainer = ({ children }: { children: any }) => {
-  const [shapes, setShapes] = useState<GeoShape[]>([]);
-  const [viewport, setViewport] = useState<ViewState>({
-    latitude: 37.762673511727435,
-    longitude: -122.40111919656555,
-    bearing: 0,
-    pitch: 0,
-    zoom: 11.363205994378514,
-  });
+  const [shapeMetadata, setShapeMetadata] = useState<GeoShapeMetadata[]>([]);
+  const storedViewport = localStorage.getItem("viewport");
+  const [viewport, setViewport] = useState<ViewState>(
+    storedViewport
+      ? JSON.parse(storedViewport)
+      : {
+          latitude: 37.762673511727435,
+          longitude: -122.40111919656555,
+          bearing: 0,
+          pitch: 0,
+          zoom: 11.363205994378514,
+        }
+  );
+
+  const { data: numShapesPayload, isLoading: numShapesIsLoading } =
+    useNumShapesQuery();
+
+  const { data: remoteShapeMetadata, isLoading: shapeMetadataIsLoading } =
+    useGetAllShapesMetadata();
+
+  useEffect(() => {
+    if (remoteShapeMetadata === undefined) {
+      return;
+    }
+    setShapeMetadata(remoteShapeMetadata);
+  }, [remoteShapeMetadata]);
 
   useEffect(() => {
     // Store viewport in local storage
+    if (
+      !Number.isFinite(viewport.latitude) ||
+      !Number.isFinite(viewport.longitude) ||
+      !Number.isFinite(viewport.zoom)
+    ) {
+      return;
+    }
     localStorage.setItem(
       "viewport",
       JSON.stringify({
@@ -73,14 +103,6 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
       })
     );
   }, [viewport]);
-
-  useEffect(() => {
-    // Read viewport from local storage
-    const storedViewport = localStorage.getItem("viewport");
-    if (storedViewport) {
-      setViewport(JSON.parse(storedViewport));
-    }
-  }, []);
 
   const [options, setOptions] = useState<GlobalEditorOptions>({
     denyOverlap: true,
@@ -94,12 +116,8 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
     }
   }, [options, options.cursorMode]);
 
-  const [selectedShapeUuids, setSelectedShapeUuids] = useState<
-    Record<string, boolean>
-  >({});
-
-  const [shapeForMetadataEdit, setShapeForMetadataEdit] =
-    useState<GeoShape | null>(null);
+  const [shapeForPropertyEdit, setShapeForPropertyEdit] =
+    useState<GeoShapeMetadata | null>(null);
 
   const [tentativeShapes, setTentativeShapes] = useState<GeoShapeCreate[]>([]);
 
@@ -114,18 +132,17 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
   return (
     <GeofencerContext.Provider
       value={{
-        shapes,
-        setShapes: (shapes: GeoShape[]) => setShapes(shapes),
+        shapeMetadata,
+        shapeMetadataIsLoading,
+        setShapeMetadata: (shapes: GeoShapeMetadata[]) =>
+          setShapeMetadata(shapes),
         viewport,
         setViewport: (viewport: any) => setViewport(viewport),
         options,
         setOptions: (options: GlobalEditorOptions) => setOptions(options),
-        selectedShapeUuids,
-        setSelectedShapeUuids: (selectedShapes: Record<string, boolean>) =>
-          setSelectedShapeUuids(selectedShapes),
-        shapeForMetadataEdit,
-        setShapeForMetadataEdit: (shape: GeoShape | null) =>
-          setShapeForMetadataEdit(shape),
+        shapeForPropertyEdit,
+        setShapeForPropertyEdit: (shape: GeoShapeMetadata | null) =>
+          setShapeForPropertyEdit(shape),
         tentativeShapes,
         setTentativeShapes: (tentativeShapes: GeoShapeCreate[]) =>
           setTentativeShapes(tentativeShapes),
@@ -133,6 +150,8 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
         setUploadedGeojson: (geojson: Feature[]) => setUploadedGeojson(geojson),
         virtuosoRef,
         mapRef,
+        numShapes: numShapesPayload?.num_shapes || 0,
+        numShapesIsLoading,
         selectedFeatureIndexes,
         setSelectedFeatureIndexes: (indexes: number[]) =>
           setSelectedFeatureIndexes(indexes),

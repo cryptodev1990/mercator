@@ -1,5 +1,6 @@
 import { createContext, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import simplur from "simplur";
 import {
   usePollCopyTaskQuery,
   useTriggerCopyTaskMutation,
@@ -40,7 +41,7 @@ export const DbSyncContextContainer = ({ children }: { children: any }) => {
     if (isSuccess && isFetched && res?.task_result?.status === "success") {
       toast.success(
         "Sync completed successfully, uploaded " +
-          res?.task_result?.numShapes ?? 0 + " shape(s)"
+          simplur`{res?.task_result?.numShapes ?? 0} shape[|s]`
       );
     }
   }, [isError, isSuccess, isFetched]);

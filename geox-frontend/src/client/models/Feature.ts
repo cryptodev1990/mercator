@@ -14,8 +14,8 @@ import type { Polygon } from "./Polygon";
  * Feature Model
  */
 export type Feature = {
-  type: any;
-  geometry:
+  type?: string;
+  geometry?:
     | Point
     | MultiPoint
     | LineString

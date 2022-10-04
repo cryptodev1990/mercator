@@ -1,6 +1,6 @@
 """API Schema."""
 import datetime
-from typing import Any, List, Optional, TypedDict
+from typing import Any, List, Optional
 
 from geojson_pydantic import Feature
 from pydantic import UUID4, Field
@@ -12,11 +12,33 @@ from app.schemas.common import BaseModel
 __all__ = []
 
 
-class ViewportBounds:
-    minX: float
-    minY: float
-    maxX: float
-    maxY: float
+class ViewportBounds(BaseModel):
+    min_x: float = Field(..., description="Minimum X coordinate")
+    min_y: float = Field(..., description="Minimum Y coordinate")
+    max_x: float = Field(..., description="Maximum X coordinate")
+    max_y: float = Field(..., description="Maximum Y coordinate")
+
+    # validate that the x values are valid geospatial coordinates
+    @classmethod
+    def validate(cls, value: Any) -> Any:
+        if not (-180 <= value["min_x"] <= 180):
+            raise ValueError("min_x must be between -180 and 180")
+        if not (-180 <= value["max_x"] <= 180):
+            raise ValueError("max_x must be between -180 and 180")
+        if not (-90 <= value["min_y"] <= 90):
+            raise ValueError("min_y must be between -90 and 90")
+        if not (-90 <= value["max_y"] <= 90):
+            raise ValueError("max_y must be between -90 and 90")
+        return value
+
+    # validate that the minimums are less than the maximums
+    @classmethod
+    def validate_min_max(cls, value: Any) -> Any:
+        if value["min_x"] > value["max_x"]:
+            raise ValueError("min_x must be less than max_x")
+        if value["min_y"] > value["max_y"]:
+            raise ValueError("min_y must be less than max_y")
+        return value
 
 
 __all__.append("ViewportBounds")
@@ -24,7 +46,8 @@ __all__.append("ViewportBounds")
 
 class GeoShapeCreate(BaseModel):
     name: Optional[str] = Field(None, description="Name of the shape")
-    geojson: Feature = Field(..., description="GeoJSON representation of the shape")
+    geojson: Feature = Field(...,
+                             description="GeoJSON representation of the shape")
 
 
 __all__.append("GeoShapeCreate")
@@ -50,7 +73,8 @@ __all__.append("GeoShapeUpdate")
 
 class GeoShape(GeoShapeRead, GeoShapeCreate):
     created_by_user_id: int = Field(..., description="User ID of the creator")
-    created_at: datetime.datetime = Field(..., description="Date and time of creation")
+    created_at: datetime.datetime = Field(...,
+                                          description="Date and time of creation")
     updated_by_user_id: Optional[int] = Field(
         None, description="User ID of the most recent updater"
     )
@@ -63,7 +87,8 @@ __all__.append("GeoShape")
 
 
 class ShapeCountResponse(BaseModel):
-    num_shapes: int = Field(..., description="Number of shapes affected by transaction")
+    num_shapes: int = Field(...,
+                            description="Number of shapes affected by transaction")
 
 
 __all__.append("ShapeCountResponse")
@@ -112,8 +137,10 @@ class GeoShapeMetadata(GeoShapeRead):
     """Metadata about a shape."""
 
     name: Optional[str] = Field(None, description="Name of the shape")
-    properties: Optional[dict] = Field(None, description="Properties of the shape")
-    created_at: datetime.datetime = Field(..., description="Date and time of creation")
+    properties: Optional[dict] = Field(
+        None, description="Properties of the shape")
+    created_at: datetime.datetime = Field(...,
+                                          description="Date and time of creation")
     updated_at: Optional[datetime.datetime] = Field(
         None, description="Date and time of most recent updater"
     )

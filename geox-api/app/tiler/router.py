@@ -13,6 +13,7 @@ dir = os.path.dirname(__file__)
 
 
 def add_tiler_routes(app: FastAPI) -> None:
+    """Note: Uses a separate async Postgres connection"""
     # Add Function registry to the application state
     app.state.timvt_function_catalog = FunctionRegistry()
 

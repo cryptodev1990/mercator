@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TbTrash } from "react-icons/tb";
 
 interface IDictionary<T> {
@@ -9,9 +9,14 @@ interface IDictionary<T> {
 interface IJsonEditorProps {
   properties: Array<{ key: string; value: any }>;
   handleResults: (properties: IDictionary<string>) => void;
+  disableSubmit: boolean;
 }
 
-export function JsonEditor({ properties, handleResults }: IJsonEditorProps) {
+export function JsonEditor({
+  properties,
+  handleResults,
+  disableSubmit,
+}: IJsonEditorProps) {
   const numProps = properties?.length ?? 0;
   const range = [...Array(numProps).keys()];
 
@@ -130,6 +135,7 @@ export function JsonEditor({ properties, handleResults }: IJsonEditorProps) {
             </button>
             <button
               className="btn btn-sm btn-accent bg-porsche"
+              disabled={disableSubmit}
               onSubmit={(d: any) => {
                 onFormSubmit(d);
               }}

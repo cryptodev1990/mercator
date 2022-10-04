@@ -1,12 +1,9 @@
 import { GeoShape } from "../../client";
 
-export function geoShapesToFeatureCollection(shapes: GeoShape[] | undefined) {
+export function geoShapesToFeatureCollection(shapes: GeoShape[]) {
   /**
    * Converts GeoShapes to GeoJSON FeatureCollection
    */
-  if (!shapes) {
-    return [];
-  }
   return {
     type: "FeatureCollection",
     features: !shapes
@@ -16,9 +13,9 @@ export function geoShapesToFeatureCollection(shapes: GeoShape[] | undefined) {
             type: "Feature",
             geometry: geojson.geometry,
             properties: {
-              name,
-              created_at,
-              uuid,
+              name: name || geojson.properties.name || geojson.properties.NAME,
+              __uuid: uuid,
+              ...geojson.properties,
             },
           };
         }),

@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import List, Optional, Union, cast
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 from sqlalchemy import func, select
@@ -17,6 +17,8 @@ from app.schemas import (
     GeoShapeCreate,
     GeoShapeUpdate,
     ShapeCountResponse,
+    GeoShapeMetadata,
+    ViewportBounds
 )
 from app.worker import copy_to_s3
 
@@ -35,7 +37,7 @@ class GetAllShapesRequestType(str, Enum):
 @router.post("/geofencer/shapes", response_model=GeoShape)
 def create_shape(
     geoshape: GeoShapeCreate,
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> GeoShape:
     """Create a shape."""
     shape = crud.create_shape(user_conn.connection, geoshape)
@@ -58,12 +60,15 @@ def get_all_shapes(
     conn = user_conn.connection
     shapes = []
     if rtype == GetAllShapesRequestType.user:
-        shapes = crud.get_all_shapes_by_user(conn, user.id, offset=offset, limit=limit)
+        shapes = crud.get_all_shapes_by_user(
+            conn, user.id, offset=offset, limit=limit)
     elif rtype == GetAllShapesRequestType.organization:
         organization_id = conn.execute(select(func.app_user_org())).scalar()
         shapes = crud.get_all_shapes_by_organization(
-            conn, organization_id=organization_id,
-            offset=offset, limit=limit
+            conn,
+            organization_id=organization_id,
+            limit=limit,
+            offset=offset,
         )
     return shapes
 
@@ -71,7 +76,7 @@ def get_all_shapes(
 @router.get("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def get_shape(
     uuid: UUID4,
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
     responses={404: {"details": "No shape with that ID found."}},
 ) -> Optional[GeoShape]:
     """Read a shape."""
@@ -84,7 +89,7 @@ def get_shape(
 @router.put("/geofencer/shapes/{uuid}", response_model=GeoShape)
 def update_shape(
     geoshape: GeoShapeUpdate,
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> Optional[GeoShape]:
     """Update a shape."""
     shape: Optional[GeoShape]
@@ -102,7 +107,7 @@ def update_shape(
 @router.post("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_create_shapes(
     geoshapes: List[GeoShapeCreate],
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
     """Create multiple shapes."""
     shapes_uuid = crud.create_many_shapes(user_conn.connection, geoshapes)
@@ -112,7 +117,7 @@ def bulk_create_shapes(
 @router.delete("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
 def bulk_delete_shapes(
     shape_uuids: List[UUID4],
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
     """Create multiple shapes."""
     row_count = crud.delete_many_shapes(user_conn.connection, shape_uuids)
@@ -121,7 +126,7 @@ def bulk_delete_shapes(
 
 @router.get("/geofencer/shapes/op/count", response_model=ShapeCountResponse)
 def get_shape_count(
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
     """Get shape count."""
     shape_count = crud.get_shape_count(user_conn.connection)
@@ -132,21 +137,26 @@ def get_shape_count(
 def get_shapes_containing_point(
     lat: float,
     lng: float,
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes containing a point."""
     shapes = crud.get_shapes_containing_point(user_conn.connection, lat, lng)
     return shapes
 
 
-@router.post("/geofencer/shapes/op/{operation}", response_model=List[Feature])
+@router.post("/geofencer/shapes/op/{operation}", response_model=List[Feature],
+             responses={
+    403: {"description": "Operation not enabled for this account"},
+    501: {"description": "Operation not supported on the server."},
+})
 def get_shapes_by_operation(
     operation: crud.GeometryOperation,
     geom: Union[Point, Polygon, LineString],
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes by operation."""
-    shapes = crud.get_shapes_related_to_geom(user_conn.connection, operation, geom)
+    shapes = crud.get_shapes_related_to_geom(
+        user_conn.connection, operation, geom)
     return shapes
 
 
@@ -192,7 +202,7 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
     },
 )
 def shapes_export(
-    user_conn: UserConnection  = Depends(get_app_user_connection),
+    user_conn: UserConnection = Depends(get_app_user_connection),
     settings: Settings = Depends(get_settings),
 ):
     """Export shapes to S3.
@@ -200,3 +210,50 @@ def shapes_export(
     This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
     """
     return run_shapes_export(user_conn, settings)
+
+
+@router.get("/geofencer/shape-metadata/bbox", response_model=List[GeoShapeMetadata], tags=["shape-metadata"])
+def get_shape_metadata_by_bounding_box(
+    min_x: float,
+    min_y: float,
+    max_x: float,
+    max_y: float,
+    user_conn: UserConnection = Depends(get_app_user_connection),
+    limit: int = crud.DEFAULT_LIMIT,
+    offset: int = 0,
+) -> List[GeoShapeMetadata]:
+    """Get shape metadata by bounding box."""
+    bbox = ViewportBounds(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
+    shapes = crud.get_shape_metadata_by_bounding_box(
+        user_conn.connection, bbox, limit, offset)
+    return shapes
+
+
+@ router.get("/geofencer/shape-metadata/search", response_model=List[GeoShapeMetadata], tags=["shape-metadata"])
+def get_shape_metadata_matching_search(
+    query: str,
+    user_conn: UserConnection = Depends(get_app_user_connection),
+    limit: int = crud.DEFAULT_LIMIT,
+    offset: int = 0,
+) -> List[GeoShapeMetadata]:
+    """Get shape metadata by bounding box."""
+    shapes = crud.get_shape_metadata_matching_search(
+        user_conn.connection, query, limit, offset)
+    return shapes
+
+
+@router.get("/geofencer/shape-metadata", response_model=List[GeoShapeMetadata], tags=["shape-metadata"])
+def get_all_shape_metadata(
+    user_conn: UserConnection = Depends(get_app_user_connection),
+    limit: int = crud.DEFAULT_LIMIT,
+    offset: int = 0,
+) -> List[GeoShapeMetadata]:
+    """Get all shape metadata with pagination"""
+    org_id = get_active_org(user_conn.connection, user_conn.user.id)
+    if org_id is None:
+        raise HTTPException(
+            status_code=403, detail="No organization found."
+        )
+    shapes = crud.get_all_shape_metadata_by_organization(
+        user_conn.connection, organization_id=org_id, limit=limit, offset=offset)
+    return shapes

@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
-
 import { MdOutlineArrowBackIos } from "react-icons/md";
-import { Tabs } from "./tabs";
-import { ShapeEditor } from "./shape-editor";
 import { Transition } from "react-transition-group";
-import { useShapes } from "../../hooks/use-shapes";
-import Loading from "react-loading";
-import { ShapeBarPaginator } from "./ShapeBarPaginator";
 
 const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   return (
@@ -21,30 +15,10 @@ const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   );
 };
 
-const GeofenceSidebar = () => {
-  const { shapeForMetadataEdit, isLoading } = useShapes();
-
-  return (
-    <GeofenceSidebarView>
-      {!isLoading && (
-        <Tabs
-          children={[<ShapeBarPaginator />, <ShapeEditor />].map((x, i) => (
-            <div key={i}>{x}</div>
-          ))}
-          active={shapeForMetadataEdit ? 1 : 0}
-          tabnames={["Shapes", "Metadata Editor"]}
-        />
-      )}
-      {isLoading && (
-        <div className="w-max m-auto">
-          <Loading type="bubbles" />
-        </div>
-      )}
-    </GeofenceSidebarView>
-  );
-};
-
-const GeofenceSidebarView = ({ children }: { children: any }) => {
+export const SidebarDrawer = ({ children }: { children: any }) => {
+  /**
+   * Handles showing / hiding the sidebar
+   */
   const [hidden, setHidden] = useState(false);
 
   // Feature: Hide sidebar with shortkey
@@ -112,5 +86,3 @@ const GeofenceSidebarView = ({ children }: { children: any }) => {
     </>
   );
 };
-
-export { GeofenceSidebar };

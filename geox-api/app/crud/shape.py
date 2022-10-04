@@ -1,22 +1,31 @@
 """CRUD functions for interacting with shapes.
 
-NOTE: All queries use Shape table and no ORM features
+NOTE: All queries use `shapes` table and no ORM features
 """
 import datetime
 from enum import Enum
+import logging
 from typing import List, Optional, Sequence, Union
 
 import jinja2
-import sqlalchemy as sa
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
+import sqlalchemy as sa
 from sqlalchemy.engine import Connection
 
 from app import schemas
 from app.db.metadata import shapes as shapes_tbl
 
 
-DEFAULT_LIMIT = 300
+logger = logging.getLogger(__name__)
+
+
+class MapProjection(str, Enum):
+    WGS84 = 4326
+    WEB_MERCATOR = 3857
+
+
+DEFAULT_LIMIT = 25
 METADATA_COLS = [
     shapes_tbl.c.uuid,
     shapes_tbl.c.name,
@@ -42,7 +51,7 @@ def get_shape(conn: Connection, shape_id: UUID4) -> Optional[schemas.GeoShape]:
 
 
 def get_all_shapes_by_user(
-    conn: Connection, user_id: int, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
+    conn: Connection, user_id: int, limit: Optional[int] = DEFAULT_LIMIT, offset: int = 0
 ) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
@@ -63,42 +72,53 @@ def get_all_shapes_by_user(
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
-def get_shape_metadata_by_bounding_box(conn: Connection, bbox: schemas.ViewportBounds, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
-    """Get all shapes within a bounding box.
+def get_shape_metadata_by_bounding_box(conn: Connection, bbox: schemas.ViewportBounds, limit: int = DEFAULT_LIMIT, offset: int = 0) -> List[schemas.GeoShapeMetadata]:
+    """Get all shapes within a bounding box
 
     Used on the frontend to determine which shapes to show details on in the sidebar
     """
     geom = Polygon(type="Polygon", coordinates=[[
-        (bbox.minX, bbox.minY),
-        (bbox.minX, bbox.maxY),
-        (bbox.maxX, bbox.maxY),
-        (bbox.maxX, bbox.minY),
-        (bbox.minX, bbox.minY)
+        (bbox.min_x, bbox.min_y),
+        (bbox.min_x, bbox.max_y),
+        (bbox.max_x, bbox.max_y),
+        (bbox.max_x, bbox.min_y),
+        (bbox.min_x, bbox.min_y)
     ]])
     stmt = (
-        sa.select(shapes_tbl) # type: ignore
+        sa.select(shapes_tbl)  # type: ignore
         .with_only_columns(METADATA_COLS)
         .where(
             shapes_tbl.c.deleted_at == None
         )
         .where(
+            # Check if the shape intersects with the bounding box
             sa.func.ST_Intersects(
-                shapes_tbl.c.geom, sa.func.ST_Transform(geom, 4326))
+                shapes_tbl.c.geom,
+                sa.func.ST_GeomFromText(
+                    geom.wkt,
+                    4326,
+                ),
+            )
         )
         .order_by(shapes_tbl.c.uuid)
-        .offset(offset)
         .limit(limit)
+        .offset(offset)
     )
+
     res = conn.execute(stmt).fetchall()
     return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
 
 
-def get_shape_metadata_matching_search(conn: Connection, query: str, offset: int = 0, limit: int = DEFAULT_LIMIT) -> List[schemas.GeoShapeMetadata]:
+def get_shape_metadata_matching_search(
+        conn: Connection,
+        search_query: str,
+        limit: int = DEFAULT_LIMIT,
+        offset: int = 0) -> List[schemas.GeoShapeMetadata]:
     """Get all shapes matching a search string."""
     stmt = sa.text("""
         SELECT uuid
         , name
-        , properties
+        , properties - '__uuid' AS properties
         , created_at
         , updated_at
         , ts_rank_cd(fts, query, 12) AS rank
@@ -108,51 +128,51 @@ def get_shape_metadata_matching_search(conn: Connection, query: str, offset: int
         WHERE 1=1
           AND (query @@ fts OR similarity > 0)
         ORDER BY rank DESC, similarity DESC
-        LIMIT 20
+        LIMIT :limit
         OFFSET :offset
     """)
     res = conn.execute(stmt, {
-        "query_text": query,
+        "query_text": search_query,
+        "limit": limit,
         "offset": offset
-    }).scalars().fetchall()
+    }).fetchall()
+    return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
+
+
+def get_all_shape_metadata_by_organization(
+    conn: Connection, organization_id: UUID4, limit: Optional[int] = DEFAULT_LIMIT, offset: int = 0
+) -> List[schemas.GeoShapeMetadata]:
+    # TODO remove UUID ordering
+    stmt = (
+        shapes_tbl
+        .select()
+        .with_only_columns(METADATA_COLS)
+        # type: ignore
+        .where(shapes_tbl.c.organization_id == str(organization_id))
+        .where(shapes_tbl.c.deleted_at == None)
+        .order_by(shapes_tbl.c.uuid)
+        .offset(offset)
+        .limit(limit)
+    )
+    res = conn.execute(stmt).fetchall()
     return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
 
 
 def get_all_shapes_by_organization(
-    conn: Connection, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
+    conn: Connection, organization_id: UUID4, limit: Optional[int] = DEFAULT_LIMIT, offset: int = 0,
 ) -> List[schemas.GeoShape]:
-    # This is usually equivalent to getting all shapes by organization
-    # TODO ordering by UUID just guarantees a sort order
-    # I am only doing this because the selected feature index in nebula.gl
-    # on the frontend needs consistent
-    # We should find a better way of handling this
+    # TODO Remove ordering by UUID
     stmt = (
         shapes_tbl
         .select()
-        .where(shapes_tbl.c.organization_id == str(organization_id))  # type: ignore
+        .where(shapes_tbl.c.organization_id == str(organization_id))
         .where(shapes_tbl.c.deleted_at == None)
         .order_by(shapes_tbl.c.uuid)
-        .offset(offset)
         .limit(limit)
+        .offset(offset)
     )
     res = conn.execute(stmt).fetchall()
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
-
-
-def get_all_shape_metadata_by_organization(
-    conn: Connection, organization_id: UUID4, offset: int = 0, limit: Optional[int] = DEFAULT_LIMIT
-) -> List[schemas.GeoShapeMetadata]:
-    stmt = (
-        sa.select(shapes_tbl) # type: ignore
-        .with_only_columns(METADATA_COLS)
-        .where(shapes_tbl.c.organization_id == str(organization_id))  # type: ignore
-        .where(shapes_tbl.c.deleted_at == None)
-        .order_by(shapes_tbl.c.uuid)
-        .offset(offset)
-        .limit(limit)
-    )
-    res = conn.execute(stmt).fetchall()
-    return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
 
 
 def create_shape(conn: Connection, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
@@ -229,7 +249,8 @@ def delete_shape(conn: Connection, uuid: UUID4) -> int:
         "deleted_at": datetime.datetime.now(),
         "deleted_by_user_id": sa.func.app_user_id(),
     }
-    stmt = (shapes_tbl
+    stmt = (
+        shapes_tbl
         .update()
         .values(**values)
         .where(shapes_tbl.c.uuid == str(uuid))
@@ -241,7 +262,7 @@ def delete_shape(conn: Connection, uuid: UUID4) -> int:
 
 
 def delete_many_shapes(conn: Connection, uuids: Sequence[UUID4]) -> int:
-    """Delete a shape."""
+    """Delete many shapes."""
     # TODO: What to do if exists?
     values = {
         "deleted_at": datetime.datetime.now(),

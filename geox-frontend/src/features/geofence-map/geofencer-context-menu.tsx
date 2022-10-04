@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { EditorMode } from "./cursor-modes";
 import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
 import { useCursorMode } from "./hooks/use-cursor-mode";
+import { useSelectedShapes } from "./hooks/use-selected-shapes";
 import { useShapes } from "./hooks/use-shapes";
 
 export const GeofencerContextMenu = () => {
@@ -12,13 +13,14 @@ export const GeofencerContextMenu = () => {
   // read selection from context
   const {
     selectedShapeUuids,
-    setShapeForMetadataEdit,
-    shapes,
+    setShapeForPropertyEdit,
+    shapeMetadata,
     clearSelectedShapeUuids,
     clearSelectedFeatureIndexes,
     mapRef,
   } = useShapes();
   const { mutate: bulkDelete } = useBulkDeleteShapesMutation();
+  const { selectedFeatureCollection } = useSelectedShapes();
 
   function closeMenu() {
     setXPos(null);
@@ -26,7 +28,7 @@ export const GeofencerContextMenu = () => {
   }
 
   function cleanup() {
-    setShapeForMetadataEdit(null);
+    setShapeForPropertyEdit(null);
     clearSelectedFeatureIndexes();
     clearSelectedShapeUuids();
     closeMenu();
@@ -72,32 +74,23 @@ export const GeofencerContextMenu = () => {
         if (Object.keys(selectedShapeUuids).length > 1) {
           toast.error("Please select only one shape to edit");
         }
-        const selectedShape = shapes.find(
+        const selectedShape = shapeMetadata.find(
           (shape) => shape.uuid === Object.keys(selectedShapeUuids)[0]
         );
         if (!selectedShape) {
+          toast.error("No shape detected");
           return;
         }
-        setShapeForMetadataEdit(selectedShape);
+        setShapeForPropertyEdit(selectedShape);
         closeMenu();
         return;
       case "Copy as GeoJSON":
-        // copies the selected shape as a geojson string to the clipboard
-        const selectedShapes = shapes.filter((shape) =>
-          Object.keys(selectedShapeUuids).includes(shape.uuid)
-        );
-        const geojson = selectedShapes.map((shape) => {
-          const g = { ...shape.geojson };
-          delete g.properties.__uuid;
-          delete g.id;
-          delete g.bbox;
-          return g;
-        })[0];
-        if (!geojson) {
-          return;
+        if (selectedFeatureCollection) {
+          navigator.clipboard.writeText(
+            JSON.stringify(selectedFeatureCollection)
+          );
+          toast.success("Copied to clipboard");
         }
-        navigator.clipboard.writeText(JSON.stringify(geojson));
-        toast.success("Copied to clipboard");
         closeMenu();
         return;
       case "Delete (Backspace)":
