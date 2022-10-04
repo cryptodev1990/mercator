@@ -63,7 +63,7 @@ def get_all_shapes(
         shapes = crud.get_all_shapes_by_user(
             conn, user.id, offset=offset, limit=limit)
     elif rtype == GetAllShapesRequestType.organization:
-        organization_id = get_active_org(conn, user_conn.user.id)
+        organization_id = conn.execute(select(func.app_user_org())).scalar()
         if organization_id is None:
             raise HTTPException(403, detail="User has no organization.")
         shapes = crud.get_all_shapes_by_organization(
