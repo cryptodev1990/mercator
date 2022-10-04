@@ -122,5 +122,5 @@ def get_osm_engine() -> Engine:
 async def get_osm_conn(engine=Depends(get_osm_engine)) -> AsyncGenerator[Connection, None]:
     """Return a connection to an OSM database."""
     # TODO: should we disallow writes to it?
-    with engine.begin():
-        yield engine
+    with engine.begin() as conn:
+        yield conn
