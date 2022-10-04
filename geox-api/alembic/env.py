@@ -35,12 +35,20 @@ target_metadata = metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+# ReplaceableEntity is the parent of all alembic_utils classes
+from alembic_utils.replaceable_entity import register_entities, ReplaceableEntity
+from app.db.metadata.functions import entities as function_entities
+
+all_entities = [*function_entities]
+
+register_entities(all_entities)
+
+
 exclude_objects = [
     # (type_, name)
     ("table", "spatial_ref_sys"),
     ("index", "organization_members_id_seq"),
 ]
-
 
 def get_url() -> str:
     """Return the database URL."""
@@ -58,10 +66,18 @@ def include_object(object, name, type_, reflected, compare_to):
     - Other object types are excluded by default. Include them with ``include_objects``.
 
     """
-    # Tables and columns include by default
+    # If object is an alembic_utility class, excluded by default
+    if isinstance(object, ReplaceableEntity):
+        for entity in all_entities:
+            # Not 100% that this works,
+            if type_ == entity.type_ and f"{entity.schema}.{entity.signature}" == name:
+                return True
+        return False
+
+    # If object is not (tables, columns, indexes, constraints), then it is included by default
     for obj_typ, obj_name in exclude_objects:
         if type_ == obj_typ and name == obj_name:
-            return False
+                return False
     return True
 
 

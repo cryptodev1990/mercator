@@ -12,7 +12,7 @@ from sqlalchemy import select, text, update
 from sqlalchemy.engine import Connection
 
 from app.core.config import get_settings
-from app.crud.organization import get_personal_org_id
+from app.crud.organization import get_personal_org_id, get_active_org
 from app.main import app
 from app.schemas import GeoShapeCreate
 from app.db.metadata import shapes as shapes_tbl
@@ -78,8 +78,10 @@ def set_active_organization(
         update(org_mbr_tbl)  # type: ignore
         .where(org_mbr_tbl.c.user_id == user_id)
         .values(active=(org_mbr_tbl.c.organization_id == organization_id))
+        .returning(org_mbr_tbl)
     )
-    return conn.execute(stmt)
+    res = conn.execute(stmt).fetchall()
+    return res
 
 
 def test_policy_exists(connection):
@@ -109,7 +111,10 @@ def test_read_shape_self_wrong_org(connection, dep_override_factory):
     # Change the org to the user's personal org
     personal_org = get_personal_org_id(connection, user_id)
     assert personal_org
+    print(personal_org)
+    get_active_org(connection, user_id, use_cache=False)
     set_active_organization(connection, user_id, personal_org)
+    assert get_active_org(connection, user_id, use_cache=False) == personal_org
     assert shape_exists(connection, shape_id)
     with dep_override_factory(user_id):
         response = client.get(f"/geofencer/shapes/{shape_id}")

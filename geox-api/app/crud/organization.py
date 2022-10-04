@@ -72,7 +72,10 @@ def get_active_org(conn: Connection, user_id: int, use_cache: bool=True) -> Opti
         handling the case of no active organization for the user.
     """
     # _get_active_org will return str not UUID to make it more
-    value = check_cache(user_id, "organization_id", _get_active_org, conn, user_id)
+    if use_cache:
+        value = check_cache(user_id, "organization_id", _get_active_org, conn, user_id)
+    else:
+        value = _get_active_org(conn, user_id)
     if value is None:
         return None
     try:

@@ -24,3 +24,4 @@ git+https://github.com/developmentseed/timvt@fc12bd6a879f0ef23d427efa76fe91e47b3
 typer==0.5.*
 buildpg==0.4
 hypercorn
+alembic_utils==0.7.*
