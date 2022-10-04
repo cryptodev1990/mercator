@@ -77,7 +77,9 @@ def query_shapes_table(
             """
                 SELECT
                     uuid :: TEXT AS uuid,
-                    name,
+                    -- This is a hack. It should be removed when shapes
+                    -- is cleaned up.
+                    coalesce(geojson->>'name', name) AS name,
                     -- WKB Format in WG84 projection
                     ST_GeomFromGeoJson(geojson->'geometry') AS geom,
                     -- to avoid certain issues writing to parquet like
