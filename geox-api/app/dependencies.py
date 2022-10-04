@@ -41,22 +41,6 @@ async def verify_token(
     token: HTTPAuthorizationCredentials = Depends(token_auth_scheme),
     settings: Settings = Depends(get_settings),
 ) -> Dict[str, Any]:
-    # # TODO airplane mode hack, do we want some formal way of enabling this?
-    # if True:
-    #     return {
-    #         "user_id": 1,
-    #         "email": "duber@mercator.tech",
-    #         "sub": "google-oauth2|106524875829152250066",
-    #         "given_name": "Andrew",
-    #         "family_name": "Duberstein",
-    #         "nickname": "duber",
-    #         "name": "Andrew Duberstein",
-    #         "picture": 'https://lh3.googleusercontent.com/a/ALm5wu1LKKw_sg52wMdTVMINtL62g1XKwnXg-p6GCctm=s96-c',
-    #         "locale": 'en',
-    #         "updated_at": '2022-09-20 10:07:13.805',
-    #         "email_verified": 'True',
-    #         "iss": 'https://dev-w40e3mxg.us.auth0.com/',
-    #     }
     """Verify a JWT token."""
     # When should this return 401 vs. 403 exceptions
     exception = HTTPException(
