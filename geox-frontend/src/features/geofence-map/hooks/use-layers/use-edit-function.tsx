@@ -5,7 +5,7 @@ import {
   MultiPolygon,
   GeoShapeMetadata,
 } from "../../../../client";
-import { Feature, flatten, unkinkPolygon, kinks } from "@turf/turf";
+import { Feature, unkinkPolygon, kinks } from "@turf/turf";
 
 import { useShapes } from "../use-shapes";
 import {
@@ -69,6 +69,7 @@ export function useEditFunction() {
       const uuid = Object.keys(selectedShapeUuids)[0];
 
       const name = shapeMetadata.find((x) => x.uuid === uuid)?.name;
+      delete multiPolygon?.properties?.__uuid;
       const payload = [
         {
           geojson: {
@@ -119,6 +120,10 @@ export function useEditFunction() {
               },
             }
           );
+        },
+        onError: (error) => {
+          toast.error("Error splitting shape");
+          console.error(error);
         },
       });
       return;
