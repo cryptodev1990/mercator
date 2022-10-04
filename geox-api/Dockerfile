@@ -47,6 +47,7 @@ COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile /webapp/
 # and in the file - .env.
 ARG git_commit_hash
 ENV GIT_COMMIT=${git_commit_hash}
+ENV APP_ENV=production
 RUN touch /webapp/.env && \
     echo "GIT_COMMIT=$GIT_COMMIT" >> /webapp/.env
 

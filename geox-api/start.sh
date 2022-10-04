@@ -47,7 +47,7 @@ then
     RELOAD_OPT="--reload"
 fi;
 
-if [ -z ${FLY_APP_NAME+x} ]
+if [ "$APP_ENV" = "production" ]
 then
   # Production -- use hypercorn
   exec hypercorn "$APP_MODULE" --workers 8 --worker-class asyncio --bind "$APP_HOST":"$APP_PORT"
