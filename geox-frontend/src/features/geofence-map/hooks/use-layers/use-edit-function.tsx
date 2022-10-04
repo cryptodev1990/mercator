@@ -14,6 +14,8 @@ import {
   useUpdateShapeMutation,
 } from "../openapi-hooks";
 import { toast } from "react-hot-toast";
+import { useCursorMode } from "../use-cursor-mode";
+import { EditorMode } from "../../cursor-modes";
 
 export function useEditFunction() {
   const {
@@ -24,6 +26,7 @@ export function useEditFunction() {
     selectedFeatureIndexes,
     clearSelectedFeatureIndexes,
   } = useShapes();
+  const { setCursorMode } = useCursorMode();
   const { mutate: addShape } = useAddShapeMutation();
   const { mutate: bulkAdd } = useBulkAddShapesMutation();
   const { mutate: updateShape } = useUpdateShapeMutation();
@@ -112,6 +115,7 @@ export function useEditFunction() {
             {
               onSuccess: () => {
                 toast.success(`Created ${numShapes} new shapes`);
+                setCursorMode(EditorMode.ViewMode);
                 clearSelectedFeatureIndexes();
                 clearSelectedShapeUuids();
               },

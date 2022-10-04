@@ -992,13 +992,36 @@ Deleting shapes works correctly but the tile refresh does not happen
 - Shapes correctly add now. Overlap denial is supported too.
 - Property edit is supported again
 
-Status, then: Create, read, update, delete all work :)
+Status: Create, read, update, delete all work :)
 
 A couple random features still have bugs:
 
-[X] shape split
-- zoom to shape
-- export geojson (might want to build an endpoint for this)
-- copy on geojson shape to the clipboard
+- [X] shape split
+- [X] zoom to shape
+- [X] export geojson (might want to build an endpoint for this)
+- [X] copy on geojson shape to the clipboard
 
-I'll get to those next
+## 10-3-2022 and 10-4-2022
+
+Changes from tiling are in prod
+
+### Plans
+
+- [ ] ~~Work on namespaces~~ Jeff A doing this
+- [ ] Scope out what to do to get automatic onboarding to work
+  - Option 1: Invite collaborators by email
+    - Flow for inviter: User signs up, user selects other users they want to work with (we send emails to each of those users)
+    - Flow for invitees: User clicks the invitation link, goes to our onboarding page
+    - Questions to answer: Do we expire links? Do we create profiles for users who don't exist yet?
+    - Implementation:
+      - Invitations
+        - Create a table of ``user_invitations``. Table has schema ``invitation_id``, ``invited_at``, ``invited_by``, ``opened_at``
+	- We allow users to read, delete, and create user invitations
+	- We offer an endpoint, ``mercator.tech/user-invitation?invitation_id=<uuid>``
+        - We use Twilio Sendgrid to send an email to an email, with the invitation_id embedded in the text, and some mention of ``colleague@org.com`` has invited them.
+	- When the invitation ID is clicked, we require the user to create an account and update the ``opened_at``
+	- If the ``opened_at`` is set, the email is expired. ``/user-invitation?invitation_id=<uuid>`` displays a screen that says to contact the inviter
+	- Out of scope: Expiring invitation links automatically
+  - Option 2: Let users opt-in to "Any user on the same email domain shares my workspace"
+    - Implentation:
+- [X] Bugfix for shape cutting

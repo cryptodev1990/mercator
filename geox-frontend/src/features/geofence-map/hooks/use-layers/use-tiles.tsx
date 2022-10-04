@@ -4,7 +4,7 @@ import { useIdToken } from "../use-id-token";
 import { useShapes } from "../use-shapes";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { findIndex } from "../../../../common/utils";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DeckContext } from "../../contexts/deck-context";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
@@ -22,7 +22,12 @@ export function useTiles() {
   };
 
   const { isSelected, selectedUuids } = useSelectedShapes();
+  const [isHovering, setIsHovering] = useState<string | null>(null);
   const { cursorMode } = useCursorMode();
+
+  useEffect(() => {
+    setIsHovering(null);
+  }, [cursorMode]);
 
   if (idToken === null) {
     return null;
@@ -46,8 +51,16 @@ export function useTiles() {
       },
     },
     onHover: ({ object, x, y }) => {
+      if (
+        // @ts-ignore
+        object?.properties?.__uuid &&
+        EditorMode.ModifyMode === cursorMode
+      ) {
+        // @ts-ignore
+        setIsHovering(object?.properties?.__uuid);
+      }
       // @ts-ignore
-      if (object?.properties?.__uuid && cursorMode !== EditorMode.SplitMode) {
+      if (object?.properties?.__uuid && cursorMode === EditorMode.ViewMode) {
         // TODO how do I get TypeScript to recognize the type on object here?
         // @ts-ignore
         const { __uuid: uuid } = object.properties;
@@ -58,6 +71,9 @@ export function useTiles() {
       }
     },
     onClick: ({ object, x, y }) => {
+      if (cursorMode === EditorMode.SplitMode) {
+        return;
+      }
       // @ts-ignore
       if (object?.properties?.__uuid) {
         // TODO how do I get TypeScript to recognize the type on object here?
@@ -74,13 +90,17 @@ export function useTiles() {
     // maxRequests: -1, // unlimited connections, using HTTP/2
     getLineColor: [192, 192, 192, 255],
     updateTriggers: {
-      getFillColor: [selectedUuids],
+      getFillColor: [selectedUuids, isHovering],
       getTileData: [tileCacheKey],
     },
     getFillColor: (d: any) => {
       if (isSelected(d.properties.__uuid)) {
         // salmon in rgba
         return [250, 128, 114, 150];
+      }
+      if (isHovering === d.properties.__uuid) {
+        // light blue in rgba
+        return [173, 216, 230, 150];
       }
       return [140, 170, 180, 200];
     },
@@ -92,6 +112,13 @@ export function useTiles() {
     // enter: () => [0, 0, 0, 0], //
     // },
     // },
+    transitions: {
+      getFillColor: {
+        duration: 300,
+        // @ts-ignore
+        enter: () => [140, 170, 180, 200], //
+      },
+    },
     renderSubLayers: (props: any) => {
       return new GeoJsonLayer({
         data: props.data,

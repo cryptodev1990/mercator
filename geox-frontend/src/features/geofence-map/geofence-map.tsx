@@ -94,6 +94,34 @@ const GeofenceMap = () => {
         onViewStateChange={({ viewState, oldViewState }) =>
           setViewport(viewState)
         }
+        // @ts-ignore
+        getCursor={(e) => {
+          switch (cursorMode) {
+            case EditorMode.ViewMode:
+              if (e.isDragging) {
+                return "grabbing";
+              }
+              if (e.isHovering) {
+                return "pointer";
+              }
+              return "grab";
+            case EditorMode.EditMode:
+            case EditorMode.LassoDrawMode:
+              return "crosshair";
+            case EditorMode.SplitMode:
+              return 'url("/scissors.png"), cell';
+            case EditorMode.ModifyMode:
+              if (e.isDragging) {
+                return "grabbing";
+              }
+              if (e.isHovering) {
+                return "pointer";
+              }
+              return "grab";
+            default:
+              return "pointer";
+          }
+        }}
         controller={{
           // @ts-ignore
           doubleClickZoom: false,
