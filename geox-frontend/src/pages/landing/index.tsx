@@ -12,12 +12,14 @@ import { HeroSection } from "./hero-section";
 import { ProductSection } from "./product-section";
 
 const LandingPage = () => {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
+
+  if (isLoading) return null;
 
   return (
     <main
