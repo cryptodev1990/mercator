@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { MdOutlineArrowBackIos } from "react-icons/md";
+import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { Transition } from "react-transition-group";
+import { useShapes } from "../../hooks/use-shapes";
 
 const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   return (
@@ -10,7 +11,7 @@ const ArrowBox = ({ handleClick }: { handleClick: any }) => {
         "flex z-10 bg-slate-600 mx-5 p-1 justify-center cursor-pointer items-center h-fit w-fit"
       }
     >
-      <MdOutlineArrowBackIos size={15} />
+      <MdOutlineArrowForwardIos size={15} />
     </div>
   );
 };
@@ -59,7 +60,7 @@ export const SidebarDrawer = ({ children }: { children: any }) => {
       <Transition in={!hidden} timeout={50}>
         {(state: any) => (
           <div
-            className="w-[300px] z-10 overflow-y-none snap-y bg-gradient-to-br from-slate-600 to-slate-700"
+            className={`w-[300px] z-10 bg-slate-700`}
             style={{
               ...defaultStyles,
               ...transitionStyles[state],

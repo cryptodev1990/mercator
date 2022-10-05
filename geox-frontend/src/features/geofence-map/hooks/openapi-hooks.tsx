@@ -95,7 +95,7 @@ export const useGetOneShapeByUuid = (uuid: string) => {
       staleTime: 0,
       cacheTime: 0,
       onError(error: any) {
-        toast.error(`Shapes failed to fetch (${error.detail})`);
+        toast.error(`Shapes failed to fetch (${error.detail ?? error})`);
       },
     }
   );
@@ -179,8 +179,8 @@ export const useGetAllShapes = (limit: number, offset: number) => {
       retry: false,
       cacheTime: 0,
       staleTime: 0,
-      onError(error) {
-        toast.error(`Shapes failed to fetch (${error})`);
+      onError(error: any) {
+        toast.error(`Shapes failed to fetch (${error.detail ?? error})`);
       },
     }
   );
