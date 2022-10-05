@@ -1023,5 +1023,8 @@ Changes from tiling are in prod
 	- If the ``opened_at`` is set, the email is expired. ``/user-invitation?invitation_id=<uuid>`` displays a screen that says to contact the inviter
 	- Out of scope: Expiring invitation links automatically
   - Option 2: Let users opt-in to "Any user on the same email domain shares my workspace"
-    - Implentation:
+    - Flow for inviter and invitees: User signs up, sees a checkbox that says "If selected, you will join the same workspace as other users in your organization"
+    - Implementation:
+      - We provide this checkbox. We create organization (a concept I am now realizing we should have called "workspaces") from email domains.
+      - If another user signs up and clicks this checkmark, they are opted into the new org
 - [X] Bugfix for shape cutting
