@@ -1,8 +1,7 @@
 from alembic_utils.pg_function import PGFunction
-from alembic_utils.replaceable_entity import register_entities
+from textwrap import dedent
 
-entities = []
-"""List of objects to monitor"""
+__all__ = ["app_user_org"]
 
 app_user_org = PGFunction(
   schema='public',
@@ -14,5 +13,3 @@ app_user_org = PGFunction(
   $$ language SQL;
   """
 )
-
-entities.append(app_user_org)

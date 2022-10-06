@@ -37,17 +37,33 @@ target_metadata = metadata
 
 # ReplaceableEntity is the parent of all alembic_utils classes
 from alembic_utils.replaceable_entity import register_entities, ReplaceableEntity
-from app.db.metadata.functions import entities as function_entities
+from alembic_utils.pg_grant_table import PGGrantTable
 
-all_entities = [*function_entities]
+# Add new functions and procedures to this module
+from app.db.metadata.functions import entities as function_entities
+# Add new policies to this module
+from app.db.metadata.policies import entities as policy_entities
+# Add new extensions here
+from app.db.metadata.extensions import entities as extension_entities
+# Add new triggers to this module
+from app.db.metadata.triggers import entities as trigger_entities
+# Add new views to this module
+from app.db.metadata.views import entities as view_entities
+# Add new triggers to this module
+from app.db.metadata.materialized_views import entities as materialized_view_entities
+
+# Table grants still need to be managed directly in alembic
+
+all_entities = [*function_entities, *policy_entities,  *extension_entities, *trigger_entities, *view_entities, *materialized_view_entities]
 
 register_entities(all_entities)
 
 
 exclude_objects = [
     # (type_, name)
-    ("table", "spatial_ref_sys"),
-    ("index", "organization_members_id_seq"),
+    ("table", "spatial_ref_sys"), # created by postgis
+    ("view", "public.geography_columns"),  # created by postgis
+    ("view", "public.geometry_columns"), # created by postgis
 ]
 
 def get_url() -> str:
@@ -66,15 +82,10 @@ def include_object(object, name, type_, reflected, compare_to):
     - Other object types are excluded by default. Include them with ``include_objects``.
 
     """
-    # If object is an alembic_utility class, excluded by default
-    if isinstance(object, ReplaceableEntity):
-        for entity in all_entities:
-            # Not 100% that this works,
-            if type_ == entity.type_ and f"{entity.schema}.{entity.signature}" == name:
-                return True
+    # Ignore grant table entities - too noisy to manage with alembic utils
+    if isinstance(object, PGGrantTable):
         return False
 
-    # If object is not (tables, columns, indexes, constraints), then it is included by default
     for obj_typ, obj_name in exclude_objects:
         if type_ == obj_typ and name == obj_name:
                 return False
