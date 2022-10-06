@@ -1034,7 +1034,7 @@ Changes from tiling are in prod
 - [ ] Set up DD APM. Relevant docs:
     - [DD](https://docs.datadoghq.com/getting_started/tracing/)
     - [Fly](https://community.fly.io/t/metrics-from-go-app-hosted-on-fly-io-not-ending-up-in-datadog/5084)
-- [ ] Get PR-level staging working. Relevant docs:
+- [X] Get PR-level staging working. Relevant docs:
     - [Github](https://github.com/superfly/fly-pr-review-apps)
 
 Issues: It turns out that you can't assign volumes to the newly created apps easily, so Postgres can store data
@@ -1042,6 +1042,24 @@ It may just be easiest to just manually set up a staging environment. TBD.
 
 ## 10-6-2022
 
-### Plans
+### Progress/Plans
 
-- Staging has an OOM memory error, so I need to increase the size of our instances.
+- [X] Create a staging organization and get the backend live there
+- [X] Create a gh action for this
+- [ ] Add a Slack notification when a merge happens
+- [ ] Rename all the fly.tomls to `fly.production.toml`? TBD
+
+#### Issues: Why didn't the per-PR staging previews work?
+
+1. Some of our applications hit an OOM error with the default Fly settings, and you can't headlessly modify those settings with flyctl
+2. The `DATABASE_URL` that's supposed to populate for Postgres simply doesn't appear
+3. Secrets weren't properly setting for reasons I couldn't figure out
+
+Overall, it just doesn't seem like they've invested a lot in staging.
+
+#### Drawbacks of the org staging
+
+1. It costs us money (which we could maybe negotiate)
+2. One person's deployed changes clobber another's, which means you have to double-check that your code is running vs someone else's
+
+The pros, of course, are that it works and is easy to reason about. Set it up in about 90 minutes after fiddling with the other approach for a day.
