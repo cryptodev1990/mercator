@@ -1,27 +1,35 @@
-# fly.toml file generated for geox-uploader on 2022-09-04T11:21:17-07:00
+# fly.toml file generated for hidden-sun-7397 on 2022-10-06T14:55:07-07:00
 
-app = "geox-uploader"
+app = "hidden-sun-7397"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
 [env]
-  num_workers = 8
+  APP_ENV = "production"
+  BACKEND_CORS_ORIGINS = "[\"*\"]"
+  PORT = "8080"
 
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
 
 [[services]]
-  http_checks = []
   internal_port = 8080
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
   [services.concurrency]
-    hard_limit = 25
-    soft_limit = 20
+    hard_limit = 50
+    soft_limit = 40
     type = "connections"
+
+  [[services.http_checks]]
+    grace_period = "10s"
+    interval = 5000
+    method = "get"
+    path = "/health"
+    protocol = "http"
 
   [[services.ports]]
     force_https = true
@@ -37,3 +45,7 @@ processes = []
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[[statics]]
+  guest_path = "/app/public"
+  url_prefix = "/static/"

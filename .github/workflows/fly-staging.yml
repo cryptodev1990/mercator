@@ -1,0 +1,19 @@
+# Docs for deploying fly.io apps with github actions:
+# https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/#speed-run-your-way-to-continuous-deployment
+name: Fly Deploy Staging
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+on:
+  pull_request:
+    types:
+      - closed
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+      name: Deploy app
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: superfly/flyctl-actions/setup-flyctl@master
+        - run: flyctl deploy --build-arg git_commit_hash=$GITHUB_SHA --dockerfile="Dockerfile" --remote-only --config fly.staging.toml --app hidden-sun-7397
+          working-directory: geox-api

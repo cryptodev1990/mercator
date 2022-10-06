@@ -1,6 +1,6 @@
-# fly.toml file generated for geox-uploader on 2022-09-04T11:21:17-07:00
+# fly.toml file generated for geox-uploader-staging on 2022-10-06T15:07:02-07:00
 
-app = "geox-uploader"
+app = "geox-uploader-staging"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []

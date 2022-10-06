@@ -1008,7 +1008,7 @@ Changes from tiling are in prod
 ### Plans
 
 - [ ] ~~Work on namespaces~~ Jeff A doing this
-- [ ] Scope out what to do to get automatic onboarding to work
+- [X] Scope out what to do to get automatic onboarding to work
   - Option 1: Invite collaborators by email
     - Flow for inviter: User signs up, user selects other users they want to work with (we send emails to each of those users)
     - Flow for invitees: User clicks the invitation link, goes to our onboarding page
@@ -1028,3 +1028,20 @@ Changes from tiling are in prod
       - We provide this checkbox. We create organization (a concept I am now realizing we should have called "workspaces") from email domains.
       - If another user signs up and clicks this checkmark, they are opted into the new org
 - [X] Bugfix for shape cutting
+
+## 10-5-2022
+
+- [ ] Set up DD APM. Relevant docs:
+    - [DD](https://docs.datadoghq.com/getting_started/tracing/)
+    - [Fly](https://community.fly.io/t/metrics-from-go-app-hosted-on-fly-io-not-ending-up-in-datadog/5084)
+- [ ] Get PR-level staging working. Relevant docs:
+    - [Github](https://github.com/superfly/fly-pr-review-apps)
+
+Issues: It turns out that you can't assign volumes to the newly created apps easily, so Postgres can store data
+It may just be easiest to just manually set up a staging environment. TBD.
+
+## 10-6-2022
+
+### Plans
+
+- Staging has an OOM memory error, so I need to increase the size of our instances.

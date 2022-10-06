@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@datadog/browser-rum": "^4.21.0"
-  }
-}

@@ -1,5 +1,7 @@
 FROM node:16
 
+ENV NUM_WORKERS ${NUM_WORKERS:-1}
+
 WORKDIR /usr/src
 COPY package*.json ./
 COPY app app/
@@ -10,4 +12,7 @@ EXPOSE 8080:8080
 
 RUN npm install pm2 -g
 RUN npm run tsc
-CMD ["pm2-runtime", "-i", "8", "./app/index.js"]
+
+RUN echo Running pm2 with ${NUM_WORKERS} workers
+
+CMD /usr/local/bin/pm2-runtime -i ${NUM_WORKERS} ./app/index.js
