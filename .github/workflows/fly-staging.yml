@@ -9,20 +9,23 @@ on:
       - closed
 jobs:
   deploy:
-    - name: Deploy app
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - uses: superfly/flyctl-actions/setup-flyctl@master
-        - run: flyctl deploy --build-arg git_commit_hash=$GITHUB_SHA --dockerfile="Dockerfile" --remote-only --config fly.staging.toml --app hidden-sun-7397
-          working-directory: geox-api
-    - name: Send custom JSON data to Slack workflow
-      id: slack
-      uses: slackapi/slack-github-action@v1.22.0
-      with:
-        payload: |
-          {
-            "git_hash": "${{ github.sha }}"
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_NOTIFY_STAGING }}
+    name: Deploy app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --build-arg git_commit_hash=$GITHUB_SHA --dockerfile="Dockerfile" --remote-only --config fly.staging.toml --app hidden-sun-7397
+        working-directory: geox-api
+  notify:
+    name: Send custom JSON data to Slack workflow
+    needs: deploy
+    runs-on: ubuntu-latest
+    id: slack
+    uses: slackapi/slack-github-action@v1.22.0
+    with:
+      payload: |
+        {
+          "git_hash": "${{ github.sha }}"
+        }
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_NOTIFY_STAGING }}
