@@ -3,14 +3,14 @@
 # Exit on error
 set -e
 
-_install_db() {
-    # Install Postgres
-    echo "installing postgres"
-    brew install -q postgresql postgis
-
-    # Create geox database
-    echo "Creating geox db/"
-    createdb geox &>/dev/null || true
+_check_postgres() {
+    if ! which psql > /dev/null
+    then
+        echo "Install PostgreSQL 14 before proceeding!" 1>&2
+        exit 1
+    else
+        echo "Postgres installed"
+    fi;
 }
 
 # Install python dependencies
@@ -20,28 +20,36 @@ _setup_python() {
     python3 -m venv env
     source env/bin/activate
     # Update pip and install wheel before isntalling anything else
-    pip install --update wheel pip
+    pip install --upgrade wheel pip
     env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" pip install -r requirements.txt
     pip install -r requirements-dev.txt
     deactivate
 }
 
 _install_overmind() {
-    echo "Installing overmind"
-    brew install -q overmind
-}
-
-_copy_template() {
-    if [ ! -f ".env.local" ]; then
-        echo "Copying .env.template to .env.local. Remember to fill it in!"
-        cp .env.template .env.local
-    else
-        echo "Found existing .env.local."
+    if ! which overmind > /dev/null; then
+        echo "Installing overmind"
+        brew install -q overmind
     fi
 }
 
-brew update
-_install_db
-_setup_python
+_install_just() {
+    if ! which just > /dev/null; then
+        echo "Installing just"
+        brew install -q rust just
+    fi
+}
+
+_install_redis() {
+    if ! which redis-cli > /dev/null; then
+        echo "Installing redis"
+        brew install -q redis
+    fi
+}
+
+brew upgrade && brew update
+_check_postgres
+_install_redis
 _install_overmind
-_copy_template
+_install_just
+_setup_python
