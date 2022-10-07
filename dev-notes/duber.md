@@ -1046,7 +1046,7 @@ It may just be easiest to just manually set up a staging environment. TBD.
 
 - [X] Create a staging organization and get the backend live there
 - [X] Create a gh action for this
-- [ ] Add a Slack notification when a merge happens
+- [X] Add a Slack notification when a merge happens
 - [ ] Rename all the fly.tomls to `fly.production.toml`? TBD
 
 #### Issues: Why didn't the per-PR staging previews work?
