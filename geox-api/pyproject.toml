@@ -1,3 +1,14 @@
+[tool.isort]
+py_version = 39
+skip_gitignore = true
+skip_glob = ["env/**", "alembic/versions/**"]
+profile = "black"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+exclude = "env/|alembic/versions|\\.ipynb$|\\.ipynb_checkpoints/"
+
 [tool.mypy]
 python_version = "3.9"
 exclude = '''(?x)
