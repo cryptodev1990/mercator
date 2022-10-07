@@ -19,7 +19,6 @@ jobs:
   # Add a notice to slack that the branch has published
   notify_merged_pull_request:
     name: Notify Slack on merged pull requests
-    id: slack
     runs-on: ubuntu-latest
     needs: deploy
     steps:
