@@ -3,15 +3,6 @@ from alembic_utils.pg_trigger import PGTrigger
 __all__ = ["users_delete_trigger", "users_insert_trigger", "shapes_create_geom_trigger", "shapes_update_geom_trigger"]
 entities = []
 
-users_delete_trigger = PGTrigger(
-    schema="public",
-    signature="users_delete_trigger",
-    on_entity="public.users",
-    is_constraint=False,
-    definition='AFTER DELETE ON public.users FOR EACH ROW EXECUTE FUNCTION remove_orphaned_organizations()'
-)
-entities.append(users_delete_trigger)
-
 users_insert_trigger = PGTrigger(
     schema="public",
     signature="users_insert_trigger",
