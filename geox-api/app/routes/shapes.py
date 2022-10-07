@@ -2,19 +2,25 @@ import logging
 from enum import Enum
 from typing import List, Optional, Union, cast
 
-from app.core.config import Settings, get_settings
-from app.crud import shape as crud
-from app.crud.organization import get_active_org
-from app.dependencies import (UserConnection, get_app_user_connection,
-                              verify_token)
-from app.schemas import (CeleryTaskResponse, GeoShape, GeoShapeCreate,
-                         GeoShapeMetadata, GeoShapeUpdate, ShapeCountResponse,
-                         ViewportBounds)
-from app.worker import copy_to_s3
 from fastapi import APIRouter, Depends, HTTPException
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 from sqlalchemy import func, select
+
+from app.core.config import Settings, get_settings
+from app.crud import shape as crud
+from app.crud.organization import get_active_org
+from app.dependencies import UserConnection, get_app_user_connection, verify_token
+from app.schemas import (
+    CeleryTaskResponse,
+    GeoShape,
+    GeoShapeCreate,
+    GeoShapeMetadata,
+    GeoShapeUpdate,
+    ShapeCountResponse,
+    ViewportBounds,
+)
+from app.worker import copy_to_s3
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +60,7 @@ def get_all_shapes(
     conn = user_conn.connection
     shapes = []
     if rtype == GetAllShapesRequestType.user:
-        shapes = crud.get_all_shapes_by_user(
-            conn, user.id, offset=offset, limit=limit)
+        shapes = crud.get_all_shapes_by_user(conn, user.id, offset=offset, limit=limit)
     elif rtype == GetAllShapesRequestType.organization:
         organization_id = conn.execute(select(func.app_user_org())).scalar()
         if organization_id is None:
@@ -140,19 +145,21 @@ def get_shapes_containing_point(
     return shapes
 
 
-@router.post("/geofencer/shapes/op/{operation}", response_model=List[Feature],
-             responses={
-    403: {"description": "Operation not enabled for this account"},
-    501: {"description": "Operation not supported on the server."},
-})
+@router.post(
+    "/geofencer/shapes/op/{operation}",
+    response_model=List[Feature],
+    responses={
+        403: {"description": "Operation not enabled for this account"},
+        501: {"description": "Operation not supported on the server."},
+    },
+)
 def get_shapes_by_operation(
     operation: crud.GeometryOperation,
     geom: Union[Point, Polygon, LineString],
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes by operation."""
-    shapes = crud.get_shapes_related_to_geom(
-        user_conn.connection, operation, geom)
+    shapes = crud.get_shapes_related_to_geom(user_conn.connection, operation, geom)
     return shapes
 
 
@@ -204,7 +211,11 @@ def shapes_export(
     return run_shapes_export(user_conn, settings)
 
 
-@router.get("/geofencer/shape-metadata/bbox", response_model=List[GeoShapeMetadata], tags=["shape-metadata"])
+@router.get(
+    "/geofencer/shape-metadata/bbox",
+    response_model=List[GeoShapeMetadata],
+    tags=["shape-metadata"],
+)
 def get_shape_metadata_by_bounding_box(
     min_x: float,
     min_y: float,
@@ -217,11 +228,16 @@ def get_shape_metadata_by_bounding_box(
     """Get shape metadata by bounding box."""
     bbox = ViewportBounds(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
     shapes = crud.get_shape_metadata_by_bounding_box(
-        user_conn.connection, bbox, limit, offset)
+        user_conn.connection, bbox, limit, offset
+    )
     return shapes
 
 
-@ router.get("/geofencer/shape-metadata/search", response_model=List[GeoShapeMetadata], tags=["shape-metadata"])
+@router.get(
+    "/geofencer/shape-metadata/search",
+    response_model=List[GeoShapeMetadata],
+    tags=["shape-metadata"],
+)
 def get_shape_metadata_matching_search(
     query: str,
     user_conn: UserConnection = Depends(get_app_user_connection),
@@ -230,11 +246,16 @@ def get_shape_metadata_matching_search(
 ) -> List[GeoShapeMetadata]:
     """Get shape metadata by bounding box."""
     shapes = crud.get_shape_metadata_matching_search(
-        user_conn.connection, query, limit, offset)
+        user_conn.connection, query, limit, offset
+    )
     return shapes
 
 
-@router.get("/geofencer/shape-metadata", response_model=List[GeoShapeMetadata], tags=["shape-metadata"])
+@router.get(
+    "/geofencer/shape-metadata",
+    response_model=List[GeoShapeMetadata],
+    tags=["shape-metadata"],
+)
 def get_all_shape_metadata(
     user_conn: UserConnection = Depends(get_app_user_connection),
     limit: int = crud.DEFAULT_LIMIT,
@@ -243,9 +264,8 @@ def get_all_shape_metadata(
     """Get all shape metadata with pagination"""
     org_id = get_active_org(user_conn.connection, user_conn.user.id)
     if org_id is None:
-        raise HTTPException(
-            status_code=403, detail="No organization found."
-        )
+        raise HTTPException(status_code=403, detail="No organization found.")
     shapes = crud.get_all_shape_metadata_by_organization(
-        user_conn.connection, organization_id=org_id, limit=limit, offset=offset)
+        user_conn.connection, organization_id=org_id, limit=limit, offset=offset
+    )
     return shapes

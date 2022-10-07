@@ -1,12 +1,14 @@
-from alembic_utils.pg_function import PGFunction
 from textwrap import dedent
+
+from alembic_utils.pg_function import PGFunction
 
 __all__ = ["create_default_organization"]
 
 create_default_organization = PGFunction(
-    schema='public',
-    signature='create_default_organization()',
-    definition=dedent("""
+    schema="public",
+    signature="create_default_organization()",
+    definition=dedent(
+        """
     returns trigger
     LANGUAGE plpgsql
     AS $function$
@@ -24,4 +26,6 @@ create_default_organization = PGFunction(
             RETURN NEW;
         END;
     $function$
-    """.strip()))
+    """.strip()
+    ),
+)

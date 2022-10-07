@@ -1,17 +1,19 @@
 """Functions to get and set app user and org settings."""
 from typing import Optional, Union
+from uuid import UUID
 
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.orm import Session
-from uuid import UUID
 
 # Postgres allows custom settings
 # https://www.postgresql.org/docs/current/runtime-config-custom.html
 
 
-def set_app_user_id( conn: Connection, user_id: Optional[int], local: bool = False) -> CursorResult:
+def set_app_user_id(
+    conn: Connection, user_id: Optional[int], local: bool = False
+) -> CursorResult:
     """Set Postgres setting ``app.auth_user_id`` to ``auth_user_id``."""
     scope = "LOCAL" if local else "SESSION"
     stmt = text(f"SET {scope} app.user_id = :user_id")
@@ -33,14 +35,14 @@ def get_app_user_id(conn: Connection) -> Optional[str]:
 
 
 # Org id
-def set_app_user_org(conn: Connection, org_id: UUID, local: bool=True) -> None:
+def set_app_user_org(conn: Connection, org_id: UUID, local: bool = True) -> None:
     """Reset Postgres setting ``app.user_id`` to ``user_id``."""
     scope = "LOCAL" if local else "SESSION"
     stmt = text(f"SET {scope} app.user_org = :org_id")
     conn.execute(stmt, {"org_id": str(org_id)})
 
 
-def unset_app_user_org(conn: Connection, local: bool=False) -> None:
+def unset_app_user_org(conn: Connection, local: bool = False) -> None:
     """Reset Postgres setting ``app.user_id`` to ``user_id``."""
     scope = "LOCAL" if local else "SESSION"
     stmt = text(f"SET {scope} app.user_org = DEFAULT")

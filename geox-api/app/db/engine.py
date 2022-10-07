@@ -11,6 +11,7 @@ from app.core.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
+
 def _set_default_app_user_id(dbapi_connection):
     # The dbapi_connection is the engine connection
     # instance(dbapi_connection, 'psycopg2.extensions.cursor')
@@ -32,7 +33,12 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
 
     """
     uri = settings.sqlalchemy_database_uri
-    params: Dict[str, Any] = {"future": True, "pool_pre_ping": True, "pool_size": 80, "max_overflow": 20}
+    params: Dict[str, Any] = {
+        "future": True,
+        "pool_pre_ping": True,
+        "pool_size": 80,
+        "max_overflow": 20,
+    }
 
     params.update(kwargs)
     engine = sa.create_engine(uri, **params)

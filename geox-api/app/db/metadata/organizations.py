@@ -10,7 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.db.metadata.common import metadata, TimestampMixin, UUIDMixin
+from app.db.metadata.common import TimestampMixin, UUIDMixin, metadata
 
 __all__ = ["organizations", "organization_members"]
 

@@ -2,19 +2,19 @@
 from datetime import datetime
 from typing import Dict, List, Type, Union
 
-from sqlalchemy import Column, DateTime, MetaData, func, Constraint
+from sqlalchemy import Column, Constraint, DateTime, MetaData, func
 from sqlalchemy.dialects.postgresql import UUID, ExcludeConstraint
 
 __all__ = ["metadata"]
 
 NAMING_CONVENTION: Dict[Union[str, Type[Constraint]], str] = {
-        "ix": "ix_%(column_0_label)s",
-        "uq": "uq_%(table_name)s_%(column_0_name)s",
-        "fk": "fk_%(table_name)s_%(column_0_name)s",
-        "ck": "ck_%(table_name)s_`%(constraint_name)s`",
-        "pk": "pk_%(table_name)s",
-        ExcludeConstraint: "ex_%(table_name)s_%(column_0_name)s"
-      }
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_`%(constraint_name)s`",
+    "pk": "pk_%(table_name)s",
+    ExcludeConstraint: "ex_%(table_name)s_%(column_0_name)s",
+}
 """Naming convention to use.
 
 The naming convention to apply when naming constraints.
@@ -43,6 +43,7 @@ it is not documented.
 
 metadata: MetaData = MetaData(naming_convention=NAMING_CONVENTION)
 """Object describing the app database."""
+
 
 def TimestampMixin() -> List[Column]:
     return [

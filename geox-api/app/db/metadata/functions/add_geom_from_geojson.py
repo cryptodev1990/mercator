@@ -1,5 +1,6 @@
-from alembic_utils.pg_function import PGFunction
 from textwrap import dedent
+
+from alembic_utils.pg_function import PGFunction
 
 add_geom_from_geojson = PGFunction(
     schema="public",
@@ -19,5 +20,5 @@ add_geom_from_geojson = PGFunction(
             RETURN NEW;
         END;
     $function$
-    """
+    """,
 )

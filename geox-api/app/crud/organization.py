@@ -8,11 +8,11 @@ from sqlalchemy.engine import Connection
 from app.db.cache import check_cache
 from app.schemas import Organization
 
-def get_user_personal_org_id(
-    conn: Connection, user_id: int
-) -> Optional[UUID4]:
+
+def get_user_personal_org_id(conn: Connection, user_id: int) -> Optional[UUID4]:
     """Return user personal org."""
-    stmt = text("""
+    stmt = text(
+        """
     SELECT o.id
     FROM organizations AS o
     INNER JOIN organization_members AS om
@@ -20,7 +20,8 @@ def get_user_personal_org_id(
     WHERE om.user_id = :user_id
         AND o.is_personal
         AND om.deleted_at IS NULL
-    """)
+    """
+    )
     return conn.execute(stmt, {"user_id": user_id}).scalar()
 
 
@@ -51,7 +52,9 @@ def set_active_org(
     return True
 
 
-def get_active_org(conn: Connection, user_id: int, use_cache: bool=True) -> Optional[UUID4]:
+def get_active_org(
+    conn: Connection, user_id: int, use_cache: bool = True
+) -> Optional[UUID4]:
     """Get the acttive organization of a user.
 
     This will check a cache for the value of the user's active organization before running
@@ -103,6 +106,7 @@ def _get_active_org(conn: Connection, user_id: int) -> Optional[str]:
     # Also this function is consistent with the return type of check_cache() if converted to str
     return str(res.organization_id) if res else None
 
+
 def get_organization(conn: Connection, id: UUID4) -> Optional[Organization]:
     """Get an organization by id.
 
@@ -112,16 +116,20 @@ def get_organization(conn: Connection, id: UUID4) -> Optional[Organization]:
         values.
 
     """
-    stmt = text("""
+    stmt = text(
+        """
         SELECT *
         FROM organizations
         WHERE id = :id
-    """)
+    """
+    )
     res = conn.execute(stmt, {"id": id}).first()
     return Organization.from_orm(res) if res else None
 
 
-def get_active_org_data(db: Connection, user_id: int, use_cache: bool=True) -> Optional[Organization]:
+def get_active_org_data(
+    db: Connection, user_id: int, use_cache: bool = True
+) -> Optional[Organization]:
     """Get the acttive organization of a user.
 
     A user will only have one active organization at a time.

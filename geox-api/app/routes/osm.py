@@ -1,17 +1,20 @@
 """Open Street Maps (OSM) routes."""
 from typing import List
 
-from app.dependencies import get_osm_conn
 from fastapi import APIRouter, Depends
 from geojson_pydantic import Feature
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
+from app.dependencies import get_osm_conn
+
 router = APIRouter(tags=["osm"])
 
 
 @router.get("/osm")
-async def get_shapes_from_osm(query: str, geographic_reference: str, conn: Connection = Depends(get_osm_conn)) -> List[Feature]:
+async def get_shapes_from_osm(
+    query: str, geographic_reference: str, conn: Connection = Depends(get_osm_conn)
+) -> List[Feature]:
     """Get shapes from OSM by amenity."""
     res = conn.execute(
         text(

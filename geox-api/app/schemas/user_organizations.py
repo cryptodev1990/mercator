@@ -4,6 +4,7 @@ from app.schemas.user import User
 
 __all__ = ["UserOrganization"]
 
+
 class UserOrganization(BaseModel):
     """Represents the combination of a User and organization.
 

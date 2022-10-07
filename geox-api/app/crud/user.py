@@ -2,10 +2,11 @@
 import datetime
 from typing import Optional
 
-from app.core.config import Settings, get_settings
-from app.schemas import User
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
+
+from app.core.config import Settings, get_settings
+from app.schemas import User
 
 
 class NoUserException(Exception):
@@ -37,6 +38,7 @@ def get_user(conn: Connection, user_id: int) -> User:
         raise NoUserWithIdException(user_id)
     return User.from_orm(user)
 
+
 def get_user_by_sub_id(conn: Connection, sub_id: str) -> Optional[User]:
     """Get a user by their Auth0 `sub_id`.
 
@@ -52,6 +54,7 @@ def get_user_by_sub_id(conn: Connection, sub_id: str) -> Optional[User]:
     )
     user = conn.execute(stmt, {"sub_id": sub_id}).first()
     return User.from_orm(user) if user else None
+
 
 def create_or_update_user_from_bearer_data(
     conn: Connection, auth_jwt_payload: dict, settings: Settings = get_settings()
@@ -71,14 +74,16 @@ def create_or_update_user_from_bearer_data(
     if existing_user:
         return User.from_orm(existing_user)
     # try to insert
-    ins_stmt = text("""
+    ins_stmt = text(
+        """
         INSERT INTO users
         (sub_id, email, is_active, given_name, family_name, nickname, name, picture, locale, updated_at, email_verified, iss)
         VALUES
         (:sub_id, :email, TRUE, :given_name, :family_name, :nickname, :name, :picture, :locale, :updated_at, :email_verified, :iss)
         ON CONFLICT (sub_id) DO NOTHING
         RETURNING *
-        """)
+        """
+    )
     cols = (
         "sub_id",
         "email",

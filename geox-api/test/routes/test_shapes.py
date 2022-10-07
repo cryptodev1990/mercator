@@ -12,11 +12,11 @@ from sqlalchemy import select, text, update
 from sqlalchemy.engine import Connection
 
 from app.core.config import get_settings
-from app.crud.organization import get_personal_org_id, get_active_org
+from app.crud.organization import get_active_org, get_personal_org_id
+from app.db.metadata import organization_members as org_mbr_tbl
+from app.db.metadata import shapes as shapes_tbl
 from app.main import app
 from app.schemas import GeoShapeCreate
-from app.db.metadata import shapes as shapes_tbl
-from app.db.metadata import organization_members as org_mbr_tbl
 
 # used in fixtures
 from .route_utils import connection, dep_override_factory  # type: ignore
@@ -226,7 +226,11 @@ def test_create_shape(connection, dep_override_factory):
     shape = GeoShapeCreate(
         name="fuchsia-auditor",
         geojson=Feature(
-            id="1", type="Feature", geometry=Point(type="Point", coordinates=(-6.364088, -65.21654)), properties={"test": "test"})
+            id="1",
+            type="Feature",
+            geometry=Point(type="Point", coordinates=(-6.364088, -65.21654)),
+            properties={"test": "test"},
+        ),
     )
 
     uuid = None
@@ -255,13 +259,21 @@ def test_bulk_create_shapes(connection, dep_override_factory):
     shapes = [
         GeoShapeCreate(
             name="fuchsia-auditor",
-            geojson=Feature(id="1", type="Feature", properties={"test": 1}, geometry=Point(
-                type="Point", coordinates=(-6.364088, -65.21654))),
+            geojson=Feature(
+                id="1",
+                type="Feature",
+                properties={"test": 1},
+                geometry=Point(type="Point", coordinates=(-6.364088, -65.21654)),
+            ),
         ),
         GeoShapeCreate(
             name="acute-vignette",
-            geojson=Feature(id="2", type="Feature", properties={"test": 1}, geometry=Point(
-                type="Point", coordinates=(-20.586622, 53.832401))),
+            geojson=Feature(
+                id="2",
+                type="Feature",
+                properties={"test": 1},
+                geometry=Point(type="Point", coordinates=(-20.586622, 53.832401)),
+            ),
         ),
     ]
 
@@ -277,8 +289,7 @@ def test_bulk_create_shapes(connection, dep_override_factory):
     for shp in shapes:
         assert (
             connection.execute(
-                text("SELECT uuid FROM shapes WHERE name = :name"), {
-                    "name": shp.name}
+                text("SELECT uuid FROM shapes WHERE name = :name"), {"name": shp.name}
             ).rowcount
             == 1
         )

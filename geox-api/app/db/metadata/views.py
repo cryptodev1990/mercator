@@ -1,5 +1,6 @@
-from alembic_utils.pg_view import PGView
 from typing import List
+
+from alembic_utils.pg_view import PGView
 
 entities: List[PGView] = []
 

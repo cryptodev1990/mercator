@@ -203,9 +203,7 @@ class Settings(BaseSettings):
             from git.repo import Repo
 
             # TODO: be more careful about where this is searching and handling specific errors
-            git_repo = Repo(
-                Path(__file__).resolve(), search_parent_directories=True
-            )
+            git_repo = Repo(Path(__file__).resolve(), search_parent_directories=True)
             if git_repo.is_dirty():
                 logger.warning(
                     "Git repo is dirty. The setting `git_commit` does not reflect local changes."

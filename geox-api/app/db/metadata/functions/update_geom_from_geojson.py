@@ -1,12 +1,14 @@
-from alembic_utils.pg_function import PGFunction
 from textwrap import dedent
+
+from alembic_utils.pg_function import PGFunction
 
 __all__ = ["update_geom_from_geojson"]
 
 update_geom_from_geojson = PGFunction(
     schema="public",
     signature="update_geom_from_geojson()",
-    definition=dedent("""
+    definition=dedent(
+        """
         RETURNS trigger
         LANGUAGE plpgsql
         AS $function$
@@ -20,5 +22,6 @@ update_geom_from_geojson = PGFunction(
             RETURN NEW;
         END;
         $function$
-    """).strip())
-
+    """
+    ).strip(),
+)

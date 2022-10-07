@@ -3,19 +3,18 @@
 NOTE: All queries use `shapes` table and no ORM features
 """
 import datetime
-from enum import Enum
 import logging
+from enum import Enum
 from typing import List, Optional, Sequence, Union
 
 import jinja2
+import sqlalchemy as sa
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
-import sqlalchemy as sa
 from sqlalchemy.engine import Connection
 
 from app import schemas
 from app.db.metadata import shapes as shapes_tbl
-
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +37,7 @@ METADATA_COLS = [
 def get_shape(conn: Connection, shape_id: UUID4) -> Optional[schemas.GeoShape]:
     """Get a shape."""
     query = (
-        shapes_tbl
-        .select()
+        shapes_tbl.select()
         .where(shapes_tbl.c.deleted_at == None)
         .where(shapes_tbl.c.uuid == shape_id)
         .limit(1)
@@ -51,7 +49,10 @@ def get_shape(conn: Connection, shape_id: UUID4) -> Optional[schemas.GeoShape]:
 
 
 def get_all_shapes_by_user(
-    conn: Connection, user_id: int, limit: Optional[int] = DEFAULT_LIMIT, offset: int = 0
+    conn: Connection,
+    user_id: int,
+    limit: Optional[int] = DEFAULT_LIMIT,
+    offset: int = 0,
 ) -> List[schemas.GeoShape]:
     """Get all shapes created by a user."""
     # TODO ordering by UUID just guarantees a sort order
@@ -59,8 +60,7 @@ def get_all_shapes_by_user(
     # on the frontend needs consistent
     # We should find a better way of handling this
     stmt = (
-        shapes_tbl
-        .select()
+        shapes_tbl.select()
         .where(shapes_tbl.c.created_by_user_id == user_id)
         .where(shapes_tbl.c.deleted_at == None)
         .order_by(shapes_tbl.c.uuid)
@@ -72,24 +72,32 @@ def get_all_shapes_by_user(
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
-def get_shape_metadata_by_bounding_box(conn: Connection, bbox: schemas.ViewportBounds, limit: int = DEFAULT_LIMIT, offset: int = 0) -> List[schemas.GeoShapeMetadata]:
+def get_shape_metadata_by_bounding_box(
+    conn: Connection,
+    bbox: schemas.ViewportBounds,
+    limit: int = DEFAULT_LIMIT,
+    offset: int = 0,
+) -> List[schemas.GeoShapeMetadata]:
     """Get all shapes within a bounding box
 
     Used on the frontend to determine which shapes to show details on in the sidebar
     """
-    geom = Polygon(type="Polygon", coordinates=[[
-        (bbox.min_x, bbox.min_y),
-        (bbox.min_x, bbox.max_y),
-        (bbox.max_x, bbox.max_y),
-        (bbox.max_x, bbox.min_y),
-        (bbox.min_x, bbox.min_y)
-    ]])
+    geom = Polygon(
+        type="Polygon",
+        coordinates=[
+            [
+                (bbox.min_x, bbox.min_y),
+                (bbox.min_x, bbox.max_y),
+                (bbox.max_x, bbox.max_y),
+                (bbox.max_x, bbox.min_y),
+                (bbox.min_x, bbox.min_y),
+            ]
+        ],
+    )
     stmt = (
         sa.select(shapes_tbl)  # type: ignore
         .with_only_columns(METADATA_COLS)
-        .where(
-            shapes_tbl.c.deleted_at == None
-        )
+        .where(shapes_tbl.c.deleted_at == None)
         .where(
             # Check if the shape intersects with the bounding box
             sa.func.ST_Intersects(
@@ -110,12 +118,11 @@ def get_shape_metadata_by_bounding_box(conn: Connection, bbox: schemas.ViewportB
 
 
 def get_shape_metadata_matching_search(
-        conn: Connection,
-        search_query: str,
-        limit: int = DEFAULT_LIMIT,
-        offset: int = 0) -> List[schemas.GeoShapeMetadata]:
+    conn: Connection, search_query: str, limit: int = DEFAULT_LIMIT, offset: int = 0
+) -> List[schemas.GeoShapeMetadata]:
     """Get all shapes matching a search string."""
-    stmt = sa.text("""
+    stmt = sa.text(
+        """
         SELECT uuid
         , name
         , properties - '__uuid' AS properties
@@ -130,22 +137,23 @@ def get_shape_metadata_matching_search(
         ORDER BY rank DESC, similarity DESC
         LIMIT :limit
         OFFSET :offset
-    """)
-    res = conn.execute(stmt, {
-        "query_text": search_query,
-        "limit": limit,
-        "offset": offset
-    }).fetchall()
+    """
+    )
+    res = conn.execute(
+        stmt, {"query_text": search_query, "limit": limit, "offset": offset}
+    ).fetchall()
     return [schemas.GeoShapeMetadata.from_orm(g) for g in list(res)]
 
 
 def get_all_shape_metadata_by_organization(
-    conn: Connection, organization_id: UUID4, limit: Optional[int] = DEFAULT_LIMIT, offset: int = 0
+    conn: Connection,
+    organization_id: UUID4,
+    limit: Optional[int] = DEFAULT_LIMIT,
+    offset: int = 0,
 ) -> List[schemas.GeoShapeMetadata]:
     # TODO remove UUID ordering
     stmt = (
-        shapes_tbl
-        .select()
+        shapes_tbl.select()
         .with_only_columns(METADATA_COLS)
         # type: ignore
         .where(shapes_tbl.c.organization_id == str(organization_id))
@@ -159,12 +167,14 @@ def get_all_shape_metadata_by_organization(
 
 
 def get_all_shapes_by_organization(
-    conn: Connection, organization_id: UUID4, limit: Optional[int] = DEFAULT_LIMIT, offset: int = 0,
+    conn: Connection,
+    organization_id: UUID4,
+    limit: Optional[int] = DEFAULT_LIMIT,
+    offset: int = 0,
 ) -> List[schemas.GeoShape]:
     # TODO Remove ordering by UUID
     stmt = (
-        shapes_tbl
-        .select()
+        shapes_tbl.select()
         .where(shapes_tbl.c.organization_id == str(organization_id))
         .where(shapes_tbl.c.deleted_at == None)
         .order_by(shapes_tbl.c.uuid)
@@ -175,11 +185,12 @@ def get_all_shapes_by_organization(
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
-def create_shape(conn: Connection, geoshape: schemas.GeoShapeCreate) -> schemas.GeoShape:
+def create_shape(
+    conn: Connection, geoshape: schemas.GeoShapeCreate
+) -> schemas.GeoShape:
     """Create a new shape"""
     ins = (
-        shapes_tbl
-        .insert()
+        shapes_tbl.insert()
         .values(
             created_by_user_id=sa.func.app_user_id(),
             updated_by_user_id=sa.func.app_user_id(),
@@ -201,8 +212,7 @@ def create_many_shapes(
 ) -> List[UUID4]:
     """Create many new shapes."""
     ins = (
-        shapes_tbl
-        .insert()
+        shapes_tbl.insert()
         .values(
             created_by_user_id=sa.func.app_user_id(),
             created_at=sa.func.now(),
@@ -218,7 +228,9 @@ def create_many_shapes(
     return list(new_shapes)
 
 
-def update_shape(conn: Connection, geoshape: schemas.GeoShapeUpdate) -> schemas.GeoShape:
+def update_shape(
+    conn: Connection, geoshape: schemas.GeoShapeUpdate
+) -> schemas.GeoShape:
     """Update a shape with additional information."""
     values = {
         "name": geoshape.name,
@@ -228,8 +240,7 @@ def update_shape(conn: Connection, geoshape: schemas.GeoShapeUpdate) -> schemas.
     if geoshape.geojson:
         values["geojson"] = geoshape.geojson.dict()
     update_stmt = (
-        shapes_tbl
-        .update()
+        shapes_tbl.update()
         .values(**values)
         .where(shapes_tbl.c.uuid == str(geoshape.uuid))
         .returning(shapes_tbl)
@@ -250,8 +261,7 @@ def delete_shape(conn: Connection, uuid: UUID4) -> int:
         "deleted_by_user_id": sa.func.app_user_id(),
     }
     stmt = (
-        shapes_tbl
-        .update()
+        shapes_tbl.update()
         .values(**values)
         .where(shapes_tbl.c.uuid == str(uuid))
         .returning(shapes_tbl.c.uuid)  # type: ignore
@@ -269,8 +279,7 @@ def delete_many_shapes(conn: Connection, uuids: Sequence[UUID4]) -> int:
         "deleted_by_user_id": sa.func.app_user_id(),
     }
     stmt = (
-        shapes_tbl
-        .update()
+        shapes_tbl.update()
         .values(**values)
         .where(shapes_tbl.c.uuid.in_(tuple([str(x) for x in uuids])))
     )  # type: ignore
@@ -290,7 +299,9 @@ def get_shape_count(conn: Connection) -> int:
     return res[0]
 
 
-def get_shapes_containing_point(conn: Connection, lat: float, lng: float) -> List[Feature]:
+def get_shapes_containing_point(
+    conn: Connection, lat: float, lng: float
+) -> List[Feature]:
     """Get the shape that contains a point."""
     stmt = sa.text(
         """
@@ -318,7 +329,9 @@ class GeometryOperation(str, Enum):
 
 
 def get_shapes_related_to_geom(
-    conn: Connection, operation: GeometryOperation, geom: Union[Point, Polygon, LineString]
+    conn: Connection,
+    operation: GeometryOperation,
+    geom: Union[Point, Polygon, LineString],
 ) -> List[Feature]:
     """Get the shape that contains a point."""
     stmt = sa.text(

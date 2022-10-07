@@ -1,5 +1,6 @@
 from asyncio.log import logger
 from multiprocessing.util import get_logger
+
 import redis as _redis
 
 from app.core.config import get_settings
