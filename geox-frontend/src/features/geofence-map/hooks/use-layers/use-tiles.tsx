@@ -88,7 +88,7 @@ export function useTiles() {
     pickable: true,
     maxRequests: 4, // TODO need to upgrade to HTTP/2
     // maxRequests: -1, // unlimited connections, using HTTP/2
-    getLineColor: [192, 192, 192, 255],
+    getLineColor: [255, 255, 255, 255],
     updateTriggers: {
       getFillColor: [selectedUuids, isHovering],
       getTileData: [tileCacheKey],

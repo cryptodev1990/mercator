@@ -140,6 +140,7 @@ export const useBulkAddShapesMutation = () => {
 
   return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
     onSuccess(data: ShapeCountResponse) {
+      queryClient.fetchQuery("numShapes");
       queryClient.fetchQuery("geofencer");
       triggerTileRefresh();
     },
