@@ -1063,3 +1063,10 @@ Overall, it just doesn't seem like they've invested a lot in staging.
 2. One person's deployed changes clobber another's, which means you have to double-check that your code is running vs someone else's
 
 The pros, of course, are that it works and is easy to reason about. Set it up in about 90 minutes after fiddling with the other approach for a day.
+
+## 10-8-22
+
+- [X] Restored logs
+- [ ] Set up DD APM. Relevant docs:
+    - [DD](https://docs.datadoghq.com/getting_started/tracing/)
+    - [Fly](https://community.fly.io/t/metrics-from-go-app-hosted-on-fly-io-not-ending-up-in-datadog/5084)
