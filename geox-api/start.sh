@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-# Start the unicorn process to run the app
+# Start the hypercorn/unicorn process to run the app
 # - MODULE_NAME: default app.main
 # - VARIABLE_NAME: default app
 # - APP_MODULE: $MODULE_NAME:$VARIABLE_NAME
@@ -50,7 +50,7 @@ fi;
 if [ "$APP_ENV" = "production" ]
 then
   # Production -- use hypercorn
-  exec hypercorn "$APP_MODULE" --workers 8 --worker-class asyncio --bind "$APP_HOST":"$APP_PORT"
+  exec hypercorn "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
 else
   # Development -- use uvicorn
   exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-config=log_config.yaml "$APP_MODULE" --workers 8
