@@ -64,6 +64,8 @@ export function useTiles() {
         // TODO how do I get TypeScript to recognize the type on object here?
         // @ts-ignore
         const { __uuid: uuid } = object.properties;
+        // @ts-ignore
+        console.log(object.properties);
         if (!isSelected(uuid)) {
           selectOneShapeUuid(uuid);
           slideToCard(uuid);

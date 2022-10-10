@@ -147,7 +147,7 @@ export const ShapeBarPaginator = () => {
             className="h-full scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-700"
             totalCount={shapeMetadata.length}
             data={shapeMetadata}
-            itemContent={(_, shape) => <ShapeCard shape={shape} />}
+            itemContent={(_: any, shape: any) => <ShapeCard shape={shape} />}
           />
         </div>
       ) : (

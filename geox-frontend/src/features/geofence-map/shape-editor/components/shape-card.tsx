@@ -50,7 +50,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
           title={shape?.properties?.name}
           className="text-1xl font-sans tracking-tight text-white truncate"
         >
-          {shape?.properties?.name || "New shape"}
+          {shape?.name || shape?.properties?.name || "New shape"}
         </h5>
         <div
           className={`transition flex flex-row justify-start space-x-1 ${selectionOpacity}`}

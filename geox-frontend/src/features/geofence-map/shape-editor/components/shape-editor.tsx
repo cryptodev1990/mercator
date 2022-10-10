@@ -53,7 +53,8 @@ export const ShapeEditor = () => {
       return {};
     }
     const { properties } = shapeForPropertyEdit;
-    properties.name = properties.name || "New shape";
+    properties.name =
+      shapeForPropertyEdit.name || properties.name || "New shape";
     return properties
       ? Object.keys(properties).map((k) => {
           return { key: k, value: properties[k] };
