@@ -16,16 +16,18 @@ import {
 import { toast } from "react-hot-toast";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
+import { useSelectedShapes } from "../use-selected-shapes";
 
 export function useEditFunction() {
   const {
     shapeMetadata,
-    selectedShapeUuids,
     setShapeForPropertyEdit,
-    clearSelectedShapeUuids,
     selectedFeatureIndexes,
     clearSelectedFeatureIndexes,
   } = useShapes();
+
+  const { clearSelectedShapeUuids, numSelected, selectedUuids } =
+    useSelectedShapes();
   const { setCursorMode } = useCursorMode();
   const { mutate: addShape } = useAddShapeMutation();
   const { mutate: bulkAdd } = useBulkAddShapesMutation();
@@ -62,14 +64,11 @@ export function useEditFunction() {
       const cut = multiPolygon.geometry.coordinates[0];
       const rest = multiPolygon.geometry.coordinates.slice(1);
 
-      if (
-        Object.keys(selectedShapeUuids).length > 1 ||
-        selectedFeatureIndexes.length > 1
-      ) {
+      if (numSelected > 1 || selectedFeatureIndexes.length > 1) {
         toast.error("Split should not select more than one shape");
         return;
       }
-      const uuid = Object.keys(selectedShapeUuids)[0];
+      const uuid = selectedUuids[0];
 
       const name = shapeMetadata.find((x) => x.uuid === uuid)?.name;
       delete multiPolygon?.properties?.__uuid;

@@ -12,15 +12,19 @@ export const GeofencerContextMenu = () => {
   const [recentActivity, setRecentActivity] = useState<number>(0);
   // read selection from context
   const {
-    selectedShapeUuids,
     setShapeForPropertyEdit,
     shapeMetadata,
-    clearSelectedShapeUuids,
     clearSelectedFeatureIndexes,
     mapRef,
   } = useShapes();
   const { mutate: bulkDelete } = useBulkDeleteShapesMutation();
-  const { selectedFeatureCollection } = useSelectedShapes();
+  const {
+    selectedFeatureCollection,
+    numSelected,
+    isSelected,
+    selectedUuids,
+    clearSelectedShapeUuids,
+  } = useSelectedShapes();
 
   function closeMenu() {
     setXPos(null);
@@ -71,11 +75,11 @@ export const GeofencerContextMenu = () => {
         setCursorMode(EditorMode.EditMode);
         return;
       case "Edit Metadata":
-        if (Object.keys(selectedShapeUuids).length > 1) {
+        if (numSelected > 1) {
           toast.error("Please select only one shape to edit");
         }
-        const selectedShape = shapeMetadata.find(
-          (shape) => shape.uuid === Object.keys(selectedShapeUuids)[0]
+        const selectedShape = shapeMetadata.find((shape) =>
+          isSelected(shape.uuid)
         );
         if (!selectedShape) {
           toast.error("No shape detected");
@@ -94,7 +98,7 @@ export const GeofencerContextMenu = () => {
         closeMenu();
         return;
       case "Delete (Backspace)":
-        bulkDelete(Object.keys(selectedShapeUuids), {
+        bulkDelete(selectedUuids, {
           onSuccess: () => {
             cleanup();
           },
@@ -118,12 +122,12 @@ export const GeofencerContextMenu = () => {
   }
 
   let options;
-  if (Object.keys(selectedShapeUuids).length === 0) {
+  if (numSelected === 0) {
     options = [
       "Draw",
       editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
     ];
-  } else if (Object.keys(selectedShapeUuids).length === 1) {
+  } else if (numSelected === 1) {
     options = [
       "Edit Metadata",
       "Copy as GeoJSON",

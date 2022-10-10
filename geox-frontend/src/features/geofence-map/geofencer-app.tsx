@@ -9,13 +9,13 @@ import { GlobalModal } from "./modals/global-modal";
 import { Toaster } from "react-hot-toast";
 import { UIContextContainer } from "./contexts/ui-context";
 import { DbSyncContextContainer } from "./contexts/db-sync-context";
-import { SelectionContextContainer } from "./contexts/selection-context";
+import { SelectionProvider } from "./contexts/selection/selection.context";
 import { DeckContextContainer } from "./contexts/deck-context";
 
 const GeofencerApp = () => {
   return (
     <GeofencerContextContainer>
-      <SelectionContextContainer>
+      <SelectionProvider>
         <UIContextContainer>
           <DbSyncContextContainer>
             <DeckContextContainer>
@@ -43,7 +43,7 @@ const GeofencerApp = () => {
             </DeckContextContainer>
           </DbSyncContextContainer>
         </UIContextContainer>
-      </SelectionContextContainer>
+      </SelectionProvider>
     </GeofencerContextContainer>
   );
 };

@@ -7,11 +7,11 @@ import { TbLasso } from "react-icons/tb";
 import { CgEditMarkup } from "react-icons/cg";
 import { RiCursorLine } from "react-icons/ri";
 import { FaDrawPolygon } from "react-icons/fa";
-import { useShapes } from "../hooks/use-shapes";
+import { useSelectedShapes } from "../hooks/use-selected-shapes";
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
-  const { getNumSelectedShapes } = useShapes();
+  const { numSelected } = useSelectedShapes();
 
   const modes = [
     {
@@ -64,7 +64,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.ModifyMode),
       dataTip: "Alter points on existing shape",
       active: cursorMode === EditorMode.ModifyMode,
-      disabled: getNumSelectedShapes() !== 1,
+      disabled: numSelected !== 1,
     },
     {
       name: "Split existing shape",
@@ -72,7 +72,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.SplitMode),
       dataTip: "Split existing shape",
       active: cursorMode === EditorMode.SplitMode,
-      disabled: getNumSelectedShapes() !== 1,
+      disabled: numSelected !== 1,
     },
   ];
 

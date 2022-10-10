@@ -8,8 +8,8 @@ import { useSelectedShapes } from "./use-selected-shapes";
 
 export const useViewport = () => {
   const { viewport, setViewport } = useContext(GeofencerContext);
-  const { shapeMetadata, tentativeShapes, isSelected } = useShapes();
-  const { selectedFeatureCollection } = useSelectedShapes();
+  const { shapeMetadata, tentativeShapes } = useShapes();
+  const { selectedFeatureCollection, isSelected } = useSelectedShapes();
 
   function _genShapes(category: string) {
     const selectedShapes = shapeMetadata?.filter((shape) =>

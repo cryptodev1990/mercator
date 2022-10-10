@@ -13,15 +13,14 @@ export function useTiles() {
   const { tileCacheKey } = useContext(DeckContext);
   const { idToken } = useIdToken();
 
-  const { shapeMetadata, scrollToSelectedShape, selectOneShapeUuid } =
-    useShapes();
+  const { shapeMetadata, scrollToSelectedShape } = useShapes();
 
   const slideToCard = (uuid: string) => {
     const i = findIndex(uuid, shapeMetadata);
     scrollToSelectedShape(i);
   };
 
-  const { isSelected, selectedUuids } = useSelectedShapes();
+  const { isSelected, selectedUuids, selectOneShapeUuid } = useSelectedShapes();
   const [isHovering, setIsHovering] = useState<string | null>(null);
   const { cursorMode } = useCursorMode();
 

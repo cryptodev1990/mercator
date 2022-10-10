@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { GeofencerContext } from "../contexts/geofencer-context";
 import { useBulkAddShapesMutation } from "./openapi-hooks";
-import { useSelectedShapes } from "./use-selected-shapes";
 
 export const useShapes = () => {
   const {
@@ -37,8 +36,6 @@ export const useShapes = () => {
     setSelectedFeatureIndexes([]);
   }
 
-  const selectedShapeFunctions = useSelectedShapes();
-
   const { mutate: addShapesBulk, isLoading: bulkAddLoading } =
     useBulkAddShapesMutation();
 
@@ -52,8 +49,6 @@ export const useShapes = () => {
     // API call - bulk load
     addShapesBulk,
     bulkAddLoading,
-    // selection
-    ...selectedShapeFunctions,
     // metadata editing
     shapeForPropertyEdit,
     setShapeForPropertyEdit,

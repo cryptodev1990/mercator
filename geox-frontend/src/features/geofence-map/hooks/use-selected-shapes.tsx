@@ -1,11 +1,9 @@
 import { useContext } from "react";
-import { SelectionContext } from "../contexts/selection-context";
+import { SelectionContext } from "../contexts/selection/selection.context";
 
 export const useSelectedShapes = () => {
   const ctx = useContext(SelectionContext);
-  const selectedUuids = Object.keys(ctx.selectedShapeUuids);
   return {
     ...ctx,
-    selectedUuids,
   };
 };

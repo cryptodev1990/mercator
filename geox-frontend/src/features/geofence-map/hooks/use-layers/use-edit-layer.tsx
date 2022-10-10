@@ -10,7 +10,6 @@ import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
 import { useSelectedShapes } from "../use-selected-shapes";
-import { useShapes } from "../use-shapes";
 import { useEditFunction } from "./use-edit-function";
 
 export const useEditLayer = () => {
@@ -18,7 +17,7 @@ export const useEditLayer = () => {
   const { selectedFeatureCollection } = useSelectedShapes();
 
   const { onEdit } = useEditFunction();
-  const { selectedShapeUuids } = useShapes();
+  const { selectedUuids } = useSelectedShapes();
 
   if (!selectedFeatureCollection) {
     return null;
@@ -37,8 +36,8 @@ export const useEditLayer = () => {
     selectedFeatureIndexes: [0],
     getPolygonOffset: () => [10, -60],
     updateTriggers: {
-      getFillColor: [selectedShapeUuids],
-      getLineColor: [selectedShapeUuids],
+      getFillColor: [selectedUuids],
+      getLineColor: [selectedUuids],
     },
     _subLayerProps: {
       guides: {
