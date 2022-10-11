@@ -6,6 +6,7 @@ import pytest
 from fastapi import Depends
 from sqlalchemy import delete, insert, text
 from sqlalchemy.engine import Connection
+from app.crud.namespaces import get_default_namespace
 
 from app.crud.organization import get_active_org_data, set_active_org
 from app.db.engine import engine
@@ -13,6 +14,7 @@ from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import organizations as org_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.db.metadata import users as users_tbl
+from app.db.metadata import namespaces as namespaces_tbl
 from app.dependencies import get_connection, get_current_user, verify_token
 from app.main import app
 from app.schemas import User, UserOrganization
@@ -23,7 +25,7 @@ def connection(test_data: Dict[str, Any]):
     with engine.connect() as conn:
         trans = conn.begin()
         try:
-            for tbl in (shapes_tbl, org_mbr_tbl, org_tbl, users_tbl):
+            for tbl in (shapes_tbl, namespaces_tbl, org_mbr_tbl, org_tbl, users_tbl):
                 conn.execute(delete(tbl))
             conn.execute(insert(users_tbl), test_data["users"])  # type: ignore
             conn.execute(insert(org_tbl), test_data["organizations"])  # type: ignore
@@ -33,7 +35,13 @@ def connection(test_data: Dict[str, Any]):
                 set_active_org(
                     conn, org_member["user_id"], org_member["organization_id"]
                 )
-            conn.execute(insert(shapes_tbl), test_data["shapes"])  # type: ignore
+            for shape in test_data["shapes"]:
+                namespace_id = get_default_namespace(conn, shape["organization_id"]).id
+                data = {**shape}
+                data["name"] = data["geojson"]["properties"]["name"]
+                data["properties"] = data["geojson"]["properties"]
+                data["namespace_id"] = namespace_id
+                conn.execute(insert(shapes_tbl), data)
 
             yield conn
         finally:

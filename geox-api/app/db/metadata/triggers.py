@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 from alembic_utils.pg_trigger import PGTrigger
 
 __all__ = [
@@ -5,6 +7,7 @@ __all__ = [
     "users_insert_trigger",
     "shapes_create_geom_trigger",
     "shapes_update_geom_trigger",
+    "organizations_insert_trigger",
 ]
 entities = []
 
@@ -34,3 +37,18 @@ shapes_update_geom_trigger = PGTrigger(
     definition="AFTER UPDATE ON public.shapes FOR EACH ROW WHEN ((pg_trigger_depth() = 0)) EXECUTE FUNCTION update_geom_from_geojson()",
 )
 entities.append(shapes_update_geom_trigger)
+
+organizations_insert_trigger = PGTrigger(
+    schema="public",
+    signature="organizations_insert_trigger",
+    on_entity="public.organizations",
+    is_constraint=False,
+    definition=dedent(
+        """
+        AFTER INSERT ON public.organizations
+        FOR EACH ROW
+        EXECUTE FUNCTION create_default_namespace()
+    """.strip()
+    ),
+)
+entities.append(organizations_insert_trigger)

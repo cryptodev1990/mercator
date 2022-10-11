@@ -1,5 +1,5 @@
 """Common classes used by the SQL tables."""
-from datetime import datetime
+import datetime
 from typing import Dict, List, Type, Union
 
 from sqlalchemy import Column, Constraint, DateTime, MetaData, func
@@ -47,12 +47,19 @@ metadata: MetaData = MetaData(naming_convention=NAMING_CONVENTION)
 
 def TimestampMixin() -> List[Column]:
     return [
-        Column("created_at", DateTime, default=datetime.utcnow, nullable=False),
+        Column(
+            "created_at",
+            DateTime,
+            default=datetime.datetime.utcnow,
+            server_default=func.now(),
+            nullable=False,
+        ),
         Column(
             "updated_at",
             DateTime,
-            default=datetime.utcnow,
-            onupdate=datetime.utcnow,
+            default=datetime.datetime.utcnow,
+            onupdate=datetime.datetime.utcnow,
+            server_default=func.now(),
             nullable=False,
         ),
     ]

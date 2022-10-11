@@ -21,7 +21,7 @@ s3fs==2022.8.2
 wheel
 # timvt==0.7.0
 git+https://github.com/developmentseed/timvt@fc12bd6a879f0ef23d427efa76fe91e47b3f8330#egg=timvt
-typer==0.5.*
+typer==0.4.*
 buildpg==0.4
 hypercorn[uvloop]
 alembic_utils==0.7.*

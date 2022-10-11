@@ -1,10 +1,2 @@
 """API Routes."""
-from . import health, info, osm, shapes, tasks  # noqa
-
-__all__ = [
-    "health",
-    "shapes",
-    "tasks",
-    "osm",
-    "info",
-]  # noqa
+from . import health, info, namespaces, osm, shape_metadata, shapes, tasks

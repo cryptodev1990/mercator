@@ -25,8 +25,8 @@ def role_exists(conn: Connection, role_name: str) -> bool:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    conn.execute(sa.text("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM app_user"))
-    conn.execute(sa.text("DROP ROLE IF EXISTS app_user"))
+    conn.execute(sa.text("REVOKE ALL ON SCHEMA public FROM app_user"))
+    #conn.execute(sa.text("DROP ROLE IF EXISTS app_user"))
 
 
 def upgrade() -> None:

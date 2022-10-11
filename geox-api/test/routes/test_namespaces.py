@@ -1,0 +1,1 @@
+"""Test namespace routes."""

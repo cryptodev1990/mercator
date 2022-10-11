@@ -15,8 +15,10 @@ from app.core.config import get_settings
 from app.crud.organization import get_active_org, get_personal_org_id
 from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import shapes as shapes_tbl
+from app.crud.namespaces import get_default_namespace
 from app.main import app
 from app.schemas import GeoShapeCreate
+from app.crud.organization import set_active_org
 
 # used in fixtures
 from .route_utils import connection, dep_override_factory  # type: ignore
@@ -71,29 +73,6 @@ def test_data():
     }
 
 
-def set_active_organization(
-    conn: Connection, user_id: int, organization_id: UUID
-) -> None:
-    stmt = (
-        update(org_mbr_tbl)  # type: ignore
-        .where(org_mbr_tbl.c.user_id == user_id)
-        .values(active=(org_mbr_tbl.c.organization_id == organization_id))
-        .returning(org_mbr_tbl)
-    )
-    res = conn.execute(stmt).fetchall()
-    return res
-
-
-def test_policy_exists(connection):
-    assert connection.execute(
-        text(
-            """
-            SELECT exists(select 1 from pg_policies where tablename = 'shapes' and policyname = 'same_org')
-            """
-        )
-    ).scalar()
-
-
 def test_read_shape_self(connection, dep_override_factory):
     user_id = 1
     shape_id = UUID("4f974f2d-572b-46f1-8741-56bf7f357d12")
@@ -113,7 +92,7 @@ def test_read_shape_self_wrong_org(connection, dep_override_factory):
     assert personal_org
     print(personal_org)
     get_active_org(connection, user_id, use_cache=False)
-    set_active_organization(connection, user_id, personal_org)
+    set_active_org(connection, user_id, personal_org)
     assert get_active_org(connection, user_id, use_cache=False) == personal_org
     assert shape_exists(connection, shape_id)
     with dep_override_factory(user_id):
@@ -243,12 +222,12 @@ def test_create_shape(connection, dep_override_factory):
         assert body
         assert uuid
         assert body["name"] == shape.name
-        assert body["created_by_user_id"] == user_id
-        assert body["geojson"]["geometry"]["type"] == "Point"
         assert (
             tuple(body["geojson"]["geometry"]["coordinates"])
-            == shape.geojson.geometry.coordinates
+            == shape.geojson.geometry.dict()["coordinates"]
         )
+        assert body["geojson"]["geometry"]["type"] == shape.geojson.geometry.type
+
     assert (
         connection.execute(
             text("SELECT uuid FROM shapes WHERE uuid = :uuid"), {"uuid": uuid}
@@ -289,13 +268,11 @@ def test_bulk_create_shapes(connection, dep_override_factory):
         assert body
         assert body["num_shapes"] == 2
 
-    for row in connection.execute(text("SELECT name, properties FROM shapes")):
-        print(row)
-
     for shp in shapes:
         assert (
             connection.execute(
-                text("SELECT uuid FROM shapes WHERE name = :name"), {"name": shp.name}
+                text("SELECT uuid FROM shapes WHERE name = :name"),
+                {"name": shp.name},
             ).rowcount
             == 1
         )

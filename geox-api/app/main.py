@@ -36,8 +36,10 @@ app = FastAPI(
 app.include_router(routes.osm.router)
 app.include_router(routes.health.router)
 app.include_router(routes.shapes.router)
+app.include_router(routes.shape_metadata.router)
 app.include_router(routes.tasks.router)
 app.include_router(routes.info.router)
+app.include_router(routes.namespaces.router)
 
 add_tiler_routes(app)
 
