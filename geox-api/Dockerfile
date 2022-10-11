@@ -40,7 +40,7 @@ WORKDIR /webapp
 
 COPY ./app /webapp/app
 COPY ./alembic /webapp/alembic
-COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml /webapp/
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml /webapp/
 
 # ARG have to be after FROM to be read
 # This sets GIT_COMMIT in two ways - default env variable (expected not to be overwritten)
