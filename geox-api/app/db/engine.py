@@ -41,7 +41,7 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     }
 
     params.update(kwargs)
-    engine = sa.create_engine(uri, **params, echo=True)
+    engine = sa.create_engine(uri, **params)
 
     # Adds events to set/reset values of app_user_id settings
     # Called when a connection is created
