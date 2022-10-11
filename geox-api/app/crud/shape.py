@@ -5,7 +5,7 @@ NOTE: All queries use `shapes` table and no ORM features
 import datetime
 import logging
 from enum import Enum
-from typing import List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union, cast
 
 import jinja2
 import sqlalchemy as sa
@@ -185,10 +185,21 @@ def get_all_shapes_by_organization(
     return [schemas.GeoShape.from_orm(g) for g in list(res)]
 
 
+def _process_geojson(geojson: Feature, name: Optional[str] = None) -> Dict[str, Any]:
+    if geojson.properties is None:
+        geojson.properties = {}
+    if name:
+        geojson.properties["name"] = name
+    if geojson.properties["name"] is None:
+        geojson.properties["name"] = "New shape"
+    return {"geojson": geojson.dict(), "name": geojson.properties["name"]}
+
+
 def create_shape(
     conn: Connection, geoshape: schemas.GeoShapeCreate
 ) -> schemas.GeoShape:
-    """Create a new shape"""
+    """Create a new shape."""
+
     ins = (
         shapes_tbl.insert()
         .values(
@@ -197,14 +208,19 @@ def create_shape(
             updated_at=sa.func.now(),
             created_at=sa.func.now(),
             organization_id=sa.func.app_user_org(),
-            name=geoshape.name,
-            geojson=geoshape.geojson.dict(),
+            **_process_geojson(geoshape.geojson, geoshape.name),
         )
         .returning(shapes_tbl)  # type: ignore
     )
-    new_shape = conn.execute(ins).fetchone()
-    res = schemas.GeoShape.from_orm(new_shape)
-    return res
+    res = conn.execute(ins).first()
+    if res is None:
+        raise Exception("No rows updated")
+    shape: Dict[str, Any] = dict(res)
+    shape["properties"] = cast(Dict[str, Any], shape.get("geojson")).get(
+        "properties", {}
+    )
+    shape["name"] = cast(Dict[str, Any], shape).get("properties", {}).get("name")
+    return schemas.GeoShape.parse_obj(shape)
 
 
 def create_many_shapes(
@@ -223,7 +239,7 @@ def create_many_shapes(
         .returning(shapes_tbl.c.uuid)
     )
     new_shapes = conn.execute(
-        ins, [{"name": s.name, "geojson": s.geojson.dict()} for s in geoshapes]
+        ins, [_process_geojson(s.geojson, s.name) for s in geoshapes]
     ).scalars()
     return list(new_shapes)
 
@@ -245,12 +261,15 @@ def update_shape(
         .where(shapes_tbl.c.uuid == str(geoshape.uuid))
         .returning(shapes_tbl)
     )
-    res = conn.execute(update_stmt)
-    rows = res.rowcount
-    if rows == 0:
+    res = conn.execute(update_stmt).first()
+    if res is None:
         raise Exception("No rows updated")
-    shape = res.fetchone()
-    return schemas.GeoShape.from_orm(shape)
+    shape: Dict[str, Any] = dict(res)
+    shape["properties"] = cast(Dict[str, Any], shape.get("geojson")).get(
+        "properties", {}
+    )
+    shape["name"] = cast(Dict[str, Any], shape).get("properties", {}).get("name")
+    return schemas.GeoShape.parse_obj(shape)
 
 
 def delete_shape(conn: Connection, uuid: UUID4) -> int:

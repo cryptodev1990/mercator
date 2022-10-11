@@ -14,6 +14,7 @@ add_geom_from_geojson = PGFunction(
             SET
                 geom = ST_GeomFromGeoJson(geojson['geometry'])
                 , properties = geojson['properties']
+                , name = geojson #>> '{properties,name}'
             WHERE 1=1
                 AND uuid = NEW.uuid
             ;

@@ -244,8 +244,11 @@ def test_create_shape(connection, dep_override_factory):
         assert uuid
         assert body["name"] == shape.name
         assert body["created_by_user_id"] == user_id
-        assert body["geojson"] == json.loads(json.dumps(shape.geojson.dict()))
-
+        assert body["geojson"]["geometry"]["type"] == "Point"
+        assert (
+            tuple(body["geojson"]["geometry"]["coordinates"])
+            == shape.geojson.geometry.coordinates
+        )
     assert (
         connection.execute(
             text("SELECT uuid FROM shapes WHERE uuid = :uuid"), {"uuid": uuid}
@@ -285,6 +288,9 @@ def test_bulk_create_shapes(connection, dep_override_factory):
         body = response.json()
         assert body
         assert body["num_shapes"] == 2
+
+    for row in connection.execute(text("SELECT name, properties FROM shapes")):
+        print(row)
 
     for shp in shapes:
         assert (
