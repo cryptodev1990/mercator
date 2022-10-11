@@ -33,13 +33,8 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
 
     """
     uri = settings.sqlalchemy_database_uri
-    params: Dict[str, Any] = {
-        "future": True,
-        "pool_pre_ping": True,
-        "pool_size": 80,
-        "max_overflow": 20,
-    }
-
+    params: Dict[str, Any] = {"future": True, "pool_pre_ping": True}
+    params.update(settings.engine_opts.dict())
     params.update(kwargs)
     engine = sa.create_engine(uri, **params)
 

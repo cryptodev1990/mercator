@@ -4,21 +4,12 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Annotated,
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union, cast
 
 from pydantic import (
     AnyHttpUrl,
     AnyUrl,
+    BaseModel,
     BaseSettings,
     EmailStr,
     Field,
@@ -70,6 +61,23 @@ class S3Url(AnyUrl):
     host_required = True
 
     __slots__ = ()
+
+
+class EngineOptions(BaseModel):
+    """SQLAlchemy Engine Settings.
+
+    Subset of options for SQLAlchemy engine.
+
+    See https://docs.sqlalchemy.org/en/14/core/engines.html#sqlalchemy.create_engine.
+
+    """
+
+    echo: bool = False
+    echo_pool: bool = False
+    pool_timeout: int = Field(30, ge=1)
+    pool_recycle: int = -1
+    pool_size: int = Field(5, ge=1)
+    max_overflow: int = Field(10, ge=0)
 
 
 class Settings(BaseSettings):
@@ -160,6 +168,11 @@ class Settings(BaseSettings):
         None, env="POSTGRES_CONNECTION"
     )
 
+    engine_opts: EngineOptions = Field(
+        EngineOptions(),
+        description="Options to apply to the app database SQLAlchemy engine.",
+    )
+
     # validation is done in the order fields are defined. sqlalchemy_database_uri
     # needs to be defined after its subcomponents
     @validator("sqlalchemy_database_uri", pre=True)
@@ -216,6 +229,7 @@ class Settings(BaseSettings):
     class Config:  # noqa
         env_file = ".env"
         case_sensitive = False
+        env_nested_delimiter = "__"
 
 
 @lru_cache()
