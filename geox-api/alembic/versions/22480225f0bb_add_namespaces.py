@@ -178,11 +178,6 @@ def downgrade() -> None:
     conn.execute("ALTER TABLE shapes DROP CONSTRAINT IF EXISTS fk_shapes_namespace_id")
     op.drop_index(op.f("ix_shapes_namespace_id"), table_name="shapes")
     op.drop_column("shapes", "namespace_id")
-    op.drop_index(
-        "organization_id",
-        table_name="namespaces",
-        postgresql_where=sa.text("deleted_at IS NOT NULL"),
-    )
     op.drop_index(op.f("ix_namespaces_organization_id"), table_name="namespaces")
     op.drop_index(op.f("ix_namespaces_name_normalized"), table_name="namespaces")
     op.drop_index(op.f("ix_namespaces_created_by_user_id"), table_name="namespaces")
