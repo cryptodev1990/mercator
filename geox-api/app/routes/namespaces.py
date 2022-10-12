@@ -1,8 +1,6 @@
 # TODO: uncomment after launching namespaces
 import logging
-from tkinter.font import names
-from tokenize import Name
-from typing import Any, Dict, List, Optional, Tuple
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import UUID4
@@ -17,7 +15,7 @@ from app.crud.namespaces import (
     select_namespaces,
     update_namespace,
 )
-from app.crud.shape import select_shape_metadata, select_shapes
+from app.crud.shape import select_shape_metadata
 from app.dependencies import UserConnection, get_app_user_connection, verify_token
 from app.schemas import Namespace, NamespaceCreate, NamespaceUpdate, RequestErrorModel
 from app.schemas.namespaces_api import NamespaceResponse
