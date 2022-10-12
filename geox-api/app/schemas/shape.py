@@ -35,7 +35,8 @@ class GeoShapeMetadata(BaseModel):
     """Metadata about a shape."""
 
     uuid: UUID4
-    name: str = Field(..., description="Name of the shape")
+    # Names are allowed to be null
+    name: Optional[str] = Field(None, description="Name of the shape")
     # TODO: change to not-optional after UUID4 is done
     namespace_id: Optional[UUID4] = None
     properties: Dict[str, Any] = Field(..., description="Properties of the shape")
