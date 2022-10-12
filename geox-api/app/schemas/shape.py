@@ -1,14 +1,12 @@
 """API Schema."""
 import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
 from geojson_pydantic import Feature
 from pydantic import UUID4, Field, root_validator
 
 from app.schemas.common import BaseModel
-
-# This is imported by __init__ with *
-# Append all objects to exported in __all__
+from app.core.datatypes import Latitude, Longitude
 
 EXAMPLE_GEOJSON = {
     "type": "Feature",
@@ -113,26 +111,13 @@ class CeleryTaskResponse(BaseModel):
 
 
 class ViewportBounds(BaseModel):
-    min_x: float = Field(..., description="Minimum X coordinate")
-    min_y: float = Field(..., description="Minimum Y coordinate")
-    max_x: float = Field(..., description="Maximum X coordinate")
-    max_y: float = Field(..., description="Maximum Y coordinate")
-
-    # validate that the x values are valid geospatial coordinates
-    @classmethod
-    def validate(cls, value: Any) -> Any:
-        if not (-180 <= value["min_x"] <= 180):
-            raise ValueError("min_x must be between -180 and 180")
-        if not (-180 <= value["max_x"] <= 180):
-            raise ValueError("max_x must be between -180 and 180")
-        if not (-90 <= value["min_y"] <= 90):
-            raise ValueError("min_y must be between -90 and 90")
-        if not (-90 <= value["max_y"] <= 90):
-            raise ValueError("max_y must be between -90 and 90")
-        return value
+    min_x: Longitude = Field(..., description="Minimum X coordinate")
+    min_y: Latitude = Field(..., description="Minimum Y coordinate")
+    max_x: Longitude = Field(..., description="Maximum X coordinate")
+    max_y: Latitude = Field(..., description="Maximum Y coordinate")
 
     # validate that the minimums are less than the maximums
-    @classmethod
+    @root_validator()
     def validate_min_max(cls, value: Any) -> Any:
         if value["min_x"] > value["max_x"]:
             raise ValueError("min_x must be less than max_x")

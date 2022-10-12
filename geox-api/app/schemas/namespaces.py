@@ -34,7 +34,7 @@ class NamespaceCreate(BaseModel):
     """Data to create a new namespace."""
 
     name: str
-    properties: Dict[str, Any] = Field({})
+    properties: Dict[str, Any] = Field(default_factory=dict)
 
     schema_extras = {
         "example": {

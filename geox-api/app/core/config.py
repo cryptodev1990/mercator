@@ -7,8 +7,6 @@ from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union, cast
 
 from pydantic import (
-    AnyHttpUrl,
-    AnyUrl,
     BaseModel,
     BaseSettings,
     EmailStr,
@@ -16,10 +14,10 @@ from pydantic import (
     PostgresDsn,
     RedisDsn,
     SecretStr,
-    constr,
     validator,
 )
-from sqlalchemy import desc
+from app.core.datatypes import AnyHttpURLorAsterisk, S3Url, GitCommitHash
+
 from timvt.db import PostgresSettings as TimVTPostgresSettings
 
 logger = logging.getLogger(__name__)
@@ -29,38 +27,6 @@ __VERSION__ = "0.0.1"
 DEFAULT_DOMAIN = "mercator.tech"
 DEFAULT_MACHINE_ACCOUNT_EMAIL = f"duber+ManagementApi@{DEFAULT_DOMAIN}"
 CONTACT_EMAIL = f"founders@{DEFAULT_DOMAIN}"
-
-AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
-"""A valid HTTP URL or *."""
-# used in CORS types
-
-GitCommitHash = Annotated[
-    str,
-    constr(
-        min_length=40,
-        max_length=40,
-        regex="^[0-9a-fA-F]{40}$",
-        strict=True,
-        to_lower=True,
-        strip_whitespace=True,
-    ),
-]
-"""Pydantic type to validate git hashes."""
-
-
-class S3Url(AnyUrl):
-    """Validate an S3 URI type.
-
-    Example: ``s3://bucket-name/path/to/file``.
-
-    """
-
-    allowed_schemes = {
-        "s3",
-    }
-    host_required = True
-
-    __slots__ = ()
 
 
 class EngineOptions(BaseModel):
