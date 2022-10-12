@@ -4,9 +4,11 @@ export function geoShapesToFeatureCollection(shapes: GeoShape[]) {
   /**
    * Converts GeoShapes to GeoJSON FeatureCollection
    */
+  console.log("shapes", shapes);
+  const isNullOrUndefined = typeof shapes === "undefined" || !shapes;
   return {
     type: "FeatureCollection",
-    features: !shapes
+    features: isNullOrUndefined
       ? []
       : shapes.map(({ name, geojson, created_at, uuid }: GeoShape) => {
           return {

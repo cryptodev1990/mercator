@@ -1,6 +1,5 @@
 import { MdDelete } from "react-icons/md";
 import Loading from "react-loading";
-import { useUpdateShapeMutation } from "../../hooks/openapi-hooks";
 import { MetadataEditButton } from "./edit-button";
 import simplur from "simplur";
 
@@ -12,9 +11,10 @@ import { EditorMode } from "../../cursor-modes";
 import { GeoShapeMetadata } from "../../../../client/models/GeoShapeMetadata";
 import { useState } from "react";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
+import { useShapes } from "../../hooks/use-shapes";
 
 export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
-  const { mutate: updateShape, isLoading } = useUpdateShapeMutation();
+  const { deleteShapes, updateLoading } = useShapes();
 
   const {
     isSelected,
@@ -64,12 +64,13 @@ export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
                 onClick={() => {
                   if (!shape.uuid) toast.error("Delete shape failed");
                   else {
-                    updateShape({ uuid: shape.uuid, should_delete: true });
+                    // updateShape({ uuid: shape.uuid, should_delete: true });
+                    deleteShapes([shape.uuid]);
                     setCursorMode(EditorMode.ViewMode);
                   }
                 }}
               >
-                {isLoading ? (
+                {updateLoading ? (
                   <Loading height={8} width={8} />
                 ) : (
                   <MdDelete className="fill-white" />

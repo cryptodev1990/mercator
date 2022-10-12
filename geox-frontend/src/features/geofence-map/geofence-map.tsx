@@ -16,9 +16,9 @@ import { useGeoShapeUndo } from "./hooks/use-geoshape-undo";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
-  const { cursorMode, setOptions } = useCursorMode();
+  const { cursorMode, setOptions, setCursorMode } = useCursorMode();
   const { mapRef, clearSelectedFeatureIndexes, deleteShapes } = useShapes();
-  const { undo, redo, startSnapshot, endSnapshot } = useGeoShapeUndo();
+  const { undo, redo } = useGeoShapeUndo();
 
   const { selectedUuids, clearSelectedShapeUuids } = useSelectedShapes();
 
@@ -33,9 +33,12 @@ const GeofenceMap = () => {
       if (event.key === "Backspace") {
         if (selectedUuids) {
           for (const uuid of selectedUuids) {
-            startSnapshot();
-            deleteShapes([uuid]);
-            endSnapshot();
+            deleteShapes([uuid], {
+              onSuccess: () => {
+                clearSelectedShapeUuids();
+                setCursorMode(EditorMode.ViewMode);
+              },
+            });
           }
         }
       }

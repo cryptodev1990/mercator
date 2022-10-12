@@ -6,8 +6,8 @@
  * Valid geometry operations.
  */
 export enum GeometryOperation {
-  CONTAINS = "contains",
-  INTERSECTS = "intersects",
-  TOUCHES = "touches",
-  CROSSES = "crosses",
+    CONTAINS = 'contains',
+    INTERSECTS = 'intersects',
+    TOUCHES = 'touches',
+    CROSSES = 'crosses',
 }

@@ -4,34 +4,28 @@
 
 import type { Feature } from './Feature';
 
+/**
+ * Metadata about a shape.
+ */
 export type GeoShape = {
+    uuid: string;
     /**
      * Name of the shape
      */
     name?: string;
+    namespace_id?: string;
     /**
-     * GeoJSON representation of the shape
+     * Properties of the shape
      */
-    geojson: Feature;
-    /**
-     * Unique identifier for the shape
-     */
-    uuid: string;
-    /**
-     * User ID of the creator
-     */
-    created_by_user_id: number;
+    properties: any;
     /**
      * Date and time of creation
      */
     created_at: string;
     /**
-     * User ID of the most recent updater
-     */
-    updated_by_user_id?: number;
-    /**
      * Date and time of most recent updater
      */
-    updated_at?: string;
+    updated_at: string;
+    geojson: Feature;
 };
 

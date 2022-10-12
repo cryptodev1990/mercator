@@ -5,15 +5,14 @@
 import type { Feature } from './Feature';
 
 export type GeoShapeUpdate = {
-    /**
-     * Unique identifier for the shape
-     */
-    uuid: string;
+    uuid?: string;
     name?: string;
     geojson?: Feature;
+    properties?: any;
     /**
-     * If true, deletes the shape
+     * The namespace id
      */
+    namespace?: string;
     should_delete?: boolean;
 };
 

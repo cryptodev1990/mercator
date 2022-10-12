@@ -10,7 +10,7 @@ import { request as __request } from "../core/request";
 export class DefaultService {
   /**
    * Info
-   * Return app info.
+   * Return app version information.
    * @returns AppVersion Successful Response
    * @throws ApiError
    */

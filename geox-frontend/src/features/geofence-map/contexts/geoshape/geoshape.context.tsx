@@ -16,7 +16,7 @@ import {
   useNumShapesQuery,
   useUpdateShapeMutation,
 } from "../../hooks/openapi-hooks";
-import { geoshapeReducer, initialState } from "./geoshape.reducer";
+import { geoshapeReducer, initialState, State } from "./geoshape.reducer";
 
 export interface GeoShapeContextI {
   // API call - get all shape metadata (shape minus geometry)
@@ -87,7 +87,7 @@ export const GeoShapeContext = createContext<GeoShapeContextI>({
 GeoShapeContext.displayName = "GeoShapeContext";
 
 export const GeoShapeProvider = ({ children }: { children: any }) => {
-  const [state, dispatch] = useReducer(
+  const [state, dispatch]: [State, any] = useReducer(
     aggressiveLog(geoshapeReducer),
     initialState
   );
@@ -219,9 +219,9 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
     }
   }, [bulkAddShapesIsLoading, bulkAddShapesError, bulkAddShapesIsSuccess]);
 
-  function bulkAddShapes(shapes: GeoShapeCreate[]) {
+  function bulkAddShapes(shapes: GeoShapeCreate[], ...args: any[]) {
     dispatch({ type: "OP_LOG_ADD", op: "BULK_ADD_SHAPES", payload: shapes });
-    return bulkAddShapesApi(shapes);
+    return bulkAddShapesApi(shapes, ...args);
   }
 
   function bulkAddFromSplit(
@@ -252,9 +252,13 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
     addShapeApi(shape as any, {
       onSuccess: (data: any) => {
         const geoshape = data as GeoShape;
+        const { properties } = geoshape.geojson;
         const metadata = {
-          properties: geoshape.geojson.properties,
-          ...geoshape,
+          properties,
+          uuid: geoshape.uuid,
+          name: geoshape.name,
+          created_at: geoshape.created_at,
+          updated_at: geoshape.updated_at,
         } as GeoShapeMetadata;
         onSuccess(metadata);
       },
@@ -290,7 +294,7 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
         bulkAddShapes,
         bulkAddFromSplit,
         addShapeAndEdit,
-        updateLoading: state.updateLoading,
+        updateLoading: state.shapeUpdateLoading,
       }}
     >
       {children}

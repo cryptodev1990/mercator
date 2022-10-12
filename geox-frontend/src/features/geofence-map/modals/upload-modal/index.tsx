@@ -48,7 +48,8 @@ export const UploadModal = () => {
     const prospects = geojson.map((feature) => {
       return {
         geojson: feature,
-        name: feature.properties?.name,
+        name: feature.properties?.name ?? "New upload",
+        //name: feature.properties?.name || "New upload",
       };
     });
     setTentativeShapes(prospects);

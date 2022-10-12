@@ -11,6 +11,11 @@ export class TilesService {
   /**
    * Get Shape Tile
    * Get a tile of shape
+   *
+   * Cache key is used to keep the same result for immutable functions
+   * On each material change (create/update/delete) for shapes
+   * we bump the cache ID
+   * @param cacheKey
    * @param z Tiles's zoom level
    * @param x Tiles's column
    * @param y Tiles's row
@@ -19,7 +24,8 @@ export class TilesService {
    * @returns any Successful Response
    * @throws ApiError
    */
-  public static getShapeTileBacksplashLayerZXYGet(
+  public static getShapeTileBacksplashLayerZXYCacheKeyGet(
+    cacheKey: number,
     z: number,
     x: number,
     y: number,
@@ -28,8 +34,9 @@ export class TilesService {
   ): CancelablePromise<any> {
     return __request(OpenAPI, {
       method: "GET",
-      url: "/backsplash/{layer}/{z}/{x}/{y}",
+      url: "/backsplash/{layer}/{z}/{x}/{y}/{cache_key}",
       path: {
+        cache_key: cacheKey,
         z: z,
         x: x,
         y: y,

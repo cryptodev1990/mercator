@@ -1,119 +1,59 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CeleryTaskResponse } from "../../client/models/CeleryTaskResponse";
-import type { CeleryTaskResult } from "../../client/models/CeleryTaskResult";
-import type { Feature } from "../../client/models/Feature";
-import type { GeometryOperation } from "../../client/models/GeometryOperation";
-import type { GeoShape } from "../../client/models/GeoShape";
-import type { GeoShapeCreate } from "../../client/models/GeoShapeCreate";
+import type { CeleryTaskResponse } from "../models/CeleryTaskResponse";
+import type { CeleryTaskResult } from "../models/CeleryTaskResult";
+import type { Feature } from "../models/Feature";
+import type { GeometryOperation } from "../models/GeometryOperation";
+import type { GeoShape } from "../models/GeoShape";
+import type { GeoShapeCreate } from "../models/GeoShapeCreate";
 import type { GeoShapeMetadata } from "../models/GeoShapeMetadata";
-import type { GeoShapeUpdate } from "../../client/models/GeoShapeUpdate";
-import type { GetAllShapesRequestType } from "../../client/models/GetAllShapesRequestType";
-import type { LineString } from "../../client/models/LineString";
-import type { Point } from "../../client/models/Point";
-import type { Polygon } from "../../client/models/Polygon";
-import type { ShapeCountResponse } from "../../client/models/ShapeCountResponse";
-import type { TileMatrixSetNames } from "../../client/models/TileMatrixSetNames";
+import type { GeoShapeUpdate } from "../models/GeoShapeUpdate";
+import type { GetAllShapesRequestType } from "../models/GetAllShapesRequestType";
+import type { LineString } from "../models/LineString";
+import type { Point } from "../models/Point";
+import type { Polygon } from "../models/Polygon";
+import type { ShapeCountResponse } from "../models/ShapeCountResponse";
+import type { TileMatrixSetNames } from "../models/TileMatrixSetNames";
 
-import type { CancelablePromise } from "../../client/core/CancelablePromise";
-import { OpenAPI } from "../../client/core/OpenAPI";
-import { request as __request } from "../../client/core/request";
+import type { CancelablePromise } from "../core/CancelablePromise";
+import { OpenAPI } from "../core/OpenAPI";
+import { request as __request } from "../core/request";
 
 export class GeofencerService {
   /**
-   * Get All Shapes
-   * Read shapes.
-   * @param rtype
-   * @param offset
-   * @param limit
-   * @returns GeoShape Successful Response
+   * Shapes Export
+   * Export shapes to S3.
+   *
+   * This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
+   * @returns CeleryTaskResponse Successful Response
    * @throws ApiError
    */
-  public static getAllShapesGeofencerShapesGet(
-    rtype: GetAllShapesRequestType,
-    offset?: number,
-    limit: number = 300
-  ): CancelablePromise<Array<GeoShape>> {
-    return __request(OpenAPI, {
-      method: "GET",
-      url: "/geofencer/shapes",
-      query: {
-        rtype: rtype,
-        offset: offset,
-        limit: limit,
-      },
-      errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Create Shape
-   * Create a shape.
-   * @param requestBody
-   * @returns GeoShape Successful Response
-   * @throws ApiError
-   */
-  public static createShapeGeofencerShapesPost(
-    requestBody: GeoShapeCreate
-  ): CancelablePromise<GeoShape> {
+  public static shapesExportGeofenceShapesExportPost(): CancelablePromise<CeleryTaskResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/geofencer/shapes",
-      body: requestBody,
-      mediaType: "application/json",
+      url: "/geofence/shapes/export",
       errors: {
-        422: `Validation Error`,
+        501: `Data export not supported on the server`,
       },
     });
   }
 
   /**
-   * Get Shape
-   * Read a shape.
-   * @param uuid
-   * @param responses
-   * @returns GeoShape Successful Response
+   * @deprecated
+   * Shapes Export
+   * Export shapes to S3.
+   *
+   * This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
+   * @returns CeleryTaskResponse Successful Response
    * @throws ApiError
    */
-  public static getShapeGeofencerShapesUuidGet(
-    uuid: string,
-    responses?: any
-  ): CancelablePromise<GeoShape> {
+  public static shapesExportShapesExportPost(): CancelablePromise<CeleryTaskResponse> {
     return __request(OpenAPI, {
-      method: "GET",
-      url: "/geofencer/shapes/{uuid}",
-      path: {
-        uuid: uuid,
-      },
-      query: {
-        responses: responses,
-      },
+      method: "POST",
+      url: "/shapes/export",
       errors: {
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  /**
-   * Update Shape
-   * Update a shape.
-   * @param requestBody
-   * @returns GeoShape Successful Response
-   * @throws ApiError
-   */
-  public static updateShapeGeofencerShapesUuidPut(
-    requestBody: GeoShapeUpdate
-  ): CancelablePromise<GeoShape> {
-    return __request(OpenAPI, {
-      method: "PUT",
-      url: "/geofencer/shapes/{uuid}",
-      body: requestBody,
-      mediaType: "application/json",
-      errors: {
-        422: `Validation Error`,
+        501: `Data export not supported on the server`,
       },
     });
   }
@@ -122,15 +62,20 @@ export class GeofencerService {
    * Bulk Create Shapes
    * Create multiple shapes.
    * @param requestBody
+   * @param namespace
    * @returns ShapeCountResponse Successful Response
    * @throws ApiError
    */
   public static bulkCreateShapesGeofencerShapesBulkPost(
-    requestBody: Array<GeoShapeCreate>
+    requestBody: Array<GeoShapeCreate>,
+    namespace?: string
   ): CancelablePromise<ShapeCountResponse> {
     return __request(OpenAPI, {
       method: "POST",
       url: "/geofencer/shapes/bulk",
+      query: {
+        namespace: namespace,
+      },
       body: requestBody,
       mediaType: "application/json",
       errors: {
@@ -152,6 +97,64 @@ export class GeofencerService {
     return __request(OpenAPI, {
       method: "DELETE",
       url: "/geofencer/shapes/bulk",
+      body: requestBody,
+      mediaType: "application/json",
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   *  Get Shapes
+   * Read shapes.
+   *
+   * Will return 200 even if no shapes match the query, including the case in which the
+   * namespace does not exist.
+   * @param namespace Only include shapes in the specified namespace given its UUID or name.
+   * @param user If TRUE, then only return shapes of the requesting user.
+   * @param rtype
+   * @param offset
+   * @param limit
+   * @returns GeoShape Successful Response
+   * @throws ApiError
+   */
+  public static getShapesGeofencerShapesGet(
+    namespace?: string,
+    user?: boolean,
+    rtype?: GetAllShapesRequestType,
+    offset?: number,
+    limit: number = 300
+  ): CancelablePromise<Array<GeoShape>> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/geofencer/shapes",
+      query: {
+        namespace: namespace,
+        user: user,
+        rtype: rtype,
+        offset: offset,
+        limit: limit,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   *  Post Shapes
+   * Create a shape.
+   * @param requestBody
+   * @returns GeoShape Successful Response
+   * @throws ApiError
+   */
+  public static postShapesGeofencerShapesPost(
+    requestBody: GeoShapeCreate
+  ): CancelablePromise<GeoShape> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/geofencer/shapes",
       body: requestBody,
       mediaType: "application/json",
       errors: {
@@ -199,6 +202,101 @@ export class GeofencerService {
   }
 
   /**
+   *  Get Shapes  Shape Id
+   * Read a shape.
+   * @param shapeId
+   * @returns GeoShape Successful Response
+   * @throws ApiError
+   */
+  public static getShapesShapeIdGeofencerShapesShapeIdGet(
+    shapeId: string
+  ): CancelablePromise<GeoShape> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/geofencer/shapes/{shape_id}",
+      path: {
+        shape_id: shapeId,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   *  Delete Shapes  Shape Id
+   * Delete a shape.
+   * @param shapeId
+   * @returns void
+   * @throws ApiError
+   */
+  public static deleteShapesShapeIdGeofencerShapesShapeIdDelete(
+    shapeId: string
+  ): CancelablePromise<void> {
+    return __request(OpenAPI, {
+      method: "DELETE",
+      url: "/geofencer/shapes/{shape_id}",
+      path: {
+        shape_id: shapeId,
+      },
+      errors: {
+        404: `Shape does not exist`,
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   *  Patch Shapes  Shape Id
+   * Update a shape.
+   * @param shapeId
+   * @param requestBody
+   * @returns GeoShape Successful Response
+   * @throws ApiError
+   */
+  public static patchShapesShapeIdGeofencerShapesShapeIdPatch(
+    shapeId: string,
+    requestBody: GeoShapeUpdate
+  ): CancelablePromise<GeoShape> {
+    return __request(OpenAPI, {
+      method: "PATCH",
+      url: "/geofencer/shapes/{shape_id}",
+      path: {
+        shape_id: shapeId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
+      errors: {
+        404: `Shape does not exist`,
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
+   * @deprecated
+   *  Update Shapes  Shape Id
+   * Update a shape.
+   * @param requestBody
+   * @returns GeoShape Successful Response
+   * @throws ApiError
+   */
+  public static updateShapesShapeIdGeofencerShapesUuidPut(
+    requestBody: GeoShapeUpdate
+  ): CancelablePromise<GeoShape> {
+    return __request(OpenAPI, {
+      method: "PUT",
+      url: "/geofencer/shapes/{uuid}",
+      body: requestBody,
+      mediaType: "application/json",
+      errors: {
+        404: `Shape does not exist`,
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  /**
    * Get Shapes By Operation
    * Get shapes by operation.
    * @param operation
@@ -227,43 +325,24 @@ export class GeofencerService {
   }
 
   /**
-   * Shapes Export
-   * Export shapes to S3.
-   *
-   * This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
-   * @returns CeleryTaskResponse Successful Response
-   * @throws ApiError
-   */
-  public static shapesExportShapesExportPost(): CancelablePromise<CeleryTaskResponse> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/shapes/export",
-      errors: {
-        403: `Data export not enabled for this account`,
-        501: `Data export not supported on the server.`,
-      },
-    });
-  }
-
-  /**
-   * Get Shape Metadata By Bounding Box
+   *  Get Shape Metadata  Bbox
    * Get shape metadata by bounding box.
    * @param minX
    * @param minY
    * @param maxX
    * @param maxY
-   * @param limit
    * @param offset
+   * @param limit
    * @returns GeoShapeMetadata Successful Response
    * @throws ApiError
    */
-  public static getShapeMetadataByBoundingBoxGeofencerShapeMetadataBboxGet(
+  public static getShapeMetadataBboxGeofencerShapeMetadataBboxGet(
     minX: number,
     minY: number,
     maxX: number,
     maxY: number,
-    limit: number = 25,
-    offset?: number
+    offset?: number,
+    limit: number = 25
   ): CancelablePromise<Array<GeoShapeMetadata>> {
     return __request(OpenAPI, {
       method: "GET",
@@ -273,8 +352,8 @@ export class GeofencerService {
         min_y: minY,
         max_x: maxX,
         max_y: maxY,
-        limit: limit,
         offset: offset,
+        limit: limit,
       },
       errors: {
         422: `Validation Error`,
@@ -283,26 +362,26 @@ export class GeofencerService {
   }
 
   /**
-   * Get Shape Metadata Matching Search
+   *  Get Shape Metadata  Search
    * Get shape metadata by bounding box.
    * @param query
-   * @param limit
    * @param offset
+   * @param limit
    * @returns GeoShapeMetadata Successful Response
    * @throws ApiError
    */
-  public static getShapeMetadataMatchingSearchGeofencerShapeMetadataSearchGet(
+  public static getShapeMetadataSearchGeofencerShapeMetadataSearchGet(
     query: string,
-    limit: number = 25,
-    offset?: number
+    offset?: number,
+    limit: number = 25
   ): CancelablePromise<Array<GeoShapeMetadata>> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/geofencer/shape-metadata/search",
       query: {
         query: query,
-        limit: limit,
         offset: offset,
+        limit: limit,
       },
       errors: {
         422: `Validation Error`,
@@ -311,23 +390,23 @@ export class GeofencerService {
   }
 
   /**
-   * Get All Shape Metadata
-   * Get all shape metadata with pagination
-   * @param limit
+   *  Get Shape Metadata
+   * Get all shape metadata with pagination.
    * @param offset
+   * @param limit
    * @returns GeoShapeMetadata Successful Response
    * @throws ApiError
    */
-  public static getAllShapeMetadataGeofencerShapeMetadataGet(
-    limit: number = 25,
-    offset?: number
+  public static getShapeMetadataGeofencerShapeMetadataGet(
+    offset?: number,
+    limit: number = 25
   ): CancelablePromise<Array<GeoShapeMetadata>> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/geofencer/shape-metadata",
       query: {
-        limit: limit,
         offset: offset,
+        limit: limit,
       },
       errors: {
         422: `Validation Error`,
@@ -380,33 +459,13 @@ export class GeofencerService {
   }
 
   /**
-   * @deprecated
-   * Copy Shapes
-   * Export shapes to S3.
-   *
-   * This is an async task. Use `/tasks/results/{task_id}` to retieve the status and results.
-   *
-   * Exports all shapes in the user's organization to Snowflake, if the user's account is
-   * enabled for shape export, and the user has provided Snowflake account information for sharing.
-   *
-   * Use `POST /shapes/export` instead.
-   * @returns CeleryTaskResponse Successful Response
-   * @throws ApiError
-   */
-  public static copyShapesTasksCopyShapesPost(): CancelablePromise<CeleryTaskResponse> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/tasks/copy_shapes",
-      errors: {
-        403: `Data export not enabled for this account`,
-        501: `Shape export is not configured`,
-      },
-    });
-  }
-
-  /**
    * Get Shape Tile
    * Get a tile of shape
+   *
+   * Cache key is used to keep the same result for immutable functions
+   * On each material change (create/update/delete) for shapes
+   * we bump the cache ID
+   * @param cacheKey
    * @param z Tiles's zoom level
    * @param x Tiles's column
    * @param y Tiles's row
@@ -415,7 +474,8 @@ export class GeofencerService {
    * @returns any Successful Response
    * @throws ApiError
    */
-  public static getShapeTileBacksplashLayerZXYGet(
+  public static getShapeTileBacksplashLayerZXYCacheKeyGet(
+    cacheKey: number,
     z: number,
     x: number,
     y: number,
@@ -424,8 +484,9 @@ export class GeofencerService {
   ): CancelablePromise<any> {
     return __request(OpenAPI, {
       method: "GET",
-      url: "/backsplash/{layer}/{z}/{x}/{y}",
+      url: "/backsplash/{layer}/{z}/{x}/{y}/{cache_key}",
       path: {
+        cache_key: cacheKey,
         z: z,
         x: x,
         y: y,

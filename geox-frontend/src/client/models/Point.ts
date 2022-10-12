@@ -6,6 +6,6 @@
  * Point Model
  */
 export type Point = {
-  coordinates: Array<Number>;
+  coordinates: Array<number>;
   type?: string;
 };

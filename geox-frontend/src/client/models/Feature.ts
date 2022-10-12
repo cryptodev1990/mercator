@@ -25,5 +25,4 @@ export type Feature = {
     | GeometryCollection;
   properties?: any;
   id?: string;
-  bbox?: Array<Number>;
 };

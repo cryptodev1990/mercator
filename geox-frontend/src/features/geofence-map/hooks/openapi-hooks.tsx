@@ -22,7 +22,7 @@ import { difference } from "@turf/turf";
 export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
   const { options } = useCursorMode();
-  const post = GeofencerService.createShapeGeofencerShapesPost;
+  const post = GeofencerService.postShapesGeofencerShapesPost;
   const { deckRef } = useContext(DeckContext);
 
   return useMutation(post, {
@@ -65,9 +65,9 @@ export const useGetAllShapesMetadata = () => {
   return useQuery<GeoShapeMetadata[]>(
     ["geofencer"],
     () => {
-      return GeofencerService.getAllShapeMetadataGeofencerShapeMetadataGet(
-        10000, // limit
-        0 // offset
+      return GeofencerService.getShapeMetadataGeofencerShapeMetadataGet(
+        0, // offset
+        10000 // limit
       );
     },
     {
@@ -88,7 +88,7 @@ export const useGetOneShapeByUuid = (uuid: string) => {
       if (!uuid) {
         return Promise.resolve(null);
       }
-      return GeofencerService.getShapeGeofencerShapesUuidGet(uuid);
+      return GeofencerService.getShapesShapeIdGeofencerShapesShapeIdGet(uuid);
     },
     {
       staleTime: 0,
@@ -102,17 +102,20 @@ export const useGetOneShapeByUuid = (uuid: string) => {
 
 export const useUpdateShapeMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
-    onSuccess(data: GeoShape) {
-      queryClient.fetchQuery("geofencer");
-    },
-    onMutate(variables) {
-      queryClient.setQueryData(["shape", variables.uuid], variables);
-    },
-    onError(error: any) {
-      toast.error(`Shapes failed to update (${error.detail ?? error})`);
-    },
-  });
+  return useMutation(
+    GeofencerService.updateShapesShapeIdGeofencerShapesUuidPut,
+    {
+      onSuccess(data: GeoShape) {
+        queryClient.fetchQuery("geofencer");
+      },
+      onMutate(variables) {
+        queryClient.setQueryData(["shape", variables.uuid], variables);
+      },
+      onError(error: any) {
+        toast.error(`Shapes failed to update (${error.detail ?? error})`);
+      },
+    }
+  );
 };
 
 export const useBulkDeleteShapesMutation = () => {
@@ -165,10 +168,12 @@ export const useGetAllShapes = (limit: number, offset: number) => {
   return useQuery<GeoShape[] | null>(
     ["allshapes"],
     () => {
-      return GeofencerService.getAllShapesGeofencerShapesGet(
-        GetAllShapesRequestType.ORGANIZATION,
-        offset,
-        limit
+      return GeofencerService.getShapesGeofencerShapesGet(
+        undefined, // namespace
+        undefined, // user
+        GetAllShapesRequestType.ORGANIZATION, // type
+        offset, // offset
+        limit // limit
       );
     },
     {
@@ -251,15 +256,4 @@ export const useDebouncedMutation = (mutationFn: any, options: any) => {
   };
 
   return { isDebouncing, debouncedMutate, ...mutation };
-};
-
-export const useDebouncedUpdateShape = () => {
-  const { isDebouncing, debouncedMutate, isLoading, isSuccess } =
-    useDebouncedMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
-      onError(error: any) {
-        toast.error(`Shapes failed to update (${error})`);
-      },
-    });
-
-  return { isDebouncing, debouncedMutate, isLoading, isSuccess };
 };

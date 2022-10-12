@@ -13,5 +13,9 @@ export type GeoShapeCreate = {
      * GeoJSON representation of the shape
      */
     geojson: Feature;
+    /**
+     * Namespace id.
+     */
+    namespace?: string;
 };
 
