@@ -95,7 +95,7 @@ def _process_geojson(geojson: Feature, name: Optional[str] = None) -> Dict[str, 
         geojson.properties = {}
     if name:
         geojson.properties["name"] = name
-    return {"geojson": geojson.dict(), "name": geojson.properties["name"]}
+    return {"geojson": geojson.dict(), "name": geojson.properties.get("name")}
 
 
 def create_many_shapes(
