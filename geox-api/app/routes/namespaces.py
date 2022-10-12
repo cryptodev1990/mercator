@@ -1,5 +1,6 @@
 # TODO: uncomment after launching namespaces
 import logging
+from tkinter.font import names
 from tokenize import Name
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -16,14 +17,10 @@ from app.crud.namespaces import (
     select_namespaces,
     update_namespace,
 )
-from app.crud.shape import select_shapes
+from app.crud.shape import select_shape_metadata, select_shapes
 from app.dependencies import UserConnection, get_app_user_connection, verify_token
-from app.schemas import (
-    Namespace,
-    NamespaceCreate,
-    NamespaceUpdate,
-    RequestErrorModel,
-)
+from app.schemas import Namespace, NamespaceCreate, NamespaceUpdate, RequestErrorModel
+from app.schemas.namespaces_api import NamespaceResponse
 
 # from app.crud.namespaces import *
 
@@ -45,12 +42,16 @@ def _responses(*args):
     return dict([_RESPONSES[key] for key in args])
 
 
-@router.post("/geofencer/namespaces", responses=_responses("NAMESPACE_EXISTS"))
+@router.post(
+    "/geofencer/namespaces",
+    responses=_responses("NAMESPACE_EXISTS"),
+    response_model=Namespace,
+)
 async def _post_namespaces(
     namespace: NamespaceCreate,
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> Namespace:
-    """Create a namespace."""
+    """Create a new namespace."""
     try:
         return create_namespace(
             user_conn.connection,
@@ -67,30 +68,38 @@ async def _post_namespaces(
 @router.get(
     "/geofencer/namespaces/{namespace_id}",
     responses=_responses("NAMESPACE_DOES_NOT_EXIST"),
+    response_model=NamespaceResponse,
 )
 async def _get_namespaces__namespace_id(
     namespace_id: UUID4,
     user_conn: UserConnection = Depends(get_app_user_connection),
-) -> Namespace:
+) -> NamespaceResponse:
     """Return a namespace."""
+    conn = user_conn.connection
     try:
-        namespace = get_namespace_by_id(user_conn.connection, namespace_id)
+        namespace = NamespaceResponse.from_orm(get_namespace_by_id(conn, namespace_id))
     except NamespaceDoesNotExistError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+    namespace.shapes = list(select_shape_metadata(conn, namespace_id=namespace.id))
     return namespace
 
 
-@router.get(
-    "/geofencer/namespaces",
-)
+@router.get("/geofencer/namespaces", response_model=List[NamespaceResponse])
 async def _get_namespaces(
     id: Optional[UUID4] = Query(default=None, title="ID of the namespace"),
     name: Optional[str] = Query(default=None, title="Name of the namespace"),
     user_conn: UserConnection = Depends(get_app_user_connection),
-) -> List[Namespace]:
+) -> List[NamespaceResponse]:
     """Return namespaces available to the user."""
-    # TODO: this is an n+1 query. Change to a single query.
-    namespaces = list(select_namespaces(user_conn.connection, id_=id, name=name))
+    conn = user_conn.connection
+    namespaces = [
+        NamespaceResponse.from_orm(nm)
+        for nm in select_namespaces(conn, id_=id, name=name)
+    ]
+    # TODO: this is an n+1 query. Change to a single query. However, the number of
+    # namespaces is generally small so this may not be that bad
+    for nm in namespaces:
+        nm.shapes = list(select_shape_metadata(conn, namespace_id=nm.id))
     return namespaces
 
 
@@ -98,6 +107,7 @@ async def _get_namespaces(
 @router.patch(
     "/geofencer/namespaces/{namespace_id}",
     responses=_responses("NAMESPACE_DOES_NOT_EXIST", "NAMESPACE_EXISTS"),
+    response_model=NamespaceResponse,
 )
 async def _patch_namespaces(
     data: NamespaceUpdate,
