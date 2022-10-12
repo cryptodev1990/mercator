@@ -174,7 +174,8 @@ def downgrade() -> None:
         definition="AS PERMISSIVE\nFOR ALL\nTO app_user\nUSING (app_user_org() = organization_id)\nWITH CHECK (app_user_org() = organization_id)",
     )
     op.drop_entity(public_namespaces_same_org)
-    op.drop_constraint(op.f("fk_shapes_namespace_id"), "shapes", type_="foreignkey")
+    conn = op.get_bind()
+    conn.execute("ALTER TABLE shapes DROP CONSTRAINT IF EXISTS fk_shapes_namespace_id")
     op.drop_index(op.f("ix_shapes_namespace_id"), table_name="shapes")
     op.drop_column("shapes", "namespace_id")
     op.drop_index(
