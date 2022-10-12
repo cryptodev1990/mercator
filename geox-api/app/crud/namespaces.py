@@ -77,6 +77,16 @@ class DefaultNamespaceCannotBeRenamedError(Exception):
         return f"Namespace '{self.id_}' is the default namespace. Its name cannot be changed."
 
 
+class DefaultNamespaceDoesNotExistError(Exception):
+    """Namespace does not exist error."""
+
+    def __init__(self, organization_id: UUID4) -> None:
+        self.id = organization_id
+
+    def __str__(self):
+        return f"No default namespace exists for organization '{self.organization_id}'."
+
+
 def name_normalizer(name: str) -> str:
     """Name normalizer.
 
@@ -147,22 +157,7 @@ def get_namespace_by_name(
     return Namespace.from_orm(res)
 
 
-# TODO: uncomment after migration to namespaces
-
-
-from pydantic import BaseModel
-from typing import Union
-
-
-class NullNamespace(BaseModel):
-    """Empty namespace."""
-
-    id: None = None
-
-
-def get_default_namespace(
-    conn, organization_id: UUID4
-) -> Union[NullNamespace, Namespace]:
+def get_default_namespace(conn, organization_id: UUID4) -> Namespace:
     """Return the default namespace of an organization."""
     stmt = text(
         """
@@ -174,13 +169,9 @@ def get_default_namespace(
     )
     values = {"organization_id": organization_id}
     res = conn.execute(stmt, values).first()
-    if res:
-        return Namespace.from_orm(res)
-    else:
-        return NullNamespace()
-
-
-## End of temp code
+    if not res:
+        raise DefaultNamespaceDoesNotExistError(organization_id)
+    return Namespace.from_orm(res)
 
 
 def create_namespace(

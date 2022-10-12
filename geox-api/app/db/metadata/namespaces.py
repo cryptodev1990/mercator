@@ -1,14 +1,13 @@
 """Namespaces Table"""
-from cProfile import label
 from textwrap import dedent
 
 from sqlalchemy import (  # type: ignore
     Boolean,
-    CheckConstraint,
     Column,
     Computed,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
     Index,
     Integer,
     String,
@@ -20,9 +19,6 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from .common import TimestampMixin, UUIDMixin, metadata
 
 __all__ = ["namespaces"]
-
-# Alternative implementation: Should NULL namespace be an implicit 'default' namespace?
-# probably not. We'd display it as default - and we'd need to disallow
 
 namespaces = Table(
     "namespaces",
@@ -74,6 +70,13 @@ namespaces = Table(
         "name_normalized",
         unique=True,
         postgresql_where=text("deleted_at IS  NULL"),
+    ),
+    # this is duplicate, but needed for setting a foreign key in shapes
+    Index(
+        "ix_unique_id_organization_id",
+        "id",
+        "organization_id",
+        unique=True,
     ),
     comment="""A Namespace is a collection of shapes.
 

@@ -1,10 +1,11 @@
 """Shape model."""
 from geoalchemy2 import Geometry
-from sqlalchemy import (  # type: ignore
+from sqlalchemy import Computed  # type: ignore
+from sqlalchemy import (
     Column,
-    Computed,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
     Index,
     Integer,
     String,
@@ -79,10 +80,12 @@ shapes = Table(
     Column(
         "namespace_id",
         UUID(as_uuid=True),
-        ForeignKey("namespaces.id", deferrable=True),
-        # TODO: change to nullable after migration
-        nullable=True,
+        nullable=False,
         index=True,
-        comment="If NULL, then in the default namespace",
+    ),
+    # The shape namespace must both exist and be in the same organization as the shape
+    ForeignKeyConstraint(
+        ["namespace_id", "organization_id"],
+        ["namespaces.id", "namespaces.organization_id"],
     ),
 )
