@@ -3,16 +3,9 @@ import { ViewState } from "react-map-gl";
 import { Feature, GeoShapeCreate } from "../../../client";
 import { GeoShapeMetadata } from "../../../client/models/GeoShapeMetadata";
 import { EditorMode } from "../cursor-modes";
-import {
-  useGetAllShapesMetadata,
-  useNumShapesQuery,
-} from "../hooks/openapi-hooks";
 import { GlobalEditorOptions } from "../types";
 
 interface GeofencerContextState {
-  shapeMetadata: GeoShapeMetadata[];
-  setShapeMetadata: (metadata: GeoShapeMetadata[]) => void;
-  shapeMetadataIsLoading: boolean;
   viewport: any;
   setViewport: (viewport: any) => void;
   options: GlobalEditorOptions;
@@ -27,14 +20,9 @@ interface GeofencerContextState {
   mapRef: any;
   selectedFeatureIndexes: number[];
   setSelectedFeatureIndexes: (indexes: number[]) => void;
-  numShapes: number;
-  numShapesIsLoading: boolean;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
-  shapeMetadata: [],
-  setShapeMetadata: () => {},
-  shapeMetadataIsLoading: false,
   options: {
     denyOverlap: true,
     cursorMode: EditorMode.ViewMode,
@@ -52,13 +40,10 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   mapRef: null,
   selectedFeatureIndexes: [],
   setSelectedFeatureIndexes: () => {},
-  numShapes: 0,
-  numShapesIsLoading: false,
 });
 GeofencerContext.displayName = "GeofencerContext";
 
 export const GeofencerContextContainer = ({ children }: { children: any }) => {
-  const [shapeMetadata, setShapeMetadata] = useState<GeoShapeMetadata[]>([]);
   const storedViewport = localStorage.getItem("viewport");
   const [viewport, setViewport] = useState<ViewState>(
     storedViewport
@@ -71,19 +56,6 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
           zoom: 11.363205994378514,
         }
   );
-
-  const { data: numShapesPayload, isLoading: numShapesIsLoading } =
-    useNumShapesQuery();
-
-  const { data: remoteShapeMetadata, isLoading: shapeMetadataIsLoading } =
-    useGetAllShapesMetadata();
-
-  useEffect(() => {
-    if (remoteShapeMetadata === undefined) {
-      return;
-    }
-    setShapeMetadata(remoteShapeMetadata);
-  }, [remoteShapeMetadata]);
 
   useEffect(() => {
     // Store viewport in local storage
@@ -132,10 +104,6 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
   return (
     <GeofencerContext.Provider
       value={{
-        shapeMetadata,
-        shapeMetadataIsLoading,
-        setShapeMetadata: (shapes: GeoShapeMetadata[]) =>
-          setShapeMetadata(shapes),
         viewport,
         setViewport: (viewport: any) => setViewport(viewport),
         options,
@@ -150,8 +118,6 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
         setUploadedGeojson: (geojson: Feature[]) => setUploadedGeojson(geojson),
         virtuosoRef,
         mapRef,
-        numShapes: numShapesPayload?.num_shapes || 0,
-        numShapesIsLoading,
         selectedFeatureIndexes,
         setSelectedFeatureIndexes: (indexes: number[]) =>
           setSelectedFeatureIndexes(indexes),

@@ -6,7 +6,7 @@ import { geoShapesToFeatureCollection } from "../../utils";
 import { selectionReducer, initialState } from "./selection.reducer";
 import { aggressiveLog } from "../../../../common/aggressive-log";
 
-interface SelectionContextState {
+export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
   addSelectedShapeUuid: (uuid: string) => void;
@@ -18,7 +18,7 @@ interface SelectionContextState {
   numSelected: number;
 }
 
-export const SelectionContext = createContext<SelectionContextState>({
+export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
   isSelected: () => false,
   addSelectedShapeUuid: () => {},
@@ -33,10 +33,7 @@ export const SelectionContext = createContext<SelectionContextState>({
 SelectionContext.displayName = "SelectionContext";
 
 export const SelectionProvider = ({ children }: { children: any }) => {
-  const [state, dispatch] = useReducer(
-    aggressiveLog(selectionReducer),
-    initialState
-  );
+  const [state, dispatch] = useReducer(selectionReducer, initialState);
 
   // TODO create a bulk query for this
   const { data: selectedShapeData, isLoading: selectedDataIsLoading } =

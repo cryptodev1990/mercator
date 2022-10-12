@@ -10,21 +10,19 @@ import { useLayers } from "./hooks/use-layers/use-layers";
 import { useViewport } from "./hooks/use-viewport";
 import { useShapes } from "./hooks/use-shapes";
 import { useContext, useEffect } from "react";
-import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
-import { toast } from "react-hot-toast";
 import { DeckContext } from "./contexts/deck-context";
 import { useSelectedShapes } from "./hooks/use-selected-shapes";
+import { useGeoShapeUndo } from "./hooks/use-geoshape-undo";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
   const { cursorMode, setOptions } = useCursorMode();
-  const { mapRef, clearSelectedFeatureIndexes } = useShapes();
+  const { mapRef, clearSelectedFeatureIndexes, deleteShapes } = useShapes();
+  const { undo, redo, startSnapshot, endSnapshot } = useGeoShapeUndo();
 
   const { selectedUuids, clearSelectedShapeUuids } = useSelectedShapes();
 
   const { deckRef } = useContext(DeckContext);
-
-  const { mutate: deleteShapes } = useBulkDeleteShapesMutation();
 
   // register the backspace key to delete a shape if a shape is selected
   useEffect(() => {
@@ -35,7 +33,9 @@ const GeofenceMap = () => {
       if (event.key === "Backspace") {
         if (selectedUuids) {
           for (const uuid of selectedUuids) {
+            startSnapshot();
             deleteShapes([uuid]);
+            endSnapshot();
           }
         }
       }
@@ -45,8 +45,10 @@ const GeofenceMap = () => {
       if (event.target instanceof HTMLInputElement) {
         return;
       }
-      if (event.key === "z" && event.metaKey) {
-        toast.error("Undo is not currently supported.");
+      if (event.key === "z" && event.metaKey && event.shiftKey) {
+        redo();
+      } else if (event.key === "z" && event.metaKey) {
+        undo();
       }
     }
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { EditorMode } from "./cursor-modes";
-import { useBulkDeleteShapesMutation } from "./hooks/openapi-hooks";
 import { useCursorMode } from "./hooks/use-cursor-mode";
 import { useSelectedShapes } from "./hooks/use-selected-shapes";
 import { useShapes } from "./hooks/use-shapes";
@@ -16,8 +15,8 @@ export const GeofencerContextMenu = () => {
     shapeMetadata,
     clearSelectedFeatureIndexes,
     mapRef,
+    deleteShapes,
   } = useShapes();
-  const { mutate: bulkDelete } = useBulkDeleteShapesMutation();
   const {
     selectedFeatureCollection,
     numSelected,
@@ -98,7 +97,7 @@ export const GeofencerContextMenu = () => {
         closeMenu();
         return;
       case "Delete (Backspace)":
-        bulkDelete(selectedUuids, {
+        deleteShapes(selectedUuids, {
           onSuccess: () => {
             cleanup();
           },

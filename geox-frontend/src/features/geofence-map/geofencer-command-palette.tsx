@@ -4,18 +4,18 @@ import { Feature, GeoShapeCreate } from "../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
 
-import {
-  useAddShapeMutation,
-  useBulkDeleteShapesMutation,
-} from "./hooks/openapi-hooks";
 import { CommandPalette } from "../command-palette/component";
 import { useIsochrones } from "../../hooks/use-isochrones";
+import { useShapes } from "./hooks/use-shapes";
 
 export const GeofencerCommandPalette = () => {
-  const { tentativeShapes, shapeMetadata, setTentativeShapes, setViewport } =
+  const { tentativeShapes, setTentativeShapes, setViewport } =
     useContext(GeofencerContext);
-  const { mutate: addShape } = useAddShapeMutation();
-  const { mutate: bulkDeleteShapes } = useBulkDeleteShapesMutation();
+  const {
+    shapeMetadata,
+    deleteShapes: bulkDeleteShapes,
+    addShape,
+  } = useShapes();
   const { getIsochrones, error: isochroneError } = useIsochrones();
 
   return (

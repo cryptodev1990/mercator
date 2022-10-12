@@ -23,7 +23,7 @@ export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
   const { options } = useCursorMode();
   const post = GeofencerService.createShapeGeofencerShapesPost;
-  const { triggerTileRefresh, deckRef } = useContext(DeckContext);
+  const { deckRef } = useContext(DeckContext);
 
   return useMutation(post, {
     onMutate: async (newData: GeoShapeCreate) => {
@@ -52,7 +52,6 @@ export const useAddShapeMutation = () => {
     },
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
-      triggerTileRefresh();
     },
     onError(error: any) {
       toast.error(`Shape failed to add`);
@@ -103,12 +102,12 @@ export const useGetOneShapeByUuid = (uuid: string) => {
 
 export const useUpdateShapeMutation = () => {
   const queryClient = useQueryClient();
-  const { triggerTileRefresh } = useContext(DeckContext);
   return useMutation(GeofencerService.updateShapeGeofencerShapesUuidPut, {
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
-      // Optimistically update to the new value
-      triggerTileRefresh();
+    },
+    onMutate(variables) {
+      queryClient.setQueryData(["shape", variables.uuid], variables);
     },
     onError(error: any) {
       toast.error(`Shapes failed to update (${error.detail ?? error})`);
@@ -118,14 +117,12 @@ export const useUpdateShapeMutation = () => {
 
 export const useBulkDeleteShapesMutation = () => {
   const queryClient = useQueryClient();
-  const { triggerTileRefresh } = useContext(DeckContext);
   return useMutation(
     GeofencerService.bulkDeleteShapesGeofencerShapesBulkDelete,
     {
       onSuccess(data: ShapeCountResponse) {
         toast.success(simplur`Deleted ${data.num_shapes} shape[|s]`);
         queryClient.fetchQuery("geofencer");
-        triggerTileRefresh();
       },
       onError(error) {
         toast.error(`Shapes failed to delete (${error})`);
@@ -136,13 +133,11 @@ export const useBulkDeleteShapesMutation = () => {
 
 export const useBulkAddShapesMutation = () => {
   const queryClient = useQueryClient();
-  const { triggerTileRefresh } = useContext(DeckContext);
 
   return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
     onSuccess(data: ShapeCountResponse) {
       queryClient.fetchQuery("numShapes");
       queryClient.fetchQuery("geofencer");
-      triggerTileRefresh();
     },
     onError(error: any) {
       toast.error(`Shapes failed to add (${error?.detail})`);

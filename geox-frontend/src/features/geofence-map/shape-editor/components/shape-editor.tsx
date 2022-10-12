@@ -1,12 +1,8 @@
-import {
-  useGetOneShapeByUuid,
-  useUpdateShapeMutation,
-} from "../../hooks/openapi-hooks";
+import { useGetOneShapeByUuid } from "../../hooks/openapi-hooks";
 
 import { JsonEditor } from "./json-editor";
 import { useShapes } from "../../hooks/use-shapes";
 import { useMemo } from "react";
-import { BiBracket, BiPencil } from "react-icons/bi";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -14,10 +10,13 @@ interface IDictionary<T> {
 
 // Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
-  const { mutate: updateShape, isLoading: editIsLoading } =
-    useUpdateShapeMutation();
   // add update shape mutation that only modifies shape metadata
-  const { shapeForPropertyEdit, setShapeForPropertyEdit } = useShapes();
+  const {
+    shapeForPropertyEdit,
+    setShapeForPropertyEdit,
+    updateShape,
+    updateLoading,
+  } = useShapes();
   const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
     shapeForPropertyEdit?.uuid || ""
   );
@@ -81,7 +80,7 @@ export const ShapeEditor = () => {
         <JsonEditor
           properties={reformattedProperties as any}
           handleResults={handleSubmit}
-          disableSubmit={editIsLoading || oneShapeIsLoading}
+          disableSubmit={updateLoading || oneShapeIsLoading}
         />
       </div>
     </div>

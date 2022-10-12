@@ -8,15 +8,11 @@ import {
 import { Feature, unkinkPolygon, kinks } from "@turf/turf";
 
 import { useShapes } from "../use-shapes";
-import {
-  useAddShapeMutation,
-  useBulkAddShapesMutation,
-  useUpdateShapeMutation,
-} from "../openapi-hooks";
 import { toast } from "react-hot-toast";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 import { useSelectedShapes } from "../use-selected-shapes";
+import { useBulkDeleteShapesMutation } from "../openapi-hooks";
 
 export function useEditFunction() {
   const {
@@ -24,28 +20,15 @@ export function useEditFunction() {
     setShapeForPropertyEdit,
     selectedFeatureIndexes,
     clearSelectedFeatureIndexes,
+    bulkAddFromSplit,
+    addShapeAndEdit,
   } = useShapes();
+
+  const { mutate: deleteShapesRaw } = useBulkDeleteShapesMutation();
 
   const { clearSelectedShapeUuids, numSelected, selectedUuids } =
     useSelectedShapes();
   const { setCursorMode } = useCursorMode();
-  const { mutate: addShape } = useAddShapeMutation();
-  const { mutate: bulkAdd } = useBulkAddShapesMutation();
-  const { mutate: updateShape } = useUpdateShapeMutation();
-
-  const addShapeAndEdit = async (shape: GeoShapeCreate) => {
-    addShape(shape as any, {
-      onSuccess: (data: any) => {
-        const geoshape = data as GeoShape;
-        const metadata = {
-          properties: geoshape.geojson.properties,
-          ...geoshape,
-        } as GeoShapeMetadata;
-        setShapeForPropertyEdit(metadata);
-      },
-    });
-  };
-
   function onEdit({
     updatedData,
     editType,
@@ -103,26 +86,22 @@ export function useEditFunction() {
         },
       ];
 
-      bulkAdd(payload, {
+      bulkAddFromSplit(payload, {
         onSuccess: ({ num_shapes: numShapes }) => {
-          // Remove previous shape
-          updateShape(
-            {
-              uuid,
-              should_delete: true,
+          // Remove previous shape -- note that we don't use the version
+          // of this function from the useShapes hook because we're not interested
+          // in logging the result of the delete to the undo history
+          deleteShapesRaw([uuid], {
+            onSuccess: () => {
+              toast.success(`Created ${numShapes} new shapes`);
+              setCursorMode(EditorMode.ViewMode);
+              clearSelectedFeatureIndexes();
+              clearSelectedShapeUuids();
             },
-            {
-              onSuccess: () => {
-                toast.success(`Created ${numShapes} new shapes`);
-                setCursorMode(EditorMode.ViewMode);
-                clearSelectedFeatureIndexes();
-                clearSelectedShapeUuids();
-              },
-              onError: (error) => {
-                toast.error(error);
-              },
-            }
-          );
+            onError: (error: any) => {
+              toast.error(error);
+            },
+          });
         },
         onError: (error) => {
           toast.error("Error splitting shape");
@@ -150,7 +129,9 @@ export function useEditFunction() {
       name: "New shape",
     } as GeoShapeCreate;
 
-    addShapeAndEdit(newShape);
+    addShapeAndEdit(newShape, (metadata: GeoShapeMetadata) => {
+      setShapeForPropertyEdit(metadata);
+    });
   }
   return { onEdit };
 }

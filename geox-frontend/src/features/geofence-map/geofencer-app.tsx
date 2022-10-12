@@ -11,39 +11,45 @@ import { UIContextContainer } from "./contexts/ui-context";
 import { DbSyncContextContainer } from "./contexts/db-sync-context";
 import { SelectionProvider } from "./contexts/selection/selection.context";
 import { DeckContextContainer } from "./contexts/deck-context";
+import { GeoShapeProvider } from "./contexts/geoshape/geoshape.context";
+import { UndoProvider } from "./contexts/geoshape/undo.context";
 
 const GeofencerApp = () => {
   return (
     <GeofencerContextContainer>
-      <SelectionProvider>
-        <UIContextContainer>
-          <DbSyncContextContainer>
-            <DeckContextContainer>
-              <GeofencerCommandPalette />
-              <GeofencerContextMenu />
-              <GlobalModal />
-              <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden">
-                <div className="flex-auto w-screen relative">
-                  <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
-                    <div className="z-30 mx-2 right-0 flex flex-col gap-3">
-                      <Dropdown />
-                      <ToolButtonBank />
+      <DeckContextContainer>
+        <GeoShapeProvider>
+          <SelectionProvider>
+            <UndoProvider>
+              <UIContextContainer>
+                <DbSyncContextContainer>
+                  <GeofencerCommandPalette />
+                  <GeofencerContextMenu />
+                  <GlobalModal />
+                  <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden">
+                    <div className="flex-auto w-screen relative">
+                      <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
+                        <div className="z-30 mx-2 right-0 flex flex-col gap-3">
+                          <Dropdown />
+                          <ToolButtonBank />
+                        </div>
+                      </div>
+                      <div className="h-[95vh] px-5 py-5 flex flex-row relative">
+                        <GeofencerSidebar />
+                      </div>
+                      <GeofenceMap />
+                    </div>
+                    <div className="fixed bottom-0 left-0 my-7 text-gray-700 text-2xs mx-1 select-none pointer-events-none">
+                      Basemap tiles by
                     </div>
                   </div>
-                  <div className="h-[95vh] px-5 py-5 flex flex-row relative">
-                    <GeofencerSidebar />
-                  </div>
-                  <GeofenceMap />
-                </div>
-                <div className="fixed bottom-0 left-0 my-7 text-gray-700 text-2xs mx-1 select-none pointer-events-none">
-                  Basemap tiles by
-                </div>
-              </div>
-              <Toaster />
-            </DeckContextContainer>
-          </DbSyncContextContainer>
-        </UIContextContainer>
-      </SelectionProvider>
+                  <Toaster />
+                </DbSyncContextContainer>
+              </UIContextContainer>
+            </UndoProvider>
+          </SelectionProvider>
+        </GeoShapeProvider>
+      </DeckContextContainer>
     </GeofencerContextContainer>
   );
 };

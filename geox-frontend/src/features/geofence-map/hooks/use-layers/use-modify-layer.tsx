@@ -2,7 +2,6 @@ import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { useEffect, useState } from "react";
 import { ModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
 import { EditorMode } from "../../cursor-modes";
-import { useUpdateShapeMutation } from "../openapi-hooks";
 import { useCursorMode } from "../use-cursor-mode";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useShapes } from "../use-shapes";
@@ -10,11 +9,11 @@ import { useViewport } from "../use-viewport";
 
 export function useModifyLayer() {
   const [localData, setLocalData] = useState<any>([]);
-  const { selectedFeatureIndexes, setSelectedFeatureIndexes } = useShapes();
+  const { selectedFeatureIndexes, setSelectedFeatureIndexes, updateShape } =
+    useShapes();
   const { cursorMode } = useCursorMode();
   const { selectOneShapeUuid, isSelected, selectedFeatureCollection } =
     useSelectedShapes();
-  const { mutate: updateShape } = useUpdateShapeMutation();
   const { viewport } = useViewport();
 
   function getFillColorFunc(datum: any) {
@@ -49,9 +48,6 @@ export function useModifyLayer() {
     selectedFeatureIndexes,
     pickingRadius: 20,
     pickingDepth: 5,
-    _dataDiff(newData, oldData) {
-      return newData;
-    },
     updateTriggers: {
       getFillColor: [selectedFeatureCollection],
       getLineColor: [selectedFeatureCollection],
@@ -65,11 +61,18 @@ export function useModifyLayer() {
       const { updatedData, editType, editContext } = e;
       setLocalData(updatedData);
       if (["addPosition", "removePosition"].includes(editType)) {
-        updateShape({
-          geojson: updatedData.features[editContext.featureIndexes[0]],
-          uuid: updatedData.features[editContext.featureIndexes[0]].properties
-            .__uuid,
-        });
+        updateShape(
+          {
+            geojson: updatedData.features[editContext.featureIndexes[0]],
+            uuid: updatedData.features[editContext.featureIndexes[0]].properties
+              .__uuid,
+          },
+          {
+            onSuccess: () => {
+              console.log("success");
+            },
+          }
+        );
       }
     },
     onClick: (o: any, e: any) => {
@@ -97,7 +100,6 @@ export function useModifyLayer() {
       }
       // Move the points
       const shapeInEdit = event.layer.state.selectedFeatures[0];
-      console.log("updated shape because of", "finishMove");
       updateShape({
         geojson: shapeInEdit,
         uuid: shapeInEdit.properties.__uuid,

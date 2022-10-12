@@ -4,16 +4,14 @@ import { useIdToken } from "../use-id-token";
 import { useShapes } from "../use-shapes";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { findIndex } from "../../../../common/utils";
-import { useContext, useEffect, useState } from "react";
-import { DeckContext } from "../../contexts/deck-context";
+import { useEffect, useState } from "react";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
 
 export function useTiles() {
-  const { tileCacheKey } = useContext(DeckContext);
   const { idToken } = useIdToken();
 
-  const { shapeMetadata, scrollToSelectedShape } = useShapes();
+  const { shapeMetadata, scrollToSelectedShape, tileCacheKey } = useShapes();
 
   const slideToCard = (uuid: string) => {
     const i = findIndex(uuid, shapeMetadata);
@@ -63,8 +61,6 @@ export function useTiles() {
         // TODO how do I get TypeScript to recognize the type on object here?
         // @ts-ignore
         const { __uuid: uuid } = object.properties;
-        // @ts-ignore
-        console.log(object.properties);
         if (!isSelected(uuid)) {
           selectOneShapeUuid(uuid);
           slideToCard(uuid);

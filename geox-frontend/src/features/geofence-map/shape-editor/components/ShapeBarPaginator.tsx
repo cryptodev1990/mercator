@@ -9,7 +9,6 @@ import { Virtuoso } from "react-virtuoso";
 import { useUiModals } from "../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../types";
 import { useDbSync } from "../../hooks/use-db-sync";
-import { toast } from "react-hot-toast";
 
 const NewUserMessage = () => {
   return (
@@ -35,7 +34,7 @@ const NewUserMessage = () => {
 const TentativeButtonBank = () => {
   // Button bank that pops up for uploaded shapes or shapes from the command palette
   const { snapToCentroid } = useViewport();
-  const { tentativeShapes, setTentativeShapes, bulkAddLoading, addShapesBulk } =
+  const { tentativeShapes, setTentativeShapes, bulkAddShapes, updateLoading } =
     useShapes();
   return (
     <div className="mt-2 space-x-1">
@@ -46,9 +45,9 @@ const TentativeButtonBank = () => {
       </h3>
       <button
         className="btn btn-xs bg-blue-400 text-white rounded-none"
-        disabled={bulkAddLoading}
+        disabled={updateLoading}
         onClick={() => {
-          addShapesBulk(
+          bulkAddShapes(
             tentativeShapes.map((shape) => ({
               ...shape,
             })),

@@ -1,25 +1,22 @@
 import { useContext } from "react";
 import { GeofencerContext } from "../contexts/geofencer-context";
-import { useBulkAddShapesMutation } from "./openapi-hooks";
+import { GeoShapeContext } from "../contexts/geoshape/geoshape.context";
 
 export const useShapes = () => {
   const {
     // Information about a shape, such as its name and UUID. It does not contain the shape's geometry.
-    shapeMetadata,
-    setShapeMetadata,
     // Used as a temporary storage for shapes that are being added to the map, either through uploads or the command palette
     tentativeShapes,
     setTentativeShapes,
     shapeForPropertyEdit,
     setShapeForPropertyEdit,
     mapRef,
-    shapeMetadataIsLoading,
     virtuosoRef,
     selectedFeatureIndexes,
     setSelectedFeatureIndexes,
-    numShapes,
-    numShapesIsLoading,
   } = useContext(GeofencerContext);
+
+  const gsc = useContext(GeoShapeContext);
 
   function scrollToSelectedShape(i: number) {
     if (virtuosoRef.current === null) {
@@ -36,19 +33,8 @@ export const useShapes = () => {
     setSelectedFeatureIndexes([]);
   }
 
-  const { mutate: addShapesBulk, isLoading: bulkAddLoading } =
-    useBulkAddShapesMutation();
-
   return {
-    shapeMetadata,
-    setShapeMetadata,
-    shapeMetadataIsLoading,
-    // API - num shapes
-    numShapes,
-    numShapesIsLoading,
-    // API call - bulk load
-    addShapesBulk,
-    bulkAddLoading,
+    ...gsc,
     // metadata editing
     shapeForPropertyEdit,
     setShapeForPropertyEdit,
