@@ -1070,3 +1070,15 @@ The pros, of course, are that it works and is easy to reason about. Set it up in
 - [ ] Set up DD APM. Relevant docs:
     - [DD](https://docs.datadoghq.com/getting_started/tracing/)
     - [Fly](https://community.fly.io/t/metrics-from-go-app-hosted-on-fly-io-not-ending-up-in-datadog/5084)
+
+## 10-11-22
+
+- [X] Refactor code for easier frontend state management
+
+## 10-12-22
+
+- [ ] Add namespaces to UI
+  - How: top-level namespaces with carets beside them, click the caret and reveal
+  - [ ] Generate new OpenAPI schema client
+  - [ ] Read new shape-metadata endpoint -- /geofencer/namespaces
+  - [ ] Add the ability for the user to rename namespace -- PATCH /geofencer/namespaces/namespace-id

@@ -12,7 +12,7 @@ export const useViewport = () => {
   const { selectedFeatureCollection, isSelected } = useSelectedShapes();
 
   function _genShapes(category: string) {
-    const selectedShapes = shapeMetadata?.filter((shape) =>
+    const selectedShapes = shapeMetadata?.filter((shape: any) =>
       isSelected(shape)
     ) as GeoShape[];
 
