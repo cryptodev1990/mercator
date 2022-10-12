@@ -21,14 +21,9 @@ from app.schemas import GeoShapeCreate
 from app.crud.organization import set_active_org
 
 # used in fixtures
-from .route_utils import connection, dep_override_factory  # type: ignore
-
-client = TestClient(app)
+# from .conftest import connection, dep_override_factory  # type: ignore
 
 yaml = YAML(typ="safe")
-
-
-settings = get_settings()
 
 
 def shape_exists(conn: Connection, shape_id: UUID4) -> bool:
@@ -73,7 +68,7 @@ def test_data():
     }
 
 
-def test_read_shape_self(connection, dep_override_factory):
+def test_read_shape_self(client, connection, dep_override_factory):
     user_id = 1
     shape_id = UUID("4f974f2d-572b-46f1-8741-56bf7f357d12")
     assert shape_exists(connection, shape_id)
@@ -84,7 +79,7 @@ def test_read_shape_self(connection, dep_override_factory):
         assert UUID(body.get("uuid")) == shape_id
 
 
-def test_read_shape_self_wrong_org(connection, dep_override_factory):
+def test_read_shape_self_wrong_org(client, connection, dep_override_factory):
     user_id = 1
     shape_id = UUID("4f974f2d-572b-46f1-8741-56bf7f357d12")
     # Change the org to the user's personal org
@@ -100,7 +95,7 @@ def test_read_shape_self_wrong_org(connection, dep_override_factory):
         assert response.status_code == 404
 
 
-def test_read_shape_diff_user_same_org(connection, dep_override_factory):
+def test_read_shape_diff_user_same_org(client, connection, dep_override_factory):
     """Read a shape from user in same org."""
 
     user_id = 1
@@ -114,7 +109,7 @@ def test_read_shape_diff_user_same_org(connection, dep_override_factory):
         assert UUID(body.get("uuid")) == shape_id
 
 
-def test_read_shape_diff_org(connection, dep_override_factory):
+def test_read_shape_diff_org(client, connection, dep_override_factory):
     """Cannot read a shape from a different org."""
     user_id = 1
     # Owned by 3 - diff org
@@ -125,7 +120,7 @@ def test_read_shape_diff_org(connection, dep_override_factory):
         assert response.status_code == 404
 
 
-def test_read_shape_doesnt_exist(connection, dep_override_factory):
+def test_read_shape_doesnt_exist(client, connection, dep_override_factory):
     """Cannot read a shape that doesn't exist."""
     user_id = 1
     # UUID doesn't exist
@@ -138,7 +133,7 @@ def test_read_shape_doesnt_exist(connection, dep_override_factory):
         assert response.status_code == 404
 
 
-def test_get_all_shapes_by_user(connection, dep_override_factory):
+def test_get_all_shapes_by_user(client, connection, dep_override_factory):
     user_id = 1
     user_shapes = {
         "4f974f2d-572b-46f1-8741-56bf7f357d12",
@@ -153,7 +148,7 @@ def test_get_all_shapes_by_user(connection, dep_override_factory):
         assert {shape["uuid"] for shape in body} == user_shapes
 
 
-def test_get_all_shapes_by_organization(connection, dep_override_factory):
+def test_get_all_shapes_by_organization(client, connection, dep_override_factory):
     user_id = 1
     organization_id = "5b706ffe-9608-4edd-bb00-ab9cbcb7384f"
     user_shapes = {
@@ -174,7 +169,7 @@ def test_get_all_shapes_by_organization(connection, dep_override_factory):
         assert {shape["uuid"] for shape in body} == user_shapes
 
 
-def test_delete_shape(connection, dep_override_factory):
+def test_delete_shape(client, connection, dep_override_factory):
     user_id = 1
     shape_id = "4f974f2d-572b-46f1-8741-56bf7f357d12"
 
@@ -200,7 +195,7 @@ def test_delete_shape(connection, dep_override_factory):
     assert row.deleted_by_user_id == user_id
 
 
-def test_create_shape(connection, dep_override_factory):
+def test_create_shape(client, connection, dep_override_factory):
     user_id = 1
     shape = GeoShapeCreate(
         name="fuchsia-auditor",
@@ -236,7 +231,7 @@ def test_create_shape(connection, dep_override_factory):
     )
 
 
-def test_bulk_create_shapes(connection, dep_override_factory):
+def test_bulk_create_shapes(client, connection, dep_override_factory):
     user_id = 1
     shapes = [
         GeoShapeCreate(

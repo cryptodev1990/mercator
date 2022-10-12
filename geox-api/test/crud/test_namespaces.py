@@ -81,32 +81,6 @@ def test_data():
     }
 
 
-class ConnectionFactory:
-    def __init__(self, engine: Engine, commit_on_exit: bool = False):
-        self.engine = engine
-        self.commit_on_exit = commit_on_exit
-        self.connection: Optional[Connection] = None
-        self.transaction: Optional[Transaction] = None
-        self.event_hooks: List[Tuple[str, Callable]] = []
-
-    def __enter__(self) -> Connection:
-        self.connection = self.engine.connect()
-        # Apply hooks
-        for identifier, fn in self.event_hooks:
-            event.listen(self.connection, identifier, fn)
-        self.transaction = self.connection.begin()
-        return self.connection
-
-    def __exit__(self, type, value, traceback) -> Literal[False]:
-        if self.commit_on_exit and type is None:
-            cast(Transaction, self.transaction).commit()
-        else:
-            cast(Transaction, self.transaction).rollback()
-        cast(Connection, self.connection).close()
-        # Always reraise any excaptions
-        return False
-
-
 def cleanup_db(conn: Connection) -> None:
     for tbl in (shapes_tbl, org_mbr_tbl, org_tbl, users_tbl):
         conn.execute(delete(tbl))

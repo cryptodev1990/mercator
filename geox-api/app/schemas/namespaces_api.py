@@ -13,4 +13,3 @@ class NamespaceResponse(Namespace):
     shapes: List[GeoShapeMetadata] = Field(
         [], description="List of shape metadata of shapes in the namespace"
     )
-
