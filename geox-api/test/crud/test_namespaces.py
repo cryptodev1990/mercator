@@ -145,7 +145,6 @@ def test_create_namespace(connection):
         connection, user_id=user_id, organization_id=organization_id, **values
     )
     assert isinstance(namespace.id, UUID)
-    assert namespace.organization_id == organization_id
     assert namespace.name == "Nomen"
     assert namespace.properties == values["properties"]
 
