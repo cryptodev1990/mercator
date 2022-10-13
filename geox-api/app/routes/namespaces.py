@@ -86,6 +86,7 @@ async def _get_namespaces__namespace_id(
 async def _get_namespaces(
     id: Optional[UUID4] = Query(default=None, title="ID of the namespace"),
     name: Optional[str] = Query(default=None, title="Name of the namespace"),
+    includeShapes: bool = Query(default=True),
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[NamespaceResponse]:
     """Return namespaces available to the user."""
@@ -96,8 +97,9 @@ async def _get_namespaces(
     ]
     # TODO: this is an n+1 query. Change to a single query. However, the number of
     # namespaces is generally small so this may not be that bad
-    for nm in namespaces:
-        nm.shapes = list(select_shape_metadata(conn, namespace_id=nm.id))
+    if includeShapes:
+        for nm in namespaces:
+            nm.shapes = list(select_shape_metadata(conn, namespace_id=nm.id))
     return namespaces
 
 
