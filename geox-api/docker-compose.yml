@@ -29,7 +29,7 @@ services:
     # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run
     env_file: ./.env.docker
     environment:
-      APP_ENV: prod
+      APP_ENV: production
       ENV_FILE: .env.docker
       POSTGRES_SERVER: db
       REDIS_CONNECTION: 'redis://queue:6379/0'

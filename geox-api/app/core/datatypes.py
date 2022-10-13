@@ -1,11 +1,38 @@
 """Custom Pydantic Data Types."""
 from typing import TYPE_CHECKING, Union, Literal
 from pydantic import AnyHttpUrl, AnyUrl, ConstrainedFloat, constr
-
+from enum import Enum
 
 AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""
 # used in CORS types
+
+
+class AppEnvEnum(str, Enum):
+    """Environment in which the app is being run."""
+
+    prod = "production"
+    production = "production"
+    dev = "dev"
+    test = "test"
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+class LogLevel(str, Enum):
+    """Python logging module log level constants represented as an ``enum.Enum``."""
+
+    NOTSET = "NOTSET"
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 if TYPE_CHECKING:
     GitCommitHash = str

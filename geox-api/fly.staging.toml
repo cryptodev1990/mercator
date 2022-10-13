@@ -6,7 +6,7 @@ kill_timeout = 5
 processes = []
 
 [env]
-  APP_ENV = "production"
+  APP_ENV = "staging"
   BACKEND_CORS_ORIGINS = "[\"*\"]"
   PORT = "8080"
 

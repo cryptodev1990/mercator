@@ -4,7 +4,7 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union, cast
+from typing import Any, Dict, List, Optional, cast
 
 from pydantic import (
     BaseModel,
@@ -16,7 +16,13 @@ from pydantic import (
     SecretStr,
     validator,
 )
-from app.core.datatypes import AnyHttpURLorAsterisk, S3Url, GitCommitHash
+from app.core.datatypes import (
+    AnyHttpURLorAsterisk,
+    S3Url,
+    GitCommitHash,
+    AppEnvEnum,
+    LogLevel,
+)
 
 from timvt.db import PostgresSettings as TimVTPostgresSettings
 
@@ -193,6 +199,14 @@ class Settings(BaseSettings):
             return branch
         except:
             return None
+
+    app_env: AppEnvEnum = Field(AppEnvEnum.dev)
+    app_log_level: LogLevel = Field(LogLevel.INFO, describe="Log level")
+
+    @validator("app_env", pre=True)
+    def _validate_app_env(cls, v):
+        v = str(v).lower()
+        return v
 
     class Config:  # noqa
         env_file = ".env"

@@ -47,7 +47,7 @@ then
     RELOAD_OPT="--reload"
 fi;
 
-if [ "$APP_ENV" = "production" ]
+if [ "$APP_ENV" = "production" ] || [ "$APP_ENV" = "staging" ]
 then
   # Production -- use hypercorn
   exec hypercorn "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
