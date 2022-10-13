@@ -15,6 +15,7 @@ class AppEnvEnum(str, Enum):
     production = "production"
     dev = "dev"
     test = "test"
+    staging = "staging"
 
     def __str__(self) -> str:
         return str(self.value)
