@@ -42,8 +42,10 @@ class EngineOptions(BaseModel):
     echo_pool: bool = False
     pool_timeout: int = Field(30, ge=1)
     pool_recycle: int = -1
-    pool_size: int = Field(5, ge=1)
-    max_overflow: int = Field(10, ge=0)
+    # SQLAlchemy default is 5
+    pool_size: int = Field(10, ge=1)
+    # SQLAlchemy default is 10
+    max_overflow: int = Field(20, ge=0)
 
 
 class Settings(BaseSettings):
