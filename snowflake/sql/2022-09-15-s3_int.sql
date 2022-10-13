@@ -10,3 +10,4 @@ CREATE STORAGE INTEGRATION s3_int
     storage_allowed_locations = ('s3://mercator-geofencer-data/');
 
 GRANT USAGE ON INTEGRATION s3_int TO ROLE sysadmin;
+

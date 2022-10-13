@@ -1,15 +1,15 @@
 """Celery worker."""
 from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Dict, Optional, cast
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import geopandas as gpd
-import pandas as pd
 import s3fs
 from celery.utils.log import get_task_logger
 from sqlalchemy import create_engine, text
 
 from app.core.celery_app import celery_app
+from app.core.datatypes import AppEnvEnum
 
 logger = get_task_logger(__name__)
 
@@ -38,12 +38,17 @@ def send_data_to_s3(
     aws_s3_url: str,
     aws_access_key_id: Optional[str] = None,
     aws_secret_access_key: Optional[str] = None,
+    app_env: AppEnvEnum = AppEnvEnum.dev,
 ) -> str:
     """Send data to S3.
 
     Returns:
         Output path in S3 of the files written.
     """
+    # if app-env is development the organization_id is ignored in the S3
+    # output path ignored and result goes to a fake UUID path on S3.
+    if app_env == AppEnvEnum.dev:
+        organization_id = str(UUID(int=0))
     rnd = str(uuid4())[:6]
     now = df["exported_at"][0]
     export_id = (

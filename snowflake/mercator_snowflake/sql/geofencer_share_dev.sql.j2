@@ -9,6 +9,8 @@ Jinja templated Snowflake SQL.
 {%- set db_name = 'org_' ~ org_id_safe %}
 {%- set share_name = db_name  ~ "_share" %}
 {%- set full_schema_name = db_name ~ '.geofencer' %}
+{%- set s3_int = 's3_int_dev' -%}
+{%- set error_int = 'snowpipe_sns_int' -%}
 
 USE ROLE geofencer_etl_role;
 
@@ -41,7 +43,7 @@ CREATE OR REPLACE STAGE {{ shapes_stage }}
 {#- make sure aws_s3_url does not end with / #}
 URL = '{{ aws_s3_url }}{{ org_id }}/'
 {#- storage integration needs to be defined elsewhere and role has to have usage privileges #}
-STORAGE_INTEGRATION = s3_int
+STORAGE_INTEGRATION = {{ s3_int }}
 FILE_FORMAT=(TYPE=parquet COMPRESSION=snappy BINARY_AS_TEXT=false);
 
 COMMENT ON STAGE {{ shapes_stage}} IS $$Staging location of exported files with geofencer shapes for organization {{ org_id }}$$;
@@ -49,7 +51,7 @@ COMMENT ON STAGE {{ shapes_stage}} IS $$Staging location of exported files with 
 {%- set shapes_pipe = full_schema_name ~ ".shapes_pipe" %}
 CREATE OR REPLACE PIPE {{ shapes_pipe }}
 AUTO_INGEST=TRUE
-ERROR_INTEGRATION=snowpipe_sns_int
+ERROR_INTEGRATION={{ error_int }}
 AS
 COPY INTO {{ shapes_exports_table }}
 (uuid, name, geom, properties, created_at, updated_at, deleted_at, exported_at, organization_id, export_id)
