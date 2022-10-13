@@ -172,3 +172,6 @@ generate-https-cert:
 # Format code
 format:
 	./bin/format.sh
+
+openapi:
+	ENV_FILE=.env.local python -m app.scripts.create_openapi_schema --output=openapi.json

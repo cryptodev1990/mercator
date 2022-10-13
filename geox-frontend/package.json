@@ -69,7 +69,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "generate-client": "openapi --input http://localhost:8080/openapi.json --output ./autogen --client axios",
+    "generate-client": "scripts/generate-client.sh",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
