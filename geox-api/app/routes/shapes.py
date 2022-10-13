@@ -146,13 +146,6 @@ def _post_shapes(
 
 ## Read
 
-# TODO: this should be removed
-class GetAllShapesRequestType(str, Enum):
-    """Valid shape request types."""
-
-    user = "user"
-    organization = "organization"
-
 
 @router.get("/geofencer/shapes/op/count", response_model=ShapeCountResponse)
 def get_shape_count(
@@ -199,9 +192,6 @@ def _get_shapes(
         title="Get shapes for a user",
         description="If TRUE, then only return shapes of the requesting user.",
     ),
-    rtype: GetAllShapesRequestType = Query(
-        default=GetAllShapesRequestType.organization
-    ),
     user_conn: UserConnection = Depends(get_app_user_connection),
     offset: int = Query(default=0, title="Item offset", ge=0),
     limit: int = Query(default=300, title="Number of shapes to retrieve", ge=1),
@@ -211,9 +201,7 @@ def _get_shapes(
     Will return 200 even if no shapes match the query, including the case in which the
     namespace does not exist.
     """
-    user_id = (
-        user_conn.user.id if user or rtype == GetAllShapesRequestType.user else None
-    )
+    user_id = user_conn.user.id if user else None
     organization_id = user_conn.organization.id
     return list(
         select_shapes(

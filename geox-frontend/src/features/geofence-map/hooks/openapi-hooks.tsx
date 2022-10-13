@@ -9,7 +9,6 @@ import {
   TasksService,
   ShapeCountResponse,
   GeoShapeCreate,
-  GetAllShapesRequestType,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
@@ -171,7 +170,6 @@ export const useGetAllShapes = (limit: number, offset: number) => {
       return GeofencerService.getShapesGeofencerShapesGet(
         undefined, // namespace
         undefined, // user
-        GetAllShapesRequestType.ORGANIZATION, // type
         offset, // offset
         limit // limit
       );

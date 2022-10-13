@@ -9,7 +9,6 @@ import type { GeoShape } from "../models/GeoShape";
 import type { GeoShapeCreate } from "../models/GeoShapeCreate";
 import type { GeoShapeMetadata } from "../models/GeoShapeMetadata";
 import type { GeoShapeUpdate } from "../models/GeoShapeUpdate";
-import type { GetAllShapesRequestType } from "../models/GetAllShapesRequestType";
 import type { LineString } from "../models/LineString";
 import type { Point } from "../models/Point";
 import type { Polygon } from "../models/Polygon";
@@ -122,7 +121,6 @@ export class GeofencerService {
   public static getShapesGeofencerShapesGet(
     namespace?: string,
     user?: boolean,
-    rtype?: GetAllShapesRequestType,
     offset?: number,
     limit: number = 300
   ): CancelablePromise<Array<GeoShape>> {
@@ -132,7 +130,6 @@ export class GeofencerService {
       query: {
         namespace: namespace,
         user: user,
-        rtype: rtype,
         offset: offset,
         limit: limit,
       },

@@ -141,7 +141,7 @@ def test_get_all_shapes_by_user(client, connection, dep_override_factory):
     }
 
     with dep_override_factory(user_id):
-        response = client.get(f"/geofencer/shapes?rtype=user")
+        response = client.get(f"/geofencer/shapes?user=true")
         assert_ok(response)
         body = response.json()
         assert body
@@ -162,7 +162,7 @@ def test_get_all_shapes_by_organization(client, connection, dep_override_factory
     }
 
     with dep_override_factory(user_id):
-        response = client.get(f"/geofencer/shapes?rtype=organization")
+        response = client.get(f"/geofencer/shapes")
         assert_ok(response)
         body = response.json()
         assert body

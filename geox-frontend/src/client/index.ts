@@ -16,7 +16,6 @@ export type { GeoShape } from "./models/GeoShape";
 export type { GeoShapeCreate } from "./models/GeoShapeCreate";
 export type { GeoShapeMetadata } from "./models/GeoShapeMetadata";
 export type { GeoShapeUpdate } from "./models/GeoShapeUpdate";
-export { GetAllShapesRequestType } from "./models/GetAllShapesRequestType";
 export type { HTTPValidationError } from "./models/HTTPValidationError";
 export type { LineString } from "./models/LineString";
 export type { MultiLineString } from "./models/MultiLineString";
