@@ -35,11 +35,11 @@ deploy:
 
 # Build docker container
 docker-build:
-	docker-compose -f docker-compose.yml --env-file .env.docker build
+	docker compose -f docker-compose.yml --env-file .env.docker build
 
 # Run Docker container
 docker-up: docker-build
-	docker-compose -f docker-compose.yml --env-file .env.docker up
+	docker compose -f docker-compose.yml --env-file .env.docker up
 
 # Delete docker database volume
 docker-delete-db:
@@ -47,17 +47,17 @@ docker-delete-db:
 
 # Connect to local docker
 docker-connect +COMMAND='app bash':
-	docker-compose -f docker-compose.yml --env-file .env.docker exec {{ COMMAND }}
+	docker compose -f docker-compose.yml --env-file .env.docker exec {{ COMMAND }}
 
 # Connect to local docker
 docker-run +COMMAND='app bash':
-	docker-compose -f docker-compose.yml --env-file .env.docker run {{ COMMAND }}
+	docker compose -f docker-compose.yml --env-file .env.docker run {{ COMMAND }}
 
 ### Build docker local file image
 
 # Build docker container
 dev-docker-build:
-	docker-compose --env-file .env.docker build
+	docker compose --env-file .env.docker build
 
 # Run Docker container
 dev-docker-up: dev-docker-build
@@ -67,7 +67,7 @@ dev-docker-up: dev-docker-build
 		echo ".overmind.sock exists" 1>&2
 		exit 1
 	fi
-	docker-compose --env-file .env.docker up
+	docker compose --env-file .env.docker up
 
 # Delete docker database volume
 dev-docker-delete-db:
@@ -75,11 +75,11 @@ dev-docker-delete-db:
 
 # Connect to local docker
 dev-docker-connect +COMMAND='app bash':
-	docker-compose --env-file .env.docker exec {{ COMMAND }}
+	docker compose --env-file .env.docker exec {{ COMMAND }}
 
 # Connect to local docker
 dev-docker-run +COMMAND='app bash':
-	docker-compose --env-file .env.docker run {{ COMMAND }}
+	docker compose --env-file .env.docker run {{ COMMAND }}
 
 ## Local development (OSX)
 
