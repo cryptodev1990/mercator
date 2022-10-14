@@ -1077,8 +1077,32 @@ The pros, of course, are that it works and is easy to reason about. Set it up in
 
 ## 10-12-22
 
+Branch: ``ajd-namespace-oddity``
+
 - [ ] Add namespaces to UI
   - How: top-level namespaces with carets beside them, click the caret and reveal
-  - [ ] Generate new OpenAPI schema client
-  - [ ] Read new shape-metadata endpoint -- /geofencer/namespaces
+  - [X] Generate new OpenAPI schema client
+  - [X] Read new shape-metadata endpoint -- /geofencer/namespaces
   - [ ] Add the ability for the user to rename namespace -- PATCH /geofencer/namespaces/namespace-id
+  - [ ] Add ability to delete a namespace
+  - [ ] Add ability to move shapes between namespaces
+
+## 10-13-22
+
+Branch: ``ajd/cache-madness``
+
+### Progress
+
+- Attempted to fix flickering in the UI on shape update
+- Turns out to be a bit trickier than imagined
+    - We need a cache for all the tiles we load in
+    - When a shape is updated or deleted, we need to expire its containing tile(s) and their parent(s)
+
+### Plans
+
+- When a shape is added, we need to refresh the tile where the shape was added. I still haven't figured this one out.
+  - I may just default to the aggressive refresh behavior we already have
+- I need to figure out some cache expiration strategy, to prevent the cache from growing too large
+- Alternative approach: Two tile layers
+  - We create two tile layers, one for lazy loading
+  - When a shape is updated, we hide its UUID from the lazy loading tile and aggressively refresh the other layer
