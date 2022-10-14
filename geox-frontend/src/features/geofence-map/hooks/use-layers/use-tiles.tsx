@@ -1,43 +1,73 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { MVTLayer } from "@deck.gl/geo-layers";
 import { useIdToken } from "../use-id-token";
 import { useShapes } from "../use-shapes";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { findIndex } from "../../../../common/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
+import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
 
 export function useTiles() {
   const { idToken } = useIdToken();
 
+  const tileCache = useMemo(() => {
+    return new TileCache();
+  }, []);
+
+  const tileArgs = useTileArgs();
+
+  const { updatedShapeIds } = useShapes();
+
+  useEffect(() => {
+    const numCleared = tileCache.clearForFeatures(updatedShapeIds);
+    if (numCleared > 0) {
+      console.log(`Cleared ${numCleared} features from cache`);
+    } else {
+      // clear all
+      // This currently applies in the "add shape" case
+      tileCache.clear();
+    }
+  }, [updatedShapeIds, tileCache]);
+
+  if (idToken === null) {
+    return null;
+  }
+  return ["geofence-mvt"].map(
+    (id) =>
+      new CxMVTLayer({
+        id,
+        // @ts-ignore
+        cache: tileCache,
+        ...tileArgs,
+      })
+  );
+}
+
+const useTileArgs = () => {
+  const { idToken } = useIdToken();
   const { shapeMetadata, scrollToSelectedShape, tileCacheKey } = useShapes();
+  const [isHovering, setIsHovering] = useState<string | null>(null);
+
+  const { isSelected, selectedUuids, selectOneShapeUuid } = useSelectedShapes();
 
   const slideToCard = (uuid: string) => {
     const i = findIndex(uuid, shapeMetadata);
     scrollToSelectedShape(i);
   };
-
-  const { isSelected, selectedUuids, selectOneShapeUuid } = useSelectedShapes();
-  const [isHovering, setIsHovering] = useState<string | null>(null);
   const { cursorMode } = useCursorMode();
 
   useEffect(() => {
     setIsHovering(null);
   }, [cursorMode]);
 
-  if (idToken === null) {
-    return null;
-  }
-
-  return new MVTLayer({
-    id: "geofence-mvt",
+  return {
     // @ts-ignore
     lineWidthMinPixels: 1,
     data:
       process.env.REACT_APP_BACKEND_URL +
       "/backsplash/generate_shape_tile/{z}/{x}/{y}" +
-      `/${tileCacheKey}`,
+      `/0`,
     loadOptions: {
       fetch: {
         method: "GET",
@@ -47,7 +77,7 @@ export function useTiles() {
         },
       },
     },
-    onHover: ({ object, x, y }) => {
+    onHover: ({ object, x, y }: any) => {
       if (
         // @ts-ignore
         object?.properties?.__uuid &&
@@ -67,7 +97,7 @@ export function useTiles() {
         }
       }
     },
-    onClick: ({ object, x, y }) => {
+    onClick: ({ object, x, y }: any) => {
       if (cursorMode === EditorMode.SplitMode) {
         return;
       }
@@ -83,8 +113,8 @@ export function useTiles() {
       }
     },
     pickable: true,
-    maxRequests: 4, // TODO need to upgrade to HTTP/2
-    // maxRequests: -1, // unlimited connections, using HTTP/2
+    // maxRequests: 4, // TODO need to upgrade to HTTP/2
+    maxRequests: -1, // unlimited connections, using HTTP/2
     getLineColor: [255, 255, 255, 255],
     updateTriggers: {
       getFillColor: [selectedUuids, isHovering],
@@ -102,20 +132,7 @@ export function useTiles() {
       return [140, 170, 180, 200];
     },
     maxCacheSize: 0,
-    // transitions: {
-    // getFillColor: {
-    // duration: 300,
-    // @ts-ignore
-    // enter: () => [0, 0, 0, 0], //
-    // },
-    // },
-    transitions: {
-      getFillColor: {
-        duration: 300,
-        // @ts-ignore
-        enter: () => [140, 170, 180, 200], //
-      },
-    },
+    maxCacheByteSize: 0,
     renderSubLayers: (props: any) => {
       return new GeoJsonLayer({
         data: props.data,
@@ -126,5 +143,5 @@ export function useTiles() {
         ...props,
       });
     },
-  });
-}
+  };
+};

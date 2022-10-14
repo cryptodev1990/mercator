@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, useReducer } from "react";
 import { UseMutateFunction } from "react-query";
 import {
   GeoShape,
@@ -8,14 +8,7 @@ import {
   ShapeCountResponse,
 } from "../../../../client";
 import { aggressiveLog } from "../../../../common/aggressive-log";
-import {
-  useAddShapeMutation,
-  useBulkAddShapesMutation,
-  useBulkDeleteShapesMutation,
-  useGetAllShapesMetadata,
-  useNumShapesQuery,
-  useUpdateShapeMutation,
-} from "../../hooks/openapi-hooks";
+import { useApi } from "./api.hook";
 import { geoshapeReducer, initialState, State } from "./geoshape.reducer";
 
 export interface GeoShapeContextI {
@@ -65,6 +58,7 @@ export interface GeoShapeContextI {
   >;
   addShapeAndEdit: any;
   updateLoading: boolean;
+  updatedShapeIds: string[];
 }
 
 export const GeoShapeContext = createContext<GeoShapeContextI>({
@@ -82,6 +76,7 @@ export const GeoShapeContext = createContext<GeoShapeContextI>({
   bulkAddFromSplit: async () => {},
   updateLoading: false,
   addShapeAndEdit: async () => {},
+  updatedShapeIds: [],
 });
 
 GeoShapeContext.displayName = "GeoShapeContext";
@@ -91,165 +86,43 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
     aggressiveLog(geoshapeReducer),
     initialState
   );
+  const api = useApi(dispatch);
 
-  const {
-    data: numShapesPayload,
-    isLoading: numShapesIsLoading,
-    error: numShapesError,
-    isSuccess: numShapesIsSuccess,
-  } = useNumShapesQuery();
-
-  useEffect(() => {
-    if (numShapesIsLoading) {
-      dispatch({ type: "FETCH_NUM_SHAPES_LOADING" });
-    } else if (numShapesError !== null) {
-      dispatch({
-        type: "FETCH_NUM_SHAPES_ERROR",
-        error: numShapesError,
-      });
-    } else if (numShapesIsSuccess) {
-      dispatch({
-        type: "FETCH_NUM_SHAPES_SUCCESS",
-        numShapes: numShapesPayload?.num_shapes || 0,
-      });
-    }
-  }, [
-    numShapesPayload,
-    numShapesIsLoading,
-    numShapesError,
-    numShapesIsSuccess,
-  ]);
-
-  const {
-    data: remoteShapeMetadata,
-    isLoading: shapeMetadataIsLoading,
-    error: shapeMetadataError,
-    isSuccess: shapeMetadataIsSuccess,
-  } = useGetAllShapesMetadata();
-
-  useEffect(() => {
-    if (shapeMetadataIsLoading) {
-      dispatch({ type: "FETCH_SHAPE_METADATA_LOADING" });
-    } else if (shapeMetadataError !== null) {
-      dispatch({
-        type: "FETCH_SHAPE_METADATA_ERROR",
-        error: shapeMetadataError,
-      });
-    } else if (shapeMetadataIsSuccess) {
-      dispatch({
-        type: "FETCH_SHAPE_METADATA_SUCCESS",
-        shapeMetdata: remoteShapeMetadata || [],
-      });
-    }
-  }, [
-    remoteShapeMetadata,
-    shapeMetadataIsLoading,
-    shapeMetadataError,
-    shapeMetadataIsSuccess,
-  ]);
-
-  const {
-    mutate: addShapeApi,
-    isLoading: addShapeIsLoading,
-    error: addShapeError,
-    isSuccess: addShapeIsSuccess,
-  } = useAddShapeMutation();
-
-  useEffect(() => {
-    if (addShapeIsLoading) {
-      dispatch({ type: "ADD_SHAPE_LOADING" });
-    } else if (addShapeIsLoading === false && addShapeError !== null) {
-      dispatch({ type: "ADD_SHAPE_ERROR", error: addShapeError });
-    } else if (addShapeIsSuccess) {
-      dispatch({ type: "ADD_SHAPE_SUCCESS" });
-    }
-  }, [addShapeIsLoading, addShapeError, addShapeIsSuccess]);
-
-  const {
-    mutate: deleteShapesApi,
-    isLoading: deleteShapesIsLoading,
-    error: deleteShapesError,
-    isSuccess: deleteShapesIsSuccess,
-  } = useBulkDeleteShapesMutation();
-
-  useEffect(() => {
-    if (deleteShapesIsLoading) {
-      dispatch({ type: "DELETE_SHAPES_LOADING" });
-    } else if (deleteShapesIsLoading === false && deleteShapesError !== null) {
-      dispatch({ type: "DELETE_SHAPES_ERROR", error: deleteShapesError });
-    } else if (deleteShapesIsSuccess) {
-      dispatch({ type: "DELETE_SHAPES_SUCCESS" });
-    }
-  }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
-
-  const {
-    mutate: updateShapeApi,
-    isLoading: updateShapeIsLoading,
-    error: updateShapeError,
-    isSuccess: updateShapeIsSuccess,
-  } = useUpdateShapeMutation();
-
-  useEffect(() => {
-    if (updateShapeIsLoading) {
-      dispatch({ type: "UPDATE_SHAPE_LOADING" });
-    } else if (updateShapeIsLoading === false && updateShapeError !== null) {
-      dispatch({ type: "UPDATE_SHAPE_ERROR", error: updateShapeError });
-    } else if (updateShapeIsSuccess) {
-      dispatch({ type: "UPDATE_SHAPE_SUCCESS" });
-    }
-  }, [updateShapeIsLoading, updateShapeError, updateShapeIsSuccess]);
-
-  const {
-    mutate: bulkAddShapesApi,
-    isLoading: bulkAddShapesIsLoading,
-    error: bulkAddShapesError,
-    isSuccess: bulkAddShapesIsSuccess,
-  } = useBulkAddShapesMutation();
-
-  useEffect(() => {
-    if (bulkAddShapesIsLoading) {
-      dispatch({ type: "BULK_ADD_SHAPES_LOADING" });
-    } else if (
-      bulkAddShapesIsLoading === false &&
-      bulkAddShapesError !== null
-    ) {
-      dispatch({ type: "BULK_ADD_SHAPES_ERROR", error: bulkAddShapesError });
-    } else if (bulkAddShapesIsSuccess) {
-      dispatch({ type: "BULK_ADD_SHAPES_SUCCESS" });
-    }
-  }, [bulkAddShapesIsLoading, bulkAddShapesError, bulkAddShapesIsSuccess]);
+  function opLog(op: string, payload: any) {
+    dispatch({
+      type: "OP_LOG_ADD",
+      op,
+      payload,
+    });
+  }
 
   function bulkAddShapes(shapes: GeoShapeCreate[], ...args: any[]) {
-    dispatch({ type: "OP_LOG_ADD", op: "BULK_ADD_SHAPES", payload: shapes });
-    return bulkAddShapesApi(shapes, ...args);
+    opLog("BULK_ADD_SHAPES", shapes);
+    return api.bulkAddShapesApi(shapes, ...args);
   }
 
   function bulkAddFromSplit(
     shapes: GeoShapeCreate[],
     { onSuccess, onError }: any
   ) {
-    dispatch({
-      type: "OP_LOG_ADD",
-      op: "BULK_ADD_SHAPE_SPLIT",
-      payload: shapes,
-    });
-    return bulkAddShapesApi(shapes, {
+    opLog("BULK_ADD_SHAPE_SPLIT", shapes);
+    return api.bulkAddShapesApi(shapes, {
       onSuccess,
       onError,
     });
   }
 
   function addShape(shape: GeoShapeCreate, ...args: any[]) {
-    dispatch({ type: "OP_LOG_ADD", op: "ADD_SHAPE", payload: shape });
-    return addShapeApi(shape, ...args);
+    opLog("ADD_SHAPE", shape);
+    return api.addShapeApi(shape, ...args);
   }
 
   const addShapeAndEdit = async (
     shape: GeoShapeCreate,
     onSuccess: (x: GeoShapeMetadata) => void
   ) => {
-    dispatch({ type: "OP_LOG_ADD", op: "ADD_SHAPE", payload: shape });
-    addShapeApi(shape as any, {
+    opLog("ADD_SHAPE", shape);
+    api.addShapeApi(shape as any, {
       onSuccess: (data: any) => {
         const geoshape = data as GeoShape;
         const { properties } = geoshape.geojson;
@@ -266,18 +139,15 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
   };
 
   function deleteShapes(shapeIds: string[], ...args: any[]) {
-    dispatch({ type: "OP_LOG_ADD", op: "DELETE_SHAPES", payload: shapeIds });
-    return deleteShapesApi(shapeIds, ...args);
+    opLog("DELETE_SHAPES", shapeIds);
+    return api.deleteShapesApi(shapeIds, ...args);
   }
 
   function updateShape(update: GeoShapeUpdate, params: any) {
-    dispatch({
-      type: "OP_LOG_ADD",
-      op: "UPDATE_SHAPE",
-      payload: update,
-    });
-    return updateShapeApi(update, params);
+    opLog("UPDATE_SHAPE", update);
+    return api.updateShapeApi(update, params);
   }
+
   return (
     <GeoShapeContext.Provider
       value={{
@@ -287,6 +157,8 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
         numShapes: state.numShapes,
         numShapesIsLoading: state.numShapesIsLoading,
         numShapesError: state.numShapesError,
+        updateLoading:
+          state.shapeAddLoading || state.shapeUpdateLoading || false,
         tileCacheKey: state.tileCacheKey,
         addShape,
         deleteShapes,
@@ -294,7 +166,7 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
         bulkAddShapes,
         bulkAddFromSplit,
         addShapeAndEdit,
-        updateLoading: state.shapeUpdateLoading,
+        updatedShapeIds: state.updatedShapeIds,
       }}
     >
       {children}

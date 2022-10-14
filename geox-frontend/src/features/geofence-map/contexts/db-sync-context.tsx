@@ -26,14 +26,6 @@ export const DbSyncContextContainer = ({ children }: { children: any }) => {
   } = usePollCopyTaskQuery(task?.task_id);
 
   useEffect(() => {
-    console.log("task", task);
-  }, [task]);
-
-  useEffect(() => {
-    console.log("isLoading", isLoading);
-  }, [isLoading]);
-
-  useEffect(() => {
     // alert user if there is an error
     if (isError) {
       toast.error("Sync failed with the message: " + error);

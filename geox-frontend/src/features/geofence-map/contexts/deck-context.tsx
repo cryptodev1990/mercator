@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef } from "react";
+import { createContext, useRef } from "react";
 
 interface DeckContextInterface {
   deckRef: React.RefObject<any>;
@@ -13,10 +13,6 @@ DeckContext.displayName = "DeckContext";
 
 export const DeckContextContainer = ({ children }: { children: any }) => {
   const deckRef = useRef<any>();
-
-  useEffect(() => {
-    console.log("deckRef", deckRef);
-  }, [deckRef]);
 
   return (
     <DeckContext.Provider

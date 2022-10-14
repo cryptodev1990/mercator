@@ -19,9 +19,11 @@ export interface State {
   numShapesError: Error | null;
   updateError: Error | null;
   shapeUpdateLoading: boolean;
+  shapeAddLoading: boolean;
   tileCacheKey: number;
   undoLog: UndoLogRecord[];
   redoLog: UndoLogRecord[];
+  updatedShapeIds: string[];
 }
 
 export const initialState: State = {
@@ -32,10 +34,12 @@ export const initialState: State = {
   numShapesIsLoading: false,
   numShapesError: null,
   shapeUpdateLoading: false,
+  shapeAddLoading: false,
   updateError: null,
   tileCacheKey: 0,
   undoLog: [],
   redoLog: [],
+  updatedShapeIds: [],
 };
 
 type Action =
@@ -67,6 +71,7 @@ type Action =
     }
   | {
       type: "ADD_SHAPE_SUCCESS";
+      updatedShapeIds: string[];
     }
   | {
       type: "ADD_SHAPE_ERROR";
@@ -79,6 +84,7 @@ type Action =
   | {
       type: "DELETE_SHAPES_SUCCESS";
       uuid: string;
+      updatedShapeIds: string[];
     }
   | {
       type: "DELETE_SHAPES_ERROR";
@@ -90,6 +96,7 @@ type Action =
     }
   | {
       type: "UPDATE_SHAPE_SUCCESS";
+      updatedShapeIds: string[];
     }
   | {
       type: "UPDATE_SHAPE_ERROR";
@@ -100,6 +107,7 @@ type Action =
     }
   | {
       type: "BULK_ADD_SHAPES_SUCCESS";
+      updatedShapeIds: string[];
     }
   | {
       type: "BULK_ADD_SHAPES_ERROR";
@@ -213,10 +221,14 @@ export function geoshapeReducer(state: State, action: Action): State {
     case "ADD_SHAPE_LOADING":
     case "UPDATE_SHAPE_LOADING":
     case "DELETE_SHAPES_LOADING": {
-      return {
+      const res = {
         ...state,
         shapeUpdateLoading: true,
       };
+      if (action.type === "ADD_SHAPE_LOADING") {
+        res.shapeAddLoading = true;
+      }
+      return res;
     }
     case "BULK_ADD_SHAPES_SUCCESS":
     case "ADD_SHAPE_SUCCESS":
@@ -226,6 +238,7 @@ export function geoshapeReducer(state: State, action: Action): State {
         ...state,
         shapeUpdateLoading: false,
         tileCacheKey: state.tileCacheKey + 1,
+        updatedShapeIds: action.updatedShapeIds || [],
       };
     }
     case "BULK_ADD_SHAPES_ERROR":

@@ -26,8 +26,12 @@ export function useEditFunction() {
 
   const { mutate: deleteShapesRaw } = useBulkDeleteShapesMutation();
 
-  const { clearSelectedShapeUuids, numSelected, selectedUuids } =
-    useSelectedShapes();
+  const {
+    clearSelectedShapeUuids,
+    numSelected,
+    selectedUuids,
+    selectOneShapeUuid,
+  } = useSelectedShapes();
   const { setCursorMode } = useCursorMode();
   function onEdit({
     updatedData,

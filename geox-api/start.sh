@@ -47,11 +47,4 @@ then
     RELOAD_OPT="--reload"
 fi;
 
-if [ "$APP_ENV" = "production" ] || [ "$APP_ENV" = "staging" ]
-then
-  # Production -- use hypercorn
-  exec hypercorn "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
-else
-  # Development -- use uvicorn
-  exec uvicorn $RELOAD_OPT --host "$APP_HOST" --port "$APP_PORT" --log-config=log_config.yaml "$APP_MODULE" --workers 8
-fi;
+exec hypercorn $RELOAD_OPT "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml

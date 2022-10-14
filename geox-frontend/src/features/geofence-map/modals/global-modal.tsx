@@ -7,8 +7,6 @@ import { SupportModal } from "./support-modal";
 
 export const GlobalModal = () => {
   const { modal } = useUiModals();
-
-  console.log("modal", modal);
   return (
     <div>
       {modal === UIModalEnum.UploadShapesModal && <UploadModal />}

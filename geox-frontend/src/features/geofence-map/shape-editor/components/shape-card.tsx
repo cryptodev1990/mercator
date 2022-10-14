@@ -14,13 +14,15 @@ import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { useShapes } from "../../hooks/use-shapes";
 
 export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
-  const { deleteShapes, updateLoading } = useShapes();
+  const { deleteShapes, updateLoading, clearSelectedFeatureIndexes } =
+    useShapes();
 
   const {
     isSelected,
     selectOneShapeUuid,
     removeSelectedShapeUuid,
     selectedDataIsLoading,
+    clearSelectedShapeUuids,
   } = useSelectedShapes();
 
   const [isHovered, setIsHovered] = useState(false);
@@ -64,8 +66,9 @@ export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
                 onClick={() => {
                   if (!shape.uuid) toast.error("Delete shape failed");
                   else {
-                    // updateShape({ uuid: shape.uuid, should_delete: true });
                     deleteShapes([shape.uuid]);
+                    clearSelectedShapeUuids();
+                    clearSelectedFeatureIndexes();
                     setCursorMode(EditorMode.ViewMode);
                   }
                 }}

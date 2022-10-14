@@ -9,6 +9,7 @@ import { Virtuoso } from "react-virtuoso";
 import { useUiModals } from "../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../types";
 import { useDbSync } from "../../hooks/use-db-sync";
+import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 
 const NewUserMessage = () => {
   return (
@@ -36,6 +37,7 @@ const TentativeButtonBank = () => {
   const { snapToCentroid } = useViewport();
   const { tentativeShapes, setTentativeShapes, bulkAddShapes, updateLoading } =
     useShapes();
+  const { clearSelectedShapeUuids } = useSelectedShapes();
   return (
     <div className="mt-2 space-x-1">
       <p className="font-bold text-xs mx-1">External data</p>
@@ -55,6 +57,7 @@ const TentativeButtonBank = () => {
               onSuccess: () => {
                 snapToCentroid({ category: "tentative" });
                 setTentativeShapes([]);
+                clearSelectedShapeUuids();
               },
             }
           );

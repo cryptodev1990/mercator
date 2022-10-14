@@ -10,10 +10,9 @@ import { useEditLayer } from "./use-edit-layer";
 import { useSelectedShapes } from "../use-selected-shapes";
 
 export const useLayers = () => {
-  const { tentativeShapes, selectedFeatureIndexes, setSelectedFeatureIndexes } =
-    useShapes();
+  const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
-  const { selectedFeatureCollection, isSelected } = useSelectedShapes();
+  const { selectedFeatureCollection } = useSelectedShapes();
 
   const tiles = useTiles();
   const editLayer = useEditLayer();

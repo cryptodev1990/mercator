@@ -27,10 +27,6 @@ export const UIContextContainer = ({ children }: { children: any }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("modal", modal);
-  }, [modal]);
-
   return (
     <UIContext.Provider
       value={{
