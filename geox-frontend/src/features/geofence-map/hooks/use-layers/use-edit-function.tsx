@@ -1,6 +1,5 @@
 // EditableGeojsonLayer function
 import {
-  GeoShape,
   GeoShapeCreate,
   MultiPolygon,
   GeoShapeMetadata,
@@ -26,12 +25,8 @@ export function useEditFunction() {
 
   const { mutate: deleteShapesRaw } = useBulkDeleteShapesMutation();
 
-  const {
-    clearSelectedShapeUuids,
-    numSelected,
-    selectedUuids,
-    selectOneShapeUuid,
-  } = useSelectedShapes();
+  const { clearSelectedShapeUuids, numSelected, selectedUuids } =
+    useSelectedShapes();
   const { setCursorMode } = useCursorMode();
   function onEdit({
     updatedData,

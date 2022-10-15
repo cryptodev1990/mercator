@@ -1,4 +1,4 @@
-import { GeoShapeMetadata } from "../../../../client";
+import { GeoShape, GeoShapeMetadata } from "../../../../client";
 
 type UndoLogRecord = {
   op:
@@ -24,6 +24,7 @@ export interface State {
   undoLog: UndoLogRecord[];
   redoLog: UndoLogRecord[];
   updatedShapeIds: string[];
+  updatedShape: GeoShape | null;
 }
 
 export const initialState: State = {
@@ -40,6 +41,7 @@ export const initialState: State = {
   undoLog: [],
   redoLog: [],
   updatedShapeIds: [],
+  updatedShape: null,
 };
 
 type Action =
@@ -72,6 +74,7 @@ type Action =
   | {
       type: "ADD_SHAPE_SUCCESS";
       updatedShapeIds: string[];
+      updatedShape: GeoShape | null;
     }
   | {
       type: "ADD_SHAPE_ERROR";
@@ -97,6 +100,7 @@ type Action =
   | {
       type: "UPDATE_SHAPE_SUCCESS";
       updatedShapeIds: string[];
+      updatedShape: GeoShape | null;
     }
   | {
       type: "UPDATE_SHAPE_ERROR";
@@ -230,15 +234,23 @@ export function geoshapeReducer(state: State, action: Action): State {
       }
       return res;
     }
-    case "BULK_ADD_SHAPES_SUCCESS":
-    case "ADD_SHAPE_SUCCESS":
-    case "UPDATE_SHAPE_SUCCESS":
-    case "DELETE_SHAPES_SUCCESS": {
+    case "DELETE_SHAPES_SUCCESS":
+    case "BULK_ADD_SHAPES_SUCCESS": {
       return {
         ...state,
         shapeUpdateLoading: false,
         tileCacheKey: state.tileCacheKey + 1,
         updatedShapeIds: action.updatedShapeIds || [],
+      };
+    }
+    case "ADD_SHAPE_SUCCESS":
+    case "UPDATE_SHAPE_SUCCESS": {
+      return {
+        ...state,
+        shapeUpdateLoading: false,
+        tileCacheKey: state.tileCacheKey + 1,
+        updatedShapeIds: action.updatedShapeIds || [],
+        updatedShape: action?.updatedShape ?? null,
       };
     }
     case "BULK_ADD_SHAPES_ERROR":

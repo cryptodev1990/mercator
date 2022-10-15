@@ -1,6 +1,6 @@
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { useEffect, useState } from "react";
-import { ModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
+import { MercatorModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
 import { useSelectedShapes } from "../use-selected-shapes";
@@ -43,7 +43,7 @@ export function useModifyLayer() {
     data: localData,
     // @ts-ignore
     getFillColor: getFillColorFunc,
-    mode: ModifyMode,
+    mode: MercatorModifyMode,
     // @ts-ignore
     selectedFeatureIndexes,
     pickingRadius: 20,
@@ -55,24 +55,20 @@ export function useModifyLayer() {
     modeConfig: {
       viewport,
     },
-    extruded: true,
-    billboard: true,
     onEdit: (e: any) => {
       const { updatedData, editType, editContext } = e;
       setLocalData(updatedData);
-      if (["addPosition", "removePosition"].includes(editType)) {
-        updateShape(
-          {
-            geojson: updatedData.features[editContext.featureIndexes[0]],
-            uuid: updatedData.features[editContext.featureIndexes[0]].properties
-              .__uuid,
-          },
-          {
-            onSuccess: () => {
-              console.log("success");
-            },
-          }
-        );
+      console.log("onEdit", editType);
+      if (
+        ["addPosition", "removePosition", "finishMovePosition"].includes(
+          editType
+        )
+      ) {
+        updateShape({
+          geojson: updatedData.features[editContext.featureIndexes[0]],
+          uuid: updatedData.features[editContext.featureIndexes[0]].properties
+            .__uuid,
+        });
       }
     },
     onClick: (o: any, e: any) => {
@@ -100,6 +96,7 @@ export function useModifyLayer() {
       }
       // Move the points
       const shapeInEdit = event.layer.state.selectedFeatures[0];
+      console.log("onDragEnd", shapeInEdit);
       updateShape({
         geojson: shapeInEdit,
         uuid: shapeInEdit.properties.__uuid,

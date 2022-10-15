@@ -82,6 +82,7 @@ export const useApi = (dispatch: any) => {
       dispatch({
         type: "ADD_SHAPE_SUCCESS",
         updatedShapeIds: [addShapeResponse.uuid],
+        updatedShape: addShapeResponse,
       });
     }
   }, [addShapeIsLoading, addShapeError, addShapeIsSuccess]);
@@ -124,6 +125,7 @@ export const useApi = (dispatch: any) => {
       dispatch({
         type: "UPDATE_SHAPE_SUCCESS",
         updatedShapeIds: [updateShapeResponse.uuid],
+        updatedShape: updateShapeResponse,
       });
     }
   }, [updateShapeIsLoading, updateShapeError, updateShapeIsSuccess]);

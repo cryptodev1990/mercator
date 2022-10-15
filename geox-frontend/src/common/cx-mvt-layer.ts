@@ -13,13 +13,18 @@ export class TileCache implements TileCacheInterface {
   private cache: { [key: string]: Feature[] } = {};
   // lookup from shape UUID collection of tile keys containing that shape
   private reverseMap: { [shapeUuid: string]: Set<string> } = {};
+  private numFeatures: number = 0;
 
   get(key: string): Feature[] | undefined {
     return this.cache[key];
   }
 
   set(key: string, value: Feature[]): void {
+    if (this.numFeatures > 10000) {
+      this.clear();
+    }
     for (const feature of value) {
+      this.numFeatures++;
       if (!this.reverseMap[__uuid(feature)]) {
         this.reverseMap[__uuid(feature)] = new Set();
       }
@@ -42,10 +47,25 @@ export class TileCache implements TileCacheInterface {
       delete this.reverseMap[uuid];
       numCleared++;
     }
+    this.numFeatures -= numCleared;
+    return numCleared;
+  }
+
+  clearTileByKeys(keys: string[]): number {
+    console.log(keys);
+    let numCleared = 0;
+    for (const key of keys) {
+      if (this.has(key)) {
+        delete this.cache[key];
+        numCleared++;
+      }
+    }
+    this.numFeatures -= numCleared;
     return numCleared;
   }
 
   clear(): void {
+    this.numFeatures = 0;
     this.cache = {};
   }
 

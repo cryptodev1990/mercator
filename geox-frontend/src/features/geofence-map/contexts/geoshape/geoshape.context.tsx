@@ -59,6 +59,7 @@ export interface GeoShapeContextI {
   addShapeAndEdit: any;
   updateLoading: boolean;
   updatedShapeIds: string[];
+  updatedShape: GeoShape | null;
 }
 
 export const GeoShapeContext = createContext<GeoShapeContextI>({
@@ -77,6 +78,7 @@ export const GeoShapeContext = createContext<GeoShapeContextI>({
   updateLoading: false,
   addShapeAndEdit: async () => {},
   updatedShapeIds: [],
+  updatedShape: null,
 });
 
 GeoShapeContext.displayName = "GeoShapeContext";
@@ -123,15 +125,14 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
   ) => {
     opLog("ADD_SHAPE", shape);
     api.addShapeApi(shape as any, {
-      onSuccess: (data: any) => {
-        const geoshape = data as GeoShape;
-        const { properties } = geoshape.geojson;
+      onSuccess: (data: GeoShape) => {
+        const { properties } = data.geojson;
         const metadata = {
           properties,
-          uuid: geoshape.uuid,
-          name: geoshape.name,
-          created_at: geoshape.created_at,
-          updated_at: geoshape.updated_at,
+          uuid: data.uuid,
+          name: data.name,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
         } as GeoShapeMetadata;
         onSuccess(metadata);
       },
@@ -167,6 +168,7 @@ export const GeoShapeProvider = ({ children }: { children: any }) => {
         bulkAddFromSplit,
         addShapeAndEdit,
         updatedShapeIds: state.updatedShapeIds,
+        updatedShape: state.updatedShape,
       }}
     >
       {children}

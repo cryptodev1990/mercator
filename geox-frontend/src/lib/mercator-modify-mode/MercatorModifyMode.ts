@@ -35,7 +35,7 @@ import { GeoJsonEditMode } from "./geojson-edit-mode";
 
 import { ImmutableFeatureCollection } from "./immutable-feature-collection";
 
-export class ModifyMode extends GeoJsonEditMode {
+export class MercatorModifyMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
 

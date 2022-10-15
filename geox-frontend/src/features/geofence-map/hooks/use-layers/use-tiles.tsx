@@ -2,11 +2,12 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import { useIdToken } from "../use-id-token";
 import { useShapes } from "../use-shapes";
 import { useSelectedShapes } from "../use-selected-shapes";
-import { findIndex } from "../../../../common/utils";
+import { findIndex, tilesForGeoJson } from "../../../../common/utils";
 import { useEffect, useMemo, useState } from "react";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
 import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
+import { useViewport } from "../use-viewport";
 
 export function useTiles() {
   const { idToken } = useIdToken();
@@ -17,16 +18,15 @@ export function useTiles() {
 
   const tileArgs = useTileArgs();
 
-  const { updatedShapeIds } = useShapes();
+  const { updatedShapeIds, updatedShape } = useShapes();
+  const { viewport } = useViewport();
 
   useEffect(() => {
-    const numCleared = tileCache.clearForFeatures(updatedShapeIds);
-    if (numCleared > 0) {
-      console.log(`Cleared ${numCleared} features from cache`);
-    } else {
-      // clear all
-      // This currently applies in the "add shape" case
-      tileCache.clear();
+    // clear the tiles
+    tileCache.clearForFeatures(updatedShapeIds);
+    if (updatedShape?.geojson) {
+      const tileKeys = tilesForGeoJson(updatedShape.geojson, viewport.zoom);
+      tileCache.clearTileByKeys(tileKeys);
     }
   }, [updatedShapeIds, tileCache]);
 

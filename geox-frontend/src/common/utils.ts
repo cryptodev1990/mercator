@@ -1,3 +1,6 @@
+import { bbox } from "@turf/turf";
+import { Feature } from "../client";
+
 export function findIndex(uuid: string, collection: any): number {
   /**
    * Find index of a UUID in a collection of elements that all have UUIDs
@@ -29,19 +32,30 @@ export function latToTile(lat: number, zoom: number) {
   );
 }
 
-export function tilesForGeoJson(geojson: any, zoom: number) {
+export function getAllTilesBetween(
+  zoom: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) {
   const tiles: { x: number; y: number; z: number }[] = [];
-  for (const feature of geojson.features) {
-    for (const coord of feature.geometry.coordinates) {
-      const tile = {
-        x: lngToTile(coord[0], zoom),
-        y: latToTile(coord[1], zoom),
-        z: zoom,
-      };
-      if (!tiles.find((t) => t.x === tile.x && t.y === tile.y)) {
-        tiles.push(tile);
-      }
+  for (let x = x1; x <= x2; x++) {
+    for (let y = y1; y <= y2; y++) {
+      tiles.push({ x, y, z: zoom });
     }
   }
   return tiles;
+}
+
+export function tilesForGeoJson(geojson: Feature, zoom: number): string[] {
+  zoom = Math.floor(zoom);
+  const bx = bbox(geojson);
+  const x1 = lngToTile(bx[0], zoom);
+  const y1 = latToTile(bx[3], zoom);
+  const x2 = lngToTile(bx[2], zoom);
+  const y2 = latToTile(bx[1], zoom);
+  const tileList = getAllTilesBetween(zoom, x1, y1, x2, y2);
+  const tl = tileList.map((t) => `${t.x}-${t.y}-${t.z}`);
+  return tl;
 }
