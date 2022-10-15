@@ -1,18 +1,17 @@
 """Test namespace routes."""
+from app.crud.organization import set_active_organization
+from app.db.metadata import users as user_tbl
+from app.db.metadata import organizations as org_tbl
+from app.db.metadata import organization_members as org_mbr_tbl
+
+
+from sqlalchemy import insert, select
+from sqlalchemy.engine import Connection
+from pydantic import UUID4
 
 # Create organization
 # Create users
 
-
-# def setup_data(conn: Connection):
-#     org = create_organization("Example.com")
-#     users = [
-#         {"name": "Alice", "email": "alice@example.com"}
-#         {"name": "Bob", "email": "bob@example.com"}
-#     ]
-#     for user in users:
-#         create_user(user)
-#         add_user_to_org()
 # Setup database
 # - Organization 1 - example.com
 #   - Alice
@@ -20,7 +19,17 @@
 # - Organization 2 - example.net
 #   - Carol
 
+from typing import cast, Dict, Any
+
 
 def test_namespace():
     """Create a new namespace."""
-    pass
+
+
+# read namespaces
+
+# create new namespace
+
+# update a namespace
+
+# drop namespace

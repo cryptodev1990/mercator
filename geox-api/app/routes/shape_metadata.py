@@ -2,15 +2,13 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Query
 
-from app.crud.organization import get_active_org
 from app.crud.shape import (
-    get_all_shape_metadata_by_organization,
     get_shape_metadata_by_bounding_box,
     get_shape_metadata_matching_search,
     select_shape_metadata,
 )
 from app.dependencies import UserConnection, get_app_user_connection, verify_token
-from app.schemas import GeoShapeMetadata, RequestErrorModel, ViewportBounds
+from app.schemas import GeoShapeMetadata, ViewportBounds
 
 router = APIRouter(
     tags=["geofencer", "shape-metadata"], dependencies=[Depends(verify_token)]

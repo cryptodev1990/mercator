@@ -5,13 +5,14 @@ NOTE: All queries use `shapes` table and no ORM features
 import datetime
 import logging
 from enum import Enum
+from tabnanny import check
 from typing import Any, Dict, Generator, List, Optional, Sequence, Union
 
 import jinja2
 import sqlalchemy as sa
 from geojson_pydantic import Feature, Polygon, Point, LineString
 from pydantic import UUID4
-from sqlalchemy import insert, select, update, func  # type: ignore
+from sqlalchemy import insert, select, update, func, literal  # type: ignore
 from sqlalchemy.engine import Connection
 
 from app.crud.namespaces import NamespaceDoesNotExistError, get_default_namespace
@@ -47,6 +48,8 @@ class ShapeDoesNotExist(Exception):
 
 
 ## Create Shapes
+
+_select_shapes = select(shapes_tbl).where(shapes_tbl.c.deleted_at.is_(None))  # type: ignore
 
 
 def create_shape(
@@ -129,14 +132,16 @@ def create_many_shapes(
         yield row.uuid
 
 
+def shape_exists(conn: Connection, shape_id: UUID4, check_deleted=True) -> bool:
+    stmt = select(shapes_tbl.c.uuid).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
+    if check_deleted:
+        stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
+    return bool(conn.execute(stmt).scalar())
+
+
 def get_shape(conn: Connection, shape_id: UUID4) -> GeoShape:
     """Get a shape."""
-    stmt = (
-        select(shapes_tbl)  # type: ignore
-        .where(shapes_tbl.c.deleted_at.is_(None))
-        .where(shapes_tbl.c.uuid == str(shape_id))
-        .limit(1)
-    )
+    stmt = _select_shapes.where(shapes_tbl.c.uuid == str(shape_id)).limit(1)
     res = conn.execute(stmt).first()
     if res is None:
         raise ShapeDoesNotExist(shape_id)
@@ -153,7 +158,7 @@ def select_shapes(
     offset: Optional[int] = 0,
 ) -> Generator[GeoShape, None, None]:
     # This will be called many times - use more advanced caching
-    stmt = select(shapes_tbl).where(shapes_tbl.c.deleted_at.is_(None)).order_by(shapes_tbl.c.uuid)  # type: ignore
+    stmt = _select_shapes.order_by(shapes_tbl.c.uuid)  # type: ignore
     if user_id is not None:
         stmt = stmt.where(shapes_tbl.c.created_by_user_id == user_id)
     if namespace_id is not None:
@@ -201,7 +206,7 @@ def select_shape_metadata(
 ) -> Generator[GeoShapeMetadata, None, None]:
     """Query shape metadata."""
     # This will be called many times - use more advanced caching
-    stmt = select(shapes_tbl).with_only_columns(METADATA_COLS).where(shapes_tbl.c.deleted_at.is_(None)).order_by(shapes_tbl.c.uuid).offset(offset).limit(limit)  # type: ignore
+    stmt = _select_shapes.with_only_columns(METADATA_COLS).order_by(shapes_tbl.c.uuid).offset(offset).limit(limit)  # type: ignore
     if user_id is not None:
         stmt = stmt.where(shapes_tbl.c.created_by_user_id == user_id)
     if organization_id is not None:
@@ -236,9 +241,7 @@ def get_shape_metadata_by_bounding_box(
         ],
     )
     stmt = (
-        select(shapes_tbl)  # type: ignore
-        .with_only_columns(METADATA_COLS)
-        .where(shapes_tbl.c.deleted_at == None)
+        _select_shapes.with_only_columns(METADATA_COLS)
         .where(
             # Check if the shape intersects with the bounding box
             func.ST_Intersects(
@@ -264,7 +267,8 @@ def get_shape_metadata_matching_search(
     """Get all shapes matching a search string."""
     stmt = sa.text(
         """
-        SELECT uuid
+        SELECT
+          uuid
         , name
         , properties - '__uuid' AS properties
         , created_at
@@ -276,6 +280,7 @@ def get_shape_metadata_matching_search(
         , SIMILARITY(:query_text, properties::VARCHAR) similarity
         WHERE 1=1
           AND (query @@ fts OR similarity > 0)
+          AND deleted_at IS NULL
         ORDER BY rank DESC, similarity DESC
         LIMIT :limit
         OFFSET :offset

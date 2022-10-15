@@ -1,33 +1,121 @@
 """CRUD functions for organizations."""
+from ast import Or
 from typing import Literal, Optional
 
 from pydantic import UUID4
-from sqlalchemy import text
+from sqlalchemy import text, insert, select
 from sqlalchemy.engine import Connection
 
 from app.db.cache import check_cache
 from app.schemas import Organization
+from app.db.metadata import organization_members as org_mbr_tbl
+from app.db.metadata import organizations as org_tbl
 
 
-def get_user_personal_org_id(conn: Connection, user_id: int) -> Optional[UUID4]:
+class OrganizationDoesNotExistError(Exception):
+    def __init__(self, id_: UUID4) -> None:
+        self.id = id_
+
+    def __str__(self) -> str:
+        return f"Organization {self.id} does not exist."
+
+
+class UserHasNoActiveOrganizationError(Exception):
+    def __init__(self, id_: int) -> None:
+        self.id = id_
+
+    def __str__(self) -> str:
+        return f"User {self.id} has no active organization."
+
+
+class UserHasNoPersonalOrganizationError(Exception):
+    def __init__(self, id_: int) -> None:
+        self.id = id_
+
+    def __str__(self) -> str:
+        return f"User {self.id} has no personal organization."
+
+
+class UserNotInOrgError(Exception):
+    def __init__(self, user_id: int, organization_id: UUID4) -> None:
+        self.user_id = user_id
+        self.organization_id = organization_id
+
+    def __str__(self) -> str:
+        return f"User {self.user_id} is not in organization {self.organization_id}"
+
+
+def create_organization(conn: Connection, *, name: str) -> Organization:
+    stmt = insert(org_tbl).returning(org_tbl)
+    res = conn.execute(stmt, {"name": name}).first()
+    return Organization.from_orm(res)
+
+
+def organization_exists(conn: Connection, organization_id: UUID4) -> bool:
+    stmt = text("SELECT 1 FROM organizations WHERE id = :id")
+    res = conn.execute(stmt, {"id": organization_id}).scalar()
+    return bool(res)
+
+
+def get_organization(conn: Connection, organization_id: UUID4) -> Organization:
+    """Get an organization by id.
+
+    Returns:
+        An organization with that id. If there is no such organization,
+        then ``None`` is returned. It is up to caller to handle ``None``
+        values.
+
+    """
+    stmt = select(org_tbl).where(org_tbl.c.id == organization_id)  # type: ignore
+    res = conn.execute(stmt, {"id": organization_id}).first()
+    if res is None:
+        raise OrganizationDoesNotExistError(organization_id)
+    return Organization.from_orm(res)
+
+
+def add_user_to_org(conn: Connection, *, user_id: int, organization_id: UUID4) -> None:
+    stmt = insert(org_mbr_tbl).returning(org_mbr_tbl.c.id)
+    res = conn.execute(
+        stmt, {"organization_id": organization_id, "user_id": user_id}
+    ).first()
+    return res.id
+
+
+def is_user_in_org(conn: Connection, *, user_id: int, organization_id: UUID4) -> bool:
+    stmt = text(
+        "SELECT id FROM organization_members WHERE user_id = :user_id AND organization_id = :organization_id"
+    )
+    res = conn.execute(stmt, {"organization_id": organization_id, "user_id": user_id})
+    return bool(res is not None)
+
+
+def get_personal_org(conn: Connection, user_id: int) -> Organization:
     """Return user personal org."""
     stmt = text(
         """
-    SELECT o.id
-    FROM organizations AS o
-    INNER JOIN organization_members AS om
-    ON o.id = om.organization_id
-    WHERE om.user_id = :user_id
-        AND o.is_personal
-        AND om.deleted_at IS NULL
-    """
+        SELECT o.*
+        FROM organizations AS o
+        INNER JOIN organization_members AS om
+        ON o.id = om.organization_id
+        WHERE om.user_id = :user_id
+            AND o.is_personal
+            AND om.deleted_at IS NULL
+        """
     )
-    return conn.execute(stmt, {"user_id": user_id}).scalar()
+    res = conn.execute(stmt, {"user_id": user_id}).first()
+    if res is None:
+        raise UserHasNoPersonalOrganizationError(user_id)
+    return Organization.from_orm(res)
 
 
-def set_active_org(
+def get_personal_org_id(conn: Connection, user_id: int) -> UUID4:
+    """Return user personal organization id."""
+    return get_personal_org(conn, user_id).id
+
+
+def set_active_organization(
     conn: Connection, user_id: int, organization_id: UUID4
-) -> Literal[True]:
+) -> None:
     """Set the active organization for a user.
 
     Args:
@@ -40,6 +128,8 @@ def set_active_org(
         user, then nothing will happen and active membership is False for all organizations that the
         user belongs to.
     """
+    if not is_user_in_org(conn, user_id=user_id, organization_id=organization_id):
+        raise UserNotInOrgError(user_id, organization_id)
     stmt = text(
         """
         UPDATE organization_members
@@ -49,10 +139,9 @@ def set_active_org(
         """
     )
     conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
-    return True
 
 
-def get_active_org(
+def get_active_org_id(
     conn: Connection, user_id: int, use_cache: bool = True
 ) -> Optional[UUID4]:
     """Get the acttive organization of a user.
@@ -68,7 +157,6 @@ def get_active_org(
         use_cache: If ``True`` looks in cache for the organization, otherwise
             runs a query to retrieve the information.
 
-
     Returns:
         Id of the active organization if one exists. ``None`` if there is no active org.
         Users of this function are responsible for raising exceptions or otherwise
@@ -76,9 +164,11 @@ def get_active_org(
     """
     # _get_active_org will return str not UUID to make it more
     if use_cache:
-        value = check_cache(user_id, "organization_id", _get_active_org, conn, user_id)
+        value = check_cache(
+            user_id, "organization_id", _get_active_org_id, conn, user_id
+        )
     else:
-        value = _get_active_org(conn, user_id)
+        value = _get_active_org_id(conn, user_id)
     if value is None:
         return None
     try:
@@ -91,7 +181,7 @@ def get_active_org(
         return None
 
 
-def _get_active_org(conn: Connection, user_id: int) -> Optional[str]:
+def _get_active_org_id(conn: Connection, user_id: int) -> Optional[str]:
     stmt = text(
         """
         SELECT organization_id
@@ -107,29 +197,7 @@ def _get_active_org(conn: Connection, user_id: int) -> Optional[str]:
     return str(res.organization_id) if res else None
 
 
-def get_organization(conn: Connection, id: UUID4) -> Optional[Organization]:
-    """Get an organization by id.
-
-    Returns:
-        An organization with that id. If there is no such organization,
-        then ``None`` is returned. It is up to caller to handle ``None``
-        values.
-
-    """
-    stmt = text(
-        """
-        SELECT *
-        FROM organizations
-        WHERE id = :id
-    """
-    )
-    res = conn.execute(stmt, {"id": id}).first()
-    return Organization.from_orm(res) if res else None
-
-
-def get_active_org_data(
-    db: Connection, user_id: int, use_cache: bool = True
-) -> Optional[Organization]:
+def get_active_organization(conn: Connection, user_id: int) -> Organization:
     """Get the acttive organization of a user.
 
     A user will only have one active organization at a time.
@@ -138,25 +206,18 @@ def get_active_org_data(
         Data on the user's active org. ``None`` if no active organization is found.
         User must handle a missing active org.
     """
-    org_id = get_active_org(db, user_id, use_cache=use_cache)
-    if org_id:
-        return get_organization(db, org_id)
-    return None
-
-
-def get_personal_org_id(conn: Connection, user_id: int) -> UUID4:
-    res = conn.execute(
-        text(
-            """
-        SELECT og.id
-        FROM organizations og
-        JOIN organization_members om
-        ON om.user_id = :user_id
-          AND om.organization_id = og.id
-          AND om.deleted_at IS NULL
-          AND og.is_personal = True
+    stmt = text(
         """
-        ),
-        {"user_id": user_id},
+        SELECT o.*
+        FROM organization_members AS om
+        INNER JOIN organizations AS o
+            ON o.id = om.organization_id
+        WHERE om.user_id = :user_id
+            AND om.deleted_at IS NULL
+            AND om.active
+        """
     )
-    return res.first()[0]
+    res = conn.execute(stmt, {"user_id": user_id}).first()
+    if res is None:
+        raise UserHasNoActiveOrganizationError(user_id)
+    return Organization.from_orm(res)

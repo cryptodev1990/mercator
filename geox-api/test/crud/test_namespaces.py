@@ -1,22 +1,13 @@
 import uuid
-from contextlib import contextmanager
-from pathlib import Path
-from tkinter.font import names
-from tokenize import Name
-from typing import Any, Dict, Generator, List, Optional, cast
+from typing import Any, Dict, List, Optional, Tuple, cast
 from unicodedata import name
 from uuid import UUID
 
 import pytest
 import ruamel.yaml
 from pydantic import UUID4
-from sqlalchemy import delete, insert, select, text, update
-from sqlalchemy.engine import Connection, Engine
-
-
-from typing import Tuple, Callable
-from typing import Literal
-from sqlalchemy import event
+from sqlalchemy import delete, event, insert, select, text, update
+from sqlalchemy.engine import Connection
 
 from app.crud.namespaces import (
     NamespaceExistsError,
@@ -31,95 +22,88 @@ from app.crud.namespaces import (
     update_namespace,
     update_namespace_by_name,
 )
-from app.crud.organization import get_active_org, set_active_org
-from app.db.engine import create_app_engine
-from app.db.metadata import common, namespaces as namespaces_tbl
+from app.crud.organization import (
+    get_active_organization,
+    set_active_organization,
+    create_organization,
+    add_user_to_org,
+)
+from app.crud.user import get_user_by_email
+from app.crud.user import create_user as crud_create_user
+from app.db.metadata import namespaces as namespaces_tbl
 from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import organizations as org_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.db.metadata import users as users_tbl
 from app.dependencies import set_app_user_settings
 from app.schemas import Namespace
-
-
-from sqlalchemy.engine import Transaction
+from string import ascii_letters, digits
+import random
 
 yaml = ruamel.yaml.YAML(typ="safe")
 
 
-@pytest.fixture(scope="module")
-def engine() -> Engine:
-    return create_app_engine()
+_ASCII_ALPHANUMERIC = ascii_letters + digits
 
 
-@pytest.fixture(scope="module")
-def test_data():
-    data_dir = Path("test/fixtures/db/test-data-1/")
-    with open(data_dir / "users.yaml", "r") as f:
-        users = yaml.load(f)
-
-    with open(data_dir / "organizations.yaml", "r") as f:
-        org_data_raw = yaml.load(f)
-
-    with open(data_dir / "shapes_new.yaml", "r") as f:
-        shapes = yaml.load(f)
-
-    org_data = []
-    org_member_data = []
-    for org in org_data_raw:
-        org_data.append({k: v for k, v in org.items() if k not in {"members"}})
-        for member in org["members"]:
-            org_member_data.append(
-                {**member, "organization_id": org["id"], "active": False}
-            )
-
-    return {
-        "organizations": org_data,
-        "organization_members": org_member_data,
-        "users": users,
-        "shapes": shapes,
-    }
+def random_sub_id():
+    prefix = "".join([random.choice(_ASCII_ALPHANUMERIC) for i in range(32)])
+    return f"{prefix}@clients"
 
 
-def cleanup_db(conn: Connection) -> None:
-    for tbl in (shapes_tbl, org_mbr_tbl, org_tbl, users_tbl):
-        conn.execute(delete(tbl))
+def create_user(conn: Connection, *, email: str, name: str) -> int:
+    user = crud_create_user(
+        conn,
+        email=email,
+        name=name,
+        nickname=name,
+        sub_id=random_sub_id(),
+        iss="Fakeissuer",
+    )
+    return user.id
 
 
-def load_data(conn: Connection, test_data: Dict[str, Any]) -> None:
-    conn.execute(insert(users_tbl), test_data["users"])  # type: ignore
-    conn.execute(insert(org_tbl), test_data["organizations"])  # type: ignore
-    for org_member in test_data["organization_members"]:
-        conn.execute(insert(org_mbr_tbl), org_member)  # type: ignore
-        # Set these new organizations to the active organization
-        set_active_org(conn, org_member["user_id"], org_member["organization_id"])
-    for row in test_data["shapes"]:
-        data = {
-            **row,
-            "namespace_id": get_default_namespace(
-                conn, UUID(row["organization_id"])
-            ).id,
-        }
-        conn.execute(insert(shapes_tbl), data)  # type: ignore
+def insert_test_users_and_orgs(conn: Connection):
+    organizations = [
+        {
+            "name": "Example.com",
+            "users": [
+                {"name": "Alice", "email": "alice@example.com"},
+                {"name": "Bob", "email": "bob@example.com"},
+            ],
+        },
+        {
+            "name": "Example.net",
+            "users": [{"name": "Carlos", "email": "carlos@example.net"}],
+        },
+    ]
+    for org in organizations:
+        organization_id = create_organization(
+            conn, name=cast(Dict[str, str], org)["name"]
+        ).id
+        for user in org["users"]:
+            user_id = create_user(conn, **user)  # type: ignore
+            add_user_to_org(conn, user_id=user_id, organization_id=organization_id)
+            set_active_organization(conn, user_id, organization_id)
 
 
-@pytest.fixture()
-def connection(engine, test_data: Dict[str, Any]):
-    with engine.connect() as conn:
-        trans = conn.begin()
-        try:
-            cleanup_db(conn)
-            load_data(conn, test_data)
-            yield conn
-        finally:
-            trans.rollback()
+@pytest.fixture(scope="function")
+def conn(engine):
+    conn = engine.connect()
+    trans = conn.begin()
+    try:
+        insert_test_users_and_orgs(conn)
+        yield conn
+    finally:
+        trans.rollback()
+        conn.close()
 
 
 def setup_app_user(
     conn: Connection, user_id: int, organization_id: Optional[UUID4] = None
 ) -> Connection:
     if organization_id is None:
-        organization_id = get_active_org(conn, user_id, use_cache=False)
+        organization_id = get_active_organization(conn, user_id).id
     set_app_user_settings(conn, user_id, cast(UUID, organization_id))
     return conn
 
@@ -130,46 +114,49 @@ def get_organizations(conn: Connection) -> List[UUID]:
     ]
 
 
-def test_default_namespaces_created(connection):
+def test_default_namespaces_created(conn):
     """Check that default namespaces were created for all organizations."""
-    for org_id in get_organizations(connection):
-        assert get_default_namespace(connection, org_id)
+    for org_id in get_organizations(conn):
+        assert get_default_namespace(conn, org_id)
 
 
-def test_create_namespace(connection):
+def get_alice_ids(conn: Connection) -> Tuple[int, UUID4]:
+    user_id = get_user_by_email(conn, "alice@example.com").id
+    org_id = get_active_organization(conn, user_id).id
+    return user_id, cast(UUID4, org_id)
+
+
+def test_create_namespace(conn: Connection):
     """Check that default namespaces were created for all organizations."""
-    values = {"name": "Nomen", "properties": {"color": "red"}}
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    values: Dict[str, Any] = {"name": "Nomen", "properties": {"color": "red"}}
+    user_id, organization_id = get_alice_ids(conn)
     namespace = create_namespace(
-        connection, user_id=user_id, organization_id=organization_id, **values
+        conn, user_id=user_id, organization_id=organization_id, **values
     )
     assert isinstance(namespace.id, UUID)
     assert namespace.name == "Nomen"
     assert namespace.properties == values["properties"]
 
 
-def test_create_namespace_error_if_existing(connection):
+def test_create_namespace_error_if_existing(conn: Connection):
     """Check that default namespaces were created for all organizations."""
-    values = {"name": "Default"}
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    values: Dict[str, Any] = {"name": "Default"}
+    user_id, organization_id = get_alice_ids(conn)
     with pytest.raises(NamespaceExistsError):
         create_namespace(
-            connection, user_id=user_id, organization_id=organization_id, **values
+            conn, user_id=user_id, organization_id=organization_id, **values
         )
 
 
-def test_create_namespace_error_if_existing_2(connection):
+def test_create_namespace_error_if_existing_2(conn):
     """Check that default namespaces were created for all organizations."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     create_namespace(
-        connection, user_id=user_id, organization_id=organization_id, name="Namespace 1"
+        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
     )
     with pytest.raises(NamespaceExistsError):
         create_namespace(
-            connection,
+            conn,
             user_id=user_id,
             organization_id=organization_id,
             # make the actual names different
@@ -177,16 +164,15 @@ def test_create_namespace_error_if_existing_2(connection):
         )
 
 
-def test_update_namespace(connection):
+def test_update_namespace(conn):
     """Check that update namespace works correctly."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace = create_namespace(
-        connection, user_id=user_id, organization_id=organization_id, name="Namespace 1"
+        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
     )
     assert namespace.id
     namespace_update = update_namespace(
-        connection,
+        conn,
         namespace.id,
         name="This was changed",
         properties={"Foo": 1, "Bar": "Hello"},
@@ -200,30 +186,28 @@ def test_update_namespace(connection):
         assert getattr(namespace, a) == getattr(namespace_update, a)
 
 
-def test_update_namespace_when_existing_name(connection):
+def test_update_namespace_when_existing_name(conn):
     """Check that `update_namespace()` raises exception when new name exists."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
-        connection, user_id=user_id, organization_id=organization_id, name="Namespace 1"
+        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
     )
     namespace_2 = create_namespace(
-        connection, user_id=user_id, organization_id=organization_id, name="Namespace 2"
+        conn, user_id=user_id, organization_id=organization_id, name="Namespace 2"
     )
     with pytest.raises(NamespaceExistsError):
-        update_namespace(connection, namespace_1.id, name=namespace_2.name)
+        update_namespace(conn, namespace_1.id, name=namespace_2.name)
 
 
-def test_update_namespace_by_name(connection):
+def test_update_namespace_by_name(conn):
     """Check that update namespace by name works correctly."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace = create_namespace(
-        connection, user_id=user_id, organization_id=organization_id, name="Namespace 1"
+        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
     )
     assert namespace.id
     namespace_update = update_namespace_by_name(
-        connection,
+        conn,
         namespace.name,
         new_name="This was changed",
         properties={"Foo": 1, "Bar": "Hello"},
@@ -236,107 +220,100 @@ def test_update_namespace_by_name(connection):
         assert getattr(namespace, a) == getattr(namespace_update, a)
 
 
-def test_update_namespace_by_name_not_exists(connection):
+def test_update_namespace_by_name_not_exists(conn):
     with pytest.raises(NamespaceWithThisNameDoesNotExistError):
         update_namespace_by_name(
-            connection, "I have a name that doesn't exist", properties={"foo": 1}
+            conn, "I have a name that doesn't exist", properties={"foo": 1}
         )
 
 
-def test_update_namespace_by_name_to_existing_name(connection):
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+def test_update_namespace_by_name_to_existing_name(conn):
+    user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
-        connection,
+        conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 1",
     )
     namespace_2 = create_namespace(
-        connection,
+        conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 2",
     )
     with pytest.raises(NamespaceExistsError):
-        update_namespace(connection, namespace_1.id, name=namespace_2.name)
+        update_namespace(conn, namespace_1.id, name=namespace_2.name)
 
 
-def test_delete_namespace(connection):
+def test_delete_namespace(conn):
     """Check that update namespace by name works correctly."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
-        connection,
+        conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 1",
     )
-    shapes = delete_namespace(connection, namespace_1.id)
+    shapes = delete_namespace(conn, namespace_1.id)
     # TODO: add shapes
     assert shapes == []
     with pytest.raises(NamespaceWithThisIdDoesNotExistError):
-        delete_namespace(connection, namespace_1.id)
+        delete_namespace(conn, namespace_1.id)
 
 
-def test_delete_namespace_by_name(connection):
+def test_delete_namespace_by_name(conn):
     """Check that update namespace by name works correctly."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
-        connection,
+        conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 1",
     )
-    shapes = delete_namespace_by_name(connection, namespace_1.name)
+    shapes = delete_namespace_by_name(conn, namespace_1.name)
     assert shapes == []
     # Check that it will raise error if deleted again
     with pytest.raises(NamespaceWithThisNameDoesNotExistError):
-        delete_namespace_by_name(connection, namespace_1.name)
+        delete_namespace_by_name(conn, namespace_1.name)
 
 
-def test_get_namespace_by_id(connection):
+def test_get_namespace_by_id(conn):
     """Check that update namespace by name works correctly."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
-        connection,
+        conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 1",
     )
-    namespace_ret = get_namespace_by_id(connection, namespace_1.id)
+    namespace_ret = get_namespace_by_id(conn, namespace_1.id)
     assert isinstance(namespace_ret, Namespace)
     for k in ("id", "name", "properties"):
         assert getattr(namespace_ret, k) == getattr(namespace_1, k)
 
 
-def test_get_namespace_by_id_not_exists(connection):
+def test_get_namespace_by_id_not_exists(conn):
     """Check that update namespace by name works correctly."""
     with pytest.raises(NamespaceWithThisIdDoesNotExistError):
-        get_namespace_by_id(connection, uuid.UUID(int=0))
+        get_namespace_by_id(conn, uuid.UUID(int=0))
 
 
-def test_get_namespace_by_name(connection):
+def test_get_namespace_by_name(conn):
     """Check that update namespace by name works correctly."""
-    user_id = 1
-    organization_id = get_active_org(connection, user_id, use_cache=False)
+    user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
-        connection,
+        conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 1",
     )
-    namespace_ret = get_namespace_by_name(connection, namespace_1.name)
+    namespace_ret = get_namespace_by_name(conn, namespace_1.name)
     assert isinstance(namespace_ret, Namespace)
     for k in ("id", "name", "properties"):
         assert getattr(namespace_ret, k) == getattr(namespace_1, k)
 
 
-def test_get_namespace_by_name_not_exists(connection):
+def test_get_namespace_by_name_not_exists(conn):
     """Check that update namespace by name works correctly."""
     with pytest.raises(NamespaceWithThisNameDoesNotExistError):
-        get_namespace_by_name(
-            connection, "This is a name that definitely does not exist."
-        )
+        get_namespace_by_name(conn, "This is a name that definitely does not exist.")

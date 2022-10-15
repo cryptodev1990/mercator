@@ -1,6 +1,6 @@
 """Common functions and fixtures used in testing API routes."""
 from functools import partial
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, cast
 
 import pytest
 from fastapi import Depends
@@ -8,8 +8,14 @@ from sqlalchemy import delete, insert, text
 from sqlalchemy.engine import Connection
 from app.crud.namespaces import get_default_namespace
 
-from app.crud.organization import get_active_org_data, set_active_org
-from app.db.engine import engine
+from app.crud.organization import (
+    get_active_organization,
+    get_organization,
+    set_active_organization,
+    add_user_to_org,
+    create_organization,
+)
+from app.crud.user import create_user as crud_create_user
 from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import organizations as org_tbl
 from app.db.metadata import shapes as shapes_tbl
@@ -18,38 +24,75 @@ from app.db.metadata import namespaces as namespaces_tbl
 from app.dependencies import get_connection, get_current_user, verify_token
 from app.main import app
 from app.schemas import User, UserOrganization
+from string import ascii_letters, digits
+import random
 
 
-@pytest.fixture()
-def connection(test_data: Dict[str, Any]):
-    with engine.connect() as conn:
-        trans = conn.begin()
-        try:
-            for tbl in (shapes_tbl, namespaces_tbl, org_mbr_tbl, org_tbl, users_tbl):
-                conn.execute(delete(tbl))
-            conn.execute(insert(users_tbl), test_data["users"])  # type: ignore
-            conn.execute(insert(org_tbl), test_data["organizations"])  # type: ignore
-            for org_member in test_data["organization_members"]:
-                conn.execute(insert(org_mbr_tbl), org_member)  # type: ignore
-                # Set these new organizations to the active organization
-                set_active_org(
-                    conn, org_member["user_id"], org_member["organization_id"]
-                )
-            for shape in test_data["shapes"]:
-                namespace_id = get_default_namespace(conn, shape["organization_id"]).id
-                data = {**shape}
-                data["name"] = data["geojson"]["properties"]["name"]
-                data["properties"] = data["geojson"]["properties"]
-                data["namespace_id"] = namespace_id
-                conn.execute(insert(shapes_tbl), data)
+_ASCII_ALPHANUMERIC = ascii_letters + digits
 
-            yield conn
-        finally:
-            trans.rollback
+
+def random_sub_id():
+    prefix = "".join([random.choice(_ASCII_ALPHANUMERIC) for i in range(32)])
+    return f"{prefix}@clients"
+
+
+def create_user(conn: Connection, *, email: str, name: str) -> int:
+    user = crud_create_user(
+        conn,
+        email=email,
+        name=name,
+        nickname=name,
+        sub_id=random_sub_id(),
+        iss="Fakeissuer",
+    )
+    return user.id
+
+
+def insert_test_users_and_orgs(conn: Connection):
+    organizations = [
+        {
+            "name": "Example.com",
+            "users": [
+                {"name": "Alice", "email": "alice@example.com"},
+                {"name": "Bob", "email": "bob@example.com"},
+            ],
+        },
+        {
+            "name": "Example.net",
+            "users": [{"name": "Carlos", "email": "carlos@example.net"}],
+        },
+    ]
+    for org in organizations:
+        organization_id = create_organization(
+            conn, name=cast(Dict[str, str], org)["name"]
+        ).id
+        for user in org["users"]:
+            user_id = create_user(conn, **user)  # type: ignore
+            add_user_to_org(conn, user_id=user_id, organization_id=organization_id)
+            set_active_organization(conn, user_id, organization_id)
+
+
+@pytest.fixture(scope="function")
+def conn(engine):
+    conn = engine.connect()
+    trans = conn.begin()
+    try:
+        insert_test_users_and_orgs(conn)
+        yield conn
+    finally:
+        trans.rollback()
+        conn.close()
+
+
+from typing import Optional
+from pydantic import UUID4
 
 
 def get_current_user_override(
-    *, user_id: int, conn: Connection = Depends(get_connection)
+    *,
+    user_id: int,
+    organization_id: Optional[UUID4] = None,
+    conn: Connection = Depends(get_connection),
 ):
     """Return a particular existing user by id.
 
@@ -60,9 +103,10 @@ def get_current_user_override(
     ).fetchone()
     user = User.from_orm(user_res)
     # Redis isn't available for tests so instead do this
-    org = get_active_org_data(conn, user.id, use_cache=False)
-    if org is None:
-        raise ValueError(f"No active organization found for user = {user.id}")
+    if organization_id is None:
+        org = get_active_organization(conn, user.id)
+    else:
+        org = get_organization(conn, organization_id)
     return UserOrganization(user=user, organization=org)
 
 

@@ -14,7 +14,7 @@ from sqlalchemy.engine import Connection, Engine
 
 from app.core.config import Settings, get_settings
 from app.core.security import VerifyToken, token_auth_scheme
-from app.crud.organization import get_active_org_data
+from app.crud.organization import get_active_organization
 from app.crud.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id, set_app_user_org
 from app.db.engine import engine
@@ -76,7 +76,7 @@ async def get_current_user(
     with engine.begin() as conn:
         user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
         # Get the user's active org
-        org = get_active_org_data(conn, user.id)
+        org = get_active_organization(conn, user.id)
         # if no organization found, then raise an exception
         if org is None:
             raise HTTPException(403)
