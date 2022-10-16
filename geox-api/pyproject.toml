@@ -28,7 +28,7 @@ filterwarnings = [
 ]
 
 [tool.pyright]
-include = ["app", "test"]
+include = ["app", "test", "cli"]
 exclude = ["**/node_modules",
     "**/__pycache__",
     "**/.ipynb_checkpoints"

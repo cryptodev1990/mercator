@@ -157,7 +157,7 @@ access-token:
 	@echo Access token copied to clipboard
 
 cli *ARGS:
-	ENV_FILE=.env.local python -m cli.__init__ {{ ARGS }}
+	ENV_FILE=.env.local python -m cli.main {{ ARGS }}
 
 # Run an interactive shell for the project
 ssh:
