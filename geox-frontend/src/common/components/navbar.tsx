@@ -11,6 +11,7 @@ const LoginButton = () => {
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
   return (
     <FlashButton
+      id='login'
       disabled={isLoading}
       onClick={
         isAuthenticated
