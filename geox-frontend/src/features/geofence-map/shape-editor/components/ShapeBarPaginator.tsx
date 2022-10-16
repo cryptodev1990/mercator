@@ -1,15 +1,14 @@
 import { useShapes } from "../../hooks/use-shapes";
 import { useViewport } from "../../hooks/use-viewport";
-import { ShapeCard } from "./shape-card";
 import { BiAddToQueue } from "react-icons/bi";
 import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
 import Loading from "react-loading";
-import { Virtuoso } from "react-virtuoso";
 import { useUiModals } from "../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../types";
 import { useDbSync } from "../../hooks/use-db-sync";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
+import { NamespaceDirectory } from "./namespace-directory";
 
 const NewUserMessage = () => {
   return (
@@ -82,13 +81,8 @@ const TentativeButtonBank = () => {
 };
 
 export const ShapeBarPaginator = () => {
-  const {
-    shapeMetadata,
-    tentativeShapes,
-    numShapes,
-    numShapesIsLoading,
-    virtuosoRef,
-  } = useShapes();
+  const { shapeMetadata, tentativeShapes, numShapes, numShapesIsLoading } =
+    useShapes();
   const { openModal } = useUiModals();
   const { isLoading: isPolling } = useDbSync();
 
@@ -137,24 +131,8 @@ export const ShapeBarPaginator = () => {
         ))}
       </div>
       {tentativeShapes.length > 0 && <TentativeButtonBank />}
-      <p className="font-bold text-xs mx-1">Geofences</p>
-      <hr />
-      {shapeMetadata?.length !== 0 ? (
-        <div
-          key={1}
-          className="relative short-h:60vh md-h:65vh tall-h:h-[70vh]"
-        >
-          <Virtuoso
-            ref={virtuosoRef}
-            className="h-full scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-700"
-            totalCount={shapeMetadata.length}
-            data={shapeMetadata}
-            itemContent={(_: any, shape: any) => <ShapeCard shape={shape} />}
-          />
-        </div>
-      ) : (
-        <NewUserMessage />
-      )}
+      {shapeMetadata?.length !== 0 && <NamespaceDirectory />}
+      {shapeMetadata.length === 0 && <NewUserMessage />}
       <footer className="flex flex-col">
         <p className="text-xs m-1">
           {shapeMetadata.length} of {numShapesIsLoading ? "..." : numShapes}

@@ -4,7 +4,6 @@ import { GeoShapeMetadata } from "../../../../client/models/GeoShapeMetadata";
 import { useGetOneShapeByUuid } from "../../hooks/openapi-hooks";
 import { geoShapesToFeatureCollection } from "../../utils";
 import { selectionReducer, initialState } from "./selection.reducer";
-import { aggressiveLog } from "../../../../common/aggressive-log";
 
 export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];

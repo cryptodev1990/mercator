@@ -37,6 +37,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
   ).length;
   return (
     <div
+      key={shape.uuid}
       onMouseEnter={() => {
         selectOneShapeUuid(shape.uuid);
         setIsHovered(true);
@@ -45,7 +46,7 @@ export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
         removeSelectedShapeUuid(shape.uuid);
         setIsHovered(false);
       }}
-      className={`p-3 max-w-sm relative border-b border-b-slate-600 snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
+      className={`h-13 p-3 max-w-sm snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
     >
       <div className="flex flex-row justify-between items-center">
         <h5

@@ -9,6 +9,8 @@ import {
   TasksService,
   ShapeCountResponse,
   GeoShapeCreate,
+  NamespaceResponse,
+  NamespacesService,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
@@ -61,20 +63,34 @@ export const useAddShapeMutation = () => {
 
 export const useGetAllShapesMetadata = () => {
   const { isTokenSet } = useTokenInOpenApi();
-  return useQuery<GeoShapeMetadata[]>(
+  return useQuery<NamespaceResponse[]>(
     ["geofencer"],
     () => {
-      return GeofencerService.getShapeMetadataGeofencerShapeMetadataGet(
-        0, // offset
-        10000 // limit
-      );
+      return NamespacesService.getNamespacesGeofencerNamespacesGet();
     },
     {
       refetchOnMount: false,
       enabled: isTokenSet,
       onError(error: any) {
         toast.remove();
-        toast.error(`Shapes failed to fetch (${error})`);
+        toast.error(`Shapes failed to fetch (${error.detail})`);
+      },
+    }
+  );
+};
+
+export const useGetNamespaces = () => {
+  const { isTokenSet } = useTokenInOpenApi();
+  return useQuery<NamespaceResponse[]>(
+    ["geofencer"],
+    () => {
+      return NamespacesService.getNamespacesGeofencerNamespacesGet();
+    },
+    {
+      enabled: isTokenSet,
+      onError(error: any) {
+        toast.remove();
+        toast.error(`Namespaces failed to fetch (${error.detail})`);
       },
     }
   );

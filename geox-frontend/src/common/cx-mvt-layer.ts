@@ -106,11 +106,15 @@ export class CxMVTLayer<ExtraProps = {}> extends MVTLayer<
       return cache.get(CACHE_KEY);
     }
 
-    const res = super.getTileData(tile).then((data: Feature[]) => {
-      cache.set(CACHE_KEY, data);
-      return data;
-    });
-    return res;
+    try {
+      const res = super.getTileData(tile).then((data: Feature[]) => {
+        cache.set(CACHE_KEY, data);
+        return data;
+      });
+      return res;
+    } catch (e) {
+      return [];
+    }
   }
   renderSubLayers(props: any) {
     return super.renderSubLayers(props);

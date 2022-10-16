@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { NamespaceResponse } from "../../../../client";
 import {
   useAddShapeMutation,
   useBulkAddShapesMutation,
@@ -55,7 +56,11 @@ export const useApi = (dispatch: any) => {
     } else if (shapeMetadataIsSuccess) {
       dispatch({
         type: "FETCH_SHAPE_METADATA_SUCCESS",
-        shapeMetdata: remoteShapeMetadata || [],
+        shapeMetadata: remoteShapeMetadata.flatMap((x) => x.shapes),
+        namespaces: remoteShapeMetadata.map((x: NamespaceResponse) => {
+          delete x.shapes;
+          return x;
+        }),
       });
     }
   }, [

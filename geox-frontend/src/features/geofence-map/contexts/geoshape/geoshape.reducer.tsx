@@ -1,6 +1,11 @@
-import { GeoShape, GeoShapeMetadata } from "../../../../client";
+import {
+  GeoShape,
+  GeoShapeMetadata,
+  Namespace,
+  NamespaceResponse,
+} from "../../../../client";
 
-type UndoLogRecord = {
+export type UndoLogRecord = {
   op:
     | "ADD_SHAPE"
     | "DELETE_SHAPES"
@@ -12,6 +17,9 @@ type UndoLogRecord = {
 
 export interface State {
   shapeMetadata: GeoShapeMetadata[];
+  namespaces: Namespace[];
+  activeNamespace: Namespace | null;
+  visibleNamepaces: Namespace[];
   shapeMetadataIsLoading: boolean;
   shapeMetadataError: Error | null;
   numShapes: number | null;
@@ -29,6 +37,9 @@ export interface State {
 
 export const initialState: State = {
   shapeMetadata: [],
+  namespaces: [],
+  activeNamespace: null,
+  visibleNamepaces: [],
   shapeMetadataIsLoading: false,
   shapeMetadataError: null,
   numShapes: null,
@@ -44,17 +55,26 @@ export const initialState: State = {
   updatedShape: null,
 };
 
-type Action =
+export type Action =
   | {
       type: "FETCH_SHAPE_METADATA_LOADING";
     }
   | {
       type: "FETCH_SHAPE_METADATA_SUCCESS";
-      shapeMetdata: GeoShapeMetadata[];
+      shapeMetadata: GeoShapeMetadata[];
+      namespaces: Namespace[];
     }
   | {
       type: "FETCH_SHAPE_METADATA_ERROR";
       error: Error;
+    }
+  | {
+      type: "SET_ACTIVE_NAMESPACE";
+      namespace: Namespace | null;
+    }
+  | {
+      type: "SET_VISIBLE_NAMESPACES";
+      namespaces: Namespace[];
     }
   | {
       type: "FETCH_NUM_SHAPES_LOADING";
@@ -154,7 +174,8 @@ export function geoshapeReducer(state: State, action: Action): State {
       return {
         ...state,
         shapeMetadataIsLoading: false,
-        shapeMetadata: action.shapeMetdata,
+        shapeMetadata: action.shapeMetadata,
+        namespaces: action.namespaces,
       };
     }
     case "FETCH_SHAPE_METADATA_ERROR": {
@@ -261,6 +282,18 @@ export function geoshapeReducer(state: State, action: Action): State {
         ...state,
         updateError: action.error,
         shapeUpdateLoading: false,
+      };
+    }
+    case "SET_ACTIVE_NAMESPACE": {
+      return {
+        ...state,
+        activeNamespace: action.namespace,
+      };
+    }
+    case "SET_VISIBLE_NAMESPACES": {
+      return {
+        ...state,
+        visibleNamepaces: action.namespaces,
       };
     }
     default:

@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION generate_shape_tile(
     x INTEGER,
     y INTEGER,
     filter_organization_id UUID,
-    cache_id INTEGER
+    namespace_ids UUID[]
 )
 RETURNS bytea
 AS $$
@@ -23,11 +23,14 @@ BEGIN
       SELECT ST_AsMVTGeom(ST_Transform(sh.geom, 3857), bounds.geom) AS geom
       , sh.properties - '__uuid' AS properties
       , sh.uuid AS "__uuid"
+      , sh.namespace_id AS "__namespace_id"
       FROM public.shapes sh, bounds
       WHERE 1=1
         AND sh.organization_id = filter_organization_id
         AND sh.deleted_at IS NULL
         AND ST_Intersects(sh.geom, ST_Transform(bounds.geom, 4326))
+	-- If the namespace parameter is empty, get all data
+	AND COALESCE(namespace_id = ANY(namespace_ids), TRUE)
     )
     SELECT ST_AsMVT(mvtgeom.*)::bytea
     INTO result

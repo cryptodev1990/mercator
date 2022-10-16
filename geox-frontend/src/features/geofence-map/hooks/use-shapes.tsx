@@ -11,23 +11,11 @@ export const useShapes = () => {
     shapeForPropertyEdit,
     setShapeForPropertyEdit,
     mapRef,
-    virtuosoRef,
     selectedFeatureIndexes,
     setSelectedFeatureIndexes,
   } = useContext(GeofencerContext);
 
   const gsc = useContext(GeoShapeContext);
-
-  function scrollToSelectedShape(i: number) {
-    if (virtuosoRef.current === null) {
-      return;
-    }
-    virtuosoRef.current.scrollToIndex({
-      index: i,
-      align: "start",
-      behavior: "smooth",
-    });
-  }
 
   function clearSelectedFeatureIndexes() {
     setSelectedFeatureIndexes([]);
@@ -41,11 +29,8 @@ export const useShapes = () => {
     // Shapes that could be added to the map
     tentativeShapes,
     setTentativeShapes,
-    // Ref for the sidebar elements
-    virtuosoRef,
     // Ref for the deck.gl container itself
     mapRef,
-    scrollToSelectedShape,
     selectedFeatureIndexes,
     setSelectedFeatureIndexes,
     clearSelectedFeatureIndexes,

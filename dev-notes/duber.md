@@ -1083,9 +1083,12 @@ Branch: ``ajd-namespace-oddity``
   - How: top-level namespaces with carets beside them, click the caret and reveal
   - [X] Generate new OpenAPI schema client
   - [X] Read new shape-metadata endpoint -- /geofencer/namespaces
-  - [ ] Add the ability for the user to rename namespace -- PATCH /geofencer/namespaces/namespace-id
-  - [ ] Add ability to delete a namespace
+  - [ ] Add the ability for the user to rename namespace -- PATCH /geofencer/namespaces/namespace-id -- Click to rename
+  - [ ] Add a namespace with a `+` icon
+  - [ ] Add delete with a right-click and delete
+  - [ ] How to assign shapes to namepaces?
   - [ ] Add ability to move shapes between namespaces
+
 
 ## 10-13-22
 
@@ -1106,3 +1109,13 @@ Branch: ``ajd/cache-madness``
 - Alternative approach: Two tile layers
   - We create two tile layers, one for lazy loading
   - When a shape is updated, we hide its UUID from the lazy loading tile and aggressively refresh the other layer
+
+## 10-14-22 & 10-15-22
+
+## Progress
+
+- [X] Finish refresh
+  - Ultimately chose to refresh single tiles for updates
+- [X] Add selection and visibility to namespaces
+- [X] Added CLI framework and CLI input to get JWT
+

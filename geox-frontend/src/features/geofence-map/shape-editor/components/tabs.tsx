@@ -4,8 +4,6 @@ import { useEffect } from "react";
 import { GeofencerNavbar } from "../../geofencer-navbar";
 import { TbListDetails, TbNotebook } from "react-icons/tb";
 import { useShapes } from "../../hooks/use-shapes";
-import { useTooltip } from "../../../../hooks/use-tooltip";
-import ReactTooltip from "react-tooltip";
 
 export function Tabs({
   children,
@@ -28,8 +26,6 @@ export function Tabs({
       setShapeForPropertyEdit(null);
     }
   }, [selectedIndex]);
-
-  const { tooltip, tooltipEvents } = useTooltip();
 
   const activeColorCss = (selected: boolean) =>
     selected ? "stroke-white" : "stroke-gray-300";
@@ -55,14 +51,12 @@ export function Tabs({
                     <TbListDetails
                       className={activeColorCss(index === selectedIndex)}
                       data-tip={"Layers list"}
-                      {...tooltipEvents}
                     />
                   )}
                   {index === 1 && (
                     <TbNotebook
                       className={activeColorCss(index === selectedIndex)}
                       data-tip={"Property editor - select a shape to edit"}
-                      {...tooltipEvents}
                     />
                   )}
                   {index === selectedIndex && (
@@ -77,7 +71,6 @@ export function Tabs({
               <Tab.Panel key={index}>{child}</Tab.Panel>
             ))}
           </Tab.Panels>
-          {tooltip && <ReactTooltip effect="solid" place="left" type="dark" />}
         </section>
       </Tab.Group>
     </>

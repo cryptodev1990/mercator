@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 import { Transition } from "react-transition-group";
-import { useShapes } from "../../hooks/use-shapes";
 
 const ArrowBox = ({ handleClick }: { handleClick: any }) => {
   return (
@@ -60,7 +59,7 @@ export const SidebarDrawer = ({ children }: { children: any }) => {
       <Transition in={!hidden} timeout={50}>
         {(state: any) => (
           <div
-            className={`w-[300px] z-10 bg-slate-700`}
+            className={`w-[300px] z-10 bg-slate-700 overflow-y-scroll scrollbar-thin`}
             style={{
               ...defaultStyles,
               ...transitionStyles[state],

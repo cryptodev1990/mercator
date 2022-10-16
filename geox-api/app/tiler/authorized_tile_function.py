@@ -30,7 +30,7 @@ class AuthorizedTileFunction(layer.Function):
                     ":x",
                     ":y",
                     ":filter_organization_id",
-                    ":cache_key",
+                    ":namespace_ids",
                 ),
             )
             q, p = render(
@@ -38,8 +38,8 @@ class AuthorizedTileFunction(layer.Function):
                 x=tile.x,
                 y=tile.y,
                 z=tile.z,
-                filter_organization_id=str(kwargs["organization_id"]),
-                cache_key=int(kwargs["cache_key"]),
+                filter_organization_id=str(kwargs["organization_id"].id),
+                namespace_ids=kwargs.get("namespace_ids"),
             )
 
             # execute the query

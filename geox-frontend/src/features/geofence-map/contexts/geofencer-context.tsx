@@ -16,7 +16,6 @@ interface GeofencerContextState {
   setTentativeShapes: (shapes: GeoShapeCreate[]) => void;
   uploadedGeojson: Feature[];
   setUploadedGeojson: (geojson: Feature[]) => void;
-  virtuosoRef: any;
   mapRef: any;
   selectedFeatureIndexes: number[];
   setSelectedFeatureIndexes: (indexes: number[]) => void;
@@ -36,7 +35,6 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setTentativeShapes: () => {},
   uploadedGeojson: [],
   setUploadedGeojson: () => {},
-  virtuosoRef: null,
   mapRef: null,
   selectedFeatureIndexes: [],
   setSelectedFeatureIndexes: () => {},
@@ -94,7 +92,6 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
   const [tentativeShapes, setTentativeShapes] = useState<GeoShapeCreate[]>([]);
 
   const [uploadedGeojson, setUploadedGeojson] = useState<Feature[]>([]);
-  const virtuosoRef = useRef(null);
   const mapRef = useRef(null);
 
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = useState<
@@ -116,7 +113,6 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
           setTentativeShapes(tentativeShapes),
         uploadedGeojson,
         setUploadedGeojson: (geojson: Feature[]) => setUploadedGeojson(geojson),
-        virtuosoRef,
         mapRef,
         selectedFeatureIndexes,
         setSelectedFeatureIndexes: (indexes: number[]) =>

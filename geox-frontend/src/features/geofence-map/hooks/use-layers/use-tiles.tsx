@@ -2,43 +2,25 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import { useIdToken } from "../use-id-token";
 import { useShapes } from "../use-shapes";
 import { useSelectedShapes } from "../use-selected-shapes";
-import { findIndex, tilesForGeoJson } from "../../../../common/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
-import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
-import { useViewport } from "../use-viewport";
+// import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
+import { MVTLayer } from "@deck.gl/geo-layers";
 
 export function useTiles() {
   const { idToken } = useIdToken();
 
-  const tileCache = useMemo(() => {
-    return new TileCache();
-  }, []);
-
   const tileArgs = useTileArgs();
-
-  const { updatedShapeIds, updatedShape } = useShapes();
-  const { viewport } = useViewport();
-
-  useEffect(() => {
-    // clear the tiles
-    tileCache.clearForFeatures(updatedShapeIds);
-    if (updatedShape?.geojson) {
-      const tileKeys = tilesForGeoJson(updatedShape.geojson, viewport.zoom);
-      tileCache.clearTileByKeys(tileKeys);
-    }
-  }, [updatedShapeIds, tileCache]);
 
   if (idToken === null) {
     return null;
   }
   return ["geofence-mvt"].map(
     (id) =>
-      new CxMVTLayer({
+      new MVTLayer({
         id,
         // @ts-ignore
-        cache: tileCache,
         ...tileArgs,
       })
   );
@@ -46,16 +28,27 @@ export function useTiles() {
 
 const useTileArgs = () => {
   const { idToken } = useIdToken();
-  const { shapeMetadata, scrollToSelectedShape, tileCacheKey } = useShapes();
+  const { tileCacheKey, visibleNamepaces } = useShapes();
   const [isHovering, setIsHovering] = useState<string | null>(null);
 
   const { isSelected, selectedUuids, selectOneShapeUuid } = useSelectedShapes();
 
-  const slideToCard = (uuid: string) => {
-    const i = findIndex(uuid, shapeMetadata);
-    scrollToSelectedShape(i);
-  };
   const { cursorMode } = useCursorMode();
+
+  const getTileUrl = useCallback(() => {
+    if (visibleNamepaces.length === 0) {
+      return "";
+    }
+    const namespacesAsParams = visibleNamepaces.map(
+      (x) => `namespace_ids=${x.id}`
+    );
+    return (
+      process.env.REACT_APP_BACKEND_URL +
+      `/backsplash/generate_shape_tile/{z}/{x}/{y}?${namespacesAsParams.join(
+        "&"
+      )}`
+    );
+  }, [visibleNamepaces]);
 
   useEffect(() => {
     setIsHovering(null);
@@ -64,10 +57,7 @@ const useTileArgs = () => {
   return {
     // @ts-ignore
     lineWidthMinPixels: 1,
-    data:
-      process.env.REACT_APP_BACKEND_URL +
-      "/backsplash/generate_shape_tile/{z}/{x}/{y}" +
-      `/0`,
+    data: getTileUrl(),
     loadOptions: {
       fetch: {
         method: "GET",
@@ -93,7 +83,6 @@ const useTileArgs = () => {
         const { __uuid: uuid } = object.properties;
         if (!isSelected(uuid)) {
           selectOneShapeUuid(uuid);
-          slideToCard(uuid);
         }
       }
     },
@@ -108,7 +97,6 @@ const useTileArgs = () => {
         const { __uuid: uuid } = object.properties;
         if (!isSelected(uuid)) {
           selectOneShapeUuid(uuid);
-          slideToCard(uuid);
         }
       }
     },
@@ -118,7 +106,7 @@ const useTileArgs = () => {
     getLineColor: [255, 255, 255, 255],
     updateTriggers: {
       getFillColor: [selectedUuids, isHovering],
-      getTileData: [tileCacheKey],
+      getTileData: [tileCacheKey, visibleNamepaces],
     },
     getFillColor: (d: any) => {
       if (isSelected(d.properties.__uuid)) {
@@ -135,11 +123,6 @@ const useTileArgs = () => {
     maxCacheByteSize: 0,
     renderSubLayers: (props: any) => {
       return new GeoJsonLayer({
-        data: props.data,
-        pickable: true,
-        stroked: true,
-        filled: true,
-        getElevation: 0,
         ...props,
       });
     },
