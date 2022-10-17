@@ -103,7 +103,7 @@ export const useGetNamespaces = () => {
   );
 };
 
-export const useGetOneShapeByUuid = (uuid: string) => {
+export const useGetOneShapeByUuid = (uuid: string | null) => {
   return useQuery<GeoShape | null>(
     ["shape", uuid],
     ({ meta }) => {

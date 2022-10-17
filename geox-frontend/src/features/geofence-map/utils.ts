@@ -4,6 +4,7 @@ export function geoShapesToFeatureCollection(shapes: GeoShape[]) {
   /**
    * Converts GeoShapes to GeoJSON FeatureCollection
    */
+  console.log(shapes);
   const isNullOrUndefined = typeof shapes === "undefined" || !shapes;
   return {
     type: "FeatureCollection",
@@ -14,7 +15,7 @@ export function geoShapesToFeatureCollection(shapes: GeoShape[]) {
             type: "Feature",
             geometry: geojson.geometry,
             properties: {
-              name: name || geojson.properties.name || geojson.properties.NAME,
+              name: name || geojson.properties.name,
               __uuid: uuid,
               ...geojson.properties,
             },

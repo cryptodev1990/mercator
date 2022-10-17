@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { GeofencerContext } from "../contexts/geofencer-context";
 import { GeoShapeWriteContext } from "../contexts/geoshape-write/context";
 import { GeoShapeMetadataContext } from "../contexts/geoshape-metadata/context";
+import { GeoShapeUpdate } from "../../../client";
 
 export const useShapes = () => {
   const {

@@ -11,6 +11,7 @@ import { EditorMode } from "../../../cursor-modes";
 import { GeoShapeMetadata } from "../../../../../client/models/GeoShapeMetadata";
 import { useSelectedShapes } from "../../../hooks/use-selected-shapes";
 import { useShapes } from "../../../hooks/use-shapes";
+import { EditableLabel } from "../../../../../common/components/editable-label";
 
 export const ShapeCard = ({
   shape,
@@ -23,8 +24,14 @@ export const ShapeCard = ({
   onMouseLeave: (e: any) => void;
   isHovered: boolean;
 }) => {
-  const { deleteShapes, updateLoading, clearSelectedFeatureIndexes } =
-    useShapes();
+  const {
+    deleteShapes,
+    updateLoading,
+    clearSelectedFeatureIndexes,
+    updateShape,
+  } = useShapes();
+
+  const { selectedFeatureCollection } = useSelectedShapes();
 
   const { isSelected, selectedDataIsLoading, clearSelectedShapeUuids } =
     useSelectedShapes();
@@ -44,12 +51,32 @@ export const ShapeCard = ({
       className={`h-13 p-3 max-w-sm snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
     >
       <div className="flex flex-row justify-between items-center">
-        <h5
-          title={shape?.properties?.name}
+        <EditableLabel
+          value={shape?.name || shape?.properties?.name || "New shape"}
+          disabled={selectedDataIsLoading}
+          onChange={(newName) => {
+            const geojson = selectedFeatureCollection?.features.find(
+              (x) => x?.properties?.__uuid === shape.uuid
+            );
+
+            if (!geojson) {
+              return;
+            }
+
+            // @ts-ignore
+            geojson.properties.name = newName;
+
+            if (newName !== shape.name) {
+              updateShape({
+                ...shape,
+                // @ts-ignore
+                geojson,
+                name: newName,
+              });
+            }
+          }}
           className="text-1xl font-sans tracking-tight text-white truncate"
-        >
-          {shape?.name || shape?.properties?.name || "New shape"}
-        </h5>
+        ></EditableLabel>
         <div
           className={`transition flex flex-row justify-start space-x-1 ${selectionOpacity}`}
         >
