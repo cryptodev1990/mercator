@@ -1,15 +1,15 @@
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, Query, Request, Response
 from morecantile import Tile, TileMatrixSet
-from pydantic import UUID4, create_model
+from pydantic import UUID4
 from timvt.dependencies import LayerParams, TileMatrixSetParams, TileParams
 from timvt.factory import TILE_RESPONSE_PARAMS
 from timvt.layer import Layer
 from timvt.resources.enums import MimeTypes
 
-from app.crud.organization import get_active_organization
-from app.dependencies import UserConnection, get_app_user_connection, verify_token
+from app.dependencies import get_current_user_org, verify_token
+from app.schemas.user_organizations import UserOrganization
 
 router = APIRouter(tags=["geofencer"], dependencies=[Depends(verify_token)])
 
@@ -30,10 +30,12 @@ async def get_shape_tile(
     tile: Tile = Depends(TileParams),
     tms: TileMatrixSet = Depends(TileMatrixSetParams),
     layer: Layer = Depends(LayerParams),
-    user_conn: UserConnection = Depends(get_app_user_connection),
+    # Can use get_current_user_org instead of get_user_connection because currently
+    # the tiler uses a separate connection pool
+    user_org: UserOrganization = Depends(get_current_user_org),
 ):
     """Get a tile of shape."""
-    org_id = user_conn.organization.id
+    org_id = user_org.organization.id
     pool = request.app.state.pool
     kwargs = {"organization_id": org_id, "namespace_ids": namespace_ids}
 

@@ -66,17 +66,23 @@ class Cache(Protocol):
         ...
 
 
-def get_cache(settings: Settings = Depends(get_settings)) -> Optional[Cache]:
+@lru_cache()
+def get_cache() -> Optional[Cache]:
+    settings = get_settings()
     opts = settings.cache
+    conn = settings.redis_connection
     if opts.enabled:
-        db = walrus.Database(
-            host=opts.host,
-            port=opts.port,
-            db=opts.db,
-            password=opts.password.get_secret_value() if opts.password else None,
-        )
-        cache = db.cache(default_timeout=opts.timeout)
-        return cache
+        try:
+            db = walrus.Database(
+                host=conn.host,
+                port=conn.port,
+                db=int(conn.path[1:]) if conn.path else None,
+                password=conn.password,
+            )
+            cache = db.cache(default_timeout=opts.timeout)
+            return cache
+        except Exception as exc:
+            logger.error("Error initializing the cache", exc)
     return None
 
 

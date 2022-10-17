@@ -4,7 +4,7 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, Tuple, Optional, cast
 
 from pydantic import (
     BaseModel,
@@ -58,11 +58,7 @@ class CacheOptions(BaseModel):
     """Options for the cache."""
 
     enabled: bool = True
-    host: str = "localhost"
-    port: int = Field(6379, ge=1)
-    db: int = Field(0, ge=0)
     timeout: int = Field(3600, ge=0)
-    password: Optional[SecretStr] = Field(None)
 
 
 class Settings(BaseSettings):
@@ -120,8 +116,10 @@ class Settings(BaseSettings):
         """Machine account sub id."""
         return f"{self.management_client_id}@clients"
 
-    backend_cors_origins: List[AnyHttpURLorAsterisk] = Field(
-        ["*"],
+    from typing import Literal
+
+    backend_cors_origins: Tuple[AnyHttpURLorAsterisk] = Field(
+        cast(Tuple[AnyHttpURLorAsterisk], tuple(["*"])),
         description="""Values of CORS access-control-allow-origins header
 
     The setting is a list of URLs. In addition, the input accepts the following values:
@@ -131,13 +129,13 @@ class Settings(BaseSettings):
     )
 
     @validator("backend_cors_origins", pre=True)
-    def _assemble_cors_origins(cls, v) -> List[str]:
+    def _assemble_cors_origins(cls, v):
         # Note - pre validation is done AFTER environment variable parsing
         # environment variables are parsed as JSON.
         # See https://pydantic-docs.helpmanual.io/usage/settings/#parsing-environment-variable-values for what to do
         # to handle comma-separated values as inputs
         if v is None or v == "":
-            return ["*"]
+            return tuple(["*"])
         return v
 
     # db connection info
@@ -184,11 +182,11 @@ class Settings(BaseSettings):
 
     redis_connection: RedisDsn = Field(
         cast(RedisDsn, "redis://localhost:6379/0"),
-        description="Redis DSN to use for celery and the cache.",
+        description="Redis connection info that can be used for celery and the cache.",
     )
 
     cache: CacheOptions = Field(
-        default_factory=CacheOptions,
+        CacheOptions(),
         description="Cache options. If None, then no cache is used.",
         env="APP_CACHE",
     )
@@ -227,8 +225,14 @@ class Settings(BaseSettings):
 
     class Config:  # noqa
         env_file = ".env"
+        # environment variables for fields are case insensitive
         case_sensitive = False
+        # nested model env variables use {field_name}__{submodel_field_name}
+        # for example, APP_CACHE__TIMEOUT=84600
         env_nested_delimiter = "__"
+        # if settings are frozen, then they are hashable and can be cached.
+        allow_mutation = False
+        frozen = True
 
 
 @lru_cache()
