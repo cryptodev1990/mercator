@@ -28,7 +28,7 @@ export function useTiles() {
 
 const useTileArgs = () => {
   const { idToken } = useIdToken();
-  const { tileCacheKey, visibleNamepaces } = useShapes();
+  const { tileCacheKey, visibleNamepaces, numShapes } = useShapes();
   const [isHovering, setIsHovering] = useState<string | null>(null);
 
   const { isSelected, selectedUuids, selectOneShapeUuid } = useSelectedShapes();
@@ -37,7 +37,10 @@ const useTileArgs = () => {
 
   const getTileUrl = useCallback(() => {
     if (visibleNamepaces.length === 0) {
-      return "";
+      return (
+        process.env.REACT_APP_BACKEND_URL +
+        "/backsplash/generate_shape_tile/{z}/{x}/{y}"
+      );
     }
     const namespacesAsParams = visibleNamepaces.map(
       (x) => `namespace_ids=${x.id}`
@@ -48,11 +51,15 @@ const useTileArgs = () => {
         "&"
       )}`
     );
-  }, [visibleNamepaces]);
+  }, [visibleNamepaces, numShapes]);
 
   useEffect(() => {
     setIsHovering(null);
   }, [cursorMode]);
+
+  if (visibleNamepaces.length === 0 && numShapes != null && numShapes > 0) {
+    return [];
+  }
 
   return {
     // @ts-ignore

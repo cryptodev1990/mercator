@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 import { useSelectedShapes } from "../use-selected-shapes";
-import { useBulkDeleteShapesMutation } from "../openapi-hooks";
+import { useBulkDeleteShapesMutation } from "../use-openapi-hooks";
 
 export function useEditFunction() {
   const {

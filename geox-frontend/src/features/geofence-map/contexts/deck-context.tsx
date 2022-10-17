@@ -11,7 +11,7 @@ export const DeckContext = createContext<DeckContextInterface>({
 
 DeckContext.displayName = "DeckContext";
 
-export const DeckContextContainer = ({ children }: { children: any }) => {
+export const DeckContextProvider = ({ children }: { children: any }) => {
   const deckRef = useRef<any>();
 
   return (

@@ -4,7 +4,7 @@ import simplur from "simplur";
 import {
   usePollCopyTaskQuery,
   useTriggerCopyTaskMutation,
-} from "../hooks/openapi-hooks";
+} from "../hooks/use-openapi-hooks";
 
 export const DbSyncContext = createContext({
   triggerCopyTask: () => {},

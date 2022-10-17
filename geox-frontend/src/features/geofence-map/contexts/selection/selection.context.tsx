@@ -1,8 +1,9 @@
 import { FeatureCollection } from "@turf/helpers";
-import { createContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { GeoShapeMetadata } from "../../../../client/models/GeoShapeMetadata";
-import { useGetOneShapeByUuid } from "../../hooks/openapi-hooks";
+import { useGetOneShapeByUuid } from "../../hooks/use-openapi-hooks";
 import { geoShapesToFeatureCollection } from "../../utils";
+import { GeoShapeMetadataContext } from "../geoshape-metadata/context";
 import { selectionReducer, initialState } from "./selection.reducer";
 
 export interface SelectionContextI {
@@ -31,7 +32,7 @@ export const SelectionContext = createContext<SelectionContextI>({
 
 SelectionContext.displayName = "SelectionContext";
 
-export const SelectionProvider = ({ children }: { children: any }) => {
+export const SelectionContextProvider = ({ children }: { children: any }) => {
   const [state, dispatch] = useReducer(selectionReducer, initialState);
 
   // TODO create a bulk query for this
@@ -61,10 +62,17 @@ export const SelectionProvider = ({ children }: { children: any }) => {
     }
     return state.uuids.includes(shapeOrUuid.uuid ?? null);
   };
-
   const selectedFeatureCollection = geoShapesToFeatureCollection(
     selectedShapeData ? [selectedShapeData] : []
   );
+
+  // remove selection if the visible shapes change
+  const { visibleNamepaces, activeNamespace } = useContext(
+    GeoShapeMetadataContext
+  );
+  useEffect(() => {
+    dispatch({ type: "RESET_SELECTION" });
+  }, [visibleNamepaces, activeNamespace]);
 
   return (
     <SelectionContext.Provider

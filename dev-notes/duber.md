@@ -1112,10 +1112,17 @@ Branch: ``ajd/cache-madness``
 
 ## 10-14-22 & 10-15-22
 
-## Progress
+### Progress
 
 - [X] Finish refresh
   - Ultimately chose to refresh single tiles for updates
 - [X] Add selection and visibility to namespaces
 - [X] Added CLI framework and CLI input to get JWT
 
+
+## 10-16-22
+
+### Progress
+
+- [ ] Add namespace button
+- [ ] Clean up contexts

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { GeofencerContext } from "../contexts/geofencer-context";
-import { GeoShapeContext } from "../contexts/geoshape/geoshape.context";
+import { GeoShapeWriteContext } from "../contexts/geoshape-write/context";
+import { GeoShapeMetadataContext } from "../contexts/geoshape-metadata/context";
 
 export const useShapes = () => {
   const {
@@ -15,14 +16,16 @@ export const useShapes = () => {
     setSelectedFeatureIndexes,
   } = useContext(GeofencerContext);
 
-  const gsc = useContext(GeoShapeContext);
+  const gswc = useContext(GeoShapeWriteContext);
+  const gsmc = useContext(GeoShapeMetadataContext);
 
   function clearSelectedFeatureIndexes() {
     setSelectedFeatureIndexes([]);
   }
 
   return {
-    ...gsc,
+    ...gswc,
+    ...gsmc,
     // metadata editing
     shapeForPropertyEdit,
     setShapeForPropertyEdit,
