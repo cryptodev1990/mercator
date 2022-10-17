@@ -11,6 +11,7 @@ export interface State {
   numShapes: number | null;
   numShapesIsLoading: boolean;
   numShapesError: Error | null;
+  namespacesError: Error | null;
 }
 
 export const initialState: State = {
@@ -23,6 +24,7 @@ export const initialState: State = {
   numShapes: null,
   numShapesIsLoading: false,
   numShapesError: null,
+  namespacesError: null,
 };
 
 export function geoshapeReducer(state: State, action: Action): State {
@@ -80,6 +82,24 @@ export function geoshapeReducer(state: State, action: Action): State {
       return {
         ...state,
         visibleNamepaces: action.namespaces,
+      };
+    }
+    case "DELETE_NAMESPACE_LOADING": {
+      return {
+        ...state,
+      };
+    }
+    case "DELETE_NAMESPACE_SUCCESS": {
+      return {
+        ...state,
+      };
+    }
+    case "UPDATE_NAMESPACE_ERROR":
+    case "ADD_NAMESPACE_ERROR":
+    case "DELETE_NAMESPACE_ERROR": {
+      return {
+        ...state,
+        namespacesError: action.error,
       };
     }
     default:

@@ -1,8 +1,12 @@
 import { createContext, Dispatch, useEffect, useReducer } from "react";
+import { useQueryClient } from "react-query";
 import {
   GeoShapeMetadata,
   Namespace,
+  NamespaceCreate,
   NamespaceResponse,
+  NamespacesService,
+  NamespaceUpdate,
 } from "../../../../client";
 import { aggressiveLog } from "../../../../common/aggressive-log";
 import {
@@ -11,6 +15,10 @@ import {
 } from "../../hooks/use-openapi-hooks";
 import { Action } from "./action-types";
 import { geoshapeReducer, initialState, State } from "./reducer";
+import {
+  useAddNamespaceMutation,
+  useDeleteNamespaceMutation,
+} from "./use-openapi";
 
 export interface IGeoShapeMetadataContext {
   // API call - get all shape metadata (shape minus geometry)
@@ -27,6 +35,14 @@ export interface IGeoShapeMetadataContext {
   numShapesError: Error | null;
   setActiveNamespace: (namespace: Namespace | null) => void;
   setVisibleNamespaces: any;
+  // namespace writes
+  addNamespace: (namespace: NamespaceCreate) => void;
+  removeNamespace: (id: Namespace["id"]) => void;
+  updateNamespace: (
+    namespaceId: Namespace["id"],
+    namespace: NamespaceUpdate
+  ) => void;
+  namespacesError: Error | null;
 }
 
 export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
@@ -41,6 +57,11 @@ export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
   numShapes: null,
   numShapesIsLoading: false,
   numShapesError: null,
+  // namespace writes
+  addNamespace: async () => {},
+  removeNamespace: async () => {},
+  updateNamespace: async () => {},
+  namespacesError: null,
 });
 
 GeoShapeMetadataContext.displayName = "GeoShapeMetadataContext";
@@ -50,6 +71,7 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     aggressiveLog(geoshapeReducer, "geoshape-metadata"),
     initialState
   );
+  const qc = useQueryClient();
 
   const {
     data: numShapesPayload,
@@ -59,12 +81,10 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
   } = useNumShapesQuery();
 
   useEffect(() => {
-    if (numShapesIsLoading) {
-      dispatch({ type: "FETCH_NUM_SHAPES_LOADING" });
-    } else if (numShapesError !== null) {
+    if (numShapesError !== null) {
       dispatch({
         type: "FETCH_NUM_SHAPES_ERROR",
-        error: numShapesError as Error,
+        error: numShapesError as any,
       });
     } else if (numShapesIsSuccess) {
       dispatch({
@@ -87,9 +107,7 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
   } = useGetAllShapesMetadata();
 
   useEffect(() => {
-    if (shapeMetadataIsLoading) {
-      dispatch({ type: "FETCH_SHAPE_METADATA_LOADING" });
-    } else if (shapeMetadataError !== null) {
+    if (shapeMetadataError !== null) {
       dispatch({
         type: "FETCH_SHAPE_METADATA_ERROR",
         error: shapeMetadataError as Error,
@@ -125,11 +143,86 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     });
   }
 
+  const { mutate: addNamespaceMutation } = useAddNamespaceMutation();
+
+  function addNamespace(namespace: NamespaceCreate) {
+    dispatch({
+      type: "ADD_NAMESPACE_LOADING",
+      namespace,
+    });
+    addNamespaceMutation(namespace, {
+      onSuccess: (data) => {
+        dispatch({
+          type: "ADD_NAMESPACE_SUCCESS",
+          payload: data,
+        });
+        qc.fetchQuery("geofencer");
+      },
+      onError: (error) => {
+        dispatch({
+          type: "ADD_NAMESPACE_ERROR",
+          error: error as Error,
+        });
+      },
+    });
+  }
+
+  const { mutate: deleteNamespaceMutation } = useDeleteNamespaceMutation();
+  function removeNamespace(id: Namespace["id"]) {
+    dispatch({
+      type: "DELETE_NAMESPACE_LOADING",
+      id,
+    });
+    deleteNamespaceMutation(id, {
+      onSuccess: (data) => {
+        dispatch({
+          type: "DELETE_NAMESPACE_SUCCESS",
+        });
+        qc.fetchQuery("geofencer");
+      },
+      onError: (error) => {
+        dispatch({
+          type: "DELETE_NAMESPACE_ERROR",
+          error: error as Error,
+        });
+      },
+    });
+  }
+
+  function updateNamespace(
+    namespaceId: Namespace["id"],
+    namespace: NamespaceUpdate
+  ) {
+    dispatch({
+      type: "UPDATE_NAMESPACE_LOADING",
+      namespace,
+    });
+    // TODO this is not a hook because I can't figure out
+    // how to get this multiparameter call to work with react-query
+    NamespacesService.patchNamespacesGeofencerNamespacesNamespaceIdPatch(
+      namespaceId,
+      namespace
+    )
+      .then((data: NamespaceResponse) => {
+        dispatch({
+          type: "UPDATE_NAMESPACE_SUCCESS",
+          payload: data,
+        });
+        qc.fetchQuery("geofencer");
+      })
+      .catch((error) => {
+        dispatch({
+          type: "UPDATE_NAMESPACE_ERROR",
+          error: error as Error,
+        });
+      });
+  }
+
   return (
     <GeoShapeMetadataContext.Provider
       value={{
         shapeMetadata: state.shapeMetadata,
-        shapeMetadataIsLoading: state.shapeMetadataIsLoading,
+        shapeMetadataIsLoading,
         shapeMetadataError: state.shapeMetadataError,
         namespaces: state.namespaces,
         activeNamespace: state.activeNamespace,
@@ -139,6 +232,10 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
         numShapes: state.numShapes,
         numShapesIsLoading: state.numShapesIsLoading,
         numShapesError: state.numShapesError,
+        addNamespace,
+        removeNamespace,
+        updateNamespace,
+        namespacesError: state.namespacesError,
       }}
     >
       {children}

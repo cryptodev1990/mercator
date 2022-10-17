@@ -8,25 +8,23 @@ import { useUiModals } from "../../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../../types";
 import { useDbSync } from "../../../hooks/use-db-sync";
 import { useSelectedShapes } from "../../../hooks/use-selected-shapes";
-import { NamespaceSection } from "./namespace-sections";
+import { NamespaceSection } from "./namespace-section";
+import simplur from "simplur";
 
-const NewUserMessage = () => {
+const EmptyMessage = () => {
   return (
-    <div className="p-5 bg-slate-600">
-      <p>
-        Welcome to{" "}
-        <strong
-          className="
-                  bg-gradient-to-r bg-clip-text text-transparent 
-                  from-white via-porsche to-white
-                  animate-text"
-        >
-          Geofencer
-        </strong>
-        ! You're part of our private beta.
+    <div className="flex flex-col justify-center h-full p-3">
+      <p className="text-white text-left">
+        No shapes have been added to the map yet.
       </p>
       <br />
-      <p>Start adding polygons by clicking on the button bank on the right</p>
+      <p className="text-white text-left">
+        Click the{" "}
+        <span className="inline-flex">
+          <BiAddToQueue />
+        </span>{" "}
+        button to add shapes.
+      </p>
     </div>
   );
 };
@@ -81,8 +79,14 @@ const TentativeButtonBank = () => {
 };
 
 export const ShapeBarPaginator = () => {
-  const { shapeMetadata, tentativeShapes, numShapes, numShapesIsLoading } =
-    useShapes();
+  const {
+    shapeMetadata,
+    tentativeShapes,
+    numShapes,
+    namespaces,
+    shapeMetadataIsLoading,
+    shapeMetadataError,
+  } = useShapes();
   const { openModal } = useUiModals();
   const { isLoading: isPolling } = useDbSync();
 
@@ -131,12 +135,34 @@ export const ShapeBarPaginator = () => {
         ))}
       </div>
       {tentativeShapes.length > 0 && <TentativeButtonBank />}
-      {shapeMetadata?.length !== 0 && <NamespaceSection />}
-      {shapeMetadata.length === 0 && <NewUserMessage />}
+      {namespaces.length !== 0 && <NamespaceSection />}
+      {!shapeMetadataIsLoading &&
+        shapeMetadata.length === 0 &&
+        namespaces.length === 0 &&
+        shapeMetadataError === null && <EmptyMessage />}
+      {shapeMetadataError && (
+        <div className="flex flex-col justify-center h-full p-3">
+          <p className="text-white text-left">
+            There was an error loading shapes.
+          </p>
+          <br />
+          <p className="text-white text-left">
+            Please refresh the page and try again.
+          </p>
+        </div>
+      )}
       <footer className="flex flex-col">
         <p className="text-xs m-1">
-          {shapeMetadata.length} of {numShapesIsLoading ? "..." : numShapes}
-          {" shapes"}
+          {shapeMetadataIsLoading && (
+            <Loading className="spin" height={20} width={20} />
+          )}
+          {
+            <>
+              {simplur`${numShapes || 0} shape[|s] in ${
+                namespaces.length
+              } folder[|s]`}
+            </>
+          }
         </p>
       </footer>
     </div>

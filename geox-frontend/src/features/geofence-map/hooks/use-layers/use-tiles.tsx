@@ -12,8 +12,12 @@ export function useTiles() {
   const { idToken } = useIdToken();
 
   const tileArgs = useTileArgs();
+  const { visibleNamepaces } = useShapes();
 
   if (idToken === null) {
+    return null;
+  }
+  if (visibleNamepaces.length === 0) {
     return null;
   }
   return ["geofence-mvt"].map(
@@ -56,10 +60,6 @@ const useTileArgs = () => {
   useEffect(() => {
     setIsHovering(null);
   }, [cursorMode]);
-
-  if (visibleNamepaces.length === 0 && numShapes != null && numShapes > 0) {
-    return [];
-  }
 
   return {
     // @ts-ignore

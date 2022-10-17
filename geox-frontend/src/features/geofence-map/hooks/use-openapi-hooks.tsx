@@ -1,5 +1,9 @@
-import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import simplur from "simplur";
 import {
   CeleryTaskResponse,
@@ -8,25 +12,51 @@ import {
   GeoShape,
   TasksService,
   ShapeCountResponse,
-  GeoShapeCreate,
   NamespaceResponse,
   NamespacesService,
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import { DeckContext } from "../contexts/deck-context";
-import { useCursorMode } from "./use-cursor-mode";
-import { difference } from "@turf/turf";
+
+const genericErrorHandler = (error: any) => {
+  const status = error?.status;
+  switch (status) {
+    case 0:
+      toast.error("Network error");
+      break;
+    case 400:
+      toast.error("Bad request");
+      break;
+    case 401:
+      toast.error("Unauthorized");
+      break;
+    case 403:
+      toast.error("Forbidden");
+      break;
+    case 404:
+      toast.error("Not found");
+      break;
+    case 409:
+      toast.error("Conflict");
+      break;
+    case 500:
+      toast.error("Internal server error");
+      break;
+    case 503:
+      toast.error("Service unavailable");
+      break;
+    default:
+      toast.error("Unknown error");
+      break;
+  }
+};
 
 export const useAddShapeMutation = () => {
   const queryClient = useQueryClient();
-  const { options } = useCursorMode();
   const post = GeofencerService.postShapesGeofencerShapesPost;
-  const { deckRef } = useContext(DeckContext);
 
   return useMutation(post, {
-    onMutate: async (newData: GeoShapeCreate) => {},
     onSuccess(data: GeoShape) {
       queryClient.fetchQuery("geofencer");
     },
@@ -39,26 +69,25 @@ export const useAddShapeMutation = () => {
 
 export const useGetAllShapesMetadata = () => {
   const { isTokenSet } = useTokenInOpenApi();
+  const queryClient = useQueryClient();
   return useQuery<NamespaceResponse[]>(
     ["geofencer"],
     () => {
       return NamespacesService.getNamespacesGeofencerNamespacesGet();
     },
+
     {
-      refetchOnMount: false,
-      enabled: isTokenSet,
-      onSuccess: (data) => {},
-      onError(error: any) {
-        toast.remove();
-        toast.error(`Shapes failed to fetch (${error.detail})`);
+      onSuccess(data) {
+        queryClient.fetchQuery("numShapes");
       },
+      enabled: isTokenSet,
+      onError: genericErrorHandler,
     }
   );
 };
 
 export const useGetNamespaces = () => {
   const { isTokenSet } = useTokenInOpenApi();
-  const queryClient = useQueryClient();
 
   return useQuery<NamespaceResponse[]>(
     ["geofencer"],
@@ -66,12 +95,8 @@ export const useGetNamespaces = () => {
       return NamespacesService.getNamespacesGeofencerNamespacesGet();
     },
     {
-      onSuccess: (data) => {
-        queryClient.fetchQuery("numShapes");
-      },
       enabled: isTokenSet,
       onError(error: any) {
-        toast.remove();
         toast.error(`Namespaces failed to fetch (${error.detail})`);
       },
     }
@@ -91,7 +116,7 @@ export const useGetOneShapeByUuid = (uuid: string) => {
       staleTime: 0,
       cacheTime: 0,
       onError(error: any) {
-        toast.error(`Shapes failed to fetch (${error.detail ?? error})`);
+        toast.error(`Shapes failed to fetch (${error})`);
       },
     }
   );
@@ -122,7 +147,6 @@ export const useBulkDeleteShapesMutation = () => {
     {
       onSuccess(data: ShapeCountResponse) {
         toast.success(simplur`Deleted ${data.num_shapes} shape[|s]`);
-        queryClient.fetchQuery("numShapes");
         queryClient.fetchQuery("geofencer");
       },
       onError(error) {
@@ -152,11 +176,12 @@ export const useNumShapesQuery = () => {
       return GeofencerService.getShapeCountGeofencerShapesOpCountGet();
     },
     {
-      refetchOnWindowFocus: true,
-      refetchOnMount: true,
-      onError(error) {
-        toast.error(`Shapes failed to fetch (${error})`);
-      },
+      staleTime: 0,
+      cacheTime: 0,
+      retryOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      onError: genericErrorHandler,
     }
   );
 };
@@ -177,7 +202,7 @@ export const useGetAllShapes = (limit: number, offset: number) => {
       cacheTime: 0,
       staleTime: 0,
       onError(error: any) {
-        toast.error(`Shapes failed to fetch (${error.detail ?? error})`);
+        toast.error(`Shapes !failed to fetch (${error.detail ?? error})`);
       },
     }
   );

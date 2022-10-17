@@ -57,9 +57,9 @@ async def _get_jwt_for_user_from_auth0(username, password, url, headless=True):
         page = await context.new_page()
         await page.goto(url)
         await page.click("#login")
-        await page.type("#username", username, delay=10)
-        await page.type("#password", password, delay=10)
-        await page.click('button[type="submit"]', delay=10)
+        await page.type("#username", username, delay=100)
+        await page.type("#password", password, delay=100)
+        await page.click('button[type="submit"]', delay=100)
         await page.wait_for_load_state("networkidle")
         # In case there is a second step to the login to authorize the app
         try:

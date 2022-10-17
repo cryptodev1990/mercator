@@ -13,6 +13,8 @@ import { useContext, useEffect } from "react";
 import { DeckContext } from "../../contexts/deck-context";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { getCursorFromCursorMode } from "./utils";
+// Needed for mapbox-gl.js to work
+import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
