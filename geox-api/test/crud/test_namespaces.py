@@ -2,13 +2,12 @@ import random
 import uuid
 from string import ascii_letters, digits
 from typing import Any, Dict, List, Optional, Tuple, cast
-from unicodedata import name
 from uuid import UUID
 
 import pytest
 import ruamel.yaml
 from pydantic import UUID4
-from sqlalchemy import delete, event, insert, select, text, update
+from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
 from app.crud.namespaces import (
@@ -21,6 +20,7 @@ from app.crud.namespaces import (
     get_default_namespace,
     get_namespace_by_id,
     get_namespace_by_name,
+    namespace_exists,
     update_namespace,
     update_namespace_by_name,
 )
@@ -246,7 +246,7 @@ def test_update_namespace_by_name_to_existing_name(conn):
 
 
 def test_delete_namespace(conn):
-    """Check that update namespace by name works correctly."""
+    """Check that deleting a namespace works correctly."""
     user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
         conn,
@@ -255,7 +255,6 @@ def test_delete_namespace(conn):
         name="Namespace 1",
     )
     shapes = delete_namespace(conn, namespace_1.id)
-    # TODO: add shapes
     assert shapes == []
     with pytest.raises(NamespaceWithThisIdDoesNotExistError):
         delete_namespace(conn, namespace_1.id)
@@ -317,3 +316,22 @@ def test_get_namespace_by_name_not_exists(conn):
     """Check that update namespace by name works correctly."""
     with pytest.raises(NamespaceWithThisNameDoesNotExistError):
         get_namespace_by_name(conn, "This is a name that definitely does not exist.")
+
+
+def test_namespace_can_have_a_deleted_name(conn):
+    """Check that a new namespace can have the same namey."""
+    user_id, organization_id = get_alice_ids(conn)
+    namespace_1 = create_namespace(
+        conn,
+        user_id=user_id,
+        organization_id=organization_id,
+        name="New namespace",
+    )
+    delete_namespace_by_name(conn, namespace_1.name)
+    namespace_2 = create_namespace(
+        conn,
+        user_id=user_id,
+        organization_id=organization_id,
+        name="New namespace",
+    )
+    assert namespace_2.name == "New namespace"

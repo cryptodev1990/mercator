@@ -113,27 +113,30 @@ def select_namespaces(
     conn, id_: Optional[UUID4] = None, name: Optional[str] = None
 ) -> Generator[Namespace, None, None]:
     """Select namespaces by matching id or name."""
-    stmt = select(namespaces_tbl).where(namespaces_tbl.c.deleted_at.is_(None))  # type: ignore
+    n = namespaces_tbl
+    stmt = select(n).where(n.c.deleted_at.is_(None)).order_by(n.c.created_at)  # type: ignore
     if name is not None:
-        stmt = stmt.where(
-            namespaces_tbl.c.name_normalized == name_normalizer(str(name))
-        )
+        stmt = stmt.where(n.c.name_normalized == name_normalizer(str(name)))
     if id_ is not None:
-        stmt = stmt.where(namespaces_tbl.c.id == id_)
+        stmt = stmt.where(n.c.id == id_)
     for row in conn.execute(stmt):
         yield Namespace.from_orm(row)
 
 
-def namespace_exists(conn, id_: UUID4) -> bool:
+def namespace_exists(conn, id_: UUID4, include_deleted: bool = False) -> bool:
     """Check whether a namespace exists or not."""
     stmt = select(namespaces_tbl.c.id).where(namespaces_tbl.c.id == id_)  # type: ignore
+    if not include_deleted:
+        stmt = stmt.where(namespaces_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
     return bool(res)
 
 
-def get_namespace_by_id(conn, id_: UUID4) -> Namespace:
+def get_namespace_by_id(conn, id_: UUID4, include_deleted: bool = False) -> Namespace:
     """Get a namespace by its id."""
     stmt = select(namespaces_tbl).where(namespaces_tbl.c.id == id_)  # type: ignore
+    if not include_deleted:
+        stmt = stmt.where(namespaces_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
     if res is None:
         raise NamespaceWithThisIdDoesNotExistError(id_)
