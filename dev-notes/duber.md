@@ -1124,5 +1124,7 @@ Branch: ``ajd/cache-madness``
 
 ### Progress
 
-- [ ] Add namespace button
-- [ ] Clean up contexts
+- [X] Clean up contexts
+- [ ] write operations: add the ability to add / update / delete namespaces
+  - [ ] Add namespace button
+- [ ] add namespace to tentative shapes / upload flow
