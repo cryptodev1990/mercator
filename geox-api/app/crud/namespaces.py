@@ -243,6 +243,7 @@ def update_namespace(
             )
         except NamespaceWithThisNameDoesNotExistError:
             params["name"] = name
+        params["normalized_name"] = name_normalizer(params["name"])
     if properties is not None:
         params["properties"] = properties
     stmt = (
