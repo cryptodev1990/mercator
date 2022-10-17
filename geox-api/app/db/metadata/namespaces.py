@@ -69,7 +69,7 @@ namespaces = Table(
         "organization_id",
         "name_normalized",
         unique=True,
-        postgresql_where=text("deleted_at IS  NULL"),
+        postgresql_where=text("deleted_at IS NULL"),
     ),
     # this is duplicate, but needed for setting a foreign key in shapes
     Index(
@@ -84,3 +84,10 @@ namespaces = Table(
     - All organizations should have a 'Default' namespace.
     """,
 )
+
+# Note: every organization should have one and only one default organization that is active
+# however this cannot be easily put into constraints in the current schema.
+# The convention that the default namespace is always named "Default" + unique slug constrains
+# there to be only one active default namespace. A trigger creates the "default" namespace for
+# each new organization. However, nothing prevents deleting the default namespace other than
+# application code.

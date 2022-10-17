@@ -1,4 +1,5 @@
 # TODO: uncomment after launching namespaces
+from email.policy import HTTP
 import logging
 from typing import List, Optional
 
@@ -11,6 +12,7 @@ from app.crud.namespaces import (
     NamespaceExistsError,
     create_namespace,
     delete_namespace,
+    get_default_namespace,
     get_namespace_by_id,
     select_namespaces,
     update_namespace,
@@ -146,6 +148,14 @@ async def _delete_namespaces(
     - 204: Success with no content
 
     """
+    conn = user_conn.connection
+    default_namespace_id = get_default_namespace(conn, user_conn.organization.id).id
+    # The crud function should allow deleting any namespace so implement the inability
+    # to delete the default namespace here.
+    if namespace_id == default_namespace_id:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, detail="Unable to delete the default namespace."
+        )
     try:
         delete_namespace(user_conn.connection, namespace_id)
     except NamespaceDoesNotExistError as exc:
