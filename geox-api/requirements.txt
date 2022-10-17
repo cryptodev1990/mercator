@@ -26,3 +26,4 @@ buildpg==0.4
 hypercorn[uvloop]
 alembic_utils==0.7.*
 prometheus-fastapi-instrumentator==5.9.*
+walrus==0.9.*

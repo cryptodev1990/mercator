@@ -10,7 +10,9 @@ from app.dependencies import get_connection, verify_token
 router = APIRouter()
 
 # simple counter to ensure metrics are working properly
-health_counter = Counter('health_count', 'Number of times the /health endpoint was called')
+health_counter = Counter(
+    "health_count", "Number of times the /health endpoint was called"
+)
 
 
 @router.get("/health", tags=["health"])

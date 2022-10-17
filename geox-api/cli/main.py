@@ -6,13 +6,10 @@ This is useful for debugging, testing, and the occasional
 manual data manipulation.
 """
 import argparse
-
 from asyncio import get_event_loop
 
 from app.core.config import get_settings
-
 from cli.programs import cli_apps
-
 
 settings = get_settings()
 

@@ -16,15 +16,15 @@ from pydantic import (
     SecretStr,
     validator,
 )
+from timvt.db import PostgresSettings as TimVTPostgresSettings
+
 from app.core.datatypes import (
     AnyHttpURLorAsterisk,
-    S3Url,
-    GitCommitHash,
     AppEnvEnum,
+    GitCommitHash,
     LogLevel,
+    S3Url,
 )
-
-from timvt.db import PostgresSettings as TimVTPostgresSettings
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,17 @@ class EngineOptions(BaseModel):
     pool_size: int = Field(10, ge=1)
     # SQLAlchemy default is 10
     max_overflow: int = Field(20, ge=0)
+
+
+class CacheOptions(BaseModel):
+    """Options for the cache."""
+
+    enabled: bool = True
+    host: str = "localhost"
+    port: int = Field(6379, ge=1)
+    db: int = Field(0, ge=0)
+    timeout: int = Field(3600, ge=0)
+    password: Optional[SecretStr] = Field(None)
 
 
 class Settings(BaseSettings):
@@ -173,7 +184,13 @@ class Settings(BaseSettings):
 
     redis_connection: RedisDsn = Field(
         cast(RedisDsn, "redis://localhost:6379/0"),
-        description="Redis DSN to use for celery",
+        description="Redis DSN to use for celery and the cache.",
+    )
+
+    cache: CacheOptions = Field(
+        default_factory=CacheOptions,
+        description="Cache options. If None, then no cache is used.",
+        env="APP_CACHE",
     )
 
     git_commit: Optional[GitCommitHash] = Field(

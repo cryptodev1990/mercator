@@ -5,8 +5,8 @@ from typing import Any, Dict, Optional
 from geojson_pydantic import Feature
 from pydantic import UUID4, Field, root_validator
 
-from app.schemas.common import BaseModel
 from app.core.datatypes import Latitude, Longitude
+from app.schemas.common import BaseModel
 
 EXAMPLE_GEOJSON = {
     "type": "Feature",
@@ -35,12 +35,15 @@ class GeoShapeMetadata(BaseModel):
     uuid: UUID4
     # Names are allowed to be null
     name: Optional[str] = Field(None, description="Name of the shape")
-    # TODO: change to not-optional after UUID4 is done
     namespace_id: Optional[UUID4] = None
-    properties: Dict[str, Any] = Field(..., description="Properties of the shape")
-    created_at: datetime.datetime = Field(..., description="Date and time of creation")
+    properties: Dict[str, Any] = Field(
+        default_factory=dict, description="Properties of the shape"
+    )
+    created_at: Optional[datetime.datetime] = Field(
+        None, description="Date and time of creation"
+    )
     updated_at: Optional[datetime.datetime] = Field(
-        ..., description="Date and time of most recent updater"
+        None, description="Date and time of most recent updater"
     )
 
     class Config:

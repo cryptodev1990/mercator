@@ -17,7 +17,7 @@ namespace by name is assumed to provide one result, because an organization is s
 
 import datetime
 from tokenize import Name
-from typing import Any, Dict, List, Optional, cast, Generator
+from typing import Any, Dict, Generator, List, Optional, cast
 from uuid import UUID
 
 from pydantic import UUID4

@@ -6,7 +6,7 @@ from pytest_fastapi_deps import fastapi_dep
 
 from app import schemas
 from app.core.config import Settings, get_settings
-from app.dependencies import UserOrganization, get_current_user
+from app.dependencies import UserOrganization, get_current_user_org
 from app.main import app
 
 client = TestClient(app)
@@ -30,7 +30,7 @@ def test_into(fastapi_dep):
         assert data == {"version": version, "git_commit": git_commit}
 
 
-def get_current_user_override():
+def get_current_user_org_override():
     """Skip JWT authorization and return test user info."""
     return UserOrganization(
         user=schemas.User(id=42, email="foo@example.com", is_active=True, sub_id=1),
@@ -43,7 +43,9 @@ def get_current_user_override():
 
 
 def test_current_user(fastapi_dep):
-    with fastapi_dep(app).override({get_current_user: get_current_user_override}):
+    with fastapi_dep(app).override(
+        {get_current_user_org: get_current_user_org_override}
+    ):
         response = client.get("/current_user")
         data = response.json()
         assert data == {"user_id": 42}

@@ -2,14 +2,15 @@
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
-import os
+import logging
 from functools import lru_cache
-from typing import Any, AsyncGenerator, Dict, Tuple, Union
+from typing import Any, AsyncGenerator, Dict, Optional, Protocol, cast
 
+import walrus
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
-from pydantic import UUID4, BaseModel
-from sqlalchemy import event, text
+from pydantic import UUID4
+from sqlalchemy import text
 from sqlalchemy.engine import Connection, Engine
 
 from app.core.config import Settings, get_settings
@@ -19,7 +20,10 @@ from app.crud.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id, set_app_user_org
 from app.db.engine import engine
 from app.db.osm import osm_engine
-from app.schemas import UserOrganization
+from app.schemas import User, UserOrganization
+from app.schemas.organizations import Organization
+
+logger = logging.getLogger(__name__)
 
 
 async def get_engine() -> Engine:
@@ -52,17 +56,46 @@ async def verify_token(
     return payload
 
 
+class Cache(Protocol):
+    """Abstract protocol for what methods a cache needs to contain."""
+
+    def set(self, str, Any) -> None:
+        ...
+
+    def get(self, str) -> Any:
+        ...
+
+
+def get_cache(settings: Settings = Depends(get_settings)) -> Optional[Cache]:
+    opts = settings.cache
+    if opts.enabled:
+        db = walrus.Database(
+            host=opts.host,
+            port=opts.port,
+            db=opts.db,
+            password=opts.password.get_secret_value() if opts.password else None,
+        )
+        cache = db.cache(default_timeout=opts.timeout)
+        return cache
+    return None
+
+
+def _current_user_key_fn(sub_id: str) -> str:
+    return f"app:cache:user_org:{sub_id}"
+
+
 async def get_current_user(
     engine: Engine = Depends(get_engine),
     auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
-) -> UserOrganization:
+    cache: Optional[Cache] = Depends(get_cache),
+) -> User:
     """Return the current user from the bearer token.
 
     This function checks whether the JWT is valid and creates the user
     from the bearer information if they are now.
 
     Returns:
-        An object with the current user and their active organization.
+        An object with the current user
 
     """
     # this function does not use the same connection as used later because it
@@ -70,16 +103,73 @@ async def get_current_user(
     # conceptualy the authentication/authorization step here is separate from
     # the request logic.
     #
-    # conn: Connection = Depends(get_connection, cache=False) is not used
-    # because the way FastAPI dependencies work would keep the connection open
-    # until the end of the request so each request would use 2 connections.
-    with engine.begin() as conn:
-        user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
-        # Get the user's active org
-        org = get_active_organization(conn, user.id)
+    # get_current_user and get_current_usr_org are split into two functions
+    # because it allows skipping opening db connections and using cache values
+    # prior to trying to open a database connection.
+    sub_id = auth_jwt_payload.get("sub")
+    # TODO: this error checking may be redundant - verify auth_jwt_payload should have
+    # raised an exception if something were wrong.
+    if sub_id is None:
+        raise HTTPException(401)
+    key = _current_user_key_fn(sub_id)
+    user = None
+    if cache:
+        try:
+            user = cache.get(key)
+            try:
+                assert isinstance(user, User)
+                logger.debug(f"User {sub_id} retrieved from cache.")
+            except AssertionError:
+                logger.warning(f"Cache error: value of {key} is invalid")
+                cache.set(key, None)
+        except Exception as exc:
+            logger.warning("Cache error: ", exc)
+    if user is None:
+        logger.debug(f"User {sub_id} not retrieved from cache.")
+        with engine.begin() as conn:
+            user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
+            if user is None:
+                raise HTTPException(403)
+            if cache:
+                cache.set(key, user)
+    return cast(User, user)
+
+
+def _current_user_org_key_fn(user_id: int) -> str:
+    return f"app:cache:user_org:{user_id}"
+
+
+async def get_current_user_org(
+    engine: Engine = Depends(get_engine),
+    user: User = Depends(get_current_user),
+    cache: Optional[Cache] = Depends(get_cache),
+) -> UserOrganization:
+    user_id = user.id
+    if user_id is None:
+        raise HTTPException(403)
+    key = _current_user_org_key_fn(user_id)
+    org = None
+    if cache:
+        try:
+            org = cache.get(key)
+            try:
+                assert isinstance(org, Organization)
+                logger.debug(
+                    f"Organization for user {user_id} retried from cache {key}"
+                )
+            except AssertionError:
+                logger.warning(f"Cache error: value of {key} is invalid")
+                cache.set(key, None)
+        except Exception as exc:
+            logger.warning("Cache error: ", exc)
+    if org is None:
+        with engine.begin() as conn:
+            org = get_active_organization(conn, user_id)
         # if no organization found, then raise an exception
         if org is None:
             raise HTTPException(403)
+        if cache:
+            cache.set(key, org)
     return UserOrganization(user=user, organization=org)
 
 
@@ -103,7 +193,7 @@ def set_app_user_settings(conn: Connection, user_id: int, org_id: UUID4):
 
 
 async def get_app_user_connection(
-    user_org: UserOrganization = Depends(get_current_user),
+    user_org: UserOrganization = Depends(get_current_user_org),
     conn=Depends(get_connection, use_cache=False),
 ) -> UserConnection:
     """Configure database session for an authorized user.

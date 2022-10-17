@@ -40,5 +40,5 @@ class CLIApp(ABC):
         Run the program from the CLI.
         """
         parser = self.generate_cli(subparsers)
-        if parser.prog.split(' ')[1] == self.APP_NAME:
+        if parser.prog.split(" ")[1] == self.APP_NAME:
             self.run(args, loop)

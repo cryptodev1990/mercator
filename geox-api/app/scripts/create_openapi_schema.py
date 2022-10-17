@@ -4,9 +4,11 @@ This script post-processes the openapi.json to produce valid typescript models
 using `opeanpi-typescript-codegen`.
 """
 
-import typer
-from app.main import app
 import json
+
+import typer
+
+from app.main import app
 
 
 def fix_bbox(schema):
@@ -151,8 +153,9 @@ def fix_multi_polygon(schema):
     return schema
 
 
-from typing import Optional
 from pathlib import Path
+from typing import Optional
+
 import typer
 
 

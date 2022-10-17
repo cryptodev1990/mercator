@@ -1,11 +1,10 @@
 """Complex objects used as the output of APIs."""
+from typing import List, Optional
+
+from pydantic import Field
+
 from .namespaces import Namespace
 from .shape import GeoShapeMetadata
-from pydantic import Field
-from typing import Optional
-
-
-from typing import List
 
 
 class NamespaceResponse(Namespace):

@@ -120,10 +120,12 @@ def bulk_create_shapes(
     return ShapeCountResponse(num_shapes=len(shape_ids))
 
 
+from typing import Any, Dict
+
+
 @router.post("/geofencer/shapes", response_model=GeoShape)
 def _post_shapes(
-    data: GeoShapeCreate,
-    user_conn: UserConnection = Depends(get_app_user_connection),
+    data: GeoShapeCreate, user_conn: UserConnection = Depends(get_app_user_connection)
 ) -> GeoShape:
     """Create a shape."""
     if data.geojson.properties is None:

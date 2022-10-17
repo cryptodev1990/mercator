@@ -1,8 +1,7 @@
 import os
 import pathlib
+
 import pytest
-
-
 
 from app.core.access_token import get_access_token
 from app.main import app

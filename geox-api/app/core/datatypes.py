@@ -1,7 +1,8 @@
 """Custom Pydantic Data Types."""
-from typing import TYPE_CHECKING, Union, Literal
-from pydantic import AnyHttpUrl, AnyUrl, ConstrainedFloat, constr
 from enum import Enum
+from typing import TYPE_CHECKING, Literal, Union
+
+from pydantic import AnyHttpUrl, AnyUrl, ConstrainedFloat, constr
 
 AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""

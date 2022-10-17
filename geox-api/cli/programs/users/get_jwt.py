@@ -1,7 +1,8 @@
 import argparse
 import asyncio
-from playwright.async_api import async_playwright
 from getpass import getpass
+
+from playwright.async_api import async_playwright
 
 from cli.programs.common.cli_app import CLIApp
 
@@ -10,16 +11,20 @@ class GetJWT(CLIApp):
 
     APP_NAME = "get_jwt"
 
-    def generate_cli(self, subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
+    def generate_cli(
+        self, subparsers: argparse._SubParsersAction
+    ) -> argparse.ArgumentParser:
         parser_jwt = subparsers.add_parser(
-            self.APP_NAME, help="Get a JWT for a user. Works only if the user is already registered in Auth0 via a user name and password.")
+            self.APP_NAME,
+            help="Get a JWT for a user. Works only if the user is already registered in Auth0 via a user name and password.",
+        )
         # required user name
-        parser_jwt.add_argument(
-            "--username", help="The username to get a JWT for")
+        parser_jwt.add_argument("--username", help="The username to get a JWT for")
         # optional password, if not provided, will prompt for it
         parser_jwt.add_argument("--password", help="Password for the user")
-        parser_jwt.add_argument("--use-prod", action="store_true",
-                                help="Look for the user in production")
+        parser_jwt.add_argument(
+            "--use-prod", action="store_true", help="Look for the user in production"
+        )
         # boolean for headless mode
         parser_jwt.add_argument(
             "--interactive",
@@ -37,7 +42,8 @@ class GetJWT(CLIApp):
         url = "https://mercator.tech" if args.use_prod else "http://localhost:3000"
         jwt = loop.run_until_complete(
             _get_jwt_for_user_from_auth0(
-                args.username, args.password, url, not args.interactive)
+                args.username, args.password, url, not args.interactive
+            )
         )
         print(jwt)
 
@@ -61,7 +67,8 @@ async def _get_jwt_for_user_from_auth0(username, password, url, headless=True):
         except:
             pass
         await page.wait_for_selector("text=Geofencer", timeout=5000)
-        jwt = await page.evaluate("""() => {
+        jwt = await page.evaluate(
+            """() => {
             let jwt;
             for (const k of Object.keys(localStorage)) {
                 if (k.startsWith('@@auth0')) {
@@ -71,7 +78,8 @@ async def _get_jwt_for_user_from_auth0(username, password, url, headless=True):
             }
             return jwt.body.id_token;
             }
-        """)
+        """
+        )
         return jwt
 
 

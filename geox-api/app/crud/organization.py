@@ -3,13 +3,12 @@ from ast import Or
 from typing import Literal, Optional
 
 from pydantic import UUID4
-from sqlalchemy import text, insert, select
+from sqlalchemy import insert, select, text
 from sqlalchemy.engine import Connection
 
-from app.db.cache import check_cache
-from app.schemas import Organization
 from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import organizations as org_tbl
+from app.schemas import Organization
 
 
 class OrganizationDoesNotExistError(Exception):
@@ -141,47 +140,19 @@ def set_active_organization(
     conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
 
 
-def get_active_org_id(
-    conn: Connection, user_id: int, use_cache: bool = True
-) -> Optional[UUID4]:
+def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
     """Get the acttive organization of a user.
-
-    This will check a cache for the value of the user's active organization before running
-    a query against the database.
 
     A user will only have one active organization at a time.
 
     Args:
         conn: Database connection
-        user_id: User id
-        use_cache: If ``True`` looks in cache for the organization, otherwise
-            runs a query to retrieve the information.
 
     Returns:
         Id of the active organization if one exists. ``None`` if there is no active org.
         Users of this function are responsible for raising exceptions or otherwise
         handling the case of no active organization for the user.
     """
-    # _get_active_org will return str not UUID to make it more
-    if use_cache:
-        value = check_cache(
-            user_id, "organization_id", _get_active_org_id, conn, user_id
-        )
-    else:
-        value = _get_active_org_id(conn, user_id)
-    if value is None:
-        return None
-    try:
-        # If value is valid UUID string - str(str) str('c90981e7-ba7b-4299-9a07-b689bdb03d3a') = 'c90981e7-ba7b-4299-9a07-b689bdb03d3a'
-        # If value is somehow already a UUID, then str(UUID('c90981e7-ba7b-4299-9a07-b689bdb03d3a')) = 'c90981e7-ba7b-4299-9a07-b689bdb03d3a'
-        # Case of None handled above
-        # Otherwise it must be an illformed string
-        return UUID4(str(value))
-    except ValueError:
-        return None
-
-
-def _get_active_org_id(conn: Connection, user_id: int) -> Optional[str]:
     stmt = text(
         """
         SELECT organization_id
@@ -194,7 +165,10 @@ def _get_active_org_id(conn: Connection, user_id: int) -> Optional[str]:
     res = conn.execute(stmt, {"user_id": user_id}).first()
     # Return str intead of UUID because UUID can't natively be cached in redis
     # Also this function is consistent with the return type of check_cache() if converted to str
-    return str(res.organization_id) if res else None
+    res = conn.execute(stmt, {"user_id": user_id}).scalar()
+    if res is None:
+        raise UserHasNoActiveOrganizationError(user_id)
+    return res
 
 
 def get_active_organization(conn: Connection, user_id: int) -> Organization:

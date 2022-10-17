@@ -1,7 +1,7 @@
 """Celery worker."""
 from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Dict, Optional, cast
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
 import geopandas as gpd
 import s3fs

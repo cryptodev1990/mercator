@@ -10,9 +10,9 @@ from typing import Any, Dict, Generator, List, Optional, Sequence, Union
 
 import jinja2
 import sqlalchemy as sa
-from geojson_pydantic import Feature, Polygon, Point, LineString
+from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
-from sqlalchemy import insert, select, update, func, literal  # type: ignore
+from sqlalchemy import func, insert, literal, select, update  # type: ignore
 from sqlalchemy.engine import Connection
 
 from app.crud.namespaces import NamespaceDoesNotExistError, get_default_namespace
@@ -90,7 +90,7 @@ def create_shape(
     new_shape = dict(res)
     new_shape["name"] = new_shape["geojson"].get("properties", {}).get("name")
     new_shape["properties"] = new_shape["geojson"].get("properties", {})
-    return GeoShape.parse_obj(dict(new_shape))
+    return GeoShape.parse_obj(new_shape)
 
 
 def _process_geojson(geojson: Feature, name: Optional[str] = None) -> Dict[str, Any]:

@@ -38,7 +38,7 @@ class AuthorizedTileFunction(layer.Function):
                 x=tile.x,
                 y=tile.y,
                 z=tile.z,
-                filter_organization_id=str(kwargs["organization_id"].id),
+                filter_organization_id=str(kwargs["organization_id"]),
                 namespace_ids=kwargs.get("namespace_ids"),
             )
 

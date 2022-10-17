@@ -1,13 +1,14 @@
 """Test namespace routes."""
-from app.crud.organization import set_active_organization
-from app.db.metadata import users as user_tbl
-from app.db.metadata import organizations as org_tbl
-from app.db.metadata import organization_members as org_mbr_tbl
+from typing import Any, Dict, cast
 
-
+from pydantic import UUID4
 from sqlalchemy import insert, select
 from sqlalchemy.engine import Connection
-from pydantic import UUID4
+
+from app.crud.organization import set_active_organization
+from app.db.metadata import organization_members as org_mbr_tbl
+from app.db.metadata import organizations as org_tbl
+from app.db.metadata import users as user_tbl
 
 # Create organization
 # Create users
@@ -18,8 +19,6 @@ from pydantic import UUID4
 #   - Bob
 # - Organization 2 - example.net
 #   - Carol
-
-from typing import cast, Dict, Any
 
 
 def test_namespace():

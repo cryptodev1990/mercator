@@ -1,32 +1,25 @@
 """Common functions and fixtures used in testing API routes."""
+import random
 from functools import partial
+from string import ascii_letters, digits
 from typing import Any, Callable, Dict, cast
 
 import pytest
 from fastapi import Depends
-from sqlalchemy import delete, insert, text
+from sqlalchemy import text
 from sqlalchemy.engine import Connection
-from app.crud.namespaces import get_default_namespace
 
 from app.crud.organization import (
+    add_user_to_org,
+    create_organization,
     get_active_organization,
     get_organization,
     set_active_organization,
-    add_user_to_org,
-    create_organization,
 )
 from app.crud.user import create_user as crud_create_user
-from app.db.metadata import organization_members as org_mbr_tbl
-from app.db.metadata import organizations as org_tbl
-from app.db.metadata import shapes as shapes_tbl
-from app.db.metadata import users as users_tbl
-from app.db.metadata import namespaces as namespaces_tbl
-from app.dependencies import get_connection, get_current_user, verify_token
+from app.dependencies import get_connection, get_current_user_org, verify_token
 from app.main import app
 from app.schemas import User, UserOrganization
-from string import ascii_letters, digits
-import random
-
 
 _ASCII_ALPHANUMERIC = ascii_letters + digits
 
@@ -85,15 +78,16 @@ def conn(engine):
 
 
 from typing import Optional
+
 from pydantic import UUID4
 
 
-def get_current_user_override(
+def get_current_user_org_override(
     *,
     user_id: int,
     organization_id: Optional[UUID4] = None,
     conn: Connection = Depends(get_connection),
-):
+) -> UserOrganization:
     """Return a particular existing user by id.
 
     This skips authentication of users to allow fake users.
@@ -136,7 +130,9 @@ def dep_override_factory(fastapi_dep, connection):
         return fastapi_dep(app).override(
             {
                 get_connection: get_connection_override(connection),
-                get_current_user: partial(get_current_user_override, user_id=user_id),
+                get_current_user_org: partial(
+                    get_current_user_org_override, user_id=user_id
+                ),
                 verify_token: lambda: {},
             }
         )

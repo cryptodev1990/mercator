@@ -1,54 +1,26 @@
-import json
+import uuid
 from functools import partial
-from operator import ge
-from pathlib import Path
 from typing import Optional
-from uuid import UUID
 
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from geojson_pydantic import Feature, Point
+from geojson.utils import generate_random as generate_random_shape
+from geojson_pydantic import Feature
 from pydantic import UUID4
 from pytest_fastapi_deps import DependencyOverrider
-from ruamel.yaml import YAML
-from sqlalchemy import select, text, update
+from randomname import get_name as get_random_name
 from sqlalchemy.engine import Connection
 
 from app.crud.organization import get_active_organization
+from app.crud.shape import create_shape, shape_exists
 from app.crud.user import get_user_by_email
-from app.schemas import UserOrganization
-
-
-import uuid
-
-
-from app.crud.shape import shape_exists
-
-from app.core.config import get_settings
-from app.crud import organization
-from app.crud.namespaces import get_default_namespace
-from app.crud.organization import (
-    get_active_organization,
-    get_personal_org_id,
-    set_active_organization,
-)
-from app.crud.shape import create_shape
-from app.crud.user import get_user_by_email
-from app.db.metadata import organization_members as org_mbr_tbl
-from app.db.metadata import shapes as shapes_tbl
-from app.dependencies import get_connection, get_current_user, verify_token
+from app.dependencies import get_connection, get_current_user_org, verify_token
 from app.main import app
-from app.schemas import GeoShapeCreate
+from app.schemas import BaseModel, GeoShape, GeoShapeCreate, User, UserOrganization
 from app.schemas.organizations import Organization
 
-from .conftest import get_connection_override, get_current_user_override
-from fastapi import status
-
-# used in fixtures
-# from .conftest import connection, dep_override_factory  # type: ignore
-
-yaml = YAML(typ="safe")
+from .conftest import get_connection_override, get_current_user_org_override
 
 
 def ymd(x):
@@ -69,8 +41,8 @@ def dep_overrider(conn: Connection) -> DependencyOverrider:
             app,
             {
                 get_connection: get_connection_override(conn),
-                get_current_user: partial(
-                    get_current_user_override,
+                get_current_user_org: partial(
+                    get_current_user_org_override,
                     user_id=user_id,
                     organization_id=organization_id,
                 ),
@@ -102,9 +74,6 @@ def carlos(conn: Connection) -> UserOrganization:
     return get_user_org_by_email(conn, "carlos@example.net")
 
 
-from app.schemas import BaseModel, User
-
-
 class ConnectionWithDepOverrides(BaseModel):
     user: User
     organization: Organization
@@ -124,13 +93,6 @@ def alice_conn(conn: Connection, alice: UserOrganization) -> ConnectionWithDepOv
     )
 
 
-from geojson.utils import generate_random as generate_random_shape
-from geojson_pydantic import Feature
-from randomname import get_name as get_random_name
-
-from app.schemas import GeoShapeCreate
-
-
 def random_geojson(include_name=True):
     if include_name:
         name = get_random_name()
@@ -138,11 +100,8 @@ def random_geojson(include_name=True):
         name = None
     return Feature(
         geometry=generate_random_shape("Polygon", numberVertices=4),
-        properties={"name": get_random_name()},
+        properties={"name": name},
     )
-
-
-from app.schemas import GeoShape
 
 
 def test_read_shape_self(
@@ -201,29 +160,31 @@ def test_read_shape_other_org(
         assert_status_code(response, status.HTTP_404_NOT_FOUND)
 
 
-def test_create_shape(
-    client: TestClient, alice_conn: ConnectionWithDepOverrides, carlos: UserOrganization
-):
-    shape = random_geojson()
-    create_shape = GeoShapeCreate(geojson=shape)
+def test_create_shape(client: TestClient, alice_conn: ConnectionWithDepOverrides):
+    data = GeoShapeCreate(geojson=random_geojson())
     with alice_conn.dep_overrides:
-        response = client.post(f"/geofencer/shapes", json=create_shape.dict())
+        response = client.post("/geofencer/shapes", json=data.dict())
         print(response.json())
         assert_ok(response)
         actual = GeoShape.parse_obj(response.json())
-        assert actual.geojson.geometry == shape.geometry
-        assert actual.geojson.properties == shape.properties
+        assert actual.geojson.geometry == data.geojson.geometry
+        assert actual.geojson.properties == data.geojson.properties
     # check that it was created in the database
     assert shape_exists(alice_conn.conn, actual.uuid)
 
 
-# def test_get_all_shapes_by_user(client, connection, dep_override_factory):
-#     user_id = 1
-#     user_shapes = {
-#         "4f974f2d-572b-46f1-8741-56bf7f357d12",
-#         "a5da808f-b717-41cb-a566-603674172bf2",
-#     }
-
+# def test_get_all_shapes(
+#     client: TestClient,
+#     alice_conn: ConnectionWithDepOverrides,
+#     carlos: UserOrganization,
+#     bob: UserOrganization,
+# ):
+#     shape = create_shape(
+#         alice_conn.conn,
+#         user_id=carlos.user.id,
+#         organization_id=carlos.organization.id,
+#         geojson=random_geojson(),
+#     )
 #     with dep_override_factory(user_id):
 #         response = client.get(f"/geofencer/shapes?user=true")
 #         assert_ok(response)

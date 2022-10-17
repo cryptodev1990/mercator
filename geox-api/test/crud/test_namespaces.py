@@ -1,4 +1,6 @@
+import random
 import uuid
+from string import ascii_letters, digits
 from typing import Any, Dict, List, Optional, Tuple, cast
 from unicodedata import name
 from uuid import UUID
@@ -23,13 +25,13 @@ from app.crud.namespaces import (
     update_namespace_by_name,
 )
 from app.crud.organization import (
+    add_user_to_org,
+    create_organization,
     get_active_organization,
     set_active_organization,
-    create_organization,
-    add_user_to_org,
 )
-from app.crud.user import get_user_by_email
 from app.crud.user import create_user as crud_create_user
+from app.crud.user import get_user_by_email
 from app.db.metadata import namespaces as namespaces_tbl
 from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import organizations as org_tbl
@@ -37,8 +39,6 @@ from app.db.metadata import shapes as shapes_tbl
 from app.db.metadata import users as users_tbl
 from app.dependencies import set_app_user_settings
 from app.schemas import Namespace
-from string import ascii_letters, digits
-import random
 
 yaml = ruamel.yaml.YAML(typ="safe")
 

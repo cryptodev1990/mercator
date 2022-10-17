@@ -5,6 +5,8 @@ from pydantic import UUID4, Field
 
 from .common import BaseModel
 
+__all__ = ["Namespace", "NamespaceCreate", "NamespaceUpdate"]
+
 
 class Namespace(BaseModel):
     """Namespace data."""

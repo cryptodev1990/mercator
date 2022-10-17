@@ -3,9 +3,9 @@
 See https://docs.sqlalchemy.org/en/14/core/functions.html#sqlalchemy.sql.functions.GenericFunction
 """
 
-from sqlalchemy.sql.functions import GenericFunction
 from sqlalchemy import Integer
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql.functions import GenericFunction
 
 
 class app_user_id(GenericFunction):

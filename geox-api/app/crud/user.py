@@ -2,7 +2,8 @@
 import datetime
 from typing import Optional
 
-from sqlalchemy import insert, text
+from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import IntegrityError
 
@@ -171,10 +172,11 @@ def create_or_update_user_from_bearer_data(
         values["email"] = settings.machine_account_email
 
     # see if user exists
-    existing_user = get_user_by_sub_id(conn, values["sub_id"])
-    if existing_user:
+    try:
+        existing_user = get_user_by_sub_id(conn, values["sub_id"])
         return User.from_orm(existing_user)
-    # try to insert
+    except NoUserWithSubIdException:
+        pass
     ins_stmt = text(
         """
         INSERT INTO users

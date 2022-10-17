@@ -1,7 +1,8 @@
 """Miscellaneous Postgres helper functions."""
 from email import policy
-from sqlalchemy.engine import Connection
+
 from sqlalchemy import text
+from sqlalchemy.engine import Connection
 
 
 def policy_exists(conn: Connection, tablename: str, policyname: str) -> bool:
