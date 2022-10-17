@@ -1,6 +1,7 @@
 """Health routes."""
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+from prometheus_client import Counter
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
@@ -8,9 +9,13 @@ from app.dependencies import get_connection, verify_token
 
 router = APIRouter()
 
+# simple counter to ensure metrics are working properly
+health_counter = Counter('health_count', 'Number of times the /health endpoint was called')
+
 
 @router.get("/health", tags=["health"])
 async def health():
+    health_counter.inc()
     return {"message": "OK"}
 
 

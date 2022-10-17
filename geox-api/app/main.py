@@ -2,6 +2,7 @@
 import logging
 
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
@@ -43,6 +44,9 @@ app.include_router(routes.namespaces.router)
 
 add_tiler_routes(app)
 
+@app.on_event("startup")
+async def startup():
+    Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 async def home():
