@@ -1127,8 +1127,13 @@ Branch: ``ajd/cache-madness``
 - [X] Clean up contexts
 - [X] write operations: add the ability to add / update / delete namespaces
   - [X] Add namespace button
-- [ ] add namespace to tentative shapes / upload flow
 - Namespace and shape interactions
-  - [ ] Let users move shapes between namespaces
+  - [X] Let users move shapes between namespaces
   - [ ] Let users merge two namespaces
+  - [ ] add namespace to tentative shapes / upload flow
 - "Are you sure?" prompt before a namespace delete
+
+
+## 10-17-22
+
+- [X] Added ability to switch namespaces for shapes. Did this using a custom drag icon and marking an element as draggable, very little JS involved.
