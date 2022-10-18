@@ -54,26 +54,6 @@ const LandingPage = () => {
                 align="right"
               />
             </div>
-            <div className="relative">
-              <ProductSection
-                header="Celestial: Track your fleet"
-                video={"95shFHRoZZw"}
-                copytext={
-                  "Receive real-time updates on your assets, message your drivers. Effortlessly track thousands or even tens of thousands of assets."
-                }
-                align="left"
-              />
-            </div>
-            <div className="relative">
-              <ProductSection
-                header="Make your GPS data dependable using our developer API"
-                video={"-h58GEoxeoI"}
-                copytext={
-                  "Impute missing GPS data or extrapolate future pings with our GPS APIs. In particular, manage pay for your contractors for Prop 22 in California, even in the presence of damaged or missing GPS."
-                }
-                align="right"
-              />
-            </div>
             <div className="max-w-5xl mx-auto py-5 border-b border-t flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
               <div className="flex-1">
                 <GradientHeader>Like what you see? Try it out.</GradientHeader>

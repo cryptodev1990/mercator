@@ -100,6 +100,7 @@ export class CxMVTLayer<ExtraProps = {}> extends MVTLayer<
   static defaultProps = defaultProps;
 
   getTileData(tile: any) {
+    // @ts-ignore
     const { cache } = this.props;
     const CACHE_KEY = `${tile.x}-${tile.y}-${tile.z}`;
     if (cache.has(CACHE_KEY)) {
