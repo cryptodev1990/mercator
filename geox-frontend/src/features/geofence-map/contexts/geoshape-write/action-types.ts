@@ -65,7 +65,6 @@ export type Action =
     }
   | {
       type: "UPDATE_SHAPE_LOADING";
-      shape: GeoShapeMetadata;
     }
   | {
       type: "UPDATE_SHAPE_SUCCESS";

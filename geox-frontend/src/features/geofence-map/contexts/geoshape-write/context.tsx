@@ -1,7 +1,8 @@
 import { difference } from "@turf/turf";
 import { createContext, Dispatch, useContext, useReducer } from "react";
-import { UseMutateFunction } from "react-query";
+import { QueryClient, UseMutateFunction, useQueryClient } from "react-query";
 import {
+  GeofencerService,
   GeoShape,
   GeoShapeCreate,
   GeoShapeMetadata,
@@ -56,6 +57,7 @@ export interface IGeoShapeWriteContext {
   updateLoading: boolean;
   updatedShapeIds: string[];
   updatedShape: GeoShape | null;
+  partialUpdateShape: (shape: GeoShapeUpdate) => void;
 }
 
 export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
@@ -69,6 +71,7 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   addShapeAndEdit: async () => {},
   updatedShapeIds: [],
   updatedShape: null,
+  partialUpdateShape: async () => {},
 });
 
 GeoShapeWriteContext.displayName = "GeoShapeWriteContext";
@@ -180,6 +183,27 @@ export const GeoShapeWriteContextProvider = ({
     return api.updateShapeApi(update, params);
   }
 
+  const qc = useQueryClient();
+  function partialUpdateShape(update: GeoShapeUpdate) {
+    if (!update.uuid) {
+      throw new Error("update must have a uuid");
+    }
+    opLog("UPDATE_SHAPE", update);
+    dispatch({ type: "UPDATE_SHAPE_LOADING" });
+
+    GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatch(
+      update.uuid,
+      update
+    ).then((data: GeoShape) => {
+      dispatch({
+        type: "UPDATE_SHAPE_SUCCESS",
+        updatedShapeIds: [data.uuid],
+        updatedShape: data,
+      });
+      qc.fetchQuery("geofencer");
+    });
+  }
+
   return (
     <GeoShapeWriteContext.Provider
       value={{
@@ -193,6 +217,7 @@ export const GeoShapeWriteContextProvider = ({
         addShapeAndEdit,
         updatedShapeIds: state.updatedShapeIds,
         updatedShape: state.updatedShape,
+        partialUpdateShape,
       }}
     >
       {children}

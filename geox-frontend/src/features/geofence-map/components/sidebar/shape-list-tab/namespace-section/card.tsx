@@ -2,10 +2,16 @@ import { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { TbCaretRight } from "react-icons/tb";
 import { Virtuoso } from "react-virtuoso";
-import { GeoShapeMetadata, Namespace } from "../../../../../../client";
+import {
+  GeofencerService,
+  GeoShapeMetadata,
+  Namespace,
+  NamespacesService,
+} from "../../../../../../client";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { useShapes } from "../../../../hooks/use-shapes";
+import { DragTarget } from "../drag-handle";
 import { ShapeCard } from "../shape-card";
 import { DeleteButton } from "./delete-button";
 
@@ -25,6 +31,7 @@ export const NamespaceCard = ({
     visibleNamepaces,
     setVisibleNamespaces,
     updateNamespace,
+    partialUpdateShape,
   } = useShapes();
   const [shapeHovered, setShapeHovered] = useState<string | null>(null);
 
@@ -32,7 +39,12 @@ export const NamespaceCard = ({
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div>
+    <DragTarget
+      handleDragOver={(e: any) => {
+        const data = e.dataTransfer.getData("text");
+        partialUpdateShape({ uuid: data, namespace: namespace.id });
+      }}
+    >
       <div
         className="flex cursor-pointer px-3"
         onMouseEnter={() => setHovered(true)}
@@ -104,6 +116,6 @@ export const NamespaceCard = ({
           />
         </div>
       )}
-    </div>
+    </DragTarget>
   );
 };

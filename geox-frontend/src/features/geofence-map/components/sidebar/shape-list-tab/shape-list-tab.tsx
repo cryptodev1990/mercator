@@ -91,7 +91,7 @@ export const ShapeBarPaginator = () => {
   const { isLoading: isPolling } = useDbSync();
 
   return (
-    <div className="flex flex-col">
+    <div id="shape-list" className="flex flex-col">
       <div className="bg-slate-700 flex flex-row justify-between cursor-pointer">
         {[
           {
@@ -151,7 +151,7 @@ export const ShapeBarPaginator = () => {
           </p>
         </div>
       )}
-      <footer className="flex flex-col">
+      <footer className="flex flex-col mt-auto">
         <p className="text-xs m-1">
           {shapeMetadataIsLoading && (
             <Loading className="spin" height={20} width={20} />
