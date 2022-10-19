@@ -1,9 +1,14 @@
 import datetime
-from typing import Any, Dict, Optional
+import re
+from typing import Any, Dict, List, Optional
 
-from pydantic import UUID4, Field
+from pydantic import UUID4, Field, validator
+from slugify import slugify
+
+from app.core.datatypes import Slug
 
 from .common import BaseModel
+from .shape import GeoShapeMetadata
 
 __all__ = ["Namespace", "NamespaceCreate", "NamespaceUpdate"]
 
@@ -13,49 +18,51 @@ class Namespace(BaseModel):
 
     id: UUID4
     name: str
-    properties: Dict[str, Any]
+    slug: Slug
+    properties: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime.datetime
     updated_at: datetime.datetime
     is_default: bool
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "id": "07ed91ac-ee3c-49e1-9172-62edcdf3cc75",
-                "name": "Metropolitan Statistical Areas",
-                "properties": {"color": "red"},
-                "created_at": "2022-10-10T17:33:28.009874",
-                "updated_at": "2022-10-10T17:33:28.009874",
-                "is_default": False,
-            }
-        }
+    shapes: Optional[List[GeoShapeMetadata]] = Field(
+        default_factory=list,
+        description="""
+        List of shape metadata of shapes in the namespace.
+        None means that shape metadata wasn't requested.
+        An empty list means that there are no shapes.""",
+    )
+
+
+def not_default(v: str) -> str:
+    """Check string is not equal to 'default'."""
+    if v.lower() == "default":
+        raise ValueError("Cannot equal 'default'")
+    return v
+
+
+def normalize_name(v: str) -> str:
+    """Normalize name fields.
+
+    Remove leading/training whitespace.
+    """
+    return v.strip()
 
 
 class NamespaceCreate(BaseModel):
     """Data to create a new namespace."""
 
     name: str
-    properties: Dict[str, Any] = Field(default_factory=dict)
+    _validate_normalize_name = validator("name", allow_reuse=True)(normalize_name)
+    _validate_name_not_default = validator("name", allow_reuse=True)(not_default)
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "name": "Metropolitan Statistical Areas",
-                "properties": {"color": "red"},
-            }
-        }
+    properties: Dict[str, Any] = Field(default_factory=dict)
 
 
 class NamespaceUpdate(BaseModel):
     """Data to update an existing namespace."""
 
-    name: Optional[str] = None
-    properties: Optional[Dict[str, Any]] = None
+    name: str
+    _validate_normalize_name = validator("name", allow_reuse=True)(normalize_name)
+    _validate_name_not_default = validator("name", allow_reuse=True)(not_default)
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "name": "Metropolitan Statistical Areas (MSA)",
-                "properties": {"color": "blue"},
-            }
-        }
+    properties: Optional[Dict[str, Any]] = None

@@ -16,18 +16,22 @@ namespace by name is assumed to provide one result, because an organization is s
 
 
 import datetime
-from tokenize import Name
+import logging
 from typing import Any, Dict, Generator, List, Optional, cast
 from uuid import UUID
 
 from pydantic import UUID4
-from sqlalchemy import insert, select, text, update
+from slugify import slugify
+from sqlalchemy import select, text, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import IntegrityError
 
 from app.db.metadata import namespaces as namespaces_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import Namespace
+
+logger = logging.getLogger(__name__)
 
 
 class NamespaceDoesNotExistError(Exception):
@@ -46,25 +50,26 @@ class NamespaceWithThisIdDoesNotExistError(NamespaceDoesNotExistError):
         return f"Namespace with id {self.id_} does not exist."
 
 
-class NamespaceWithThisNameDoesNotExistError(NamespaceDoesNotExistError):
+class NamespaceWithThisSlugDoesNotExistError(NamespaceDoesNotExistError):
     """Namespace does not exist error."""
 
-    def __init__(self, name: str) -> None:
-        self.name = name
+    def __init__(self, slug: str) -> None:
+        self.slug = slug
 
     def __str__(self):
-        return f"Namespace with name '{self.name_}' does not exist."
+        return f"Namespace with slug '{self.slug}' does not exist."
 
 
 class NamespaceExistsError(Exception):
     """Namespace already exists error."""
 
-    def __init__(self, name: str, id_: UUID4) -> None:
+    def __init__(self, name: str, slug: str, id_: UUID4) -> None:
         self.name = name
+        self.slug = slug
         self.id_ = id_
 
     def __str__(self):
-        return f"Namespace {self.id_}, named '{self.name}' exists."
+        return f"Namespace {self.id_}, name='{self.name}', slug='{self.slug}' exists."
 
 
 class DefaultNamespaceCannotBeRenamedError(Exception):
@@ -87,14 +92,6 @@ class DefaultNamespaceDoesNotExistError(Exception):
         return f"No default namespace exists for organization '{self.organization_id}'."
 
 
-def name_normalizer(name: str) -> str:
-    """Name normalizer.
-
-    Strips whitespace from ends and converts to lowercase.
-    """
-    return name.strip().lower()
-
-
 def _add_user_org_to_params(conn: Connection, params: Dict[str, Any]) -> Dict[str, Any]:
     # Modifies params in place
     user_id = params.get("user_id")
@@ -109,16 +106,28 @@ def _add_user_org_to_params(conn: Connection, params: Dict[str, Any]) -> Dict[st
     return params
 
 
+_select_namespaces = select(namespaces_tbl).where(namespaces_tbl.c.deleted_at.is_(None))  # type: ignore
+
+
+def slugify_name(name: str) -> str:
+    return slugify(name)
+
+
 def select_namespaces(
-    conn, id_: Optional[UUID4] = None, name: Optional[str] = None
+    conn,
+    id_: Optional[UUID4] = None,
+    name: Optional[str] = None,
+    slug: Optional[str] = None,
 ) -> Generator[Namespace, None, None]:
     """Select namespaces by matching id or name."""
     n = namespaces_tbl
-    stmt = select(n).where(n.c.deleted_at.is_(None)).order_by(n.c.created_at)  # type: ignore
-    if name is not None:
-        stmt = stmt.where(n.c.name_normalized == name_normalizer(str(name)))
+    stmt = _select_namespaces.order_by(n.c.created_at)  # type: ignore
     if id_ is not None:
         stmt = stmt.where(n.c.id == id_)
+    if name is not None:
+        stmt = stmt.where(n.c.name == name)
+    if slug is not None:
+        stmt = stmt.where(n.c.slug == slug)
     for row in conn.execute(stmt):
         yield Namespace.from_orm(row)
 
@@ -132,7 +141,7 @@ def namespace_exists(conn, id_: UUID4, include_deleted: bool = False) -> bool:
     return bool(res)
 
 
-def get_namespace_by_id(conn, id_: UUID4, include_deleted: bool = False) -> Namespace:
+def get_namespace(conn, id_: UUID4, include_deleted: bool = False) -> Namespace:
     """Get a namespace by its id."""
     stmt = select(namespaces_tbl).where(namespaces_tbl.c.id == id_)  # type: ignore
     if not include_deleted:
@@ -143,20 +152,14 @@ def get_namespace_by_id(conn, id_: UUID4, include_deleted: bool = False) -> Name
     return Namespace.from_orm(res)
 
 
-def get_namespace_by_name(
-    conn,
-    name: str,
-) -> Namespace:
-    """Get a namespace by its name."""
-    name_normalized = name_normalizer(name)
-    stmt = (
-        select(namespaces_tbl)  # type: ignore
-        .where(namespaces_tbl.c.deleted_at.is_(None))
-        .where(namespaces_tbl.c.name_normalized == name_normalized)
-    )
+def get_namespace_by_slug(conn, slug: str) -> Namespace:
+    """Get a namespace by its id."""
+    # Note: function assumes an RLS user
+    # No include_deleted because slug is unique only for undeleted namespaces
+    stmt = select(namespaces_tbl).where(namespaces_tbl.c.slug == slug)  # type: ignore
     res = conn.execute(stmt).first()
     if res is None:
-        raise NamespaceWithThisNameDoesNotExistError(name_normalized)
+        raise NamespaceWithThisSlugDoesNotExistError(slug)
     return Namespace.from_orm(res)
 
 
@@ -186,11 +189,11 @@ def create_namespace(
 ) -> Namespace:
     """Create a new namespace."""
     name = name.strip()
-    name_normalized = name_normalizer(name)
+    slug = slugify_name(name)
     stmt = insert(namespaces_tbl).returning(namespaces_tbl)
     params: Dict[str, Any] = {
         "name": name,
-        "name_normalized": name_normalized,
+        "slug": slug,
         "properties": properties or {},
         "user_id": user_id,
         "organization_id": organization_id,
@@ -206,14 +209,15 @@ def create_namespace(
     except IntegrityError as exc:
         nested_trans.rollback()
         try:
-            existing_namespace = get_namespace_by_name(conn, name)
-        except NamespaceWithThisNameDoesNotExistError:
+            existing_namespace = get_namespace_by_slug(conn, slug)
+        except NamespaceWithThisSlugDoesNotExistError:
             # this shouldn't happen - so set the value to null and then when NamespaceExistsError
             # is raised, an exception for missing attribute errors will be raised - indicating
             # that something went horribly wrong
             existing_namespace = None
         raise NamespaceExistsError(
             cast(Namespace, existing_namespace).name,
+            cast(Namespace, existing_namespace).slug,
             cast(Namespace, existing_namespace).id,
         )
     return Namespace.from_orm(res)
@@ -226,69 +230,61 @@ def update_namespace(
     properties: Optional[Dict[str, Any]] = None,
 ) -> Namespace:
     """Update a namespace."""
+    values: Dict[str, Any] = {}
     # See whether it exists - this could be handled impliclty by update -
     # but we need to also check other values.
     # This will raise values if the namespace does not exist.
-    namespace = get_namespace_by_id(conn, id_)
-
-    # Don't need user_id and organization_id. That is handled by RLS -
-    # or it is an admin user and it doesn't matter.
-    params: Dict[str, Any] = {}
-    if name is not None:
-        # check that the name does not exist - ideally the partial index should handle it
-        # but it appears that it does not
+    namespace = get_namespace(conn, id_)
+    if name:
         if namespace.is_default:
             raise DefaultNamespaceCannotBeRenamedError(id_)
+        # check that the slug does not exist - ideally the partial index should handle it
+        # but it appears that it does not
+        slug = slugify_name(name)
         try:
-            namespace_with_same_name = get_namespace_by_name(conn, name)
+            namespace_with_slug = get_namespace_by_slug(conn, slug)
             raise NamespaceExistsError(
-                namespace_with_same_name.name, namespace_with_same_name.id
+                namespace_with_slug.name,
+                namespace_with_slug.slug,
+                namespace_with_slug.id,
             )
-        except NamespaceWithThisNameDoesNotExistError:
-            params["name"] = name
-        params["normalized_name"] = name_normalizer(params["name"])
+        except NamespaceWithThisSlugDoesNotExistError:
+            pass
+        values["name"] = name
+        values["slug"] = slug
+
     if properties is not None:
-        params["properties"] = properties
+        values["properties"] = properties
+
     stmt = (
         update(namespaces_tbl)
         .where(namespaces_tbl.c.id == id_)
-        .where(namespaces_tbl.c.deleted_at.is_(None))
         .returning(namespaces_tbl)
     )
     nested_trans = conn.begin_nested()
     try:
-        res = conn.execute(stmt, params).first()
+        res = conn.execute(stmt, values).first()
     except IntegrityError as exc:
         # If the user didn't try to change the name ... then this error shouldn't have happend
-        if params["name"] is None:
+        # and we have a bigger problem that we need to log
+        if values["slug"] is None:
             raise exc
         # the user tried to change the name of a namespace when it already has a name
         try:
             nested_trans.rollback()
-            existing_namespace = get_namespace_by_name(conn, params["name"])
-            raise NamespaceExistsError(existing_namespace.name, existing_namespace.id)
-        except NamespaceWithThisNameDoesNotExistError:
+            existing_namespace = get_namespace_by_slug(conn, values["slug"])
+            raise NamespaceExistsError(
+                existing_namespace.name, existing_namespace.slug, existing_namespace.id
+            )
+        except NamespaceWithThisSlugDoesNotExistError:
             # this shouldn't happen - so set the value to null and then when NamespaceExistsError
             # is raised, an exception for missing attribute errors will be raised - indicating
             # that something went horribly wrong
             raise exc
     # If None is returned - then no row was updated - meaning
     # that the namespace doesn't exist. However, we checked for existence
-    # with get_namespace_by_id()
+    # with get_namespace()
     return Namespace.from_orm(res)
-
-
-def update_namespace_by_name(
-    conn: Connection,
-    name: str,
-    new_name: Optional[str] = None,
-    properties: Optional[Dict[str, Any]] = None,
-) -> Namespace:
-    """Update a namespace referencing it by its."""
-    namespace = get_namespace_by_name(conn, name)
-    return update_namespace(
-        conn, id_=namespace.id, name=new_name, properties=properties
-    )
 
 
 def delete_namespace(conn: Connection, id_: UUID4) -> List[UUID4]:
@@ -325,9 +321,3 @@ def delete_namespace(conn: Connection, id_: UUID4) -> List[UUID4]:
         row.uuid for row in conn.execute(del_shapes_stmt, params).fetchall()
     ]
     return shapes_deleted
-
-
-def delete_namespace_by_name(conn: Connection, name: str) -> List[UUID4]:
-    """Delete a namespace by its name."""
-    namespace = get_namespace_by_name(conn, name)
-    return delete_namespace(conn, namespace.id)

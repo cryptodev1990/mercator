@@ -10,12 +10,12 @@ import type { GeoShapeMetadata } from './GeoShapeMetadata';
 export type NamespaceResponse = {
     id: string;
     name: string;
+    slug: string;
     properties: any;
     organization_id: string;
     created_at: string;
     updated_at: string;
     is_default: boolean;
-    schema_extras?: any;
     /**
      *
      * List of shape metadata of shapes in the namespace.

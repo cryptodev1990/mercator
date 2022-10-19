@@ -3,11 +3,11 @@ from textwrap import dedent
 
 from sqlalchemy import (  # type: ignore
     Boolean,
+    CheckConstraint,
     Column,
     Computed,
     DateTime,
     ForeignKey,
-    ForeignKeyConstraint,
     Index,
     Integer,
     String,
@@ -27,14 +27,14 @@ namespaces = Table(
     # CIText used in order to make name uniqueness case-insensitive
     Column("name", String(), nullable=False, comment="Namespace name"),
     Column(
-        "name_normalized",
+        "slug",
         String(),
         nullable=False,
         comment=dedent(
             """
                 Normalized namespace name. This is preprocessed prior to being inserted.
-                Uniqueness of names is determined by this and not by `name`.""".strip()
-        ),
+                Uniqueness of names is determined by this and not by `name`."""
+        ).strip(),
         index=True,
     ),
     Column(
@@ -62,12 +62,17 @@ namespaces = Table(
         index=True,
         comment="ID of the user which created the namespace",
     ),
-    Column("is_default", Boolean(), Computed("name_normalized = 'Default'")),
+    Column(
+        "is_default",
+        Boolean(),
+        Computed("coalesce(slug = 'default', FALSE)"),
+        nullable=False,
+    ),
     # This partial index ensures that the name is unique within an organization - only considering active organizations,
     Index(
-        "ix_unique_organization_name",
+        "ix_unique_organization_slug",
         "organization_id",
-        "name_normalized",
+        "slug",
         unique=True,
         postgresql_where=text("deleted_at IS NULL"),
     ),
@@ -78,11 +83,14 @@ namespaces = Table(
         "organization_id",
         unique=True,
     ),
-    comment="""A Namespace is a collection of shapes.
+    CheckConstraint("slug SIMILAR TO '[a-z0-9-_]+'", name="slug_is_valid"),
+    comment=dedent(
+        """A Namespace is a collection of shapes.
 
     - Each shape is in one namespace.
     - All organizations should have a 'Default' namespace.
-    """,
+    """
+    ).strip(),
 )
 
 # Note: every organization should have one and only one default organization that is active

@@ -8,6 +8,5 @@
 export type NamespaceUpdate = {
     name?: string;
     properties?: any;
-    schema_extras?: any;
 };
 

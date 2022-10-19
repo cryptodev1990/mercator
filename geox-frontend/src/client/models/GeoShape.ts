@@ -17,15 +17,15 @@ export type GeoShape = {
     /**
      * Properties of the shape
      */
-    properties: any;
+    properties?: any;
     /**
      * Date and time of creation
      */
-    created_at: string;
+    created_at?: string;
     /**
      * Date and time of most recent updater
      */
-    updated_at: string;
+    updated_at?: string;
     geojson: Feature;
 };
 

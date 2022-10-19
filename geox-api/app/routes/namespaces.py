@@ -1,6 +1,6 @@
 # TODO: uncomment after launching namespaces
-from email.policy import HTTP
 import logging
+from email.policy import HTTP
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
@@ -13,7 +13,7 @@ from app.crud.namespaces import (
     create_namespace,
     delete_namespace,
     get_default_namespace,
-    get_namespace_by_id,
+    get_namespace,
     select_namespaces,
     update_namespace,
 )
@@ -77,7 +77,7 @@ async def _get_namespaces__namespace_id(
     """Return a namespace."""
     conn = user_conn.connection
     try:
-        namespace = NamespaceResponse.from_orm(get_namespace_by_id(conn, namespace_id))
+        namespace = NamespaceResponse.from_orm(get_namespace(conn, namespace_id))
     except NamespaceDoesNotExistError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
     namespace.shapes = list(select_shape_metadata(conn, namespace_id=namespace.id))

@@ -16,3 +16,4 @@ black[jupyter]
 playwright
 randomname
 geojson
+types-python-slugify

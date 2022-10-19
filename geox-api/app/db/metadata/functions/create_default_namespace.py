@@ -15,7 +15,7 @@ create_default_namespace = PGFunction(
         DECLARE
             new_organization_id UUID;
         BEGIN
-            INSERT INTO namespaces (name, name_normalized, organization_id)
+            INSERT INTO namespaces (name, slug, organization_id)
             VALUES
             ('Default', 'default', NEW.id);
 

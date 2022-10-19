@@ -1,8 +1,9 @@
 """Custom Pydantic Data Types."""
+import re
 from enum import Enum
 from typing import TYPE_CHECKING, Literal, Union
 
-from pydantic import AnyHttpUrl, AnyUrl, ConstrainedFloat, constr
+from pydantic import AnyHttpUrl, AnyUrl, ConstrainedFloat, ConstrainedStr, constr
 
 AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""
@@ -81,3 +82,9 @@ else:
 
         ge = -180
         le = 180
+
+
+class Slug(ConstrainedStr):
+    """Valid slug value."""
+
+    regex = re.compile(r"^[a-z0-9_-]+$")

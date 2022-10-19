@@ -12,6 +12,7 @@ export function namespacesAndShapes(nrs: NamespaceResponse[]) {
   for (const nr of nrs) {
     namespaces.push({
       name: nr.name,
+      slug: nr.slug,
       id: nr.id,
       created_at: nr.created_at,
       updated_at: nr.updated_at,

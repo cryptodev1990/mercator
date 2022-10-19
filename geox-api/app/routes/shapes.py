@@ -84,7 +84,7 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
     deprecated=True,
 )
 @router.post(
-    "/geofence/shapes/export",
+    "/geofencer/shapes/export",
     response_model=CeleryTaskResponse,
     responses=_responses("SERVICE_MISSING_FROM_SERVER"),
 )

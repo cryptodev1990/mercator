@@ -13,16 +13,14 @@ from sqlalchemy.engine import Connection
 from app.crud.namespaces import (
     NamespaceExistsError,
     NamespaceWithThisIdDoesNotExistError,
-    NamespaceWithThisNameDoesNotExistError,
+    NamespaceWithThisSlugDoesNotExistError,
     create_namespace,
     delete_namespace,
-    delete_namespace_by_name,
     get_default_namespace,
-    get_namespace_by_id,
-    get_namespace_by_name,
+    get_namespace,
+    get_namespace_by_slug,
     namespace_exists,
     update_namespace,
-    update_namespace_by_name,
 )
 from app.crud.organization import (
     add_user_to_org,
@@ -128,7 +126,10 @@ def get_alice_ids(conn: Connection) -> Tuple[int, UUID4]:
 
 def test_create_namespace(conn: Connection):
     """Check that default namespaces were created for all organizations."""
-    values: Dict[str, Any] = {"name": "Nomen", "properties": {"color": "red"}}
+    values: Dict[str, Any] = {
+        "name": "Nomen",
+        "properties": {"color": "red"},
+    }
     user_id, organization_id = get_alice_ids(conn)
     namespace = create_namespace(
         conn, user_id=user_id, organization_id=organization_id, **values
@@ -152,7 +153,10 @@ def test_create_namespace_error_if_existing_2(conn):
     """Check that default namespaces were created for all organizations."""
     user_id, organization_id = get_alice_ids(conn)
     create_namespace(
-        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
+        conn,
+        user_id=user_id,
+        organization_id=organization_id,
+        name="Namespace 1",
     )
     with pytest.raises(NamespaceExistsError):
         create_namespace(
@@ -168,7 +172,10 @@ def test_update_namespace(conn):
     """Check that update namespace works correctly."""
     user_id, organization_id = get_alice_ids(conn)
     namespace = create_namespace(
-        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
+        conn,
+        user_id=user_id,
+        organization_id=organization_id,
+        name="Namespace 1",
     )
     assert namespace.id
     namespace_update = update_namespace(
@@ -180,6 +187,7 @@ def test_update_namespace(conn):
     assert isinstance(namespace_update, Namespace)
     assert namespace.id == namespace_update.id
     assert namespace_update.name == "This was changed"
+    assert namespace_update.slug == "this-was-changed"
     assert namespace_update.properties == {"Foo": 1, "Bar": "Hello"}
     assert namespace_update.updated_at >= namespace.updated_at
     for a in ["created_at"]:
@@ -187,47 +195,7 @@ def test_update_namespace(conn):
 
 
 def test_update_namespace_when_existing_name(conn):
-    """Check that `update_namespace()` raises exception when new name exists."""
-    user_id, organization_id = get_alice_ids(conn)
-    namespace_1 = create_namespace(
-        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
-    )
-    namespace_2 = create_namespace(
-        conn, user_id=user_id, organization_id=organization_id, name="Namespace 2"
-    )
-    with pytest.raises(NamespaceExistsError):
-        update_namespace(conn, namespace_1.id, name=namespace_2.name)
-
-
-def test_update_namespace_by_name(conn):
-    """Check that update namespace by name works correctly."""
-    user_id, organization_id = get_alice_ids(conn)
-    namespace = create_namespace(
-        conn, user_id=user_id, organization_id=organization_id, name="Namespace 1"
-    )
-    assert namespace.id
-    namespace_update = update_namespace_by_name(
-        conn,
-        namespace.name,
-        new_name="This was changed",
-        properties={"Foo": 1, "Bar": "Hello"},
-    )
-    assert namespace.id == namespace_update.id
-    assert namespace_update.name == "This was changed"
-    assert namespace_update.properties == {"Foo": 1, "Bar": "Hello"}
-    assert namespace_update.updated_at >= namespace.updated_at
-    for a in ["created_at"]:
-        assert getattr(namespace, a) == getattr(namespace_update, a)
-
-
-def test_update_namespace_by_name_not_exists(conn):
-    with pytest.raises(NamespaceWithThisNameDoesNotExistError):
-        update_namespace_by_name(
-            conn, "I have a name that doesn't exist", properties={"foo": 1}
-        )
-
-
-def test_update_namespace_by_name_to_existing_name(conn):
+    """Check that `update_namespace()` raises exception when new slug exists."""
     user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
         conn,
@@ -242,7 +210,7 @@ def test_update_namespace_by_name_to_existing_name(conn):
         name="Namespace 2",
     )
     with pytest.raises(NamespaceExistsError):
-        update_namespace(conn, namespace_1.id, name=namespace_2.name)
+        update_namespace(conn, namespace_1.id, name=namespace_1.name)
 
 
 def test_delete_namespace(conn):
@@ -260,22 +228,6 @@ def test_delete_namespace(conn):
         delete_namespace(conn, namespace_1.id)
 
 
-def test_delete_namespace_by_name(conn):
-    """Check that update namespace by name works correctly."""
-    user_id, organization_id = get_alice_ids(conn)
-    namespace_1 = create_namespace(
-        conn,
-        user_id=user_id,
-        organization_id=organization_id,
-        name="Namespace 1",
-    )
-    shapes = delete_namespace_by_name(conn, namespace_1.name)
-    assert shapes == []
-    # Check that it will raise error if deleted again
-    with pytest.raises(NamespaceWithThisNameDoesNotExistError):
-        delete_namespace_by_name(conn, namespace_1.name)
-
-
 def test_get_namespace_by_id(conn):
     """Check that update namespace by name works correctly."""
     user_id, organization_id = get_alice_ids(conn)
@@ -285,7 +237,7 @@ def test_get_namespace_by_id(conn):
         organization_id=organization_id,
         name="Namespace 1",
     )
-    namespace_ret = get_namespace_by_id(conn, namespace_1.id)
+    namespace_ret = get_namespace(conn, namespace_1.id)
     assert isinstance(namespace_ret, Namespace)
     for k in ("id", "name", "properties"):
         assert getattr(namespace_ret, k) == getattr(namespace_1, k)
@@ -294,28 +246,28 @@ def test_get_namespace_by_id(conn):
 def test_get_namespace_by_id_not_exists(conn):
     """Check that update namespace by name works correctly."""
     with pytest.raises(NamespaceWithThisIdDoesNotExistError):
-        get_namespace_by_id(conn, uuid.UUID(int=0))
+        get_namespace(conn, uuid.UUID(int=0))
 
 
-def test_get_namespace_by_name(conn):
+def test_get_namespace_by_slug(conn):
     """Check that update namespace by name works correctly."""
     user_id, organization_id = get_alice_ids(conn)
     namespace_1 = create_namespace(
         conn,
         user_id=user_id,
         organization_id=organization_id,
-        name="Namespace 1",
+        name="New Namespace",
     )
-    namespace_ret = get_namespace_by_name(conn, namespace_1.name)
+    namespace_ret = get_namespace_by_slug(conn, namespace_1.slug)
     assert isinstance(namespace_ret, Namespace)
     for k in ("id", "name", "properties"):
         assert getattr(namespace_ret, k) == getattr(namespace_1, k)
 
 
-def test_get_namespace_by_name_not_exists(conn):
+def test_get_namespace_by_slug_not_exists(conn):
     """Check that update namespace by name works correctly."""
-    with pytest.raises(NamespaceWithThisNameDoesNotExistError):
-        get_namespace_by_name(conn, "This is a name that definitely does not exist.")
+    with pytest.raises(NamespaceWithThisSlugDoesNotExistError):
+        get_namespace_by_slug(conn, "sgasgdgsa-asgsdgsa-asdgasgsa-adgasdgsa-agsdgsg")
 
 
 def test_namespace_can_have_a_deleted_name(conn):
@@ -327,11 +279,11 @@ def test_namespace_can_have_a_deleted_name(conn):
         organization_id=organization_id,
         name="New namespace",
     )
-    delete_namespace_by_name(conn, namespace_1.name)
+    delete_namespace(conn, namespace_1.id)
     namespace_2 = create_namespace(
         conn,
         user_id=user_id,
         organization_id=organization_id,
         name="New namespace",
     )
-    assert namespace_2.name == "New namespace"
+    assert namespace_2.slug == "new-namespace"

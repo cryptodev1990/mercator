@@ -8,6 +8,5 @@
 export type NamespaceCreate = {
     name: string;
     properties?: any;
-    schema_extras?: any;
 };
 

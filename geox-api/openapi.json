@@ -1,0 +1,2505 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Mercator API",
+    "contact": {
+      "email": "duber+ManagementApi@mercator.tech"
+    },
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/osm": {
+      "get": {
+        "tags": [
+          "osm"
+        ],
+        "summary": "Get Shapes From Osm",
+        "description": "Get shapes from OSM by amenity.",
+        "operationId": "get_shapes_from_osm_osm_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string"
+            },
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Geographic Reference",
+              "type": "string"
+            },
+            "name": "geographic_reference",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protected_health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Protected Health",
+        "operationId": "protected_health_protected_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/db-health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Db Health",
+        "operationId": "db_health_db_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/geofencer/shapes/export": {
+      "post": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Shapes Export",
+        "description": "Export shapes to S3.\n\nThis is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.",
+        "operationId": "shapes_export_geofencer_shapes_export_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CeleryTaskResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Data export not supported on the server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/shapes/export": {
+      "post": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Shapes Export",
+        "description": "Export shapes to S3.\n\nThis is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.",
+        "operationId": "shapes_export_shapes_export_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CeleryTaskResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Data export not supported on the server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes/bulk": {
+      "post": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Bulk Create Shapes",
+        "description": "Create multiple shapes.",
+        "operationId": "bulk_create_shapes_geofencer_shapes_bulk_post",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Namespace",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "namespace",
+            "in": "query"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Data",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GeoShapeCreate"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShapeCountResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Bulk Delete Shapes",
+        "description": "Create multiple shapes.",
+        "operationId": "bulk_delete_shapes_geofencer_shapes_bulk_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Shape Uuids",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid4"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShapeCountResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes": {
+      "get": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Get Shapes",
+        "description": "Read shapes.\n\nWill return 200 even if no shapes match the query, including the case in which the\nnamespace does not exist.",
+        "operationId": "_get_shapes_geofencer_shapes_get",
+        "parameters": [
+          {
+            "description": "Only include shapes in the specified namespace given its UUID or name.",
+            "required": false,
+            "schema": {
+              "title": "Namespace of shapes",
+              "type": "string",
+              "description": "Only include shapes in the specified namespace given its UUID or name.",
+              "format": "uuid4"
+            },
+            "name": "namespace",
+            "in": "query"
+          },
+          {
+            "description": "If TRUE, then only return shapes of the requesting user.",
+            "required": false,
+            "schema": {
+              "title": "Get shapes for a user",
+              "type": "boolean",
+              "description": "If TRUE, then only return shapes of the requesting user."
+            },
+            "name": "user",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Item offset",
+              "minimum": 0.0,
+              "type": "integer",
+              "default": 0
+            },
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Number of shapes to retrieve",
+              "minimum": 1.0,
+              "type": "integer",
+              "default": 300
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response  Get Shapes Geofencer Shapes Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeoShape"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Post Shapes",
+        "description": "Create a shape.",
+        "operationId": "_post_shapes_geofencer_shapes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeoShapeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoShape"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes/op/count": {
+      "get": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Get Shape Count",
+        "description": "Get shape count.",
+        "operationId": "get_shape_count_geofencer_shapes_op_count_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShapeCountResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes/op/contains": {
+      "get": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Get Shapes Containing Point",
+        "description": "Get shapes containing a point.",
+        "operationId": "get_shapes_containing_point_geofencer_shapes_op_contains_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Lat",
+              "maximum": 90.0,
+              "minimum": -90.0,
+              "type": "number"
+            },
+            "name": "lat",
+            "in": "query"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Lng",
+              "maximum": 180.0,
+              "minimum": -180.0,
+              "type": "number"
+            },
+            "name": "lng",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Shapes Containing Point Geofencer Shapes Op Contains Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Feature"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes/{shape_id}": {
+      "get": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Get Shapes  Shape Id",
+        "description": "Read a shape.",
+        "operationId": "_get_shapes__shape_id_geofencer_shapes__shape_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Shape Id",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "shape_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoShape"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Delete Shapes  Shape Id",
+        "description": "Delete a shape.",
+        "operationId": "_delete_shapes__shape_id_geofencer_shapes__shape_id__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Shape Id",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "shape_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Shape does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Patch Shapes  Shape Id",
+        "description": "Update a shape.",
+        "operationId": "_patch_shapes__shape_id_geofencer_shapes__shape_id__patch",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "ID of the shape to edit.",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "shape_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeoShapeUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoShape"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Shape does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes/{uuid}": {
+      "put": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Update Shapes  Shape Id",
+        "description": "Update a shape.",
+        "operationId": "_update_shapes__shape_id_geofencer_shapes__uuid__put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeoShapeUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoShape"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Shape does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shapes/op/{operation}": {
+      "post": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": "Get Shapes By Operation",
+        "description": "Get shapes by operation.",
+        "operationId": "get_shapes_by_operation_geofencer_shapes_op__operation__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/GeometryOperation"
+            },
+            "name": "operation",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Geom",
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/Point"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Polygon"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LineString"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Shapes By Operation Geofencer Shapes Op  Operation  Post",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Feature"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Operation not enabled for this account"
+          },
+          "501": {
+            "description": "Operation not supported on the server."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shape-metadata/bbox": {
+      "get": {
+        "tags": [
+          "geofencer",
+          "shape-metadata",
+          "shape-metadata"
+        ],
+        "summary": " Get Shape Metadata  Bbox",
+        "description": "Get shape metadata by bounding box.",
+        "operationId": "_get_shape_metadata__bbox_geofencer_shape_metadata_bbox_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Min X",
+              "maximum": 180.0,
+              "minimum": -180.0,
+              "type": "number"
+            },
+            "name": "min_x",
+            "in": "query"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Min Y",
+              "maximum": 90.0,
+              "minimum": -90.0,
+              "type": "number"
+            },
+            "name": "min_y",
+            "in": "query"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Max X",
+              "maximum": 180.0,
+              "minimum": -180.0,
+              "type": "number"
+            },
+            "name": "max_x",
+            "in": "query"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Max Y",
+              "maximum": 90.0,
+              "minimum": -90.0,
+              "type": "number"
+            },
+            "name": "max_y",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Item offset",
+              "minimum": 0.0,
+              "type": "integer",
+              "default": 0
+            },
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Number of shapes to retrieve",
+              "minimum": 1.0,
+              "type": "integer",
+              "default": 25
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response  Get Shape Metadata  Bbox Geofencer Shape Metadata Bbox Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeoShapeMetadata"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shape-metadata/search": {
+      "get": {
+        "tags": [
+          "geofencer",
+          "shape-metadata",
+          "shape-metadata"
+        ],
+        "summary": " Get Shape Metadata  Search",
+        "description": "Get shape metadata by bounding box.",
+        "operationId": "_get_shape_metadata__search_geofencer_shape_metadata_search_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string"
+            },
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Item offset",
+              "minimum": 0.0,
+              "type": "integer",
+              "default": 0
+            },
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Number of shapes to retrieve",
+              "minimum": 1.0,
+              "type": "integer",
+              "default": 25
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response  Get Shape Metadata  Search Geofencer Shape Metadata Search Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeoShapeMetadata"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/shape-metadata": {
+      "get": {
+        "tags": [
+          "geofencer",
+          "shape-metadata",
+          "shape-metadata"
+        ],
+        "summary": " Get Shape Metadata",
+        "description": "Get all shape metadata with pagination.",
+        "operationId": "_get_shape_metadata_geofencer_shape_metadata_get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Offset",
+              "type": "integer",
+              "default": 0
+            },
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "type": "integer",
+              "default": 25
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response  Get Shape Metadata Geofencer Shape Metadata Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeoShapeMetadata"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/tasks/results/{task_id}": {
+      "get": {
+        "tags": [
+          "geofencer",
+          "tasks"
+        ],
+        "summary": "Get Status",
+        "description": "Retrieve results of a task.",
+        "operationId": "get_status_tasks_results__task_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "string"
+            },
+            "name": "task_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CeleryTaskResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/tasks/test": {
+      "post": {
+        "tags": [
+          "geofencer",
+          "tasks"
+        ],
+        "summary": "Run Test Celery",
+        "description": "Run a test celery task.",
+        "operationId": "run_test_celery_tasks_test_post",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Word",
+              "type": "string",
+              "default": "Hello"
+            },
+            "name": "word",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CeleryTaskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/info": {
+      "get": {
+        "summary": "Info",
+        "description": "Return app version information.",
+        "operationId": "info_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppVersion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/geofencer/namespaces": {
+      "get": {
+        "tags": [
+          "namespaces"
+        ],
+        "summary": " Get Namespaces",
+        "description": "Return namespaces available to the user.",
+        "operationId": "_get_namespaces_geofencer_namespaces_get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "ID of the namespace",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Name of the namespace",
+              "type": "string"
+            },
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Includeshapes",
+              "type": "boolean",
+              "default": true
+            },
+            "name": "includeShapes",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response  Get Namespaces Geofencer Namespaces Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NamespaceResponse"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "namespaces"
+        ],
+        "summary": " Post Namespaces",
+        "description": "Create a new namespace.",
+        "operationId": "_post_namespaces_geofencer_namespaces_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NamespaceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Namespace"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Namespace does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/geofencer/namespaces/{namespace_id}": {
+      "get": {
+        "tags": [
+          "namespaces"
+        ],
+        "summary": " Get Namespaces  Namespace Id",
+        "description": "Return a namespace.",
+        "operationId": "_get_namespaces__namespace_id_geofencer_namespaces__namespace_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Namespace Id",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "namespace_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Namespace exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "namespaces"
+        ],
+        "summary": " Delete Namespaces",
+        "description": "Return namespaces available to the user.\n\n- 204: Success with no content",
+        "operationId": "_delete_namespaces_geofencer_namespaces__namespace_id__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Namespace Id",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "namespace_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Namespace exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "namespaces"
+        ],
+        "summary": " Patch Namespaces",
+        "description": "Return namespaces available to the user.",
+        "operationId": "_patch_namespaces_geofencer_namespaces__namespace_id__patch",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Namespace to edit",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "namespace_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NamespaceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamespaceResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Namespace exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Namespace does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/backsplash/{layer}/{z}/{x}/{y}": {
+      "get": {
+        "tags": [
+          "tiles",
+          "geofencer",
+          "geofencer"
+        ],
+        "summary": "Get Shape Tile",
+        "description": "Get a tile of shape.",
+        "operationId": "get_shape_tile_backsplash__layer___z___x___y__get",
+        "parameters": [
+          {
+            "description": "Tiles's zoom level",
+            "required": true,
+            "schema": {
+              "title": "Z",
+              "maximum": 30.0,
+              "minimum": 0.0,
+              "type": "integer",
+              "description": "Tiles's zoom level"
+            },
+            "name": "z",
+            "in": "path"
+          },
+          {
+            "description": "Tiles's column",
+            "required": true,
+            "schema": {
+              "title": "X",
+              "type": "integer",
+              "description": "Tiles's column"
+            },
+            "name": "x",
+            "in": "path"
+          },
+          {
+            "description": "Tiles's row",
+            "required": true,
+            "schema": {
+              "title": "Y",
+              "type": "integer",
+              "description": "Tiles's row"
+            },
+            "name": "y",
+            "in": "path"
+          },
+          {
+            "description": "Layer Name",
+            "required": true,
+            "schema": {
+              "title": "Layer",
+              "type": "string",
+              "description": "Layer Name"
+            },
+            "name": "layer",
+            "in": "path"
+          },
+          {
+            "description": "List of namespaces to query. If not included, defaults to all namespaces",
+            "required": false,
+            "schema": {
+              "title": "Namespace Ids",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid4"
+              },
+              "description": "List of namespaces to query. If not included, defaults to all namespaces"
+            },
+            "name": "namespace_ids",
+            "in": "query"
+          },
+          {
+            "description": "TileMatrixSet Name (default: 'WebMercatorQuad')",
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TileMatrixSetNames"
+                }
+              ],
+              "description": "TileMatrixSet Name (default: 'WebMercatorQuad')",
+              "default": "WebMercatorQuad"
+            },
+            "name": "TileMatrixSetId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/x-protobuf": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Home",
+        "operationId": "home__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppVersion": {
+        "title": "AppVersion",
+        "required": [
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "title": "Version",
+            "type": "string",
+            "description": "App version number."
+          },
+          "git_commit": {
+            "title": "Git Commit",
+            "type": "string",
+            "description": "Git hash"
+          }
+        },
+        "description": "Version information about the app."
+      },
+      "CeleryTaskResponse": {
+        "title": "CeleryTaskResponse",
+        "required": [
+          "task_id"
+        ],
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "title": "Task Id",
+            "type": "string",
+            "description": "Task id."
+          }
+        },
+        "description": "Response from submitting a Celery task."
+      },
+      "CeleryTaskResult": {
+        "title": "CeleryTaskResult",
+        "required": [
+          "task_id",
+          "task_status",
+          "task_result"
+        ],
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "title": "Task Id",
+            "type": "string",
+            "description": "Task id."
+          },
+          "task_status": {
+            "title": "Task Status",
+            "type": "string",
+            "description": "Task status."
+          },
+          "task_result": {
+            "title": "Task Result",
+            "description": "Task results."
+          }
+        },
+        "description": "Result of a Celery task."
+      },
+      "Feature": {
+        "title": "Feature",
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "Feature",
+            "const": "Feature"
+          },
+          "geometry": {
+            "title": "Geometry",
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPoint"
+              },
+              {
+                "$ref": "#/components/schemas/LineString"
+              },
+              {
+                "$ref": "#/components/schemas/MultiLineString"
+              },
+              {
+                "$ref": "#/components/schemas/Polygon"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPolygon"
+              },
+              {
+                "$ref": "#/components/schemas/GeometryCollection"
+              }
+            ]
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "bbox": {
+            "title": "Bbox",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "description": "Feature Model"
+      },
+      "GeoShape": {
+        "title": "GeoShape",
+        "required": [
+          "uuid",
+          "geojson"
+        ],
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "Name of the shape"
+          },
+          "namespace_id": {
+            "title": "Namespace Id",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object",
+            "description": "Properties of the shape"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string",
+            "description": "Date and time of creation",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string",
+            "description": "Date and time of most recent updater",
+            "format": "date-time"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/Feature"
+          }
+        },
+        "description": "Metadata about a shape.",
+        "example": {
+          "uuid": "9be2a343-60f5-4324-a5f4-4efe8efeba28",
+          "name": "Lake Merritt",
+          "properties": {},
+          "namespace_id": "cf9f83cd-d454-4abb-b77c-c6d639804618",
+          "geojson": {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    -122.26907730102539,
+                    37.796084948503236
+                  ],
+                  [
+                    -122.24555969238281,
+                    37.796084948503236
+                  ],
+                  [
+                    -122.24555969238281,
+                    37.81208947621168
+                  ],
+                  [
+                    -122.26907730102539,
+                    37.81208947621168
+                  ],
+                  [
+                    -122.26907730102539,
+                    37.796084948503236
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "GeoShapeCreate": {
+        "title": "GeoShapeCreate",
+        "required": [
+          "geojson"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "Name of the shape"
+          },
+          "geojson": {
+            "title": "Geojson",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Feature"
+              }
+            ],
+            "description": "GeoJSON representation of the shape"
+          },
+          "namespace": {
+            "title": "Namespace",
+            "type": "string",
+            "description": "Namespace id.",
+            "format": "uuid4"
+          }
+        },
+        "example": {
+          "name": "Lake Merritt",
+          "properties": {},
+          "namespace_id": "cf9f83cd-d454-4abb-b77c-c6d639804618",
+          "geojson": {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    -122.26907730102539,
+                    37.796084948503236
+                  ],
+                  [
+                    -122.24555969238281,
+                    37.796084948503236
+                  ],
+                  [
+                    -122.24555969238281,
+                    37.81208947621168
+                  ],
+                  [
+                    -122.26907730102539,
+                    37.81208947621168
+                  ],
+                  [
+                    -122.26907730102539,
+                    37.796084948503236
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "GeoShapeMetadata": {
+        "title": "GeoShapeMetadata",
+        "required": [
+          "uuid"
+        ],
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "Name of the shape"
+          },
+          "namespace_id": {
+            "title": "Namespace Id",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object",
+            "description": "Properties of the shape"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string",
+            "description": "Date and time of creation",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string",
+            "description": "Date and time of most recent updater",
+            "format": "date-time"
+          }
+        },
+        "description": "Metadata about a shape.",
+        "example": {
+          "uuid": "9be2a343-60f5-4324-a5f4-4efe8efeba28",
+          "name": "Lake Merritt",
+          "properties": {},
+          "namespace_id": "cf9f83cd-d454-4abb-b77c-c6d639804618",
+          "geojson": {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    -122.26907730102539,
+                    37.796084948503236
+                  ],
+                  [
+                    -122.24555969238281,
+                    37.796084948503236
+                  ],
+                  [
+                    -122.24555969238281,
+                    37.81208947621168
+                  ],
+                  [
+                    -122.26907730102539,
+                    37.81208947621168
+                  ],
+                  [
+                    -122.26907730102539,
+                    37.796084948503236
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "GeoShapeUpdate": {
+        "title": "GeoShapeUpdate",
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/Feature"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          },
+          "namespace": {
+            "title": "Namespace",
+            "type": "string",
+            "description": "The namespace id",
+            "format": "uuid4"
+          },
+          "should_delete": {
+            "title": "Should Delete",
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "example": {
+          "properties": {
+            "New property": 10
+          },
+          "namespace_id": "cf9f83cd-d454-4abb-b77c-c6d639804618"
+        }
+      },
+      "GeometryCollection": {
+        "title": "GeometryCollection",
+        "required": [
+          "geometries"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "GeometryCollection",
+            "const": "GeometryCollection"
+          },
+          "geometries": {
+            "title": "Geometries",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Point"
+                },
+                {
+                  "$ref": "#/components/schemas/MultiPoint"
+                },
+                {
+                  "$ref": "#/components/schemas/LineString"
+                },
+                {
+                  "$ref": "#/components/schemas/MultiLineString"
+                },
+                {
+                  "$ref": "#/components/schemas/Polygon"
+                },
+                {
+                  "$ref": "#/components/schemas/MultiPolygon"
+                }
+              ]
+            }
+          }
+        },
+        "description": "GeometryCollection Model"
+      },
+      "GeometryOperation": {
+        "title": "GeometryOperation",
+        "enum": [
+          "contains",
+          "intersects",
+          "touches",
+          "crosses"
+        ],
+        "type": "string",
+        "description": "Valid geometry operations."
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "LineString": {
+        "title": "LineString",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "title": "Coordinates",
+            "minItems": 2,
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "LineString",
+            "const": "LineString"
+          }
+        },
+        "description": "LineString Model"
+      },
+      "MultiLineString": {
+        "title": "MultiLineString",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "title": "Coordinates",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 3
+              }
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "MultiLineString",
+            "const": "MultiLineString"
+          }
+        },
+        "description": "MultiLineString Model"
+      },
+      "MultiPoint": {
+        "title": "MultiPoint",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "title": "Coordinates",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 3,
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "MultiPoint",
+            "const": "MultiPoint"
+          }
+        },
+        "description": "MultiPoint Model"
+      },
+      "MultiPolygon": {
+        "title": "MultiPolygon",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "title": "Coordinates",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "MultiPolygon",
+            "const": "MultiPolygon"
+          }
+        },
+        "description": "MultiPolygon Model"
+      },
+      "Namespace": {
+        "title": "Namespace",
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "created_at",
+          "updated_at",
+          "is_default"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "pattern": "^[a-z0-9_-]+$",
+            "type": "string"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string",
+            "format": "date-time"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "shapes": {
+            "title": "Shapes",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeoShapeMetadata"
+            },
+            "description": "\n        List of shape metadata of shapes in the namespace.\n        None means that shape metadata wasn't requested.\n        An empty list means that there are no shapes."
+          }
+        },
+        "description": "Namespace data."
+      },
+      "NamespaceCreate": {
+        "title": "NamespaceCreate",
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          }
+        },
+        "description": "Data to create a new namespace."
+      },
+      "NamespaceResponse": {
+        "title": "NamespaceResponse",
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "created_at",
+          "updated_at",
+          "is_default"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "pattern": "^[a-z0-9_-]+$",
+            "type": "string"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string",
+            "format": "date-time"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "shapes": {
+            "title": "Shapes",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeoShapeMetadata"
+            },
+            "description": "\n        List of shape metadata of shapes in the namespace.\n        None means that shape metadata wasn't requested.\n        An empty list means that there are no shapes."
+          }
+        },
+        "description": "Response in get namespaces."
+      },
+      "NamespaceUpdate": {
+        "title": "NamespaceUpdate",
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          }
+        },
+        "description": "Data to update an existing namespace."
+      },
+      "Point": {
+        "title": "Point",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "title": "Coordinates",
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 2,
+            "items": {
+              "type": "number"
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "Point",
+            "const": "Point"
+          }
+        },
+        "description": "Point Model"
+      },
+      "Polygon": {
+        "title": "Polygon",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "title": "Coordinates",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "default": "Polygon",
+            "const": "Polygon"
+          }
+        },
+        "description": "Polygon Model"
+      },
+      "RequestErrorModel": {
+        "title": "RequestErrorModel",
+        "required": [
+          "detail"
+        ],
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        }
+      },
+      "ShapeCountResponse": {
+        "title": "ShapeCountResponse",
+        "required": [
+          "num_shapes"
+        ],
+        "type": "object",
+        "properties": {
+          "num_shapes": {
+            "title": "Num Shapes",
+            "type": "integer",
+            "description": "Number of shapes affected by transaction"
+          }
+        },
+        "example": {
+          "num_shapes": 5
+        }
+      },
+      "TileMatrixSetNames": {
+        "title": "TileMatrixSetNames",
+        "enum": [
+          "CanadianNAD83_LCC",
+          "EuropeanETRS89_LAEAQuad",
+          "LINZAntarticaMapTilegrid",
+          "NZTM2000",
+          "NZTM2000Quad",
+          "UPSAntarcticWGS84Quad",
+          "UPSArcticWGS84Quad",
+          "UTM31WGS84Quad",
+          "WGS1984Quad",
+          "WebMercatorQuad",
+          "WorldCRS84Quad",
+          "WorldMercatorWGS84Quad"
+        ],
+        "description": "An enumeration."
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
