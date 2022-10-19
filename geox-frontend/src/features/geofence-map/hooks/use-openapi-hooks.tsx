@@ -214,7 +214,7 @@ export const usePollCopyTaskQuery = (taskId: string | undefined) => {
     ["copyTask", taskId],
     () => {
       if (taskId) {
-        return TasksService.getStatusTasksResultsTaskIdGet(taskId);
+        return GeofencerService.getStatusGeofencerShapesExportTaskIdGet(taskId);
       }
       return Promise.resolve({} as CeleryTaskResult);
     },
@@ -243,7 +243,7 @@ export const usePollCopyTaskQuery = (taskId: string | undefined) => {
 export const useTriggerCopyTaskMutation = () => {
   const queryClient = useQueryClient();
   return useMutation<CeleryTaskResponse>(
-    GeofencerService.shapesExportShapesExportPost,
+    GeofencerService.shapesExportGeofencerShapesExportPost,
     {
       onSuccess(data: CeleryTaskResponse) {
         queryClient.fetchQuery(["copyTask", data.task_id]);

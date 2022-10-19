@@ -104,8 +104,6 @@ def query_shapes_table(
         df = gpd.read_postgis(
             query, conn, geom_col="geom", params={"organization_id": organization_id}
         )
-        print(df["properties"])
-        print(df["geom"])
         logger.debug(f"Retrieved {df.shape[0]} rows")
         return df
 

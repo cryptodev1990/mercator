@@ -14,15 +14,13 @@ from app.main import app
 
 
 def fix_bbox(schema):
-    bbox = schema["components"]["schemas"]["Feature"]["properties"]["bbox"]
-    del bbox["anyOf"]
-    bbox["type"] = "array"
-    bbox["items"] = {"type": "number"}
+    bbox = {"type": "array", "items": {"type": "number"}}
+    schema["components"]["schemas"]["Feature"]["properties"]["bbox"] = bbox
     return schema
 
 
 def fix_point(schema):
-    coord = {"type": "array", "items": {"type", "number"}}
+    coord = {"type": "array", "items": {"type": "number"}}
     schema["components"]["schemas"]["Point"]["properties"]["coordinates"] = coord
     return schema
 
@@ -158,13 +156,13 @@ def fix_multi_polygon(schema):
 def main(output: Optional[Path] = typer.Option(None, exists=False)) -> None:
     """Generate an openapi schema to use in generating typescript clients."""
     schema = app.openapi()
-    schema = fix_bbox(schema)
+    # schema = fix_bbox(schema)
     schema = fix_point(schema)
-    schema = fix_polygon(schema)
-    schema = fix_line_string(schema)
-    schema = fix_multi_line_string(schema)
-    schema = fix_multi_polygon(schema)
-    schema = fix_multi_point(schema)
+    # schema = fix_polygon(schema)
+    # schema = fix_line_string(schema)
+    # schema = fix_multi_line_string(schema)
+    # schema = fix_multi_polygon(schema)
+    # schema = fix_multi_point(schema)
     schema_str = json.dumps(schema, indent=2)
     if output:
         with output.open("w") as f:

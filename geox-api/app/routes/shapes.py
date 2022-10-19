@@ -1,11 +1,11 @@
 import logging
-from enum import Enum
 from typing import List, Optional, Union, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
 
+from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
 from app.crud import shape as crud
 from app.crud.namespaces import get_default_namespace
@@ -22,13 +22,14 @@ from app.crud.shape import (
 from app.dependencies import UserConnection, get_app_user_connection, verify_token
 from app.schemas import (
     CeleryTaskResponse,
+    CeleryTaskResult,
     GeoShape,
     GeoShapeCreate,
     GeoShapeUpdate,
     RequestErrorModel,
     ShapeCountResponse,
 )
-from app.worker import copy_to_s3
+from app.worker import copy_to_s3, test_celery
 
 logger = logging.getLogger(__name__)
 
@@ -77,12 +78,20 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
     return CeleryTaskResponse(task_id=task.id)
 
 
-@router.post(
-    "/shapes/export",
-    response_model=CeleryTaskResponse,
-    responses=_responses("SERVICE_MISSING_FROM_SERVER"),
-    deprecated=True,
+@router.get(
+    "/geofencer/shapes/export/{task_id}",
+    response_model=CeleryTaskResult,
+    tags=["tasks"],
 )
+def get_status(task_id: str):
+    """Retrieve results of a task."""
+    task_result = celery_app.AsyncResult(task_id)
+    result = CeleryTaskResult(
+        task_id=task_id, task_status=task_result.status, task_result=task_result.result
+    )
+    return result
+
+
 @router.post(
     "/geofencer/shapes/export",
     response_model=CeleryTaskResponse,

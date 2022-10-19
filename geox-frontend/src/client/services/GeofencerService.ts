@@ -20,26 +20,29 @@ import { OpenAPI } from "../core/OpenAPI";
 import { request as __request } from "../core/request";
 
 export class GeofencerService {
-  /**
-   * Shapes Export
-   * Export shapes to S3.
-   *
-   * This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
-   * @returns CeleryTaskResponse Successful Response
-   * @throws ApiError
-   */
-  public static shapesExportGeofenceShapesExportPost(): CancelablePromise<CeleryTaskResponse> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/geofence/shapes/export",
-      errors: {
-        501: `Data export not supported on the server`,
-      },
-    });
+    /**
+     * Get Status
+     * Retrieve results of a task.
+     * @param taskId
+     * @returns CeleryTaskResult Successful Response
+     * @throws ApiError
+     */
+     public static getStatusGeofencerShapesExportTaskIdGet(
+      taskId: string,
+  ): CancelablePromise<CeleryTaskResult> {
+      return __request(OpenAPI, {
+          method: 'GET',
+          url: '/geofencer/shapes/export/{task_id}',
+          path: {
+              'task_id': taskId,
+          },
+          errors: {
+              422: `Validation Error`,
+          },
+      });
   }
 
   /**
-   * @deprecated
    * Shapes Export
    * Export shapes to S3.
    *
@@ -47,10 +50,10 @@ export class GeofencerService {
    * @returns CeleryTaskResponse Successful Response
    * @throws ApiError
    */
-  public static shapesExportShapesExportPost(): CancelablePromise<CeleryTaskResponse> {
+  public static shapesExportGeofencerShapesExportPost(): CancelablePromise<CeleryTaskResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/shapes/export",
+      url: "/geofencer/shapes/export",
       errors: {
         501: `Data export not supported on the server`,
       },
