@@ -61,6 +61,7 @@ export const useLayers = () => {
           data: featureToFeatureCollection(
             tentativeShapes.map((x) => x.geojson)
           ),
+          pointRadiusMinPixels: 7,
         }),
       modifyLayer,
       selectedFeatureCollection &&

@@ -2,12 +2,7 @@ import { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { TbCaretRight } from "react-icons/tb";
 import { Virtuoso } from "react-virtuoso";
-import {
-  GeofencerService,
-  GeoShapeMetadata,
-  Namespace,
-  NamespacesService,
-} from "../../../../../../client";
+import { GeoShapeMetadata, Namespace } from "../../../../../../client";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { useShapes } from "../../../../hooks/use-shapes";

@@ -27,6 +27,8 @@ export function getCursorFromCursorMode(
         return "pointer";
       }
       return "grab";
+    case EditorMode.DrawIsochroneMode:
+      return "crosshair";
     default:
       return "pointer";
   }

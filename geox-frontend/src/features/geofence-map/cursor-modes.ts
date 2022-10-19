@@ -13,5 +13,5 @@ export enum EditorMode {
   TranslateMode = "TranslateMode",
   DrawPolygonFromRouteMode = "DrawPolygonFromRoute",
   // IC DEMO
-  InstacartDemoMode = "InstacartDemoMode",
+  DrawIsochroneMode = "DrawIsochroneMode",
 }

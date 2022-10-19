@@ -15,15 +15,21 @@ import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { getCursorFromCursorMode } from "./utils";
 // Needed for mapbox-gl.js to work
 import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
+import { useIsochrones } from "../../../../hooks/use-isochrones";
+import { UIContext } from "../../contexts/ui-context";
+import { toast } from "react-hot-toast";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
   const { cursorMode, setOptions, setCursorMode } = useCursorMode();
-  const { mapRef, clearSelectedFeatureIndexes, deleteShapes } = useShapes();
+  const { mapRef, clearSelectedFeatureIndexes, deleteShapes, addShape } =
+    useShapes();
 
   const { selectedUuids, clearSelectedShapeUuids } = useSelectedShapes();
 
   const { deckRef } = useContext(DeckContext);
+  const { getIsochrones } = useIsochrones();
+  const { isochroneParams } = useContext(UIContext);
 
   // register the backspace key to delete a shape if a shape is selected
   useEffect(() => {
@@ -102,6 +108,20 @@ const GeofenceMap = () => {
         }
         // @ts-ignore
         getCursor={(e) => getCursorFromCursorMode(e, cursorMode)}
+        onClick={(e) => {
+          if (cursorMode === EditorMode.DrawIsochroneMode) {
+            getIsochrones(
+              e.coordinate as number[],
+              isochroneParams.timeInMinutes,
+              isochroneParams.travelMode || "car"
+            ).then((isochrones) => {
+              addShape({
+                name: "Isochrone",
+                geojson: isochrones,
+              });
+            });
+          }
+        }}
         controller={{
           // @ts-ignore
           doubleClickZoom: false,

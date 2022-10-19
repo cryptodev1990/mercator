@@ -22,7 +22,9 @@ const GeofencerSidebar = () => {
     <SidebarDrawer>
       <Tabs
         children={[<ShapeBarPaginator />, <ShapeEditor />].map((x, i) => (
-          <div key={i}>{x}</div>
+          <div className="h-full" key={i}>
+            {x}
+          </div>
         ))}
         active={!shapeForPropertyEdit ? 0 : 1}
         tabnames={["Shapes", "Metadata Editor"]}

@@ -33,7 +33,7 @@ const GeofencerApp = () => {
     DeckContextProvider,
     GeofencerContextContainer,
     GeoShapeMetadataProvider,
-    // This context needs to be after the deck and selection contexts
+    // GeoShapeWriteContextProvider needs to be after the deck and selection contexts
     GeoShapeWriteContextProvider,
     SelectionContextProvider,
     UIContextContainer,
@@ -48,7 +48,7 @@ const GeofencerApp = () => {
       <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden">
         <div className="flex-auto w-screen relative">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
-            <div className="z-30 mx-2 right-0 flex flex-col gap-3">
+            <div className="z-30 mx-2 flex flex-col space-y-3 items-end">
               <Dropdown />
               <ToolButtonBank />
             </div>

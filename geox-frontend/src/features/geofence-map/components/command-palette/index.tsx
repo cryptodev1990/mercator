@@ -8,6 +8,7 @@ import { Menu } from "./menu";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { useShapes } from "../../hooks/use-shapes";
 import { toast } from "react-hot-toast";
+import { polygon, union } from "@turf/turf";
 
 export const CommandPalette = () => {
   const { tentativeShapes, setTentativeShapes, setViewport } =
@@ -32,6 +33,20 @@ export const CommandPalette = () => {
       }}
       onDelete={() => {
         bulkDeleteShapes(shapeMetadata.map((s: any) => s.uuid));
+        setTentativeShapes([]);
+      }}
+      onUnion={() => {
+        // get a union of a list of shapes using turf
+        // https://turfjs.org/docs/#union
+        // get a union of a list of
+        let newShape = polygon([]);
+        for (const shape of tentativeShapes) {
+          newShape = union(shape.geojson as any, newShape) as any;
+        }
+        addShape({
+          name: "New shape",
+          geojson: newShape as any,
+        });
         setTentativeShapes([]);
       }}
       // Commit data to the server
@@ -75,7 +90,7 @@ export const CommandPalette = () => {
 
         setTentativeShapes(newShapes);
       }}
-      onIsochrone={async (num: number, timeUnits: string) => {
+      onIsochrone={async (num: number, timeUnits: string, mode: string) => {
         const timeInSeconds = num * 60;
         const newShapes: GeoShapeCreate[] = [];
         let i = 0;
@@ -91,7 +106,7 @@ export const CommandPalette = () => {
             const chrone = await getIsochrones(
               centroid(pt).geometry.coordinates,
               timeInSeconds,
-              "car"
+              mode
             );
 
             newShapes.push({

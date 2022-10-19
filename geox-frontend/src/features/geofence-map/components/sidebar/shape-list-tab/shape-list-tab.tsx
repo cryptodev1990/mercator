@@ -9,7 +9,7 @@ import { UIModalEnum } from "../../../types";
 import { useDbSync } from "../../../hooks/use-db-sync";
 import { useSelectedShapes } from "../../../hooks/use-selected-shapes";
 import { NamespaceSection } from "./namespace-section";
-import simplur from "simplur";
+import { Footer } from "../footer";
 
 const EmptyMessage = () => {
   return (
@@ -37,13 +37,13 @@ const TentativeButtonBank = () => {
   const { clearSelectedShapeUuids } = useSelectedShapes();
   return (
     <div className="mt-2 space-x-1">
-      <p className="font-bold text-xs mx-1">External data</p>
+      <p className="font-bold text-sm mx-1">External data</p>
       <hr />
-      <h3 className="font-bold uppercase text-sm text-blue-300">
-        {tentativeShapes.length} shapes in queue
+      <h3 className="text-sm text-blue-300">
+        {tentativeShapes.length} areas in queue
       </h3>
       <button
-        className="btn btn-xs bg-blue-400 text-white rounded-none"
+        className="btn btn-xs bg-blue-400 text-white rounded"
         disabled={updateLoading}
         onClick={() => {
           bulkAddShapes(
@@ -63,13 +63,17 @@ const TentativeButtonBank = () => {
         + Publish
       </button>
       <button
-        className="btn btn-xs bg-blue-400 text-white rounded-none"
+        className="btn btn-xs bg-blue-400 text-white rounded"
         onClick={() => snapToCentroid({ category: "tentative" })}
       >
-        Zoom to centroid
+        <span role="img" aria-label="magnifying glass">
+          🔍
+        </span>
+        {"    "}
+        Zoom
       </button>
       <button
-        className="btn btn-xs bg-blue-400 text-white rounded-none"
+        className="btn btn-xs bg-red-400 text-white rounded"
         onClick={() => setTentativeShapes([])}
       >
         Clear
@@ -151,20 +155,6 @@ export const ShapeBarPaginator = () => {
           </p>
         </div>
       )}
-      <footer className="flex flex-col mt-auto">
-        <p className="text-xs m-1">
-          {shapeMetadataIsLoading && (
-            <Loading className="spin" height={20} width={20} />
-          )}
-          {
-            <>
-              {simplur`${numShapes || 0} shape[|s] in ${
-                namespaces.length
-              } folder[|s]`}
-            </>
-          }
-        </p>
-      </footer>
     </div>
   );
 };

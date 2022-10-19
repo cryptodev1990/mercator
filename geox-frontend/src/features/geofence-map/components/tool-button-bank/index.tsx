@@ -1,17 +1,22 @@
 // @ts-ignore
-import { useCursorMode } from "../hooks/use-cursor-mode";
+import { useCursorMode } from "../../hooks/use-cursor-mode";
 
-import { EditorMode } from "../cursor-modes";
+import { EditorMode } from "../../cursor-modes";
 import { BsScissors } from "react-icons/bs";
 import { TbLasso } from "react-icons/tb";
-import { CgEditMarkup } from "react-icons/cg";
+import { CgClose, CgEditMarkup } from "react-icons/cg";
 import { RiCursorLine } from "react-icons/ri";
-import { FaDrawPolygon } from "react-icons/fa";
-import { useSelectedShapes } from "../hooks/use-selected-shapes";
+import { FaClock, FaDrawPolygon } from "react-icons/fa";
+import { useSelectedShapes } from "../../hooks/use-selected-shapes";
+import { MdDriveEta } from "react-icons/md";
+import { useState } from "react";
+import { IsochroneControls } from "./isochrone-controls";
+import { Transition } from "react-transition-group";
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
   const { numSelected } = useSelectedShapes();
+  const [pushOut, setPushOut] = useState(false);
 
   const modes = [
     {
@@ -27,6 +32,13 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.EditMode),
       dataTip: "Draw new or edit existing geofences",
       active: cursorMode === EditorMode.EditMode,
+    },
+    {
+      name: "Drive time",
+      icon: <MdDriveEta />,
+      onClick: () => setCursorMode(EditorMode.DrawIsochroneMode),
+      dataTip: "Drive time distance",
+      active: cursorMode === EditorMode.ModifyMode,
     },
     // {
     //   name: "Lasso",
@@ -77,28 +89,51 @@ export const ToolButtonBank = () => {
   ];
 
   const buttonCss =
-    "bg-slate-600 hover:bg-blue-500 text-white font-semibold disabled:bg-slate-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent";
+    "bg-slate-600 hover:bg-blue-500 text-white font-semibold disabled:bg-slate-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent ";
+
+  function slideAside() {
+    setPushOut(!pushOut);
+  }
 
   return (
-    <div className="grid grid-flow-row gap-0 ">
+    <div className="flex flex-col items-end">
       {modes.map((mode) => {
         let classes = buttonCss;
         if (mode.active) {
           classes += " bg-blue-500";
-        } else if (mode.name === "Instacart demo") {
-          classes += " bg-red-700";
+        }
+        if (mode.name === "Drive time") {
+          return (
+            <div className="bg-blue-500 flex flex-row-reverse">
+              <button
+                onClick={(e) => {
+                  slideAside();
+                  mode.onClick();
+                }}
+                key={mode.name}
+                disabled={mode.disabled}
+                title={mode.dataTip}
+                className={classes}
+              >
+                <FaClock />
+              </button>
+              {pushOut && <IsochroneControls key={1} />}
+            </div>
+          );
         }
         return (
-          <button
-            // data-tip={mode.dataTip}
-            key={mode.name}
-            disabled={mode.disabled}
-            title={mode.dataTip}
-            onClick={mode.onClick}
-            className={classes}
-          >
-            {mode.icon}
-          </button>
+          <div>
+            <button
+              // data-tip={mode.dataTip}
+              key={mode.name}
+              disabled={mode.disabled}
+              title={mode.dataTip}
+              onClick={mode.onClick}
+              className={classes}
+            >
+              {mode.icon}
+            </button>
+          </div>
         );
       })}
     </div>

@@ -11,6 +11,7 @@ export const Menu = ({
   onOSM,
   onBuffer,
   onPublish,
+  onUnion,
   onDelete,
   onIsochrone,
 }: {
@@ -18,6 +19,7 @@ export const Menu = ({
   onOSM: any;
   onBuffer: any;
   onPublish: any;
+  onUnion: any;
   onDelete: any;
   onIsochrone: any;
 }) => {
@@ -63,8 +65,23 @@ export const Menu = ({
         } else if (value.endsWith("drive")) {
           // extract number from string
           const values = value.match(/^draw (\d+) (\w+) drive*/);
-          onIsochrone(values![1] ?? 10, values![2] ?? "minute");
+          await onIsochrone(values![1] ?? 10, values![2] ?? "minute", "car");
+        } else if (value.endsWith("bike ride")) {
+          // extract number from string
+          console.log("HEY");
+          const values = value.match(/^draw (\d+) (\w+) bike ride*/);
+          await onIsochrone(values![1] ?? 10, values![2] ?? "minute", "bike");
+        } else if (value.endsWith("scooter ride")) {
+          // extract number from string
+          const values = value.match(/^draw (\d+) (\w+) scooter ride*/);
+          await onIsochrone(
+            values![1] ?? 10,
+            values![2] ?? "minute",
+            "scooter"
+          );
         }
+      } else if (value.startsWith("union")) {
+        onUnion();
       } else if (value.startsWith("publish")) {
         onPublish();
       } else if (value.startsWith("delete")) {
@@ -78,6 +95,7 @@ export const Menu = ({
       setHidden(true);
       // success
     } catch (e: any) {
+      console.error(e);
       setError(e);
     }
   }

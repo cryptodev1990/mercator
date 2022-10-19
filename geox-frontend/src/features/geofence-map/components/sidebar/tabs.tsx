@@ -31,13 +31,15 @@ export function Tabs({
     selected ? "stroke-white" : "stroke-gray-300";
 
   return (
-    <>
+    <div className="h-full">
       <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
-        <section className="flex flex-col">
-          <header className="bg-slate-800 flex-1">
-            <div className="flex flex-row justify-between items-baseline">
-              <GeofencerNavbar />
-            </div>
+        <section className="flex flex-col h-full">
+          <div>
+            <header className="bg-slate-800 flex-1">
+              <div className="flex flex-row justify-between items-baseline">
+                <GeofencerNavbar />
+              </div>
+            </header>
             <Tab.List className="my-1 relative">
               {tabnames.map((tabname: string, index: number) => (
                 <Tab
@@ -65,14 +67,14 @@ export function Tabs({
                 </Tab>
               ))}
             </Tab.List>
-          </header>
-          <Tab.Panels className="relative flex-auto bg-slate-700">
+          </div>
+          <Tab.Panels>
             {children.map((child: any, index: number) => (
               <Tab.Panel key={index}>{child}</Tab.Panel>
             ))}
           </Tab.Panels>
         </section>
       </Tab.Group>
-    </>
+    </div>
   );
 }
