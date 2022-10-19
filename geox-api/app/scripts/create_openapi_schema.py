@@ -5,6 +5,8 @@ using `opeanpi-typescript-codegen`.
 """
 
 import json
+from pathlib import Path
+from typing import Optional
 
 import typer
 
@@ -20,28 +22,20 @@ def fix_bbox(schema):
 
 
 def fix_point(schema):
-    coord = schema["components"]["schemas"]["Point"]["properties"]["coordinates"]
-    coord["type"] = "array"
-    del coord["anyOf"]
-    coord["maxItems"] = 3
-    coord["minItems"] = 2
-    coord["items"] = {"type": "number"}
+    coord = {"type": "array", "items": {"type", "number"}}
+    schema["components"]["schemas"]["Point"]["properties"]["coordinates"] = coord
     return schema
 
 
 def fix_polygon(schema):
-    coord = schema["components"]["schemas"]["Polygon"]["properties"]["coordinates"]
-    coord["type"] = "array"
-    coord["items"] = {"type": "array", "items": {"type": "number"}}
+    coord = {"type": "array", "items": {"type": "array", "items": {"type": "number"}}}
+    schema["components"]["schemas"]["Polygon"]["properties"]["coordinates"] = coord
     return schema
 
 
 def fix_line_string(schema):
-    coord = schema["components"]["schemas"]["LineString"]["properties"]["coordinates"]
-    coord["type"] = "array"
-    coord["maxItems"] = 3
-    coord["minItems"] = 2
-    coord["items"] = {"type": "number"}
+    coord = {"type": "array", "items": {"type": "array", "items": {"type": "number"}}}
+    schema["components"]["schemas"]["LineString"]["properties"]["coordinates"] = coord
     return schema
 
 
@@ -60,20 +54,23 @@ def fix_multi_line_string(schema):
     #      ]
     #    ]
     #  }
-    coord = schema["components"]["schemas"]["MultiLineString"]["properties"][
-        "coordinates"
-    ]
-    # Each item is a line-string
-    coord["items"] = {
+    coord = {
         "type": "array",
-        # each item is a point (2-3 numbers)
         "items": {
             "type": "array",
-            "items": {"type": "number"},
-            "minItems": 2,
-            "maxItems": 3,
+            # each item is a point (2-3 numbers)
+            "items": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 3,
+            },
         },
     }
+    schema["components"]["schemas"]["MultiLineString"]["properties"][
+        "coordinates"
+    ] = coord
+    # Each item is a line-string
     return schema
 
 
@@ -88,14 +85,16 @@ def fix_multi_point(schema):
     #      [101.0, 1.0]
     #    ]
     #  }
-    coord = schema["components"]["schemas"]["MultiPoint"]["properties"]["coordinates"]
-    coord["type"] = "array"
-    coord["items"] = {
+    coord = {
         "type": "array",
-        "minItems": 2,
-        "maxItems": 3,
-        "items": {"type": "number"},
+        "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 3,
+            "items": {"type": "number"},
+        },
     }
+    schema["components"]["schemas"]["MultiPoint"]["properties"]["coordinates"] = coord
     return schema
 
 
@@ -136,27 +135,24 @@ def fix_multi_polygon(schema):
     # Array<         // list of polygons
     #   Array<       // polygon
     #     Array<   // point - 2-3 numbers
-    coord = schema["components"]["schemas"]["MultiPolygon"]["properties"]["coordinates"]
+
     # outer array = list of polygons
-    coord["type"] = "array"
-    coord["items"] = {
-        # polygon is a list of coordinates
-        "type": "array",
+    coord = {
         "items": {
-            # each point is 2-3 numbers
+            # polygon is a list of coordinates
             "type": "array",
-            "minItems": 2,
-            "maxItems": 3,
-            "items": {"type": "number"},
+            "items": {
+                # each point is 2-3 numbers
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 3,
+                "items": {"type": "number"},
+            },
         },
+        "type": "array",
     }
+    schema["components"]["schemas"]["MultiPolygon"]["properties"]["coordinates"] = coord
     return schema
-
-
-from pathlib import Path
-from typing import Optional
-
-import typer
 
 
 def main(output: Optional[Path] = typer.Option(None, exists=False)) -> None:
