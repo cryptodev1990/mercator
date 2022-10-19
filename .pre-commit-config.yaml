@@ -5,6 +5,7 @@ repos:
     rev: v4.3.0
     hooks:
     -   id: check-added-large-files
+        args: ["--maxkb=100000"] # github max file size = 100MB
     -   id: no-commit-to-branch
         args: ['--branch', 'master']
 -   repo: https://github.com/Yelp/detect-secrets
