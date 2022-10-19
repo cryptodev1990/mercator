@@ -1,6 +1,7 @@
 """Main module of the app."""
 import logging
 
+from datadog import initialize
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.middleware import Middleware
@@ -16,6 +17,12 @@ logger.setLevel(logging.DEBUG)
 __VERSION__ = "0.0.1"
 
 settings = get_settings()
+
+initialize(
+    statsd_host=settings.statsd_host,
+    statsd_port=settings.statsd_port,
+    statsd_constant_tags=settings.statsd_tags,
+)
 
 app = FastAPI(
     title="Mercator API",

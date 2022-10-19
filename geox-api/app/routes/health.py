@@ -1,4 +1,5 @@
 """Health routes."""
+from datadog import statsd
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from prometheus_client import Counter
@@ -18,6 +19,7 @@ health_counter = Counter(
 @router.get("/health", tags=["health"])
 async def health():
     health_counter.inc()
+    statsd.increment('health_check')
     return {"message": "OK"}
 
 

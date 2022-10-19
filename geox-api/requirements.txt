@@ -28,3 +28,4 @@ alembic_utils==0.7.*
 prometheus-fastapi-instrumentator==5.9.*
 walrus==0.9.*
 python-slugify==6.1.*
+datadog==0.44.*
