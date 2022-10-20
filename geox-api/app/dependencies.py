@@ -59,10 +59,13 @@ async def verify_token(
 class Cache(Protocol):
     """Abstract protocol for what methods a cache needs to contain."""
 
-    def set(self, str, Any) -> None:
+    def set(self, key: Any, value: Any, timeout: Optional[Any] = None) -> Any:
         ...
 
-    def get(self, str) -> Any:
+    def get(self, key: Any, default: Optional[Any] = None) -> Any:
+        ...
+
+    def delete(self, key: Any) -> Any:
         ...
 
 
@@ -79,7 +82,7 @@ def get_cache() -> Optional[Cache]:
                 db=int(conn.path[1:]) if conn.path else None,
                 password=conn.password,
             )
-            cache = db.cache(default_timeout=opts.timeout)
+            cache: walrus.Cache = db.cache(default_timeout=opts.timeout)
             return cache
         except Exception as exc:
             logger.error("Error initializing the cache", exc)
