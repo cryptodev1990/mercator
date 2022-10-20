@@ -9,6 +9,8 @@ processes = []
   APP_ENV = "staging"
   BACKEND_CORS_ORIGINS = "[\"*\"]"
   PORT = "8080"
+  APP_CACHE__ENABLED = true
+  APP_CACHE__TIMEOUT = 60
 
 [metrics]
   path = "/metrics"
