@@ -116,8 +116,6 @@ class Settings(BaseSettings):
         """Machine account sub id."""
         return f"{self.management_client_id}@clients"
 
-    from typing import Literal
-
     backend_cors_origins: Tuple[AnyHttpURLorAsterisk] = Field(
         cast(Tuple[AnyHttpURLorAsterisk], tuple(["*"])),
         description="""Values of CORS access-control-allow-origins header
@@ -152,7 +150,7 @@ class Settings(BaseSettings):
     )
 
     engine_opts: EngineOptions = Field(
-        EngineOptions(),
+        EngineOptions(),  # type: ignore
         description="Options to apply to the app database SQLAlchemy engine.",
     )
 
@@ -186,8 +184,8 @@ class Settings(BaseSettings):
     )
 
     cache: CacheOptions = Field(
-        CacheOptions(),
-        description="Cache options. If None, then no cache is used.",
+        CacheOptions(enabled=True),  # type: ignore
+        description="Cache options.",
         env="APP_CACHE",
     )
 
