@@ -39,7 +39,6 @@ export const ShapeEditor = () => {
           properties,
         },
         uuid: shapeUuid,
-        should_delete: false,
       },
       {
         onSuccess: () => setShapeForPropertyEdit(null),

@@ -1,8 +1,10 @@
 """API Schema."""
 import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
-from geojson_pydantic import Feature
+from geojson_pydantic import Feature, GeometryCollection
+from geojson_pydantic.features import GeometryCollection
+from geojson_pydantic.geometries import Geometry
 from pydantic import UUID4, Field, root_validator
 
 from app.core.datatypes import Latitude, Longitude
@@ -57,8 +59,16 @@ class GeoShapeMetadata(BaseModel):
         }
 
 
-class GeoShape(GeoShapeMetadata):
+class GeoShape(BaseModel):
+    uuid: UUID4
     geojson: Feature
+    namespace_id: UUID4
+    created_at: Optional[datetime.datetime] = Field(
+        None, description="Date and time of creation"
+    )
+    updated_at: Optional[datetime.datetime] = Field(
+        None, description="Date and time of most recent updater"
+    )
 
     class Config:
         example = GeoShapeMetadata.Config.schema_extra["example"]
@@ -87,9 +97,7 @@ class GeoShapeUpdate(BaseModel):
     geojson: Optional[Feature] = None
     properties: Optional[Dict[str, Any]] = None
     namespace: Optional[UUID4] = Field(None, description="The namespace id")
-
-    # TODO: delete this - this should not be used at all
-    should_delete: bool = Field(False, description="")
+    geometry: Union[None, Geometry, GeometryCollection] = None
 
     class Config:
         schema_extra = {

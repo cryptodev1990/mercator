@@ -244,25 +244,16 @@ def _update_shapes__shape_id(
     """Update a shape."""
     shape: Optional[GeoShape]
     shape_id = data.uuid
-    if data.should_delete:
-        try:
-            delete_shape(
-                user_conn.connection, cast(UUID4, shape_id), user_id=user_conn.user.id
-            )
-        except ShapeDoesNotExist as exc:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
-        return None
-    else:
-        try:
-            shape = update_shape(
-                user_conn.connection,
-                cast(UUID4, shape_id),
-                user_id=user_conn.user.id,
-                geojson=data.geojson,
-            )
-        except ShapeDoesNotExist as exc:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
-        return shape
+    try:
+        shape = update_shape(
+            user_conn.connection,
+            cast(UUID4, shape_id),
+            user_id=user_conn.user.id,
+            geojson=data.geojson,
+        )
+    except ShapeDoesNotExist as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+    return shape
 
 
 @router.patch(
@@ -281,8 +272,11 @@ def _patch_shapes__shape_id(
             user_conn.connection,
             shape_id,
             user_id=user_conn.user.id,
-            namespace_id=data.namespace,
             geojson=data.geojson,
+            geometry=data.geometry,
+            properties=data.properties,
+            name=data.name,
+            namespace_id=data.namespace,
         )
     except ShapeDoesNotExist as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))

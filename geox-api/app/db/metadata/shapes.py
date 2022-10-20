@@ -1,4 +1,6 @@
 """Shape model."""
+import datetime
+
 from geoalchemy2 import Geometry
 from sqlalchemy import Computed  # type: ignore
 from sqlalchemy import (
@@ -37,7 +39,7 @@ shapes = Table(
     Column(
         "created_at",
         DateTime,
-        default=func.now(),
+        default=datetime.datetime.utcnow,
         server_default=func.now(),
         nullable=False,
     ),
@@ -48,7 +50,13 @@ shapes = Table(
         nullable=False,
         server_default=func.app_user_id(),
     ),
-    Column("updated_at", DateTime, default=func.now(), server_default=func.now()),
+    Column(
+        "updated_at",
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        server_default=func.now(),
+    ),
     Column(
         "updated_by_user_id",
         Integer,

@@ -5,17 +5,17 @@ NOTE: All queries use `shapes` table and no ORM features
 import datetime
 import logging
 from enum import Enum
-from tabnanny import check
-from typing import Any, Dict, Generator, List, Optional, Sequence, Union
+from typing import Any, Dict, Generator, List, Optional, Sequence, Union, cast
 
 import jinja2
 import sqlalchemy as sa
-from geojson_pydantic import Feature, LineString, Point, Polygon
+from geojson_pydantic import Feature, GeometryCollection, LineString, Point, Polygon
+from geojson_pydantic.geometries import Geometry
 from pydantic import UUID4
-from sqlalchemy import func, insert, literal, select, update  # type: ignore
+from sqlalchemy import func, insert, select, update  # type: ignore
 from sqlalchemy.engine import Connection
 
-from app.crud.namespaces import NamespaceDoesNotExistError, get_default_namespace
+from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBounds
 
@@ -132,16 +132,18 @@ def create_many_shapes(
         yield row.uuid
 
 
-def shape_exists(conn: Connection, shape_id: UUID4, check_deleted=True) -> bool:
+def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bool:
     stmt = select(shapes_tbl.c.uuid).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
-    if check_deleted:
+    if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     return bool(conn.execute(stmt).scalar())
 
 
-def get_shape(conn: Connection, shape_id: UUID4) -> GeoShape:
+def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoShape:
     """Get a shape."""
     stmt = _select_shapes.where(shapes_tbl.c.uuid == str(shape_id)).limit(1)
+    if not include_deleted:
+        stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
     if res is None:
         raise ShapeDoesNotExist(shape_id)
@@ -315,10 +317,30 @@ def update_shape(
     *,
     user_id: int,
     namespace_id: Optional[UUID4] = None,
-    geojson: Optional[Feature] = None,
+    geojson: Optional[Feature] = None,  # type: ignore
+    geometry: Union[None, Geometry, GeometryCollection] = None,
+    properties: Optional[Dict[str, Any]] = None,
+    name: Optional[str] = None,
 ) -> GeoShape:
     """Update a shape with additional information."""
-    values: Dict[str, Any] = {"updated_by_user_id": user_id}
+    values: Dict[str, Any] = {
+        "updated_by_user_id": user_id,
+        "updated_at": datetime.datetime.utcnow(),
+    }
+    # If geojson is not specified, then these are updated.
+    if geometry or (properties is not None) or name or geojson:
+        if not geojson:
+            geojson = get_shape(conn, id_).geojson
+        geojson: Feature  # type: ignore
+        if geometry:
+            geojson.geometry = geometry
+        if geojson.properties is None:
+            geojson.properties = {}
+        if properties is not None:
+            # This ensures that the old name is retained
+            geojson.properties = {"name": geojson.properties.get(name), **properties}
+        if name:
+            geojson.properties["name"] = name
     if namespace_id:
         values["namespace_id"] = namespace_id
     if geojson:
@@ -340,10 +362,7 @@ def update_shape(
     # The trigger that updates properties from geojson does not run until
     # after returning retrieves values for the row. the following lines
     # work around that
-    new_shape = dict(res)
-    new_shape["properties"] = new_shape["geojson"]["properties"]
-    new_shape["name"] = new_shape["properties"]["name"]
-    return GeoShape.parse_obj(new_shape)
+    return GeoShape.parse_obj(res)
 
 
 ### Deleting ###
