@@ -2,13 +2,14 @@ import { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { TbCaretRight } from "react-icons/tb";
 import { Virtuoso } from "react-virtuoso";
-import { GeoShapeMetadata, Namespace } from "../../../../../../client";
+import { Namespace } from "../../../../../../client";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { useShapes } from "../../../../hooks/use-shapes";
-import { DragTarget } from "../drag-handle";
-import { ShapeCard } from "../shape-card";
+import { DragTarget } from "../shape-card/drag-handle";
+import { ShapeCard } from "../shape-card/shape-card";
 import { DeleteButton } from "./delete-button";
+import simplur from "simplur";
 
 export const NamespaceCard = ({
   namespace,
@@ -33,13 +34,20 @@ export const NamespaceCard = ({
   const { selectOneShapeUuid } = useSelectedShapes();
   const [hovered, setHovered] = useState(false);
 
+  const sectionShapeMetadata = shapeMetadata.filter(
+    (shape) => shape.namespace_id === namespace.id
+  );
+
   return (
     <DragTarget
+      id={`namespace-card-${namespace.slug}`}
+      className={`snap-start bg-slate-600 border-gray-200`}
       handleDragOver={(e: any) => {
         const data = e.dataTransfer.getData("text");
         partialUpdateShape({ uuid: data, namespace: namespace.id });
       }}
     >
+      {/* Namespace header */}
       <div
         className="flex cursor-pointer px-3"
         onMouseEnter={() => setHovered(true)}
@@ -64,6 +72,9 @@ export const NamespaceCard = ({
           />
         </div>
         <div className="self-center ml-auto z-10 flex space-x-3">
+          {hovered && (
+            <span className="text-sm">{simplur`${sectionShapeMetadata.length} shapes`}</span>
+          )}
           {!namespace.is_default && hovered && (
             <DeleteButton namespace={namespace} />
           )}
@@ -83,33 +94,29 @@ export const NamespaceCard = ({
         </div>
       </div>
       <hr />
+      {/* Directory body */}
       {shouldOpen && (
-        <div
-          key={1}
-          className="relative short-h:60vh md-h:65vh tall-h:h-[70vh]"
-        >
-          <Virtuoso
-            className="h-full scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-700"
-            totalCount={shapeMetadata.length}
-            data={shapeMetadata.filter(
-              (shape) => shape.namespace_id === namespace.id
-            )}
-            itemContent={(_: any, shape: GeoShapeMetadata) => {
-              return (
-                <ShapeCard
-                  shape={shape}
-                  key={shape.uuid}
-                  isHovered={shapeHovered === shape.uuid}
-                  onMouseEnter={() => {
-                    setShapeHovered(shape.uuid);
-                    selectOneShapeUuid(shape.uuid);
-                  }}
-                  onMouseLeave={() => setShapeHovered(null)}
-                />
-              );
-            }}
-          />
-        </div>
+        <Virtuoso
+          style={{
+            height: 3 * sectionShapeMetadata.length + "rem",
+          }}
+          data={sectionShapeMetadata}
+          itemContent={(index, data) => {
+            const shape = data;
+            return (
+              <ShapeCard
+                shape={shape}
+                key={index}
+                isHovered={shapeHovered === shape.uuid}
+                onMouseEnter={() => {
+                  setShapeHovered(shape.uuid);
+                  selectOneShapeUuid(shape.uuid);
+                }}
+                onMouseLeave={() => setShapeHovered(null)}
+              />
+            );
+          }}
+        />
       )}
     </DragTarget>
   );

@@ -36,7 +36,20 @@ export const DragHandle = ({
   );
 };
 
-export const DragTarget = ({ children, handleDragOver }: any) => {
+export const DragTarget = ({
+  id,
+  children,
+  handleDragOver,
+  className,
+  style,
+  ...props
+}: {
+  id: string;
+  children: any;
+  handleDragOver: (e: any) => void;
+  className?: string;
+  style?: any;
+}) => {
   function dropHandler(ev: any) {
     ev.preventDefault();
     handleDragOver(ev);
@@ -44,8 +57,11 @@ export const DragTarget = ({ children, handleDragOver }: any) => {
 
   return (
     <div
+      id={id}
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e: any) => dropHandler(e)}
+      style={style}
+      className={className}
     >
       {children}
     </div>

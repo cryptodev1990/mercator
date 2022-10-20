@@ -1,17 +1,17 @@
-import { MdDelete, MdDragIndicator } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import Loading from "react-loading";
 import { MetadataEditButton } from "./edit-button";
 import simplur from "simplur";
 
 import toast from "react-hot-toast";
 import { TbTarget } from "react-icons/tb";
-import { useViewport } from "../../../hooks/use-viewport";
-import { useCursorMode } from "../../../hooks/use-cursor-mode";
-import { EditorMode } from "../../../cursor-modes";
-import { GeoShapeMetadata } from "../../../../../client/models/GeoShapeMetadata";
-import { useSelectedShapes } from "../../../hooks/use-selected-shapes";
-import { useShapes } from "../../../hooks/use-shapes";
-import { EditableLabel } from "../../../../../common/components/editable-label";
+import { useViewport } from "../../../../hooks/use-viewport";
+import { useCursorMode } from "../../../../hooks/use-cursor-mode";
+import { EditorMode } from "../../../../cursor-modes";
+import { GeoShapeMetadata } from "../../../../../../client/models/GeoShapeMetadata";
+import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
+import { useShapes } from "../../../../hooks/use-shapes";
+import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { DragHandle } from "./drag-handle";
 import { SHAPE_CARD_IMAGE } from "./drag-images";
 
@@ -40,7 +40,7 @@ export const ShapeCard = ({
   const { setCursorMode } = useCursorMode();
   const { snapToBounds } = useViewport();
 
-  const selectionBg = isSelected(shape) ? "bg-slate-600" : "bg-slate-800";
+  const selectionBg = isSelected(shape) ? "text-blue-800" : "text-white";
   const selectionOpacity = isSelected(shape) ? "opacity-100" : "opacity-50";
   const numProperties = Object.keys(shape.properties).filter(
     (x) => !x.startsWith("__")

@@ -3,7 +3,7 @@ import { useShapes } from "../../../../hooks/use-shapes";
 import { AddButton } from "./add-button";
 import { NamespaceCard } from "./card";
 
-export const NamespaceSection = () => {
+export const NamespaceSection = ({ className }: any) => {
   const {
     namespaces,
     visibleNamepaces,
@@ -20,7 +20,7 @@ export const NamespaceSection = () => {
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className={className}>
       {namespaces.map((namespace, i) => {
         const isVisible = visibleNamepaces
           .map((x) => x.id)

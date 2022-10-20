@@ -1,5 +1,4 @@
 import { useShapes } from "../../../hooks/use-shapes";
-import { useViewport } from "../../../hooks/use-viewport";
 import { BiAddToQueue } from "react-icons/bi";
 import { VscJson } from "react-icons/vsc";
 import { AiFillDatabase } from "react-icons/ai";
@@ -7,9 +6,9 @@ import Loading from "react-loading";
 import { useUiModals } from "../../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../../types";
 import { useDbSync } from "../../../hooks/use-db-sync";
-import { useSelectedShapes } from "../../../hooks/use-selected-shapes";
 import { NamespaceSection } from "./namespace-section";
 import { Footer } from "../footer";
+import { TentativeButtonBank } from "./shape-card/button-bank";
 
 const EmptyMessage = () => {
   return (
@@ -29,59 +28,6 @@ const EmptyMessage = () => {
   );
 };
 
-const TentativeButtonBank = () => {
-  // Button bank that pops up for uploaded shapes or shapes from the command palette
-  const { snapToCentroid } = useViewport();
-  const { tentativeShapes, setTentativeShapes, bulkAddShapes, updateLoading } =
-    useShapes();
-  const { clearSelectedShapeUuids } = useSelectedShapes();
-  return (
-    <div className="mt-2 space-x-1">
-      <p className="font-bold text-sm mx-1">External data</p>
-      <hr />
-      <h3 className="text-sm text-blue-300">
-        {tentativeShapes.length} areas in queue
-      </h3>
-      <button
-        className="btn btn-xs bg-blue-400 text-white rounded"
-        disabled={updateLoading}
-        onClick={() => {
-          bulkAddShapes(
-            tentativeShapes.map((shape) => ({
-              ...shape,
-            })),
-            {
-              onSuccess: () => {
-                snapToCentroid({ category: "tentative" });
-                setTentativeShapes([]);
-                clearSelectedShapeUuids();
-              },
-            }
-          );
-        }}
-      >
-        + Publish
-      </button>
-      <button
-        className="btn btn-xs bg-blue-400 text-white rounded"
-        onClick={() => snapToCentroid({ category: "tentative" })}
-      >
-        <span role="img" aria-label="magnifying glass">
-          🔍
-        </span>
-        {"    "}
-        Zoom
-      </button>
-      <button
-        className="btn btn-xs bg-red-400 text-white rounded"
-        onClick={() => setTentativeShapes([])}
-      >
-        Clear
-      </button>
-    </div>
-  );
-};
-
 export const ShapeBarPaginator = () => {
   const {
     shapeMetadata,
@@ -94,39 +40,41 @@ export const ShapeBarPaginator = () => {
   const { openModal } = useUiModals();
   const { isLoading: isPolling } = useDbSync();
 
+  const topBarButtons = [
+    {
+      icon: <BiAddToQueue className="fill-white" />,
+      disabled: false,
+      onClick: () => openModal(UIModalEnum.UploadShapesModal),
+      text: "Upload",
+      title: "Upload a GeoJSON or other shape file",
+    },
+    {
+      icon: <VscJson className="fill-white" size={15} />,
+      disabled: numShapes === 0,
+      title: "Export shapes as GeoJSON",
+      onClick: () => openModal(UIModalEnum.ExportShapesModal),
+      text: "Export",
+    },
+    {
+      icon: isPolling ? (
+        <Loading className="spin" height={20} width={20} />
+      ) : (
+        <AiFillDatabase className="fill-white" />
+      ),
+      title: "Publish shapes to your Snowflake or Redshift database",
+      disabled: isPolling || numShapes === 0,
+      onClick: () => {
+        if (isPolling) return;
+        openModal(UIModalEnum.DbSyncModal);
+      },
+      text: "DB Sync",
+    },
+  ];
+
   return (
-    <div id="shape-list" className="flex flex-col">
+    <div id="shape-list" className="flex flex-col flex-1">
       <div className="bg-slate-700 flex flex-row justify-between cursor-pointer">
-        {[
-          {
-            icon: <BiAddToQueue className="fill-white" />,
-            disabled: false,
-            onClick: () => openModal(UIModalEnum.UploadShapesModal),
-            text: "Upload",
-            title: "Upload a GeoJSON or other shape file",
-          },
-          {
-            icon: <VscJson className="fill-white" size={15} />,
-            disabled: numShapes === 0,
-            title: "Export shapes as GeoJSON",
-            onClick: () => openModal(UIModalEnum.ExportShapesModal),
-            text: "Export",
-          },
-          {
-            icon: isPolling ? (
-              <Loading className="spin" height={20} width={20} />
-            ) : (
-              <AiFillDatabase className="fill-white" />
-            ),
-            title: "Publish shapes to your Snowflake or Redshift database",
-            disabled: isPolling || numShapes === 0,
-            onClick: () => {
-              if (isPolling) return;
-              openModal(UIModalEnum.DbSyncModal);
-            },
-            text: "DB Sync",
-          },
-        ].map((button, i) => (
+        {topBarButtons.map((button, i) => (
           <button
             key={i}
             disabled={button.disabled}
@@ -139,7 +87,14 @@ export const ShapeBarPaginator = () => {
         ))}
       </div>
       {tentativeShapes.length > 0 && <TentativeButtonBank />}
-      {namespaces.length !== 0 && <NamespaceSection />}
+      {namespaces.length !== 0 && (
+        <NamespaceSection
+          className="
+          flex-1
+          h-full p-1 bg-gradient-to-b from-slate-600 to-slate-700 
+      "
+        />
+      )}
       {!shapeMetadataIsLoading &&
         shapeMetadata.length === 0 &&
         namespaces.length === 0 &&
@@ -155,6 +110,7 @@ export const ShapeBarPaginator = () => {
           </p>
         </div>
       )}
+      <Footer />
     </div>
   );
 };

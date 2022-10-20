@@ -22,7 +22,11 @@ const GeofencerSidebar = () => {
     <SidebarDrawer>
       <Tabs
         children={[<ShapeBarPaginator />, <ShapeEditor />].map((x, i) => (
-          <div className="h-full" key={i}>
+          <div
+            className="h-full flex flex-col items-stretch justify-between"
+            id={`tab-${i}`}
+            key={i}
+          >
             {x}
           </div>
         ))}

@@ -1,14 +1,12 @@
 // button to add a namespace
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { useShapes } from "../../../../hooks/use-shapes";
 
 export const AddButton = () => {
   const { addNamespace, namespaces, namespacesError } = useShapes();
-
-  const ref = useRef<any>(null);
 
   useEffect(() => {
     if (namespacesError) {

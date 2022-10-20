@@ -31,46 +31,44 @@ export function Tabs({
     selected ? "stroke-white" : "stroke-gray-300";
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
-        <section className="flex flex-col h-full">
-          <div>
-            <header className="bg-slate-800 flex-1">
-              <div className="flex flex-row justify-between items-baseline">
-                <GeofencerNavbar />
-              </div>
-            </header>
-            <Tab.List className="my-1 relative">
-              {tabnames.map((tabname: string, index: number) => (
-                <Tab
-                  key={index}
-                  disabled={index === 1 && !shapeForPropertyEdit}
-                  className={
-                    "transition px-2 hover:text-porsche selection:bg-porsche mx-2"
-                  }
-                >
-                  {index === 0 && (
-                    <TbListDetails
-                      className={activeColorCss(index === selectedIndex)}
-                      data-tip={"Layers list"}
-                    />
-                  )}
-                  {index === 1 && (
-                    <TbNotebook
-                      className={activeColorCss(index === selectedIndex)}
-                      data-tip={"Property editor - select a shape to edit"}
-                    />
-                  )}
-                  {index === selectedIndex && (
-                    <div className="mt-1 h-0.5 w-5 bg-white absolute" />
-                  )}
-                </Tab>
-              ))}
-            </Tab.List>
-          </div>
-          <Tab.Panels>
+        <section className="h-full flex flex-col">
+          <header className="bg-slate-800">
+            <GeofencerNavbar />
+          </header>
+          <Tab.List className="my-1 relative">
+            {tabnames.map((tabname: string, index: number) => (
+              <Tab
+                key={index}
+                disabled={index === 1 && !shapeForPropertyEdit}
+                className={
+                  "transition px-2 hover:text-porsche selection:bg-porsche mx-2"
+                }
+              >
+                {index === 0 && (
+                  <TbListDetails
+                    className={activeColorCss(index === selectedIndex)}
+                    data-tip={"Layers list"}
+                  />
+                )}
+                {index === 1 && (
+                  <TbNotebook
+                    className={activeColorCss(index === selectedIndex)}
+                    data-tip={"Property editor - select a shape to edit"}
+                  />
+                )}
+                {index === selectedIndex && (
+                  <div className="mt-1 h-0.5 w-5 bg-white absolute" />
+                )}
+              </Tab>
+            ))}
+          </Tab.List>
+          <Tab.Panels className="flex-auto">
             {children.map((child: any, index: number) => (
-              <Tab.Panel key={index}>{child}</Tab.Panel>
+              <Tab.Panel className="h-full" key={index}>
+                {child}
+              </Tab.Panel>
             ))}
           </Tab.Panels>
         </section>
