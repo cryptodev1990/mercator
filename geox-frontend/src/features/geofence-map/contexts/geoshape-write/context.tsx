@@ -128,17 +128,22 @@ export const GeoShapeWriteContextProvider = ({
         .find((x: any) => x.id === "geofence-mvt");
       // TODO this produces way more features than it needs to, what gives?
       const currentFeatures = mvtLayer.getRenderedFeatures();
-      for (const feat of currentFeatures) {
-        const diffShape = difference(shape.geojson as any, feat);
-        if (diffShape === null) {
-          shape.geojson = {
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-              coordinates: [],
-            },
-          };
+      if (!currentFeatures) {
+        return shape;
+      }
+
+      for (let i = 1; i < currentFeatures.length; i++) {
+        const feature = currentFeatures[i];
+        console.log("feature", feature);
+        // ignore if the feature is not a polygon or multipolygon
+        if (
+          feature.geometry.type !== "Polygon" &&
+          feature.geometry.type !== "MultiPolygon"
+        ) {
+          continue;
         }
+        const diffShape = difference(shape.geojson as any, feature);
+        console.log("diffShape", diffShape);
         shape.geojson = diffShape as any;
       }
     }
