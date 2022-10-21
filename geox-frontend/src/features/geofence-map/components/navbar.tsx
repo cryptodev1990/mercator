@@ -37,7 +37,8 @@ const GeofencerNavbar = () => {
           )}
         </div>
         <button
-          title="Report a bug or request a feature"
+          data-tip="Report a bug or request a feature"
+          data-tip-skew="left"
           className="link text-white hover:text-blue-300 border-none hover:border-none"
           onClick={() => openModal(UIModalEnum.SupportModal)}
         >

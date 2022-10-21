@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { GeofencerNavbar } from "../navbar";
 import { TbListDetails, TbNotebook } from "react-icons/tb";
 import { useShapes } from "../../hooks/use-shapes";
+import { Tooltip } from "../../../../common/components/tooltip";
 
 export function Tabs({
   children,
@@ -55,7 +56,6 @@ export function Tabs({
                 {index === 1 && (
                   <TbNotebook
                     className={activeColorCss(index === selectedIndex)}
-                    data-tip={"Property editor - select a shape to edit"}
                   />
                 )}
                 {index === selectedIndex && (

@@ -10,7 +10,6 @@ import {
   CeleryTaskResult,
   GeofencerService,
   GeoShape,
-  TasksService,
   ShapeCountResponse,
   NamespaceResponse,
   NamespacesService,
@@ -31,9 +30,9 @@ const genericErrorHandler = (error: any) => {
     case 401:
       toast.error("Unauthorized");
       break;
-    case 403:
-      toast.error("Forbidden");
-      break;
+    // case 403:
+    //   toast.error("Forbidden");
+    //   break;
     case 404:
       toast.error("Not found");
       break;

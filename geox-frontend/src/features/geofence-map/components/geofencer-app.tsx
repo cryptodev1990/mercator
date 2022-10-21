@@ -13,6 +13,7 @@ import { SelectionContextProvider } from "../contexts/selection/selection.contex
 import { DeckContextProvider } from "../contexts/deck-context";
 import { GeoShapeWriteContextProvider } from "../contexts/geoshape-write/context";
 import { GeoShapeMetadataProvider } from "../contexts/geoshape-metadata/context";
+import { Tooltip } from "../../../common/components/tooltip";
 
 const ContextProviderNest = ({
   contextProviders,
@@ -63,6 +64,7 @@ const GeofencerApp = () => {
         </div>
       </div>
       <Toaster />
+      <Tooltip />
     </ContextProviderNest>
   );
 };

@@ -27,7 +27,8 @@ export const AddButton = () => {
     <div
       // center the div like a button and give it a slight border and make it beautfiul
       className="flex items-center justify-center hover:bg-gray-500 hover:border-gray-500 hover:text-white transition"
-      title="Add a namespace"
+      data-tip="Add a shapes folder"
+      data-tip-skew="right"
     >
       <EditableLabel
         className="font-bold text-md mx-1 select-none text-gray-400"

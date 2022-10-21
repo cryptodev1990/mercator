@@ -4,9 +4,11 @@ import { MdDragIndicator } from "react-icons/md";
 export const DragHandle = ({
   transferData,
   dragImage,
+  dataTip,
 }: {
   transferData: string;
   dragImage: any;
+  dataTip?: string;
 }) => {
   function dragStartHandler(ev: any) {
     // Set the drag's format and data. Use the event target's id for the data
@@ -18,7 +20,7 @@ export const DragHandle = ({
   }
 
   return (
-    <div>
+    <div data-tip={dataTip}>
       {/* Hide drag indicator behind a transparent element */}
       <div className="w-4 h-4 relative">
         <div className="w-4 h-4 absolute">

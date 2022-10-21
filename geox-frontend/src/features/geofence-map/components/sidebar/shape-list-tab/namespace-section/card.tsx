@@ -73,7 +73,7 @@ export const NamespaceCard = ({
         </div>
         <div className="self-center ml-auto z-10 flex space-x-3">
           {hovered && (
-            <span className="text-sm">{simplur`${sectionShapeMetadata.length} shapes`}</span>
+            <span className="text-sm">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
           )}
           {!namespace.is_default && hovered && (
             <DeleteButton namespace={namespace} />
@@ -89,7 +89,9 @@ export const NamespaceCard = ({
               }
             }}
           >
-            {isVisible ? <BsEyeFill /> : <BsEyeSlashFill />}
+            <span data-tip="Click to show/hide layer" data-tip-skew="right">
+              {isVisible ? <BsEyeFill /> : <BsEyeSlashFill />}
+            </span>
           </div>
         </div>
       </div>

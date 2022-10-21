@@ -9,7 +9,15 @@ export function ModalCard({
   title,
   icon,
   isLoading,
-}: any) {
+}: {
+  open: boolean;
+  onSubmit?: () => void;
+  onClose: () => void;
+  children: React.ReactNode;
+  title: string;
+  icon: React.ReactNode;
+  isLoading?: boolean;
+}) {
   const cancelButtonRef = useRef(null);
 
   return (

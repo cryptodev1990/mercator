@@ -4,14 +4,13 @@ import { useCursorMode } from "../../hooks/use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 import { BsScissors } from "react-icons/bs";
 import { TbLasso } from "react-icons/tb";
-import { CgClose, CgEditMarkup } from "react-icons/cg";
+import { CgEditMarkup } from "react-icons/cg";
 import { RiCursorLine } from "react-icons/ri";
 import { FaClock, FaDrawPolygon } from "react-icons/fa";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { MdDriveEta } from "react-icons/md";
 import { useState } from "react";
 import { IsochroneControls } from "./isochrone-controls";
-import { Transition } from "react-transition-group";
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
@@ -23,14 +22,14 @@ export const ToolButtonBank = () => {
       name: "View",
       icon: <RiCursorLine />,
       onClick: () => setCursorMode(EditorMode.ViewMode),
-      dataTip: "Read-only view of existing geofences",
+      dataTip: "View-only mode (Esc)",
       active: cursorMode === EditorMode.ViewMode,
     },
     {
       name: "Edit",
       icon: <FaDrawPolygon />,
       onClick: () => setCursorMode(EditorMode.EditMode),
-      dataTip: "Draw new or edit existing geofences",
+      dataTip: "Draw a shape by clicking",
       active: cursorMode === EditorMode.EditMode,
     },
     {
@@ -74,7 +73,7 @@ export const ToolButtonBank = () => {
       name: "Alter",
       icon: <CgEditMarkup />,
       onClick: () => setCursorMode(EditorMode.ModifyMode),
-      dataTip: "Alter points on existing shape",
+      dataTip: "Edit an existing shape",
       active: cursorMode === EditorMode.ModifyMode,
       disabled: numSelected !== 1,
     },
@@ -82,7 +81,7 @@ export const ToolButtonBank = () => {
       name: "Split existing shape",
       icon: <BsScissors />,
       onClick: () => setCursorMode(EditorMode.SplitMode),
-      dataTip: "Split existing shape",
+      dataTip: "Split a selection by drawing through it",
       active: cursorMode === EditorMode.SplitMode,
       disabled: numSelected !== 1,
     },
@@ -112,7 +111,9 @@ export const ToolButtonBank = () => {
                 }}
                 key={mode.name}
                 disabled={mode.disabled}
-                title={mode.dataTip}
+                data-tip={mode.dataTip}
+                data-tip-skew="left"
+                data-tip-cx="175"
                 className={classes}
               >
                 <FaClock />
@@ -127,7 +128,9 @@ export const ToolButtonBank = () => {
               // data-tip={mode.dataTip}
               key={mode.name}
               disabled={mode.disabled}
-              title={mode.dataTip}
+              data-tip={mode.dataTip}
+              data-tip-skew="left"
+              data-tip-cx="200"
               onClick={mode.onClick}
               className={classes}
             >

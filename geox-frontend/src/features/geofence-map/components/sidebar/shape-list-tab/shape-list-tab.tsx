@@ -46,12 +46,12 @@ export const ShapeBarPaginator = () => {
       disabled: false,
       onClick: () => openModal(UIModalEnum.UploadShapesModal),
       text: "Upload",
-      title: "Upload a GeoJSON or other shape file",
+      dataTip: "Upload a GeoJSON or other shape file",
     },
     {
       icon: <VscJson className="fill-white" size={15} />,
       disabled: numShapes === 0,
-      title: "Export shapes as GeoJSON",
+      dataTip: "Export shapes as GeoJSON",
       onClick: () => openModal(UIModalEnum.ExportShapesModal),
       text: "Export",
     },
@@ -61,7 +61,7 @@ export const ShapeBarPaginator = () => {
       ) : (
         <AiFillDatabase className="fill-white" />
       ),
-      title: "Publish shapes to your Snowflake or Redshift database",
+      dataTip: "Publish shapes to your Snowflake or Redshift database",
       disabled: isPolling || numShapes === 0,
       onClick: () => {
         if (isPolling) return;
@@ -80,6 +80,8 @@ export const ShapeBarPaginator = () => {
             disabled={button.disabled}
             className="btn btn-xs h-10 rounded-none bg-slate-700 text-white space-x-1 grow"
             onClick={button.onClick}
+            data-tip={button.dataTip}
+            data-tip-skew="right"
           >
             {button.icon}{" "}
             <label className="cursor-pointer">{button.text}</label>

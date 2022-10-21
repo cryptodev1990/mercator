@@ -54,7 +54,11 @@ export const ShapeCard = ({
       className={`h-13 p-3 max-w-sm snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
     >
       <div className="flex flex-row justify-left items-center">
-        <DragHandle transferData={shape.uuid} dragImage={SHAPE_CARD_IMAGE} />
+        <DragHandle
+          transferData={shape.uuid}
+          dragImage={SHAPE_CARD_IMAGE}
+          dataTip={`Drag into ${shape.name} another folder`}
+        />
         <EditableLabel
           value={shape?.name || shape?.properties?.name || "New shape"}
           disabled={selectedDataIsLoading}
@@ -91,6 +95,7 @@ export const ShapeCard = ({
                 className="btn btn-square btn-sm bg-slate-700 hover:bg-red-400 hover:border-red-400 box-border"
                 title="Delete"
                 disabled={updateLoading}
+                data-tip="Delete this shape"
                 onClick={() => {
                   if (!shape.uuid) toast.error("Delete shape failed");
                   else {
@@ -109,7 +114,7 @@ export const ShapeCard = ({
               </button>
               <button
                 className="btn btn-square btn-sm bg-slate-700 hover:bg-green-400 hover:border-green-400 box-border"
-                title="Zoom to"
+                data-tip="Zoom to"
                 disabled={selectedDataIsLoading}
                 onClick={() => {
                   snapToBounds({ category: "selected" });
