@@ -2,6 +2,7 @@
 import logging
 
 from datadog import initialize
+from ddtrace import tracer
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.middleware import Middleware
@@ -23,6 +24,8 @@ initialize(
     statsd_port=settings.statsd_port,
     statsd_constant_tags=settings.statsd_tags,
 )
+
+tracer.configure(hostname=settings.tracer_host, port=settings.tracer_port)
 
 app = FastAPI(
     title="Mercator API",

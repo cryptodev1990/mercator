@@ -91,6 +91,10 @@ class Settings(BaseSettings):
     statsd_port: int = Field(8125, env="STATSD_PORT")
     statsd_tags: List[str] = Field([], env="STATSD_TAGS")
 
+    # Datadog Tracer
+    tracer_host: str = Field("mercator-dd-agent.internal", env="TRACER_HOST")
+    tracer_port: int = Field(8126, env="TRACER_PORT")
+
     @validator("aws_s3_url", pre=True)
     def _validate_aws_s3_url(cls, v):
         """Ensure the S3 URL always ends with a backslash."""
