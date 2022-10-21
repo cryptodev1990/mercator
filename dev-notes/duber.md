@@ -1129,11 +1129,29 @@ Branch: ``ajd/cache-madness``
   - [X] Add namespace button
 - Namespace and shape interactions
   - [X] Let users move shapes between namespaces
-  - [ ] Let users merge two namespaces
-  - [ ] add namespace to tentative shapes / upload flow
-- "Are you sure?" prompt before a namespace delete
+  - [ ] Let users merge two namespaces (shelved)
+  - [ ] add namespace to tentative shapes / upload flow (shelved)
+- "Are you sure?" prompt before a namespace delete (shelved)
+- Undo (shelved)
 
 
 ## 10-17-22
 
 - [X] Added ability to switch namespaces for shapes. Did this using a custom drag icon and marking an element as draggable, very little JS involved.
+
+## 10-20-22 10-21-22
+
+### Progress
+- [X] Add tooltips
+- [ ] improve the search bar
+  - Search bar has three inputs:
+    - List of intents that map back to functions
+      - e.g. "Where's the nearest bar to a coffee shop?" == "Nearest X to my Y"
+      - Each intent needs:
+        - An icon
+	- A name
+	- A function to execute
+	- a list of arguments
+    - List of slot filling extractors that map back to arguments
+      - X: [(input => qna("What's the destination?", input), qna("What's the origin?", input)]
+    - User query input
