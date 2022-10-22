@@ -4,20 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 import { Navbar } from "../../common/components/navbar";
-import { EmailBox } from "./email-box";
-import { FooterSection } from "./footer-section";
-import { GradientHeader } from "./gradient-header";
+import { EmailBox } from "./components/email-box";
+import { FooterSection } from "./components/footer-section";
+import { GradientHeader } from "./components/gradient-header";
 
-import { HeroSection } from "./hero-section";
-import { ProductSection } from "./product-section";
+import { HeroSection } from "./components/hero-section";
+import { ProductSection } from "./components/product-section";
 
-const LandingPage = () => {
+const LandingPage = (): JSX.Element | null => {
   const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   if (isLoading) return null;
 
@@ -54,7 +54,7 @@ const LandingPage = () => {
                 align="right"
               />
             </div>
-            <div className="max-w-5xl mx-auto py-5 border-b border-t flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
+            <div className="max-w-5xl mx-auto py-5 flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
               <div className="flex-1">
                 <GradientHeader>Like what you see? Try it out.</GradientHeader>
               </div>
