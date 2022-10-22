@@ -17,7 +17,7 @@ const LandingPage = (): JSX.Element | null => {
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   if (isLoading) return null;
 
