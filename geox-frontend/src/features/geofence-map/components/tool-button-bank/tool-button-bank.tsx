@@ -9,7 +9,7 @@ import { RiCursorLine } from "react-icons/ri";
 import { FaClock, FaDrawPolygon } from "react-icons/fa";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { MdDriveEta } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IsochroneControls } from "./isochrone-controls";
 
 export const ToolButtonBank = () => {
@@ -87,12 +87,12 @@ export const ToolButtonBank = () => {
     },
   ];
 
+  useEffect(() => {
+    setPushOut(cursorMode === EditorMode.DrawIsochroneMode);
+  }, [cursorMode]);
+
   const buttonCss =
     "bg-slate-600 hover:bg-blue-500 text-white font-semibold disabled:bg-slate-900 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent ";
-
-  function slideAside() {
-    setPushOut(!pushOut);
-  }
 
   return (
     <div className="flex flex-col items-end">
@@ -105,10 +105,7 @@ export const ToolButtonBank = () => {
           return (
             <div className="bg-blue-500 flex flex-row-reverse">
               <button
-                onClick={(e) => {
-                  slideAside();
-                  mode.onClick();
-                }}
+                onClick={mode.onClick}
                 key={mode.name}
                 disabled={mode.disabled}
                 data-tip={mode.dataTip}

@@ -39,6 +39,7 @@ export const Globe = (): JSX.Element => {
       <DeckGL
         initialViewState={initialViewState}
         controller={{
+          // @ts-ignore
           keyboard: true,
           scrollZoom: false,
         }}
@@ -58,6 +59,7 @@ export const Globe = (): JSX.Element => {
         parameters={{ cull: true }}
         layers={[
           new GeoJsonLayer({
+            // @ts-ignore
             data: countries,
             getPolygonOffset: ({ layerIndex }) => [0, -layerIndex * 100],
             opacity: 0.0,

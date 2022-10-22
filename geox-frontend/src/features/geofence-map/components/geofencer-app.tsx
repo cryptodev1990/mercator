@@ -2,7 +2,7 @@ import { GeofenceMap } from "./shape-map";
 import { GeofencerSidebar } from "./sidebar";
 import { GeofencerContextContainer } from "../contexts/geofencer-context";
 import Dropdown from "../../../common/components/dropdown";
-import { ToolButtonBank } from "./tool-button-bank";
+import { ToolButtonBank } from "./tool-button-bank/tool-button-bank";
 import { CommandPalette } from "./command-palette";
 import { RightClickMenu } from "./right-click-menu";
 import { GlobalModal } from "./modals";
