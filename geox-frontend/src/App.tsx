@@ -5,7 +5,7 @@ import RequireAuth from "./common/components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
 import { useTokenInOpenApi } from "./hooks/use-token-in-openapi";
-import { useIntercom } from './lib/intercom'
+import { useIntercom } from "./lib/intercom";
 
 function Logout() {
   const { logout } = useAuth0();
@@ -26,6 +26,20 @@ function HealthRedirect() {
   return null;
 }
 
+function Terms(): null {
+  const url =
+    "https://docs.google.com/document/d/e/2PACX-1vSMcKSpjwh7Vhj0xNC38lmoRwkAdpMlGXYl5uOWUcID-PhtzTp06FPCWuvqJJUtlfPkVaYJ6_R1lswK/pub";
+  window.location.replace(url);
+  return null;
+}
+
+function Privacy(): null {
+  const url =
+    "https://docs.google.com/document/d/e/2PACX-1vS5rxku7DRfwI9wjoJ6wSyir8Jy3IAJGaGABTf54DO_v_JiZjACAr0DsOzbp6xiduQbV0YI2mJeLHL6/pub";
+  window.location.replace(url);
+  return null;
+}
+
 function RoutesIndex() {
   return (
     <BrowserRouter>
@@ -43,6 +57,8 @@ function RoutesIndex() {
         <Route path="/logout" element={<RequireAuth page={<Logout />} />} />
         <Route path="/health" element={<HealthRedirect />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
       </Routes>
     </BrowserRouter>
   );
@@ -52,7 +68,7 @@ function App() {
   useTokenInOpenApi();
   useIntercom();
 
-  return <RoutesIndex />
+  return <RoutesIndex />;
 }
 
 export default App;
