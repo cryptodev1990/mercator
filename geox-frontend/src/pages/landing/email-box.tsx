@@ -1,22 +1,31 @@
 import { useState } from "react";
 import { supabase } from "../../common/supabase-client";
 
-const EmailBox = () => {
+export const EmailBox = (): JSX.Element => {
   const [status, setStatus] = useState("clean");
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setStatus("loading");
-    const email = e.target[0].value;
+    const target = event.target as HTMLFormElement;
+    const email = (target[0] as HTMLInputElement).value;
     try {
       let ret = await supabase
         .from("waitlist")
         .insert([{ email }], { returning: "minimal" });
       const error = ret.error;
-
       if (error) {
         console.log(error);
         setStatus("error");
-        throw error;
+        // Error message: duplicate key value violates unique constraint \"waitlist_email_key\"
+        if (error.code === "23505") {
+          alert(
+            "Your email is already the system. We appreciate your interest. We'll contact you shortly."
+          );
+          setStatus("resolved");
+        } else {
+          throw error;
+        }
       } else {
         setStatus("resolved");
       }
@@ -42,7 +51,8 @@ const EmailBox = () => {
             className="focus:outline-none p-3 rounded-l-3xl"
             type="email"
             placeholder="Your email here"
-          ></input>
+            required={true}
+          />
           <button
             className="transition bg-purple-500 text-white cursor-pointer 2 p-3 pr-3 hover:bg-tertiary rounded-r-2xl font-bold overflow-x-clip whitespace-nowrap text-ellipsis"
             disabled={status === "loading"}
@@ -54,5 +64,3 @@ const EmailBox = () => {
     </form>
   );
 };
-
-export { EmailBox };
