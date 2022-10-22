@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const FooterSection = () => {
   return (
     <footer className="text-white max-w-5xl mx-auto mt-12 relative h-[180px] snap-end border-t-2">
@@ -14,7 +16,9 @@ export const FooterSection = () => {
         </ul>
         <div>
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Mercator Technologies
+            &copy; {new Date().getFullYear()} Mercator Technologies |{" "}
+            <Link to="/terms">Terms of Service</Link> |{" "}
+            <Link to="/privacy">Privacy Policy</Link>
           </p>
         </div>
       </div>
