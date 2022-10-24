@@ -5,13 +5,14 @@ import ReactLoading from "react-loading";
 import { useNavigate, useMatch } from "react-router-dom";
 import Dropdown from "./dropdown";
 import { FlashButton } from "./button";
+import clsx from "clsx";
 
 const LoginButton = () => {
   const navigate = useNavigate();
   const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
   return (
     <FlashButton
-      id='login'
+      id="login"
       disabled={isLoading}
       onClick={
         isAuthenticated
@@ -59,7 +60,7 @@ const Navbar: React.FC = () => {
           <img
             src={isAuthenticated && onDashboard ? smallLogo : logo}
             alt="logo"
-            className="h-10"
+            className={clsx(onHomepage, "hidden", "h-10")}
           />
         </a>
       </nav>
