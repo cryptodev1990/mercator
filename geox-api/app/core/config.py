@@ -4,7 +4,7 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, cast
+from typing import Any, Dict, List, Tuple, Optional, cast
 
 from pydantic import (
     BaseModel,
@@ -85,6 +85,15 @@ class Settings(BaseSettings):
         None,
         description="S3 used to store export data, e.g. 's3://bucket/path/as/prefix/'",
     )
+
+    # Datadog Statsd
+    statsd_host: str = Field("mercator-dd-agent.internal", env="STATSD_HOST")
+    statsd_port: int = Field(8125, env="STATSD_PORT")
+    statsd_tags: List[str] = Field([], env="STATSD_TAGS")
+
+    # Datadog Tracer
+    tracer_host: str = Field("mercator-dd-agent.internal", env="TRACER_HOST")
+    tracer_port: int = Field(8126, env="TRACER_PORT")
 
     @validator("aws_s3_url", pre=True)
     def _validate_aws_s3_url(cls, v):
