@@ -1139,7 +1139,7 @@ Branch: ``ajd/cache-madness``
 
 - [X] Added ability to switch namespaces for shapes. Did this using a custom drag icon and marking an element as draggable, very little JS involved.
 
-## 10-20-22 10-21-22
+## 10-20-22 & 10-21-22
 
 ### Progress
 - [X] Add tooltips
@@ -1155,3 +1155,13 @@ Branch: ``ajd/cache-madness``
     - List of slot filling extractors that map back to arguments
       - X: [(input => qna("What's the destination?", input), qna("What's the origin?", input)]
     - User query input
+
+## 10-24-22
+
+### Progress
+
+- [ ] Image upload and manipulation?
+- [ ] Mobile-friendly frontend
+- [ ] Turn off autodeploy for staging
+
+### Plans
