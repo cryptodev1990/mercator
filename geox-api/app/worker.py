@@ -1,4 +1,5 @@
 """Celery worker."""
+from functools import lru_cache
 from typing import Any, Dict, Optional
 from uuid import UUID, uuid4
 
@@ -8,6 +9,7 @@ from celery.utils.log import get_task_logger
 from sqlalchemy import create_engine, text
 
 from app.core.celery_app import celery_app
+from app.core.config import EngineOptions
 from app.core.datatypes import AppEnvEnum
 
 logger = get_task_logger(__name__)
@@ -27,8 +29,12 @@ def test_celery(word: str) -> str:
 # routes.
 
 
-def get_postgres_engine(postgres_connection_url):
-    return create_engine(postgres_connection_url, future=True)
+@lru_cache(None)
+def get_postgres_engine(
+    postgres_connection_url, engine_opts: Optional[EngineOptions] = None
+):
+    opts = engine_opts.dict() if engine_opts else {}
+    return create_engine(postgres_connection_url, pre_ping=True, future=True, **opts)
 
 
 def send_data_to_s3(
@@ -71,9 +77,11 @@ def send_data_to_s3(
 
 
 def query_shapes_table(
-    organization_id: str, app_db_connection_url: str
+    organization_id: str,
+    app_db_connection_url: str,
+    engine_opts: Optional[EngineOptions] = None,
 ) -> gpd.GeoDataFrame:
-    engine = get_postgres_engine(app_db_connection_url)
+    engine = get_postgres_engine(app_db_connection_url, engine_opts=None)
     with engine.begin() as conn:
         logger.debug(f"Copy shapes for {organization_id}")
         # TODO: save as geoparquet with geopandas
