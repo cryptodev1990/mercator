@@ -12,18 +12,29 @@ import { MdDriveEta } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { IsochroneControls } from "./isochrone-controls";
 
+interface ToolButtonBankMode {
+  name: string;
+  icon: JSX.Element;
+  onClick: () => void;
+  dataTip: string;
+  active: boolean;
+  disabled?: boolean;
+  key: string;
+}
+
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
   const { numSelected } = useSelectedShapes();
   const [pushOut, setPushOut] = useState(false);
 
-  const modes = [
+  const modes: ToolButtonBankMode[] = [
     {
       name: "View",
       icon: <RiCursorLine />,
       onClick: () => setCursorMode(EditorMode.ViewMode),
       dataTip: "View-only mode (Esc)",
       active: cursorMode === EditorMode.ViewMode,
+      key: "mode-view",
     },
     {
       name: "Edit",
@@ -31,6 +42,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.EditMode),
       dataTip: "Draw a shape by clicking",
       active: cursorMode === EditorMode.EditMode,
+      key: "mode-edit",
     },
     {
       name: "Drive time",
@@ -38,6 +50,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.DrawIsochroneMode),
       dataTip: "Drive time distance",
       active: cursorMode === EditorMode.ModifyMode,
+      key: "mode-drive-time",
     },
     // {
     //   name: "Lasso",
@@ -52,6 +65,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.LassoDrawMode),
       dataTip: "Freely draw a polygon",
       active: cursorMode === EditorMode.LassoDrawMode,
+      key: "mode-polygon-lasso",
     },
     // {
     //   name: "Translate",
@@ -60,6 +74,7 @@ export const ToolButtonBank = () => {
     //   dataTip: "Coming soon",
     //   disabled: true,
     //   active: cursorMode === EditorMode.TranslateMode,
+    //   mode: "mode-translate"
     // },
     // {
     //   name: "Polygon from Route",
@@ -68,6 +83,7 @@ export const ToolButtonBank = () => {
     //   dataTip: "Coming soon",
     //   disabled: true,
     //   active: cursorMode === EditorMode.DrawPolygonFromRouteMode,
+    //   mode: "mode-polygon-from-route"
     // },
     {
       name: "Alter",
@@ -76,6 +92,7 @@ export const ToolButtonBank = () => {
       dataTip: "Edit an existing shape",
       active: cursorMode === EditorMode.ModifyMode,
       disabled: numSelected !== 1,
+      key: "mode-alter",
     },
     {
       name: "Split existing shape",
@@ -84,6 +101,7 @@ export const ToolButtonBank = () => {
       dataTip: "Split a selection by drawing through it",
       active: cursorMode === EditorMode.SplitMode,
       disabled: numSelected !== 1,
+      key: "mode-split-existing-shape",
     },
   ];
 
