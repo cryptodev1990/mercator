@@ -8,6 +8,7 @@ import { useTiles } from "./use-tiles";
 import { useModifyLayer } from "./use-modify-layer";
 import { useEditLayer } from "./use-edit-layer";
 import { useSelectedShapes } from "../use-selected-shapes";
+import { useImageLayer } from "./use-image-layer";
 
 export const useLayers = () => {
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
@@ -17,11 +18,12 @@ export const useLayers = () => {
   const tiles = useTiles();
   const editLayer = useEditLayer();
   const modifyLayer = useModifyLayer();
+  const imageLayer = useImageLayer();
 
   const { cursorMode, setCursorMode } = useCursorMode();
-
   return {
     layers: [
+      false && imageLayer, // traceable image layer
       tiles,
       // Renders the selected feature
       selectedFeatureCollection &&
