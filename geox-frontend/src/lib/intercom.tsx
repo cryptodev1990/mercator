@@ -10,10 +10,10 @@ export function useIntercom(): void {
   React.useEffect(() => {
     if (user) {
       // @ts-ignore
-      window.Intercom("boot", {
-        app_id: process.env.REACT_APP_INTERCOM_APP_ID,
-        email: user.email,
-      });
+      // window.Intercom("boot", {
+      //   app_id: process.env.REACT_APP_INTERCOM_APP_ID,
+      //   email: user.email,
+      // });
     }
   }, [user]);
 }
