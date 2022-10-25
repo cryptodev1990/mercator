@@ -1179,3 +1179,6 @@ Branch: ``ajd/cache-madness``
 - [ ] Add necessary links
 
 ### Progress
+
+- Removed ddtrace to see if we could get richer logs on why our deploys are failing (https://github.com/mercatorhq/mercator/pull/496)
+  - Web server doesn't ever start running. Something is either masking the errors or preventing the process from starting.
