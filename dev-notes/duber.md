@@ -1160,7 +1160,7 @@ Branch: ``ajd/cache-madness``
 
 ### Progress
 
-- [ ] Image upload and manipulation?
+- [X] Image upload and manipulation?
 - [X] Mobile-friendly frontend
 - [X] Turn off autodeploy for staging
 
