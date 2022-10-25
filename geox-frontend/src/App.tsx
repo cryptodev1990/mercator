@@ -5,7 +5,7 @@ import RequireAuth from "./common/components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
 import { useTokenInOpenApi } from "./hooks/use-token-in-openapi";
-import { useIntercom } from "./lib/intercom";
+// import { useIntercom } from "./lib/intercom";
 
 function Logout() {
   const { logout } = useAuth0();
@@ -66,7 +66,7 @@ function RoutesIndex() {
 
 function App() {
   useTokenInOpenApi();
-  useIntercom();
+  // useIntercom();
 
   return <RoutesIndex />;
 }
