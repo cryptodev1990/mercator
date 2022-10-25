@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { MdEmail } from "react-icons/md";
+import Loading from "react-loading";
 import { supabase } from "../../../common/supabase-client";
 
 export const EmailBox = (): JSX.Element => {
@@ -19,7 +22,7 @@ export const EmailBox = (): JSX.Element => {
         setStatus("error");
         // Error message: duplicate key value violates unique constraint \"waitlist_email_key\"
         if (error.code === "23505") {
-          alert(
+          toast.success(
             "Your email is already the system. We appreciate your interest. We'll contact you shortly."
           );
           setStatus("resolved");
@@ -31,7 +34,7 @@ export const EmailBox = (): JSX.Element => {
       }
     } catch (error) {
       setStatus("error");
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -45,19 +48,23 @@ export const EmailBox = (): JSX.Element => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <div className="flex flex-row bg-white text-slate-600 text-sm sm:text-xl gap-3 justify-between items-baseline rounded-2xl w-full">
+      <div className="transition-opacity ease-in duration-700 opacity-100">
+        <div className="flex flex-row text-slate-600 justify-between items-center border-b border-white">
           <input
-            className="focus:outline-none p-3 rounded-l-3xl"
+            className="focus:outline-none flex-1 pl-5 bg-transparent  text-white placeholder:text-purple-200"
             type="email"
-            placeholder="Your email here"
+            placeholder="Join our waitlist"
             required={true}
           />
           <button
-            className="transition bg-purple-500 text-white cursor-pointer 2 p-3 pr-3 hover:bg-tertiary rounded-r-2xl font-bold overflow-x-clip whitespace-nowrap text-ellipsis"
+            className="transition bg-white h-10 p-3 text-white cursor-pointer hover:bg-purple-300 font-bold overflow-x-clip whitespace-nowrap text-ellipsis"
             disabled={status === "loading"}
           >
-            {status === "loading" ? "Submitting..." : "Get early access"}
+            {status === "loading" ? (
+              <Loading type="spin" color="#000" height={20} width={20} />
+            ) : (
+              <MdEmail className="fill-purple-500" />
+            )}
           </button>
         </div>
       </div>

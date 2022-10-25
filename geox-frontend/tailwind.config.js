@@ -3,11 +3,14 @@ const plugin = require("tailwindcss/plugin");
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    fontFamily: {
+      sans: ["Roboto", "sans-serif"],
+    },
     extend: {
       screens: {
-        'tall-h': { 'raw': '(min-height: 500px)' },
-        'md-h': { 'raw': '(min-height: 400px)' },
-        'short-h': { 'raw': '(min-height: 300px)' },
+        "tall-h": { raw: "(min-height: 500px)" },
+        "md-h": { raw: "(min-height: 400px)" },
+        "short-h": { raw: "(min-height: 300px)" },
       },
       colors: {
         "baby-blue": "#E7F2F8",
@@ -38,7 +41,7 @@ module.exports = {
   },
   plugins: [
     require("daisyui"),
-    require('tailwind-scrollbar'),
+    require("tailwind-scrollbar"),
     plugin(function ({ addUtilities }) {
       const newUtilities = {
         ".text-animation": {

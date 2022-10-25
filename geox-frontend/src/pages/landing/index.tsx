@@ -33,37 +33,33 @@ const LandingPage = (): JSX.Element | null => {
       role="main"
     >
       <div className="">
-        <div className="relative overflow-y-scroll h-screen">
-          <div className="absolute skew-y-12 h-[100vh] z-0 w-[100vw] -translate-y-40 bg-gradient-to-br from-secondary to-purple-500 overflow-hidden"></div>
+        <div className="relative overflow-y-scroll h-screen overflow-x-hidden">
+          <div className="absolute skew-y-12 h-screen z-0 w-[100vw] -translate-y-40 bg-gradient-to-br from-secondary to-purple-500 overflow-hidden"></div>
           <div className="max-w-5xl mx-auto py-5 h-screen">
             <Navbar />
 
-            <div className="my-12 sm:my-20 container">
+            <div className="">
               <HeroSection />
             </div>
           </div>
           {/* Products */}
-          <div className="z-50 container max-w-5xl mx-auto my-10">
-            <div className="">
-              <ProductSection
-                header="Control dispatch, analysis, and reporting with Geofencer"
-                video={"PdZAk17Gxx0"}
-                copytext={
-                  "Draw neighborhood boundaries and create shapes to analyze and report on"
-                }
-                align="right"
-              />
+          <ProductSection
+            header="Control dispatch, analysis, and reporting with Geofencer"
+            video={"PdZAk17Gxx0"}
+            copytext={
+              "Draw neighborhood boundaries and create shapes to analyze and report on"
+            }
+            align="right"
+          />
+          <div className="max-w-5xl mx-auto py-5 flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
+            <div className="flex-1">
+              <GradientHeader>Like what you see? Try it out.</GradientHeader>
             </div>
-            <div className="max-w-5xl mx-auto py-5 flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
-              <div className="flex-1">
-                <GradientHeader>Like what you see? Try it out.</GradientHeader>
-              </div>
-              <div className="sm:w-1/2 w-full sm:p-0 p-5">
-                <EmailBox />
-              </div>
+            <div className="sm:w-1/2 w-full sm:p-0 p-5">
+              <EmailBox />
             </div>
-            <FooterSection />
           </div>
+          <FooterSection />
         </div>
       </div>
     </main>
