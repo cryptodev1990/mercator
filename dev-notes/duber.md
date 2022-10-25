@@ -1165,3 +1165,12 @@ Branch: ``ajd/cache-madness``
 - [X] Turn off autodeploy for staging
 
 ### Plans
+
+- https://www.notion.so/7ef6d277a9074684875226d1989068d2?v=8705cafa55c44fa3b88ef9c3bb750dfb
+- [ ] Add necessary links
+- [ ] Attempt tile cache
+- [ ] Stripe billing flow: https://www.notion.so/7ef6d277a9074684875226d1989068d2?v=98082d500263487bb457e9517a5062a9&p=5ffce0d5b98c4001b79d86d955c27993&pm=s
+
+## 10-25-22
+
+### Progress
