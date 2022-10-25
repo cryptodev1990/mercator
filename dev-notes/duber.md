@@ -1176,5 +1176,6 @@ Branch: ``ajd/cache-madness``
 ### Plans
 
 - [ ] Notion side-drawer of gifs
+- [ ] Add necessary links
 
 ### Progress
