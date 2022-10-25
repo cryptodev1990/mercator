@@ -45,6 +45,7 @@ export const InvestorSection = (): JSX.Element => {
           rel="noreferrer"
           className="first-of-type:pl-4 select-none cursor-pointer"
           style={{}}
+          key={investor.name}
         >
           {!investor.logo && (
             <span className="text-slate-100 font-serif inline-block leading-4">
