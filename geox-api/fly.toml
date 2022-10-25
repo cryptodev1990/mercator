@@ -8,8 +8,13 @@ processes = []
 
 [env]
   APP_ENV = "production"
+  # Redis cache environment variables
   APP_CACHE__ENABLED = true
+  # Redis cache TTL in seconds
   APP_CACHE__TIMEOUT = 3600
+  # Configures logging for SQLAlchemy
+  ENGINE_OPTS__ECHO = true
+  ENGINE_OPTS__ECHO_POOL = true
   BACKEND_CORS_ORIGINS = "[\"*\"]"
   PORT = "8080"
 
