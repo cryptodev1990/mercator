@@ -6,7 +6,7 @@ import datetime
 import logging
 from enum import Enum
 from typing import Any, Dict, Generator, List, Optional, Sequence, Union
-
+from sqlalchemy.sql import FromClause, ColumnElement
 import jinja2
 import sqlalchemy as sa
 from geojson_pydantic import Feature, GeometryCollection, LineString, Point, Polygon
@@ -34,6 +34,15 @@ METADATA_COLS = [
     shapes_tbl.c.properties,
     shapes_tbl.c.created_at,
     shapes_tbl.c.updated_at,
+]
+
+GEOSHAPE_COLS = [
+    shapes_tbl.c.uuid,
+    shapes_tbl.c.name,
+    shapes_tbl.c.namespace_id,
+    shapes_tbl.c.created_at,
+    shapes_tbl.c.updated_at,
+    shapes_tbl.c.geojson,
 ]
 
 ## Read Shapes
@@ -65,13 +74,7 @@ def create_shape(
     # The trigger that updates properties from geojson does not run until
     # after returning retrieves values for the row. the following lines
     # work around that
-    stmt = insert(shapes_tbl).returning(
-        shapes_tbl.c.uuid,
-        shapes_tbl.c.created_at,
-        shapes_tbl.c.updated_at,
-        shapes_tbl.c.geojson,
-        shapes_tbl.c.namespace_id,
-    )  # type: ignore
+    stmt = insert(shapes_tbl).returning(*GEOSHAPE_COLS)
     values = {
         "created_by_user_id": user_id,
         "updated_by_user_id": user_id,
@@ -80,10 +83,7 @@ def create_shape(
         "namespace_id": namespace_id or get_default_namespace(conn, organization_id).id,
     }
     res = conn.execute(stmt, values).first()
-    new_shape = dict(res)
-    new_shape["name"] = new_shape["geojson"].get("properties", {}).get("name")
-    new_shape["properties"] = new_shape["geojson"].get("properties", {})
-    return GeoShape.parse_obj(new_shape)
+    return GeoShape.from_orm(res)
 
 
 def _update_geojson(
@@ -189,9 +189,13 @@ def _select_shapes_query(
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
     bbox: Optional[ViewportBounds] = None,
-    metadata_only: bool = False,
+    columns: Optional[Sequence[Union[ColumnElement[Any], int]]] = None,
 ) -> Select:
-    stmt = _select_shapes.order_by(shapes_tbl.c.uuid)
+    if columns:
+        stmt = select(columns)
+    else:
+        stmt = select(shapes_tbl)  # type: ignore
+    stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     if ids is not None:
         stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
     if user_id is not None:
@@ -213,8 +217,7 @@ def _select_shapes_query(
         stmt = stmt.limit(limit)
     if offset is not None:
         stmt = stmt.offset(offset)
-    if metadata_only:
-        stmt = stmt.with_only_columns(METADATA_COLS)
+
     return stmt
 
 
@@ -238,7 +241,7 @@ def select_shapes(
         offset=offset,
         bbox=bbox,
         ids=ids,
-        metadata_only=False,
+        columns=GEOSHAPE_COLS,
     )
     res = conn.execute(stmt)
     for row in res:
@@ -266,7 +269,7 @@ def select_shape_metadata(
         offset=offset,
         bbox=bbox,
         ids=ids,
-        metadata_only=True,
+        columns=METADATA_COLS,
     )
     res = conn.execute(stmt)
     for row in res:
@@ -333,17 +336,7 @@ def update_shape(
     ).dict()
     if namespace_id:
         values["namespace_id"] = namespace_id
-    stmt = (
-        update(shapes_tbl)
-        .where(shapes_tbl.c.uuid == id_)
-        .returning(
-            shapes_tbl.c.uuid,
-            shapes_tbl.c.created_at,
-            shapes_tbl.c.updated_at,
-            shapes_tbl.c.geojson,
-            shapes_tbl.c.namespace_id,
-        )
-    )
+    stmt = update(shapes_tbl).where(shapes_tbl.c.uuid == id_).returning(*GEOSHAPE_COLS)
     res = conn.execute(stmt, values).first()
     if res is None:
         raise ShapeDoesNotExist(id_)
@@ -397,7 +390,7 @@ def delete_many_shapes(
     if ids:
         stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
     res = conn.execute(stmt, values)
-    return [row.uuid for row in res.fetchall()]
+    return [row.uuid for row in res]
 
 
 def get_shape_count(conn: Connection) -> int:
@@ -407,7 +400,8 @@ def get_shape_count(conn: Connection) -> int:
         .where(shapes_tbl.c.organization_id == sa.func.app_user_org())
         .where(shapes_tbl.c.deleted_at == None)
     )
-    return conn.execute(stmt).scalar()
+    res = conn.execute(stmt).scalar()
+    return res
 
 
 def get_shapes_containing_point(
@@ -416,7 +410,7 @@ def get_shapes_containing_point(
     """Get the shape that contains a point."""
     stmt = sa.text(
         """
-    SELECT *
+    SELECT geojson
     FROM shapes
     WHERE 1=1
       AND ST_Contains(geom, ST_GeomFromText('POINT(:lng :lat)', 4326))
@@ -425,9 +419,7 @@ def get_shapes_containing_point(
     """
     )
     res = conn.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
-    if res:
-        return [GeoShape.parse_obj(dict(row)).geojson for row in res]
-    return []
+    return [row.geojson for row in res]
 
 
 class GeometryOperation(str, Enum):
@@ -448,7 +440,7 @@ def get_shapes_related_to_geom(
     stmt = sa.text(
         jinja2.Template(
             """
-    SELECT *
+    SELECT geojson
     FROM shapes
     WHERE 1=1
       AND ST_{{operation}}(geom, ST_GeomFromGeoJSON(:geom))
@@ -457,7 +449,5 @@ def get_shapes_related_to_geom(
     """
         ).render(operation=operation.title())
     )
-    res = conn.execute(stmt, {"geom": geom.json()}).fetchall()
-    if res:
-        return [GeoShape.parse_obj(dict(row)).geojson for row in res]
-    return []
+    res = conn.execute(stmt, {"geom": geom.json()})
+    return [row.geojson for row in res]
