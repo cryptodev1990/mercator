@@ -40,7 +40,6 @@ export function useTiles() {
       // @ts-ignore
       onViewportLoad: (headers: Tile2DHeader[]) => {
         // triggers after all tiles in a viewport load
-        tc.clear();
         setUpdateCount(updateCount + 1);
       },
       updateTriggers: {
@@ -54,6 +53,10 @@ export function useTiles() {
       id: "bg-mvt",
       // @ts-ignore
       cache: tc,
+      // @ts-ignore
+      onViewportLoad: (headers: Tile2DHeader[]) => {
+        tc.clear();
+      },
       updateTriggers: {
         getTileData: [updateCount],
         getFillColor: [selectedUuids, isHovering],
