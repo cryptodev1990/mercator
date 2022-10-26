@@ -19,6 +19,7 @@ export function useTiles() {
   const [updateCount, setUpdateCount] = useState(0);
   const tileArgs = useTileArgs(isHovering, setIsHovering);
   const { tileCacheKey, visibleNamepaces, updatedShapeIds } = useShapes();
+  const { cursorMode } = useCursorMode();
   const { selectedUuids } = useSelectedShapes();
 
   useEffect(() => {
@@ -43,7 +44,8 @@ export function useTiles() {
         setUpdateCount(updateCount + 1);
       },
       updateTriggers: {
-        getFillColor: [selectedUuids, isHovering],
+        getFillColor: [selectedUuids, isHovering, cursorMode],
+        getLineColor: [selectedUuids, isHovering],
         getTileData: [tileCacheKey, visibleNamepaces],
       },
       // @ts-ignore
@@ -121,17 +123,23 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
         GL.DST_COLOR,
       ],
     },
-    getLineColor: [0, 0, 0, 150],
-    getFillColor: (d: any) => {
+    getLineColor: (d: any) => {
       if (isSelected(d.properties.__uuid)) {
         // hidden
         return [250, 128, 114, 0];
+      }
+      return [0, 0, 0, 150];
+    },
+    getFillColor: (d: any) => {
+      if (isSelected(d.properties.__uuid)) {
+        // hidden
+        return [250, 128, 114, cursorMode === EditorMode.ViewMode ? 255 : 0];
       }
       if (isHovering === d.properties.__uuid) {
         // light blue in rgba
         return [173, 216, 230];
       }
-      return [140, 170, 180];
+      return [140, 170, 180, cursorMode === EditorMode.ViewMode ? 255 : 0];
     },
     extruded: false,
     onHover: ({ object, x, y }: any) => {
