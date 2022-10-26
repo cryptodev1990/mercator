@@ -1,6 +1,6 @@
 """API Schema."""
 import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, Sequence
 
 from geojson_pydantic import Feature, GeometryCollection
 from geojson_pydantic.features import GeometryCollection
@@ -135,6 +135,14 @@ class ViewportBounds(BaseModel):
         if value["min_y"] > value["max_y"]:
             raise ValueError("min_y must be less than max_y")
         return value
+
+    @classmethod
+    def from_list(cls, coordinates: Sequence[float]) -> "ViewportBounds":
+        """Create a viewport from a list of coordinates."""
+        if len(coordinates) != 4:
+            raise ValueError("Four coordinates must be provided.")
+        min_x, min_y, max_x, max_y = coordinates
+        return cls(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
 
     class Config:
         schema_extra = {

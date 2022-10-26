@@ -1,9 +1,11 @@
 import logging
-from typing import List, Optional, Union, cast
+from typing import List, Optional, Union, cast, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
+from app.schemas import ViewportBounds
+from app.core.datatypes import Latitude, Longitude
 
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
@@ -130,9 +132,6 @@ def bulk_create_shapes(
     return ShapeCountResponse(num_shapes=len(shape_ids))
 
 
-from typing import Any, Dict
-
-
 @router.post("/geofencer/shapes", response_model=GeoShape)
 def _post_shapes(
     data: GeoShapeCreate, user_conn: UserConnection = Depends(get_app_user_connection)
@@ -170,8 +169,8 @@ def get_shape_count(
 
 @router.get("/geofencer/shapes/op/contains", response_model=List[Feature])
 def get_shapes_containing_point(
-    lat: float = Query(ge=-90, le=90),
-    lng: float = Query(ge=-180, le=180),
+    lat: Latitude,
+    lng: Longitude,
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes containing a point."""
@@ -201,28 +200,39 @@ def _get_shapes(
     ),
     user: Optional[bool] = Query(
         default=None,
-        title="Get shapes for a user",
+        title="Get shapes for the current user",
         description="If TRUE, then only return shapes of the requesting user.",
     ),
     user_conn: UserConnection = Depends(get_app_user_connection),
     offset: int = Query(default=0, title="Item offset", ge=0),
     limit: int = Query(default=300, title="Number of shapes to retrieve", ge=1),
+    shape_ids: Optional[List[UUID4]] = Query(None, title="List of shape ids"),
+    bbox: Tuple[Longitude, Latitude, Longitude, Latitude] = Query(
+        default=None, title="Bounding box (min x, min y, max x, max y)"
+    ),
 ) -> List[GeoShape]:
     """Read shapes.
 
     Will return 200 even if no shapes match the query, including the case in which the
     namespace does not exist.
+
+    All non-empty query parameters are combined with `AND`.
+
     """
+    try:
+        bbox_obj = ViewportBounds.from_list(bbox)
+    except ValueError:
+        raise HTTPException(422, "Invalid bbox")
     user_id = user_conn.user.id if user else None
-    organization_id = user_conn.organization.id
     return list(
         select_shapes(
             user_conn.connection,
             user_id=user_id,
-            organization_id=organization_id,
             namespace_id=namespace,
             offset=offset,
             limit=limit,
+            ids=shape_ids,
+            bbox=bbox_obj
         )
     )
 

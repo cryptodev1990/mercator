@@ -1,11 +1,11 @@
 """Common fixtures."""
 from functools import partial
-from typing import Optional
+from typing import Any, Dict, Optional, cast
 
 import pytest
 from fastapi import status
 from geojson.utils import generate_random as generate_random_geometry
-from geojson_pydantic import Feature
+from geojson_pydantic import Feature, Polygon
 from pydantic import UUID4
 from pytest_fastapi_deps import DependencyOverrider
 from randomname import get_name as get_random_name
@@ -91,12 +91,14 @@ def alice_conn(conn: Connection, alice: UserOrganization) -> ConnectionWithDepOv
     )
 
 
-def random_geojson(include_name=True):
+def random_geojson(include_name=True) -> Feature[Polygon, Dict[str, Any]]:
     if include_name:
         name = get_random_name()
     else:
         name = None
     return Feature(
-        geometry=generate_random_geometry("Polygon", numberVertices=4),
+        geometry=cast(Polygon, generate_random_geometry("Polygon", numberVertices=4)),
         properties={"name": name},
+        type="Feature",
+        id=None,
     )

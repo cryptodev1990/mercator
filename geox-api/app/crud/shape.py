@@ -5,7 +5,7 @@ NOTE: All queries use `shapes` table and no ORM features
 import datetime
 import logging
 from enum import Enum
-from typing import Any, Dict, Generator, List, Optional, Sequence, Union, cast
+from typing import Any, Dict, Generator, List, Optional, Sequence, Union
 
 import jinja2
 import sqlalchemy as sa
@@ -14,7 +14,7 @@ from geojson_pydantic.geometries import Geometry
 from pydantic import UUID4
 from sqlalchemy import func, insert, select, update  # type: ignore
 from sqlalchemy.engine import Connection
-
+from sqlalchemy.sql import Select
 from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBounds
@@ -22,7 +22,7 @@ from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBoun
 logger = logging.getLogger(__name__)
 
 
-class MapProjection(str, Enum):
+class MapProjection(int, Enum):
     WGS84 = 4326
     WEB_MERCATOR = 3857
 
@@ -49,7 +49,7 @@ class ShapeDoesNotExist(Exception):
 
 ## Create Shapes
 
-_select_shapes = select(shapes_tbl).where(shapes_tbl.c.deleted_at.is_(None))  # type: ignore
+_select_shapes: Select = select(shapes_tbl).where(shapes_tbl.c.deleted_at.is_(None))  # type: ignore
 
 
 def create_shape(
@@ -62,13 +62,6 @@ def create_shape(
     namespace_id: Optional[UUID4] = None,
 ) -> GeoShape:
     """Create a new shape."""
-    if namespace_id is None:
-        # TODO: remove this once namespaces are migrated
-        namespace_id = get_default_namespace(conn, organization_id).id
-    if geojson.properties is None:
-        geojson.properties = {}
-    if name:
-        geojson.properties["name"] = name
     # The trigger that updates properties from geojson does not run until
     # after returning retrieves values for the row. the following lines
     # work around that
@@ -83,8 +76,8 @@ def create_shape(
         "created_by_user_id": user_id,
         "updated_by_user_id": user_id,
         "organization_id": organization_id,
-        "geojson": geojson.dict(),
-        "namespace_id": namespace_id,
+        "geojson": _update_geojson(geojson, name=name).dict(),
+        "namespace_id": namespace_id or get_default_namespace(conn, organization_id).id,
     }
     res = conn.execute(stmt, values).first()
     new_shape = dict(res)
@@ -93,12 +86,50 @@ def create_shape(
     return GeoShape.parse_obj(new_shape)
 
 
-def _process_geojson(geojson: Feature, name: Optional[str] = None) -> Dict[str, Any]:
-    if geojson.properties is None:
-        geojson.properties = {}
-    if name:
-        geojson.properties["name"] = name
-    return {"geojson": geojson.dict(), "name": geojson.properties.get("name")}
+def _update_geojson(
+    geojson: Feature,
+    *,
+    geojson_new: Optional[Feature] = None,
+    geometry: Union[None, Geometry, GeometryCollection] = None,
+    properties: Optional[Dict[str, Any]] = None,
+    name: Optional[str] = None,
+) -> Feature[Union[Geometry, GeometryCollection], Dict[str, Any]]:
+    """Combine geojson objects with components."""
+    geometry_new = (
+        geometry or (geojson_new.geometry if geojson_new else None) or geojson.geometry
+    )
+    # where to get the properties from
+    properties_new = (
+        (
+            properties if properties is not None else None
+        )  # {} will delete all properties
+        or (
+            (
+                (geojson_new.properties if geojson_new.properties is not None else None)
+                if geojson_new
+                else None
+            )
+        )
+        or geojson.properties
+        or {}
+    )
+    # where to get the name from
+    name_new = (
+        name
+        or (properties or {}).get("name")
+        or (((geojson_new.properties or {}).get("name") if geojson_new else None))
+        or (geojson.properties or {}).get("name")
+    )
+    properties_new["name"] = name_new
+    # Remove __uuid and __parent_uuid from properties if they were included
+    # This prevents reuploaded data from including a different UUID that may be
+    # used by the frontend.
+    for k in ("__uuid", "__parent_uuid"):
+        try:
+            del properties_new[k]
+        except KeyError:
+            pass
+    return Feature.parse_obj({"geometry": geometry_new, "properties": properties_new})
 
 
 def create_many_shapes(
@@ -122,7 +153,7 @@ def create_many_shapes(
     default_namespace = namespace_id or get_default_namespace(conn, organization_id).id
     values = [
         {
-            **_process_geojson(x.geojson, x.name),
+            "geojson": _update_geojson(x.geojson, name=x.name).dict(),
             "namespace_id": x.namespace or default_namespace,
         }
         for x in data
@@ -141,7 +172,7 @@ def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bo
 
 def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoShape:
     """Get a shape."""
-    stmt = _select_shapes.where(shapes_tbl.c.uuid == str(shape_id)).limit(1)
+    stmt = select(shapes_tbl).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
@@ -150,117 +181,96 @@ def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoSh
     return GeoShape.parse_obj(dict(res))
 
 
-def select_shapes(
-    conn: Connection,
-    *,
+def _select_shapes_query(
+    ids: Optional[Sequence[UUID4]] = None,
     user_id: Optional[int] = None,
     organization_id: Optional[UUID4] = None,
     namespace_id: Optional[UUID4] = None,
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
-) -> Generator[GeoShape, None, None]:
-    # This will be called many times - use more advanced caching
-    stmt = _select_shapes.order_by(shapes_tbl.c.uuid)  # type: ignore
+    bbox: Optional[ViewportBounds] = None,
+    metadata_only: bool = False,
+) -> Select:
+    stmt = _select_shapes.order_by(shapes_tbl.c.uuid)
+    if ids is not None:
+        stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
     if user_id is not None:
         stmt = stmt.where(shapes_tbl.c.created_by_user_id == user_id)
     if namespace_id is not None:
         stmt = stmt.where(shapes_tbl.c.namespace_id == namespace_id)
     if organization_id is not None:
         stmt = stmt.where(shapes_tbl.c.organization_id == organization_id)
-    if offset is not None:
-        stmt = stmt.offset(offset)
+    if bbox:
+        stmt = stmt.where(
+            func.ST_Intersects(
+                shapes_tbl.c.geom,
+                func.ST_MakeEnvelope(
+                    bbox.min_x, bbox.min_y, bbox.max_x, bbox.max_y, MapProjection.WGS84
+                ),
+            )
+        )
     if limit:
         stmt = stmt.limit(limit)
+    if offset is not None:
+        stmt = stmt.offset(offset)
+    if metadata_only:
+        stmt = stmt.with_only_columns(METADATA_COLS)
+    return stmt
+
+
+def select_shapes(
+    conn: Connection,
+    *,
+    ids: Optional[Sequence[UUID4]] = None,
+    user_id: Optional[int] = None,
+    organization_id: Optional[UUID4] = None,
+    namespace_id: Optional[UUID4] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = 0,
+    bbox: Optional[ViewportBounds] = None,
+) -> Generator[GeoShape, None, None]:
+    # This will be called many times - use more advanced caching
+    stmt = _select_shapes_query(
+        user_id=user_id,
+        organization_id=organization_id,
+        namespace_id=namespace_id,
+        limit=limit,
+        offset=offset,
+        bbox=bbox,
+        ids=ids,
+        metadata_only=False,
+    )
     res = conn.execute(stmt)
     for row in res:
-        print(row)
         yield GeoShape.parse_obj(dict(row))
-
-
-def get_all_shapes_by_user(
-    conn: Connection,
-    user_id: int,
-    limit: Optional[int] = None,
-    offset: int = 0,
-) -> List[GeoShape]:
-    """Get all shapes created by a user."""
-    return list(select_shapes(conn, user_id=user_id, limit=limit, offset=offset))
-
-
-def get_all_shapes_by_organization(
-    conn: Connection,
-    user_id: int,
-    limit: Optional[int] = None,
-    offset: int = 0,
-) -> List[GeoShape]:
-    """Get all shapes created by a user."""
-    return list(select_shapes(conn, user_id=user_id, limit=limit, offset=offset))
 
 
 def select_shape_metadata(
     conn: Connection,
     *,
+    ids: Optional[Sequence[UUID4]] = None,
+    bbox: Optional[ViewportBounds] = None,
     user_id: Optional[int] = None,
     organization_id: Optional[UUID4] = None,
     namespace_id: Optional[UUID4] = None,
     limit: Optional[int] = None,
-    offset: int = 0,
+    offset: Optional[int] = 0,
 ) -> Generator[GeoShapeMetadata, None, None]:
     """Query shape metadata."""
     # This will be called many times - use more advanced caching
-    stmt = _select_shapes.with_only_columns(METADATA_COLS).order_by(shapes_tbl.c.uuid).offset(offset).limit(limit)  # type: ignore
-    if user_id is not None:
-        stmt = stmt.where(shapes_tbl.c.created_by_user_id == user_id)
-    if organization_id is not None:
-        stmt = stmt.where(shapes_tbl.c.organization_id == organization_id)
-    if namespace_id is not None:
-        stmt = stmt.where(shapes_tbl.c.namespace_id == namespace_id)
+    stmt = _select_shapes_query(
+        user_id=user_id,
+        organization_id=organization_id,
+        namespace_id=namespace_id,
+        limit=limit,
+        offset=offset,
+        bbox=bbox,
+        ids=ids,
+        metadata_only=True,
+    )
     res = conn.execute(stmt)
     for row in res:
         yield GeoShapeMetadata.parse_obj(dict(row))
-
-
-def get_shape_metadata_by_bounding_box(
-    conn: Connection,
-    bbox: ViewportBounds,
-    limit: int = None,
-    offset: int = 0,
-) -> List[GeoShapeMetadata]:
-    """Get all shapes within a bounding box.
-
-    Used on the frontend to determine which shapes to show details on in the sidebar
-    """
-    geom = Polygon(
-        type="Polygon",
-        coordinates=[
-            [
-                (bbox.min_x, bbox.min_y),
-                (bbox.min_x, bbox.max_y),
-                (bbox.max_x, bbox.max_y),
-                (bbox.max_x, bbox.min_y),
-                (bbox.min_x, bbox.min_y),
-            ]
-        ],
-    )
-    stmt = (
-        _select_shapes.with_only_columns(METADATA_COLS)
-        .where(
-            # Check if the shape intersects with the bounding box
-            func.ST_Intersects(
-                shapes_tbl.c.geom,
-                func.ST_GeomFromText(
-                    geom.wkt,
-                    4326,
-                ),
-            )
-        )
-        .order_by(shapes_tbl.c.uuid)
-        .limit(limit)
-        .offset(offset)
-    )
-
-    res = conn.execute(stmt).fetchall()
-    return [GeoShapeMetadata.parse_obj(dict(g)) for g in list(res)]
 
 
 def get_shape_metadata_matching_search(
@@ -294,20 +304,6 @@ def get_shape_metadata_matching_search(
     return [GeoShapeMetadata.parse_obj(dict(g)) for g in list(res)]
 
 
-def get_all_shape_metadata_by_organization(
-    conn: Connection,
-    organization_id: UUID4,
-    limit: Optional[int] = None,
-    offset: int = 0,
-) -> List[GeoShapeMetadata]:
-    # TODO remove UUID ordering
-    return list(
-        select_shape_metadata(
-            conn, organization_id=organization_id, limit=limit, offset=offset
-        )
-    )
-
-
 ## Updating ###
 
 
@@ -328,23 +324,15 @@ def update_shape(
         "updated_at": datetime.datetime.utcnow(),
     }
     # If geojson is not specified, then these are updated.
-    if geometry or (properties is not None) or name or geojson:
-        if not geojson:
-            geojson = get_shape(conn, id_).geojson
-        geojson: Feature  # type: ignore
-        if geometry:
-            geojson.geometry = geometry
-        if geojson.properties is None:
-            geojson.properties = {}
-        if properties is not None:
-            # This ensures that the old name is retained
-            geojson.properties = {"name": geojson.properties.get(name), **properties}
-        if name:
-            geojson.properties["name"] = name
+    values["geojson"] = _update_geojson(
+        get_shape(conn, id_).geojson,
+        geojson_new=geojson,
+        geometry=geometry,
+        name=name,
+        properties=properties,
+    ).dict()
     if namespace_id:
         values["namespace_id"] = namespace_id
-    if geojson:
-        values["geojson"] = geojson.dict()
     stmt = (
         update(shapes_tbl)
         .where(shapes_tbl.c.uuid == id_)

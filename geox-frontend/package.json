@@ -70,7 +70,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "generate-client": "scripts/generate-client.sh",
+    "generate-client": "openapi --input ../geox-api/client/openapi.json --output ./autogen --client axios --exportCore false --indent 2",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

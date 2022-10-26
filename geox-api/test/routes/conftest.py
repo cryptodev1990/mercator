@@ -2,10 +2,11 @@
 import random
 from functools import partial
 from string import ascii_letters, digits
-from typing import Any, Callable, Dict, cast
+from typing import Callable, Dict, Optional, cast
 
 import pytest
 from fastapi import Depends
+from pydantic import UUID4
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
@@ -75,11 +76,6 @@ def conn(engine):
     finally:
         trans.rollback()
         conn.close()
-
-
-from typing import Optional
-
-from pydantic import UUID4
 
 
 def get_current_user_org_override(

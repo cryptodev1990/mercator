@@ -50,10 +50,6 @@ class ShapeTestCase(BaseModel):
     ]
 )
 def patch_test_cases(request, feature_1):
-    def copy_feature() -> Feature[Polygon, Dict[str, Any]]:
-        return Feature.parse_obj(feature_1.dict())
-
-    out = []
     new_name: str = "New Name"
     new_props: Dict[str, Any] = {"foo": 1}
     new_geometry = Polygon.parse_obj(
@@ -62,90 +58,160 @@ def patch_test_cases(request, feature_1):
             "type": "Polygon",
         }
     )
-    new_geojson = {
-        "properties": {"bar": "abcdef"},
-        "geometry": {
-            "coordinates": [[[-41, 34], [-27, -32], [82, -66], [39, 50], [-41, 34]]],
-            "type": "Polygon",
-        },
-    }
+    new_geojson = Feature.parse_obj(
+        {
+            "properties": {"bar": "abcdef"},
+            "geometry": {
+                "coordinates": [
+                    [[-41, 34], [-27, -32], [82, -66], [39, 50], [-41, 34]]
+                ],
+                "type": "Polygon",
+            },
+        }
+    )
 
     new_namespace = None
     if request.param == "name":
         # change name
         data = {"name": new_name}
-        expected = copy_feature()
-        expected.properties["name"] = new_name  # type: ignore
+        expected = Feature.parse_obj(
+            {
+                "geometry": feature_1.geometry,
+                "properties": {**feature_1.properties, "name": new_name},
+            }
+        )
     elif request.param == "properties":
         # change name
         data = {"properties": new_props}
-        expected: Feature[Polygon, Dict[str, Any]] = copy_feature()
-        expected.properties = {"name": None, **new_props}  # type: ignore
+        expected = Feature.parse_obj(
+            {
+                "geometry": feature_1.geometry,
+                "properties": {"name": feature_1.properties.get("name"), **new_props},
+            }
+        )
     elif request.param == "geojson":
-        # updates properties, but with no name!!
-        data = {"geojson": new_geojson}
-        expected = Feature.parse_obj(new_geojson)
+        data = {"geojson": new_geojson.dict()}
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geojson.geometry),
+                "properties": {
+                    "name": feature_1.properties.get("name"),
+                    **(new_geojson.properties or {}),
+                },
+            }
+        )
     elif request.param == "geometry":
         data = {"geometry": new_geometry.dict()}
-        expected: Feature[Polygon, Dict[str, Any]] = copy_feature()
-        expected.geometry = new_geometry
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geometry),
+                "properties": feature_1.properties,
+            }
+        )
     elif request.param == "name+properties":
         data = {"name": new_name, "properties": new_props}
-        expected: Feature[Polygon, Dict[str, Any]] = copy_feature()
-        expected.properties = {**new_props, "name": new_name}
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, feature_1.geometry),
+                "properties": {**new_props, "name": new_name},
+            }
+        )
     elif request.param == "name+geometry":
         data = {"name": new_name, "geometry": new_geometry.dict()}
-        expected: Feature[Polygon, Dict[str, Any]] = copy_feature()
-        expected.properties["name"] = new_name  # type: ignore
-        expected.geometry = new_geometry
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geometry),
+                "properties": {**(feature_1.properties or {}), "name": new_name},
+            }
+        )
     elif request.param == "name+geojson":
-        data = {"name": new_name, "geojson": new_geojson}
-        expected: Feature[Polygon, Dict[str, Any]] = copy_feature()
-        expected = Feature.parse_obj(new_geojson)
-        expected.properties["name"] = new_name  # type: ignore
+        data = {"name": new_name, "geojson": new_geojson.dict()}
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geojson.geometry),
+                "properties": {**(new_geojson.properties or {}), "name": new_name},
+            }
+        )
     elif request.param == "properties+geometry":
         data = {
-            "properties": {"name": None, **new_props},
+            "properties": {
+                "name": (feature_1.properties or {}).get("name"),
+                **new_props,
+            },
             "geometry": new_geometry.dict(),
         }
-        expected = Feature.parse_obj(data)
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geometry),
+                "properties": {
+                    "name": feature_1.properties.get("name"),
+                    **(new_props or {}),
+                },
+            }
+        )
     elif request.param == "properties+geojson":
-        data = {"properties": new_props, "geojson": new_geojson}
-        expected = Feature.parse_obj(new_geojson)
-        expected.properties = {"name": None, **new_props}  # type: ignore
+        data = {"properties": new_props, "geojson": new_geojson.dict()}
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geojson.geometry),
+                "properties": {
+                    "name": feature_1.properties.get("name"),
+                    **(new_props or {}),
+                },
+            }
+        )
     elif request.param == "geometry+geojson":
-        data = {"geometry": new_geometry.dict(), "geojson": new_geojson}
-        expected = Feature.parse_obj(new_geojson)
-        expected.geometry = new_geometry
+        data = {"geometry": new_geometry.dict(), "geojson": new_geojson.dict()}
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geometry),
+                "properties": {
+                    "name": feature_1.properties.get("name"),
+                    **(new_geojson.properties or {}),
+                },
+            }
+        )
     elif request.param == "name+properties+geometry":
         data = {
             "name": new_name,
             "properties": new_props,
             "geometry": new_geometry.dict(),
         }
-        expected = Feature(properties=new_props, geometry=new_geometry)  # type: ignore
-        expected.properties["name"] = new_name  # type: ignore
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geometry),
+                "properties": {**(new_props or {}), "name": new_name},
+            }
+        )
     elif request.param == "name+properties+geojson":
-        data = {"name": new_name, "properties": new_props, "geojson": new_geojson}
-        expected = Feature.parse_obj(new_geojson)
-        expected.properties = new_props
-        expected.properties["name"] = new_name  # type: ignore
+        data = {
+            "name": new_name,
+            "properties": new_props,
+            "geojson": new_geojson.dict(),
+        }
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geojson.geometry),
+                "properties": {**(new_props or {}), "name": new_name},
+            }
+        )
     elif request.param == "name+properties+geometry+geojson":
         data = {
             "name": new_name,
             "properties": new_props,
             "geometry": new_geometry.dict(),
-            "geojson": new_geojson,
+            "geojson": new_geojson.dict(),
         }
-        # everything in geojson is overwritten
-        expected = Feature(properties=new_props, geometry=new_geometry)  # type: ignore
-        expected.properties["name"] = new_name  # type: ignore
+        expected = Feature.parse_obj(
+            {
+                "geometry": cast(Feature, new_geometry),
+                "properties": {**(new_props or {}), "name": new_name},
+            }
+        )
     else:
         raise ValueError(f"{request.param} is unknown")
 
-    return ShapeTestCase(
-        feature=feature_1, data=data, geojson=expected, namespace=new_namespace
-    )
+    return ShapeTestCase(feature=feature_1, data=data, geojson=expected)
 
 
 def test_patch_shape(

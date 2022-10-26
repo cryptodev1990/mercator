@@ -153,16 +153,55 @@ def fix_multi_polygon(schema):
     return schema
 
 
+def fix_bbox_params(schema):
+    # Fix bbox params in some routes
+    # Original schema:
+    #       "items": [
+    #     {
+    #       "maximum": 180.0,
+    #       "minimum": -180.0,
+    #       "type": "number"
+    #     },
+    #     {
+    #       "maximum": 90.0,
+    #       "minimum": -90.0,
+    #       "type": "number"
+    #     },
+    #     {
+    #       "maximum": 180.0,
+    #       "minimum": -180.0,
+    #       "type": "number"
+    #     },
+    #     {
+    #       "maximum": 90.0,
+    #       "minimum": -90.0,
+    #       "type": "number"
+    #     }
+    #   ]
+    # Generated typescript
+    # Array<any>
+    # Desired typescript
+    # Array<number>
+    routes = [("/geofencer/shapes", "get"), ("/geofencer/shape-metadata", "get")]
+    for path, http_verb in routes:
+        params = schema["paths"][path][http_verb]["parameters"]
+        for p in params:
+            if p["name"] == "bbox":
+                p["schema"]["items"] = {"type": "number"}
+    return schema
+
+
 def main(output: Optional[Path] = typer.Option(None, exists=False)) -> None:
     """Generate an openapi schema to use in generating typescript clients."""
     schema = app.openapi()
-    # schema = fix_bbox(schema)
+    schema = fix_bbox(schema)
     schema = fix_point(schema)
-    # schema = fix_polygon(schema)
-    # schema = fix_line_string(schema)
-    # schema = fix_multi_line_string(schema)
-    # schema = fix_multi_polygon(schema)
-    # schema = fix_multi_point(schema)
+    schema = fix_polygon(schema)
+    schema = fix_line_string(schema)
+    schema = fix_multi_line_string(schema)
+    schema = fix_multi_polygon(schema)
+    schema = fix_multi_point(schema)
+    schema = fix_bbox_params(schema)
     schema_str = json.dumps(schema, indent=2)
     if output:
         with output.open("w") as f:

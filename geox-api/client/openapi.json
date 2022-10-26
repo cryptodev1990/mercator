@@ -120,6 +120,55 @@
         }
       }
     },
+    "/geofencer/shapes/export/{task_id}": {
+      "get": {
+        "tags": [
+          "geofencer",
+          "tasks"
+        ],
+        "summary": "Get Status",
+        "description": "Retrieve results of a task.",
+        "operationId": "get_status_geofencer_shapes_export__task_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "string"
+            },
+            "name": "task_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CeleryTaskResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/geofencer/shapes/export": {
       "post": {
         "tags": [
@@ -150,44 +199,6 @@
             }
           }
         },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      }
-    },
-    "/shapes/export": {
-      "post": {
-        "tags": [
-          "geofencer"
-        ],
-        "summary": "Shapes Export",
-        "description": "Export shapes to S3.\n\nThis is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.",
-        "operationId": "shapes_export_shapes_export_post",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CeleryTaskResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "Data export not supported on the server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequestErrorModel"
-                }
-              }
-            }
-          }
-        },
-        "deprecated": true,
         "security": [
           {
             "HTTPBearer": []
@@ -314,7 +325,7 @@
           "geofencer"
         ],
         "summary": " Get Shapes",
-        "description": "Read shapes.\n\nWill return 200 even if no shapes match the query, including the case in which the\nnamespace does not exist.",
+        "description": "Read shapes.\n\nWill return 200 even if no shapes match the query, including the case in which the\nnamespace does not exist.\n\nAll non-empty query parameters are combined with `AND`.",
         "operationId": "_get_shapes_geofencer_shapes_get",
         "parameters": [
           {
@@ -333,7 +344,7 @@
             "description": "If TRUE, then only return shapes of the requesting user.",
             "required": false,
             "schema": {
-              "title": "Get shapes for a user",
+              "title": "Get shapes for the current user",
               "type": "boolean",
               "description": "If TRUE, then only return shapes of the requesting user."
             },
@@ -360,6 +371,33 @@
               "default": 300
             },
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "List of shape ids",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid4"
+              }
+            },
+            "name": "shape_ids",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Bounding box (min x, min y, max x, max y)",
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "name": "bbox",
             "in": "query"
           }
         ],
@@ -1051,6 +1089,54 @@
               "default": 25
             },
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "description": "If TRUE, then only return shapes of the requesting user.",
+            "required": false,
+            "schema": {
+              "title": "Get shapes for a user",
+              "type": "boolean",
+              "description": "If TRUE, then only return shapes of the requesting user."
+            },
+            "name": "user",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Namespace id.",
+              "type": "string",
+              "format": "uuid4"
+            },
+            "name": "namespace",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Shape ids.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid4"
+              }
+            },
+            "name": "shape_ids",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Bounding box (min x, min y, max x, max y)",
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "name": "bbox",
             "in": "query"
           }
         ],
@@ -1756,7 +1842,6 @@
             "type": "string"
           },
           "bbox": {
-            "title": "Bbox",
             "type": "array",
             "items": {
               "type": "number"
@@ -1769,7 +1854,8 @@
         "title": "GeoShape",
         "required": [
           "uuid",
-          "geojson"
+          "geojson",
+          "namespace_id"
         ],
         "type": "object",
         "properties": {
@@ -1778,20 +1864,13 @@
             "type": "string",
             "format": "uuid4"
           },
-          "name": {
-            "title": "Name",
-            "type": "string",
-            "description": "Name of the shape"
+          "geojson": {
+            "$ref": "#/components/schemas/Feature"
           },
           "namespace_id": {
             "title": "Namespace Id",
             "type": "string",
             "format": "uuid4"
-          },
-          "properties": {
-            "title": "Properties",
-            "type": "object",
-            "description": "Properties of the shape"
           },
           "created_at": {
             "title": "Created At",
@@ -1804,47 +1883,6 @@
             "type": "string",
             "description": "Date and time of most recent updater",
             "format": "date-time"
-          },
-          "geojson": {
-            "$ref": "#/components/schemas/Feature"
-          }
-        },
-        "description": "Metadata about a shape.",
-        "example": {
-          "uuid": "9be2a343-60f5-4324-a5f4-4efe8efeba28",
-          "name": "Lake Merritt",
-          "properties": {},
-          "namespace_id": "cf9f83cd-d454-4abb-b77c-c6d639804618",
-          "geojson": {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [
-                [
-                  [
-                    -122.26907730102539,
-                    37.796084948503236
-                  ],
-                  [
-                    -122.24555969238281,
-                    37.796084948503236
-                  ],
-                  [
-                    -122.24555969238281,
-                    37.81208947621168
-                  ],
-                  [
-                    -122.26907730102539,
-                    37.81208947621168
-                  ],
-                  [
-                    -122.26907730102539,
-                    37.796084948503236
-                  ]
-                ]
-              ]
-            }
           }
         }
       },
@@ -2018,10 +2056,31 @@
             "description": "The namespace id",
             "format": "uuid4"
           },
-          "should_delete": {
-            "title": "Should Delete",
-            "type": "boolean",
-            "default": false
+          "geometry": {
+            "title": "Geometry",
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPoint"
+              },
+              {
+                "$ref": "#/components/schemas/LineString"
+              },
+              {
+                "$ref": "#/components/schemas/MultiLineString"
+              },
+              {
+                "$ref": "#/components/schemas/Polygon"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPolygon"
+              },
+              {
+                "$ref": "#/components/schemas/GeometryCollection"
+              }
+            ]
           }
         },
         "example": {
@@ -2105,13 +2164,13 @@
         "type": "object",
         "properties": {
           "coordinates": {
-            "title": "Coordinates",
-            "minItems": 2,
             "type": "array",
             "items": {
-              "type": "number"
-            },
-            "maxItems": 3
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
           },
           "type": {
             "title": "Type",
@@ -2130,8 +2189,6 @@
         "type": "object",
         "properties": {
           "coordinates": {
-            "title": "Coordinates",
-            "minItems": 1,
             "type": "array",
             "items": {
               "type": "array",
@@ -2162,8 +2219,6 @@
         "type": "object",
         "properties": {
           "coordinates": {
-            "title": "Coordinates",
-            "minItems": 1,
             "type": "array",
             "items": {
               "type": "array",
@@ -2191,9 +2246,6 @@
         "type": "object",
         "properties": {
           "coordinates": {
-            "title": "Coordinates",
-            "minItems": 1,
-            "type": "array",
             "items": {
               "type": "array",
               "items": {
@@ -2204,7 +2256,8 @@
                   "type": "number"
                 }
               }
-            }
+            },
+            "type": "array"
           },
           "type": {
             "title": "Type",
@@ -2369,10 +2422,7 @@
         "type": "object",
         "properties": {
           "coordinates": {
-            "title": "Coordinates",
             "type": "array",
-            "maxItems": 3,
-            "minItems": 2,
             "items": {
               "type": "number"
             }
@@ -2394,8 +2444,6 @@
         "type": "object",
         "properties": {
           "coordinates": {
-            "title": "Coordinates",
-            "minItems": 1,
             "type": "array",
             "items": {
               "type": "array",

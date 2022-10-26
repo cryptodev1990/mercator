@@ -83,7 +83,11 @@ export class ShapeMetadataService {
    */
   public static getShapeMetadataGeofencerShapeMetadataGet(
     offset?: number,
-    limit: number = 25
+    limit: number = 25,
+    user?: boolean,
+    namespace?: string,
+    shapeIds?: Array<string>,
+    bbox?: Array<number>
   ): CancelablePromise<Array<GeoShapeMetadata>> {
     return __request(OpenAPI, {
       method: "GET",
@@ -91,6 +95,10 @@ export class ShapeMetadataService {
       query: {
         offset: offset,
         limit: limit,
+        user: user,
+        namespace: namespace,
+        shape_ids: shapeIds,
+        bbox: bbox,
       },
       errors: {
         422: `Validation Error`,

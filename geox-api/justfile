@@ -177,4 +177,4 @@ format:
 	./bin/format.sh
 
 openapi:
-	ENV_FILE=.env.local python -m app.scripts.create_openapi_schema --output=openapi.json
+	ENV_FILE=.env.local python -m app.scripts.create_openapi_schema --output=client/openapi.json

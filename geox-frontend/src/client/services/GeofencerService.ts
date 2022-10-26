@@ -20,26 +20,26 @@ import { OpenAPI } from "../core/OpenAPI";
 import { request as __request } from "../core/request";
 
 export class GeofencerService {
-    /**
-     * Get Status
-     * Retrieve results of a task.
-     * @param taskId
-     * @returns CeleryTaskResult Successful Response
-     * @throws ApiError
-     */
-     public static getStatusGeofencerShapesExportTaskIdGet(
-      taskId: string,
+  /**
+   * Get Status
+   * Retrieve results of a task.
+   * @param taskId
+   * @returns CeleryTaskResult Successful Response
+   * @throws ApiError
+   */
+  public static getStatusGeofencerShapesExportTaskIdGet(
+    taskId: string
   ): CancelablePromise<CeleryTaskResult> {
-      return __request(OpenAPI, {
-          method: 'GET',
-          url: '/geofencer/shapes/export/{task_id}',
-          path: {
-              'task_id': taskId,
-          },
-          errors: {
-              422: `Validation Error`,
-          },
-      });
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/geofencer/shapes/export/{task_id}",
+      path: {
+        task_id: taskId,
+      },
+      errors: {
+        422: `Validation Error`,
+      },
+    });
   }
 
   /**
@@ -125,7 +125,9 @@ export class GeofencerService {
     namespace?: string,
     user?: boolean,
     offset?: number,
-    limit: number = 300
+    limit: number = 300,
+    shapeIds?: Array<string>,
+    bbox?: Array<number>
   ): CancelablePromise<Array<GeoShape>> {
     return __request(OpenAPI, {
       method: "GET",
@@ -135,6 +137,8 @@ export class GeofencerService {
         user: user,
         offset: offset,
         limit: limit,
+        shape_ids: shapeIds,
+        bbox: bbox,
       },
       errors: {
         422: `Validation Error`,
@@ -399,7 +403,11 @@ export class GeofencerService {
    */
   public static getShapeMetadataGeofencerShapeMetadataGet(
     offset?: number,
-    limit: number = 25
+    limit: number = 25,
+    user?: boolean,
+    namespace?: string,
+    shapeIds?: Array<string>,
+    bbox?: Array<number>
   ): CancelablePromise<Array<GeoShapeMetadata>> {
     return __request(OpenAPI, {
       method: "GET",
@@ -407,6 +415,10 @@ export class GeofencerService {
       query: {
         offset: offset,
         limit: limit,
+        user: user,
+        namespace: namespace,
+        shape_ids: shapeIds,
+        bbox: bbox,
       },
       errors: {
         422: `Validation Error`,
