@@ -1193,6 +1193,8 @@ Branch: ``ajd/cache-madness``
 
 ### Plans / Progress
 
+- [X] Fix fisheye in shapecards
+  - Skipped the daisy-ui tailwind classes in favor of my own, which don't generate the fisheye effect
 - [X] Tiles
   - I need to go back and document how this works.
 - [ ] Notion side-drawer of gifs
