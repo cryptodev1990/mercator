@@ -1,21 +1,22 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
-    -   id: check-added-large-files
+      - id: check-added-large-files
         args: ["--maxkb=100000"] # github max file size = 100MB
-    -   id: no-commit-to-branch
-        args: ['--branch', 'master']
--   repo: https://github.com/Yelp/detect-secrets
+      - id: no-commit-to-branch
+        args: ["--branch", "master"]
+  - repo: https://github.com/Yelp/detect-secrets
     rev: v1.3.0
     hooks:
-    -   id: detect-secrets
+      - id: detect-secrets
         exclude: package.lock.json
         args:
-        - "--baseline"
-        - ".secrets.baseline"
-        - "--exclude-files"
-        - "alembic/versions/.*"
-
+          - "--baseline"
+          - ".secrets.baseline"
+          - "--exclude-files"
+          - "alembic/versions/\\.*"
+          - "--exclude-files"
+          - ".*\\.ipynb$"
