@@ -5,14 +5,23 @@ import { useSelectedShapes } from "../use-selected-shapes";
 import { useCallback, useEffect, useState } from "react";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
-// import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
-import { MVTLayer } from "@deck.gl/geo-layers";
+import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
+import Tile2DHeader from "@deck.gl/geo-layers/tile-layer/tile-2d-header";
+
+const tc = new TileCache();
 
 export function useTiles() {
   const { idToken } = useIdToken();
 
-  const tileArgs = useTileArgs();
-  const { visibleNamepaces } = useShapes();
+  const [isHovering, setIsHovering] = useState<string | null>(null);
+  const [updateCount, setUpdateCount] = useState(0);
+  const tileArgs = useTileArgs(isHovering, setIsHovering);
+  const { tileCacheKey, visibleNamepaces, updatedShapeIds } = useShapes();
+  const { selectedUuids } = useSelectedShapes();
+
+  useEffect(() => {
+    tc.clearForFeatures(updatedShapeIds);
+  }, [updatedShapeIds]);
 
   if (idToken === null) {
     return null;
@@ -20,24 +29,50 @@ export function useTiles() {
   if (visibleNamepaces.length === 0) {
     return null;
   }
-  return ["geofence-mvt"].map(
-    (id) =>
-      new MVTLayer({
-        id,
-        // @ts-ignore
-        ...tileArgs,
-      })
-  );
+
+  return [
+    new CxMVTLayer({
+      id: "gf-mvt",
+      // @ts-ignore
+      cache: tc,
+      // @ts-ignore
+      onViewportLoad: (headers: Tile2DHeader[]) => {
+        // triggers after all tiles in a viewport load
+        tc.clear();
+        setUpdateCount(updateCount + 1);
+      },
+      updateTriggers: {
+        getFillColor: [selectedUuids, isHovering],
+        getTileData: [tileCacheKey, visibleNamepaces],
+      },
+      // @ts-ignore
+      ...tileArgs,
+    }),
+    new CxMVTLayer({
+      id: "bg-mvt",
+      // @ts-ignore
+      cache: tc,
+      updateTriggers: {
+        getTileData: [updateCount],
+        getFillColor: [selectedUuids, isHovering],
+      },
+      // @ts-ignore
+      ...tileArgs,
+    }),
+  ];
 }
 
-const useTileArgs = () => {
+const useTileArgs = (isHovering: any, setIsHovering: any) => {
   const { idToken } = useIdToken();
-  const { tileCacheKey, visibleNamepaces, numShapes } = useShapes();
-  const [isHovering, setIsHovering] = useState<string | null>(null);
+  const { visibleNamepaces, numShapes } = useShapes();
 
-  const { isSelected, selectedUuids, selectOneShapeUuid } = useSelectedShapes();
+  const { isSelected, selectOneShapeUuid } = useSelectedShapes();
 
   const { cursorMode } = useCursorMode();
+
+  useEffect(() => {
+    setIsHovering(null);
+  }, [cursorMode]);
 
   const getTileUrl = useCallback(() => {
     if (visibleNamepaces.length === 0) {
@@ -56,15 +91,11 @@ const useTileArgs = () => {
       )}`
     );
   }, [visibleNamepaces, numShapes]);
-
-  useEffect(() => {
-    setIsHovering(null);
-  }, [cursorMode]);
-
   return {
     // @ts-ignore
     lineWidthMinPixels: 1,
     data: getTileUrl(),
+
     loadOptions: {
       fetch: {
         method: "GET",
@@ -74,6 +105,19 @@ const useTileArgs = () => {
         },
       },
     },
+    opacity: 0.1,
+    getFillColor: (d: any) => {
+      if (isSelected(d.properties.__uuid)) {
+        // salmon in rgba
+        return [250, 128, 114];
+      }
+      if (isHovering === d.properties.__uuid) {
+        // light blue in rgba
+        return [173, 216, 230];
+      }
+      return [140, 170, 180];
+    },
+    extruded: false,
     onHover: ({ object, x, y }: any) => {
       if (
         // @ts-ignore
@@ -108,24 +152,8 @@ const useTileArgs = () => {
       }
     },
     pickable: true,
-    // maxRequests: 4, // TODO need to upgrade to HTTP/2
     maxRequests: -1, // unlimited connections, using HTTP/2
     getLineColor: [255, 255, 255, 255],
-    updateTriggers: {
-      getFillColor: [selectedUuids, isHovering],
-      getTileData: [tileCacheKey, visibleNamepaces],
-    },
-    getFillColor: (d: any) => {
-      if (isSelected(d.properties.__uuid)) {
-        // salmon in rgba
-        return [250, 128, 114, 150];
-      }
-      if (isHovering === d.properties.__uuid) {
-        // light blue in rgba
-        return [173, 216, 230, 150];
-      }
-      return [140, 170, 180, 200];
-    },
     maxCacheSize: 0,
     maxCacheByteSize: 0,
     renderSubLayers: (props: any) => {

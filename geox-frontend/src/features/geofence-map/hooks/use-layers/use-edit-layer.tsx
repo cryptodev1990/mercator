@@ -35,13 +35,15 @@ export const useEditLayer = () => {
     // @ts-ignore
     selectedFeatureIndexes: [0],
     getPolygonOffset: () => [10, -60],
+    extruded: true,
+    stroked: true,
+    filled: true,
     updateTriggers: {
       getFillColor: [selectedUuids],
       getLineColor: [selectedUuids],
     },
     _subLayerProps: {
       guides: {
-        stroked: true,
         // https://deck.gl/docs/api-reference/layers/geojson-layer#pointtypecircle-options
         pointRadiusMinPixels: 2,
         getPointRadius: 5,

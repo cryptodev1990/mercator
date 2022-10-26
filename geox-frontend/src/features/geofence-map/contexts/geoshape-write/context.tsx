@@ -125,7 +125,7 @@ export const GeoShapeWriteContextProvider = ({
       const layerManager = deckRef.current.deck.layerManager;
       const mvtLayer = layerManager
         .getLayers()
-        .find((x: any) => x.id === "geofence-mvt");
+        .find((x: any) => x.id === "gf-mvt");
       // TODO this produces way more features than it needs to, what gives?
       const currentFeatures = mvtLayer.getRenderedFeatures();
       if (!currentFeatures) {

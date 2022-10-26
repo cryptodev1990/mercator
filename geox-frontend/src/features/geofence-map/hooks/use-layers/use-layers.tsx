@@ -23,6 +23,14 @@ export const useLayers = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
   return {
     layers: [
+      selectedFeatureCollection &&
+        [
+          EditorMode.LassoDrawMode,
+          EditorMode.SplitMode,
+          EditorMode.EditMode,
+        ].includes(cursorMode) &&
+        editLayer,
+
       false && imageLayer, // traceable image layer
       tiles,
       // Renders the selected feature
@@ -66,13 +74,6 @@ export const useLayers = () => {
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
-      selectedFeatureCollection &&
-        [
-          EditorMode.LassoDrawMode,
-          EditorMode.SplitMode,
-          EditorMode.EditMode,
-        ].includes(cursorMode) &&
-        editLayer,
     ],
   };
 };

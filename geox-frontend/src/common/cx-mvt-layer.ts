@@ -12,7 +12,7 @@ export class TileCache implements TileCacheInterface {
   // Lookup from tile key (x, y, z} to features
   private cache: { [key: string]: Feature[] } = {};
   // lookup from shape UUID collection of tile keys containing that shape
-  private reverseMap: { [shapeUuid: string]: Set<string> } = {};
+  private uuidToTileMap: { [shapeUuid: string]: Set<string> } = {};
   private numFeatures: number = 0;
 
   get(key: string): Feature[] | undefined {
@@ -25,10 +25,10 @@ export class TileCache implements TileCacheInterface {
     }
     for (const feature of value) {
       this.numFeatures++;
-      if (!this.reverseMap[__uuid(feature)]) {
-        this.reverseMap[__uuid(feature)] = new Set();
+      if (!this.uuidToTileMap[__uuid(feature)]) {
+        this.uuidToTileMap[__uuid(feature)] = new Set();
       }
-      this.reverseMap[__uuid(feature)].add(key);
+      this.uuidToTileMap[__uuid(feature)].add(key);
     }
     this.cache[key] = value;
   }
@@ -36,15 +36,15 @@ export class TileCache implements TileCacheInterface {
   clearForFeatures(featureUuids: string[]): number {
     let numCleared = 0;
     for (const uuid of featureUuids) {
-      if (!this.reverseMap[uuid]) {
+      if (!this.uuidToTileMap[uuid]) {
         continue;
       }
       // remove all tiles that contain this feature
-      for (const key of this.reverseMap[uuid].keys()) {
+      for (const key of this.uuidToTileMap[uuid].keys()) {
         delete this.cache[key];
       }
       // remove all references to this feature
-      delete this.reverseMap[uuid];
+      delete this.uuidToTileMap[uuid];
       numCleared++;
     }
     this.numFeatures -= numCleared;
