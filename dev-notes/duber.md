@@ -1191,6 +1191,9 @@ Branch: ``ajd/cache-madness``
 
 ## 10-26-22
 
-### Plans
+### Plans / Progress
 
-### Progress
+- [X] Tiles
+  - I need to go back and document how this works.
+- [ ] Notion side-drawer of gifs
+
