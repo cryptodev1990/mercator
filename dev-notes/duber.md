@@ -1176,9 +1176,21 @@ Branch: ``ajd/cache-madness``
 ### Plans
 
 - [ ] Notion side-drawer of gifs
-- [ ] Add necessary links
+- [X] Add necessary links
+- [ ] Tiles
+  - Set up two tile layers
+  - Have the selected shapes hide and load them in
+  - On select, load the multiple selected shapes
+  - On delete, hide the selection, refresh one tile layer. When that tile layer is refreshed, refresh the other tile layer.
+  - Can we have the tile layer refresh depend on another tile layer? Maybe through https://deck.gl/docs/api-reference/geo-layers/tile-layer#onviewportload
 
 ### Progress
 
 - Removed ddtrace to see if we could get richer logs on why our deploys are failing (https://github.com/mercatorhq/mercator/pull/496)
   - Web server doesn't ever start running. Something is either masking the errors or preventing the process from starting.
+
+## 10-26-22
+
+### Plans
+
+### Progress
