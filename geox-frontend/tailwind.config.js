@@ -24,6 +24,7 @@ module.exports = {
       },
       animation: {
         text: "text 5s ease infinite",
+        bg: "background 5s ease infinite",
       },
       keyframes: {
         text: {

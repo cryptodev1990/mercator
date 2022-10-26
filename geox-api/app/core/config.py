@@ -163,6 +163,11 @@ class Settings(BaseSettings):
         description="Options to apply to the app database SQLAlchemy engine.",
     )
 
+    worker_engine_opts: EngineOptions = Field(
+        EngineOptions(),  # type: ignore
+        description="Options to apply to the connections used by Celery workers to access the app database.",
+    )
+
     # validation is done in the order fields are defined. sqlalchemy_database_uri
     # needs to be defined after its subcomponents
     @validator("sqlalchemy_database_uri", pre=True)

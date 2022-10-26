@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
           <img
             src={isAuthenticated && onDashboard ? smallLogo : logo}
             alt="logo"
-            className={clsx(onHomepage, "hidden", "h-10")}
+            className={clsx("h-10", onHomepage && !isAuthenticated && "hidden")}
           />
         </a>
       </nav>
