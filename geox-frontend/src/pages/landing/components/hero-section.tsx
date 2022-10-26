@@ -7,8 +7,6 @@ import logo from "../../../common/assets/mercator-logo.svg";
 // import logoAmplify from "../images/Amplify_Partners_logo.jpeg";
 // import logoValor from "../images/Valor_Equity_Partners_logo.webp";
 
-import { useEffect, useRef } from "react";
-
 function Investor(url: string, logo: string | null, name: string): InvestorT {
   return {
     url,
@@ -64,16 +62,8 @@ export const InvestorSection = (): JSX.Element => {
 };
 
 export const HeroSection = (): JSX.Element => {
-  const ref = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.focus();
-    }
-  }, [ref]);
-
   return (
-    <section ref={ref} className="m-10 relative">
+    <section className="m-10 relative">
       <div className="max-w-full sm:max-w-[50%] text-white flex flex-col justify-start">
         <a href="/">
           <img src={logo} alt="logo" className="h-12" />
@@ -82,7 +72,7 @@ export const HeroSection = (): JSX.Element => {
           Geospatial analytics made easy
         </span>
         <div className="py-10">
-          <EmailBox />
+          <EmailBox autoFocus />
         </div>
         <div>
           <InvestorSection />

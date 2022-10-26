@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { MdEmail } from "react-icons/md";
 import Loading from "react-loading";
 import { supabase } from "../../../common/supabase-client";
 
-export const EmailBox = (): JSX.Element => {
+export const EmailBox = ({
+  autoFocus,
+  ...props
+}: {
+  autoFocus?: boolean;
+}): JSX.Element => {
   const [status, setStatus] = useState("clean");
+
+  const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (ref.current && autoFocus) {
+      ref.current.focus();
+    }
+  }, [ref]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -51,8 +64,9 @@ export const EmailBox = (): JSX.Element => {
       <div className="transition-opacity ease-in duration-700 opacity-100">
         <div className="flex flex-row text-slate-600 justify-between items-center border-b border-white">
           <input
-            className="focus:outline-none flex-1 pl-5 bg-transparent  text-white placeholder:text-purple-200"
+            className="focus:outline-none flex-1 pl-5 bg-transparent text-white placeholder:text-purple-200"
             type="email"
+            ref={ref}
             placeholder="Join our waitlist"
             required={true}
           />

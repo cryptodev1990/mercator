@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 import { Navbar } from "../../common/components/navbar";
-import { EmailBox } from "./components/email-box";
 import { FooterSection } from "./components/footer-section";
-import { GradientHeader } from "./components/gradient-header";
 
 import { HeroSection } from "./components/hero-section";
 import { ProductSection } from "./components/product-section";
@@ -51,14 +49,7 @@ const LandingPage = (): JSX.Element | null => {
             }
             align="right"
           />
-          <div className="max-w-5xl mx-auto py-5 flex items-center sm:flex-row flex-col gap-3 sm:gap-0">
-            <div className="flex-1">
-              <GradientHeader>Like what you see? Try it out.</GradientHeader>
-            </div>
-            <div className="sm:w-1/2 w-full sm:p-0 p-5">
-              <EmailBox />
-            </div>
-          </div>
+          <div className="max-w-5xl mx-auto py-5 flex items-center sm:flex-row flex-col gap-3 sm:gap-0"></div>
           <FooterSection />
         </div>
       </div>
