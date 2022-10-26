@@ -6,7 +6,7 @@ export const MetadataEditButton = ({ shape }: { shape: GeoShapeMetadata }) => {
   const { setShapeForPropertyEdit } = useShapes();
   return (
     <button
-      className="btn btn-square btn-sm bg-slate-700 hover:bg-blue-400 hover:border-blue-400 box-border"
+      className="cx-btn-square bg-slate-700 hover:bg-blue-400 hover:border-blue-400 box-border"
       data-tip="Edit this shape's text metadata"
       onClick={() => setShapeForPropertyEdit(shape)}
     >

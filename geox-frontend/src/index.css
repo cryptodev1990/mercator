@@ -11,3 +11,9 @@ body {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .cx-btn-square {
+    @apply transition h-6 w-6 flex flex-row justify-center items-center rounded border border-slate-500 bg-slate-700;
+  }
+}

@@ -92,7 +92,7 @@ export const ShapeCard = ({
             <>
               <MetadataEditButton shape={shape} />
               <button
-                className="btn btn-square btn-sm bg-slate-700 hover:bg-red-400 hover:border-red-400 box-border"
+                className="cx-btn-square hover:bg-red-400 hover:border-red-400 box-border"
                 title="Delete"
                 disabled={updateLoading}
                 data-tip="Delete this shape"
@@ -113,7 +113,7 @@ export const ShapeCard = ({
                 )}
               </button>
               <button
-                className="btn btn-square btn-sm bg-slate-700 hover:bg-green-400 hover:border-green-400 box-border"
+                className="cx-btn-square hover:bg-green-400 hover:border-green-400 box-border"
                 data-tip="Zoom to"
                 disabled={selectedDataIsLoading}
                 onClick={() => {
