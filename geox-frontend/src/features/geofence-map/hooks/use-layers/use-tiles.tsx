@@ -8,6 +8,8 @@ import { useCursorMode } from "../use-cursor-mode";
 import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
 import Tile2DHeader from "@deck.gl/geo-layers/tile-layer/tile-2d-header";
 
+import GL from "@luma.gl/constants";
+
 const tc = new TileCache();
 
 export function useTiles() {
@@ -93,7 +95,7 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
   }, [visibleNamepaces, numShapes]);
   return {
     // @ts-ignore
-    lineWidthMinPixels: 1,
+    lineWidthMinPixels: 2,
     data: getTileUrl(),
 
     loadOptions: {
@@ -105,11 +107,22 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
         },
       },
     },
-    opacity: 0.1,
+    opacity: 0.2,
+    parameters: {
+      // don't blend two layers
+      blend: true,
+      blendFunc: [
+        GL.SRC_ALPHA,
+        GL.SRC_ALPHA,
+        GL.ONE_MINUS_CONSTANT_ALPHA,
+        GL.DST_COLOR,
+      ],
+    },
+    getLineColor: [0, 0, 0, 150],
     getFillColor: (d: any) => {
       if (isSelected(d.properties.__uuid)) {
-        // salmon in rgba
-        return [250, 128, 114];
+        // hidden
+        return [250, 128, 114, 0];
       }
       if (isHovering === d.properties.__uuid) {
         // light blue in rgba
@@ -153,7 +166,6 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
     },
     pickable: true,
     maxRequests: -1, // unlimited connections, using HTTP/2
-    getLineColor: [255, 255, 255, 255],
     maxCacheSize: 0,
     maxCacheByteSize: 0,
     renderSubLayers: (props: any) => {

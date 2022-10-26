@@ -32,7 +32,9 @@ export const useLayers = () => {
         editLayer,
 
       false && imageLayer, // traceable image layer
-      tiles,
+      // @ts-ignore
+      tiles ? tiles[1] : null,
+      tiles ? tiles[0] : null,
       // Renders the selected feature
       selectedFeatureCollection &&
         cursorMode === EditorMode.ViewMode &&

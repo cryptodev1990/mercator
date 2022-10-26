@@ -138,7 +138,7 @@ export function useModifyLayer() {
             : [0, 0, 0, 100];
         },
         pickingRadius: 20,
-        getFillColor: [0, 0, 0, 0],
+        getFillColor: [250, 128, 114, 150],
       },
     },
   });
