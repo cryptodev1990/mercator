@@ -1196,6 +1196,11 @@ Branch: ``ajd/cache-madness``
 - [X] Fix fisheye in shapecards
   - Skipped the daisy-ui tailwind classes in favor of my own, which don't generate the fisheye effect
 - [X] Tiles
-  - I need to go back and document how this works.
+    - On read:
+      - Tile Layer A reads in a bunch of data from the tile server, into a shared cache
+      - Tile Layer B reads in the data from that shared cache
+    - On update (create/update/delete)
+      - Tile Layer A expires the cache and reads in a bunch of new data to the cache, then refreshes (while tile layer B still visible)
+      - Tile Layer B reads from the cache, refreshes
 - [ ] Notion side-drawer of gifs
 
