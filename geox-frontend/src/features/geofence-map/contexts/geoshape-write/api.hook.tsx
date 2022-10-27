@@ -25,7 +25,13 @@ export const useApi = (dispatch: any) => {
         updatedShape: addShapeResponse,
       });
     }
-  }, [addShapeIsLoading, addShapeError, addShapeIsSuccess]);
+  }, [
+    addShapeIsLoading,
+    addShapeError,
+    addShapeIsSuccess,
+    addShapeResponse,
+    dispatch,
+  ]);
 
   const {
     mutate: deleteShapesApi,
@@ -44,7 +50,13 @@ export const useApi = (dispatch: any) => {
         updatedShapeIds: deletedUuids || [],
       });
     }
-  }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
+  }, [
+    deleteShapesIsLoading,
+    deleteShapesError,
+    deleteShapesIsSuccess,
+    dispatch,
+    deletedUuids,
+  ]);
 
   const {
     mutate: updateShapeApi,
@@ -66,7 +78,13 @@ export const useApi = (dispatch: any) => {
         updatedShape: updateShapeResponse,
       });
     }
-  }, [updateShapeIsLoading, updateShapeError, updateShapeIsSuccess]);
+  }, [
+    updateShapeIsLoading,
+    updateShapeError,
+    updateShapeIsSuccess,
+    dispatch,
+    updateShapeResponse,
+  ]);
 
   const {
     mutate: bulkAddShapesApi,
@@ -86,7 +104,12 @@ export const useApi = (dispatch: any) => {
     } else if (bulkAddShapesIsSuccess) {
       dispatch({ type: "BULK_ADD_SHAPES_SUCCESS" });
     }
-  }, [bulkAddShapesIsLoading, bulkAddShapesError, bulkAddShapesIsSuccess]);
+  }, [
+    bulkAddShapesIsLoading,
+    bulkAddShapesError,
+    bulkAddShapesIsSuccess,
+    dispatch,
+  ]);
 
   return {
     bulkAddShapesApi,
