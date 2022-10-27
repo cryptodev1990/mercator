@@ -40,15 +40,7 @@ const LandingPage = (): JSX.Element | null => {
               <HeroSection />
             </div>
           </div>
-          {/* Products */}
-          <ProductSection
-            header="Control dispatch, analysis, and reporting with Geofencer"
-            video={"PdZAk17Gxx0"}
-            copytext={
-              "Draw neighborhood boundaries and create shapes to analyze and report on"
-            }
-            align="right"
-          />
+          <ProductSection />
           <div className="max-w-5xl mx-auto py-5 flex items-center sm:flex-row flex-col gap-3 sm:gap-0"></div>
           <FooterSection />
         </div>

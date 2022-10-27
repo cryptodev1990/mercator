@@ -48,21 +48,7 @@ const features: PrimaryFeatureData[] = [
   },
 ];
 
-type AlignTypes = "left" | "right" | "center";
-
-type ProductSectionProps = {
-  header: string;
-  copytext: string;
-  align?: AlignTypes;
-  video: string;
-};
-
-export const ProductSection = ({
-  header,
-  copytext,
-  align,
-  video,
-}: ProductSectionProps): JSX.Element => {
+export const ProductSection = (): JSX.Element => {
   let [tabOrientation, setTabOrientation] = useState("horizontal");
 
   useEffect(() => {
