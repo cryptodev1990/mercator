@@ -17,7 +17,7 @@ export const NamespaceSection = ({ className }: any) => {
       setActiveNamespace(namespaces[0]);
       setVisibleNamespaces([namespaces[0]]);
     }
-  }, []);
+  }, [namespaces, setActiveNamespace, setVisibleNamespaces]);
 
   return (
     <div className={className}>

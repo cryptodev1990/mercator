@@ -13,7 +13,7 @@ export const useIdToken = () => {
     }).then((token) => {
       setIdToken(token.id_token);
     });
-  }, []);
+  }, [getAccessTokenSilently]);
 
   return {
     idToken,

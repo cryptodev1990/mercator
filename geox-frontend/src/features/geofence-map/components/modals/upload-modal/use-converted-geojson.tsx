@@ -57,7 +57,7 @@ export const useConvertedGeojson = () => {
       setGeojson(res);
       setInitialUploadSize(0);
     }
-  }, [initialUploadSize]);
+  }, [initialUploadSize, geojson, setGeojson]);
 
   function convertJsonFileToGeojson(jsonFile: File, transform?: any) {
     const reader = new FileReader();
