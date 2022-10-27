@@ -189,10 +189,11 @@ def _select_shapes_query(
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
     bbox: Optional[ViewportBounds] = None,
-    columns: Optional[Sequence[Union[ColumnElement[Any], int]]] = None,
+    columns: Optional[Sequence[Union[ColumnElement[Any], int, str]]] = None,
 ) -> Select:
     if columns:
-        stmt = select(columns)
+        cols = [shapes_tbl.c[c] if isinstance(c, str) else c for c in columns]
+        stmt = select(cols)
     else:
         stmt = select(shapes_tbl)  # type: ignore
     stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
