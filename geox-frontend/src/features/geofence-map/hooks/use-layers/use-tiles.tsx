@@ -73,8 +73,7 @@ export function useTiles() {
 
 const useTileArgs = (isHovering: any, setIsHovering: any) => {
   const { idToken } = useIdToken();
-  const { visibleNamepaces, numShapes, updatedShapeIds, deletedShapeIds } =
-    useShapes();
+  const { visibleNamepaces, numShapes, deletedShapeIds } = useShapes();
 
   const { isSelected, selectOneShapeUuid } = useSelectedShapes();
 
@@ -86,7 +85,7 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
 
   useEffect(() => {
     setIsHovering(null);
-  }, [cursorMode]);
+  }, [cursorMode, setIsHovering]);
 
   const getTileUrl = useCallback(() => {
     if (visibleNamepaces.length === 0) {
@@ -104,6 +103,7 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
         "&"
       )}`
     );
+    // eslint-disable-next-line
   }, [visibleNamepaces, numShapes]);
   return {
     // @ts-ignore
