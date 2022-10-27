@@ -36,7 +36,7 @@ export const DbSyncContextContainer = ({ children }: { children: any }) => {
           simplur`{res?.task_result?.numShapes ?? 0} shape[|s]`
       );
     }
-  }, [isError, isSuccess, isFetched]);
+  }, [isError, isSuccess, isFetched, error, res?.task_result?.status]);
 
   return (
     <DbSyncContext.Provider
