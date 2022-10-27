@@ -20,6 +20,7 @@ export interface State {
   updatedShapeIds: string[];
   updatedShape: GeoShape | null;
   updateError: Error | null;
+  deletedShapeIds: string[];
 }
 
 export const initialState: State = {
@@ -31,6 +32,7 @@ export const initialState: State = {
   updatedShapeIds: [],
   updatedShape: null,
   updateError: null,
+  deletedShapeIds: [],
 };
 
 export function reducer(state: State, action: Action): State {
@@ -57,6 +59,8 @@ export function reducer(state: State, action: Action): State {
         shapeUpdateLoading: false,
         tileCacheKey: state.tileCacheKey + 1,
         updatedShapeIds: action.updatedShapeIds || [],
+        deletedShapeIds:
+          action.type === "DELETE_SHAPES_SUCCESS" ? action.updatedShapeIds : [],
       };
     }
     case "ADD_SHAPE_SUCCESS":

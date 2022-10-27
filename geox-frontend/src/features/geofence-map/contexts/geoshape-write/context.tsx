@@ -56,6 +56,7 @@ export interface IGeoShapeWriteContext {
   addShapeAndEdit: any;
   updateLoading: boolean;
   updatedShapeIds: string[];
+  deletedShapeIds: string[];
   updatedShape: GeoShape | null;
   partialUpdateShape: (shape: GeoShapeUpdate) => void;
 }
@@ -70,6 +71,7 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   updateLoading: false,
   addShapeAndEdit: async () => {},
   updatedShapeIds: [],
+  deletedShapeIds: [],
   updatedShape: null,
   partialUpdateShape: async () => {},
 });
@@ -222,6 +224,7 @@ export const GeoShapeWriteContextProvider = ({
         addShapeAndEdit,
         updatedShapeIds: state.updatedShapeIds,
         updatedShape: state.updatedShape,
+        deletedShapeIds: state.deletedShapeIds,
         partialUpdateShape,
       }}
     >

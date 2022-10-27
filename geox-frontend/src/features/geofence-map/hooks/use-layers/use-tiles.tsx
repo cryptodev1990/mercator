@@ -44,9 +44,9 @@ export function useTiles() {
         setUpdateCount(updateCount + 1);
       },
       updateTriggers: {
-        getFillColor: [selectedUuids, isHovering, cursorMode],
-        getLineColor: [selectedUuids, isHovering],
-        getTileData: [tileCacheKey, visibleNamepaces],
+        getFillColor: [selectedUuids, isHovering, cursorMode, updatedShapeIds],
+        getLineColor: [selectedUuids, isHovering, cursorMode, updatedShapeIds],
+        getTileData: [tileCacheKey, visibleNamepaces, cursorMode],
       },
       // @ts-ignore
       ...tileArgs,
@@ -73,9 +73,14 @@ export function useTiles() {
 
 const useTileArgs = (isHovering: any, setIsHovering: any) => {
   const { idToken } = useIdToken();
-  const { visibleNamepaces, numShapes } = useShapes();
+  const { visibleNamepaces, numShapes, updatedShapeIds, deletedShapeIds } =
+    useShapes();
 
   const { isSelected, selectOneShapeUuid } = useSelectedShapes();
+
+  useEffect(() => {
+    console.log("yooooooo", deletedShapeIds);
+  }, [deletedShapeIds]);
 
   const { cursorMode } = useCursorMode();
 
@@ -129,12 +134,18 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
         // hidden
         return [250, 128, 114, 0];
       }
+      if (deletedShapeIds.includes(d.properties.__uuid)) {
+        return [250, 128, 114, 0];
+      }
       return [0, 0, 0, 150];
     },
     getFillColor: (d: any) => {
+      if (deletedShapeIds.includes(d.properties.__uuid)) {
+        return [250, 128, 114, 0];
+      }
       if (isSelected(d.properties.__uuid)) {
         // hidden
-        return [250, 128, 114, cursorMode === EditorMode.ViewMode ? 255 : 0];
+        return [250, 128, 114, 0];
       }
       if (isHovering === d.properties.__uuid) {
         // light blue in rgba
@@ -178,8 +189,6 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
     },
     pickable: true,
     maxRequests: 6, // unlimited connections, using HTTP/2
-    maxCacheSize: 0,
-    maxCacheByteSize: 0,
     renderSubLayers: (props: any) => {
       return new GeoJsonLayer({
         ...props,
