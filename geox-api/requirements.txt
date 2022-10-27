@@ -1,9 +1,7 @@
 fastapi[all]==0.78.*
-snowflake-connector-python[pandas]==2.7.12
 SQLAlchemy==1.4.*
 celery[redis]==5.2.*
 pyarrow==8.0.*
-snowflake-sqlalchemy==1.4.*
 geojson-pydantic==0.4.2
 geopandas==0.11.*
 authlib==1.0.1
