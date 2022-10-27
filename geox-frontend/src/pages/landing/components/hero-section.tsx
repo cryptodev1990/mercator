@@ -1,11 +1,5 @@
 import { EmailBox } from "./email-box";
 import logo from "../../../common/assets/mercator-logo.svg";
-// import logoYc from "../images/yc-logo.png";
-// import logoTribeCapital from "../images/Tribe_Capital_logo.webp";
-// import logoSoma from "../images/Soma_Capital_logo.webp";
-// import logoRebel from "../images/Rebel_Fund_logo.webp";
-// import logoAmplify from "../images/Amplify_Partners_logo.jpeg";
-// import logoValor from "../images/Valor_Equity_Partners_logo.webp";
 
 function Investor(url: string, logo: string | null, name: string): InvestorT {
   return {
