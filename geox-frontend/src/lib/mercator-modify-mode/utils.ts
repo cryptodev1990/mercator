@@ -197,7 +197,7 @@ export function nearestPointOnProjectedLine(
   };
 }
 
-export function nearestPointOnLine<G extends LineString | MultiLineString>(
+export function nearestPointOnLine(
   lines: FeatureOf<LineString>,
   inPoint: FeatureOf<Point>,
   viewport?: Viewport
