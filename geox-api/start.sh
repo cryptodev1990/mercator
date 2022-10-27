@@ -49,4 +49,4 @@ then
 fi;
 
 # exec ddtrace-run hypercorn $RELOAD_OPT "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
-exec hypercorn $RELOAD_OPT "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
+exec hypercorn $RELOAD_OPT "$APP_MODULE" --workers 17 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml

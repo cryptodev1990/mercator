@@ -59,6 +59,8 @@ export function useTiles() {
       onViewportLoad: (headers: Tile2DHeader[]) => {
         tc.clear();
       },
+      // blocks any server request by this layer, it can only read from the cache
+      neverFetch: true,
       updateTriggers: {
         getTileData: [updateCount],
         getFillColor: [selectedUuids, isHovering],
@@ -102,7 +104,6 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
     // @ts-ignore
     lineWidthMinPixels: 2,
     data: getTileUrl(),
-
     loadOptions: {
       fetch: {
         method: "GET",
@@ -176,7 +177,7 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
       }
     },
     pickable: true,
-    maxRequests: -1, // unlimited connections, using HTTP/2
+    maxRequests: 6, // unlimited connections, using HTTP/2
     maxCacheSize: 0,
     maxCacheByteSize: 0,
     renderSubLayers: (props: any) => {

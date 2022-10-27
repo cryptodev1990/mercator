@@ -83,6 +83,7 @@ interface TileCacheInterface {
 
 const defaultProps = {
   cache: null,
+  neverFetch: false,
 };
 
 export type CxMVTLayerProps<DataT = any> = _CxMVTLayerProps &
@@ -90,6 +91,8 @@ export type CxMVTLayerProps<DataT = any> = _CxMVTLayerProps &
 
 type _CxMVTLayerProps = {
   cache: TileCacheInterface;
+  // blocks fetching
+  neverFetch: boolean;
 };
 
 export class CxMVTLayer<ExtraProps = {}> extends MVTLayer<
@@ -101,12 +104,15 @@ export class CxMVTLayer<ExtraProps = {}> extends MVTLayer<
 
   getTileData(tile: any) {
     // @ts-ignore
-    const { cache } = this.props;
+    const { cache, neverFetch } = this.props;
     const CACHE_KEY = `${tile.x}-${tile.y}-${tile.z}`;
     if (cache.has(CACHE_KEY)) {
       return cache.get(CACHE_KEY);
     }
 
+    if (neverFetch) {
+      return [];
+    }
     try {
       const res = super.getTileData(tile).then((data: Feature[]) => {
         cache.set(CACHE_KEY, data);
