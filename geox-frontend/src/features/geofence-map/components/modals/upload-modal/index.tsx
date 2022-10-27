@@ -16,17 +16,20 @@ export const UploadModal = () => {
   const { fetchGeoJson, geojson, loading, error, convertJsonFileToGeojson } =
     useConvertedGeojson();
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file) => {
-      if (file.name.endsWith("json")) {
-        const opts: any = {};
-        convertJsonFileToGeojson(file, opts);
-      } else {
-        fetchGeoJson(file);
-      }
-    });
-    setFiles(acceptedFiles);
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      acceptedFiles.forEach((file) => {
+        if (file.name.endsWith("json")) {
+          const opts: any = {};
+          convertJsonFileToGeojson(file, opts);
+        } else {
+          fetchGeoJson(file);
+        }
+      });
+      setFiles(acceptedFiles);
+    },
+    [fetchGeoJson, convertJsonFileToGeojson]
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
     useFsAccessApi: false,
