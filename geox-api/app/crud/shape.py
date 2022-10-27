@@ -124,7 +124,7 @@ def _update_geojson(
     # Remove __uuid and __parent_uuid from properties if they were included
     # This prevents reuploaded data from including a different UUID that may be
     # used by the frontend.
-    for k in ("__uuid", "__parent_uuid"):
+    for k in "__uuid":
         try:
             del properties_new[k]
         except KeyError:
