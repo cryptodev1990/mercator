@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { GeofencerNavbar } from "../navbar";
 import { TbListDetails, TbNotebook } from "react-icons/tb";
 import { useShapes } from "../../hooks/use-shapes";
-import { Tooltip } from "../../../../common/components/tooltip";
 
 export function Tabs({
   children,
@@ -26,7 +25,7 @@ export function Tabs({
     if (active !== selectedIndex) {
       setShapeForPropertyEdit(null);
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, active, setShapeForPropertyEdit]);
 
   const activeColorCss = (selected: boolean) =>
     selected ? "stroke-white" : "stroke-gray-300";
