@@ -1,8 +1,8 @@
-### What
+# What
 
-### Why
+# Why
 
-### Frontend Checklist
+# Frontend Checklist
 
 - [ ] You can add a shape through both draw methods (lasso and click-per-point)
 - [ ] You can add and remove points from a shape
