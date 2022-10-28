@@ -38,7 +38,8 @@ CONTACT_EMAIL = f"founders@{DEFAULT_DOMAIN}"
 class EngineOptions(BaseModel):
     """SQLAlchemy Engine Settings.
 
-    Subset of options for SQLAlchemy engine.
+    Subset of options that are passed to SQLAlchemy :func:`sqlalchemy.create_engine`
+    when initializing the app engine.
 
     See https://docs.sqlalchemy.org/en/14/core/engines.html#sqlalchemy.create_engine.
 
@@ -54,11 +55,34 @@ class EngineOptions(BaseModel):
     max_overflow: int = Field(20, ge=0)
 
 
-class CacheOptions(BaseModel):
-    """Options for the cache."""
+class TilerPoolOptions(BaseModel):
+    """Options for the tiler pool.
 
-    enabled: bool = True
-    timeout: int = Field(3600, ge=0)
+    These are used by :func:`get_tiler_settings`, and are used to initialize :class:`TimVTPostgresSettings`.
+
+    All defaults are those in :class:`TimVTPostgresSettings`.
+
+    """
+
+    db_min_conn_size: int = 1
+    db_max_conn_size: int = 10
+    db_max_queries: int = 50000
+    db_max_inactive_conn_lifetime: float = 300
+
+
+class CacheOptions(BaseModel):
+    """Options for the user/organization cache.
+
+    The cache is defined in app.dependencies.Cache. It caches user and organization
+    info for each request.
+    """
+
+    enabled: bool = Field(
+        True, description="If true, then use a cache. If false, no cache."
+    )
+    timeout: int = Field(
+        3600, ge=0, description="Cache key default timeout in seconds."
+    )
 
 
 class Settings(BaseSettings):
@@ -192,6 +216,11 @@ class Settings(BaseSettings):
         None, env="SQLALCHEMY_OSM_DATABASE_URI"
     )
 
+    tiler_pool_options: TilerPoolOptions = Field(
+        default_factory=TilerPoolOptions,
+        description="Options for the tiling server connection pool.",
+    )
+
     redis_connection: RedisDsn = Field(
         cast(RedisDsn, "redis://localhost:6379/0"),
         description="Redis connection info that can be used for celery and the cache.",
@@ -272,5 +301,6 @@ def get_tiler_settings() -> TimVTPostgresSettings:
         postgres_user=settings.postgres_user,
         postgres_pass=password,
         postgres_dbname=settings.postgres_db,
-        # db_tables=None,
+        **settings.tiler_pool_options.dict(),
+        db_tables=None,
     )
