@@ -3,7 +3,7 @@ import destination from "@turf/destination";
 import bearing from "@turf/bearing";
 import pointToLineDistance from "@turf/point-to-line-distance";
 import { flattenEach } from "@turf/meta";
-import { point } from "@turf/helpers";
+import { point, MultiLineString } from "@turf/helpers";
 import { getCoords } from "@turf/invariant";
 import WebMercatorViewport from "viewport-mercator-project";
 import {
@@ -197,7 +197,7 @@ export function nearestPointOnProjectedLine(
   };
 }
 
-export function nearestPointOnLine(
+export function nearestPointOnLine<G extends LineString | MultiLineString>(
   lines: FeatureOf<LineString>,
   inPoint: FeatureOf<Point>,
   viewport?: Viewport

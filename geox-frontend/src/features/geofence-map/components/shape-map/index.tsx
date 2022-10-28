@@ -17,6 +17,7 @@ import { getCursorFromCursorMode } from "./utils";
 import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
+import { toast } from "react-hot-toast";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -80,14 +81,7 @@ const GeofenceMap = () => {
       document.removeEventListener("keydown", escFunction);
       document.removeEventListener("keydown", undoHandler);
     };
-  }, [
-    selectedUuids,
-    deleteShapes,
-    clearSelectedFeatureIndexes,
-    clearSelectedShapeUuids,
-    setCursorMode,
-    setOptions,
-  ]);
+  }, [selectedUuids, deleteShapes]);
 
   const { layers } = useLayers();
 

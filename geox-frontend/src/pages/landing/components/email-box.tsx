@@ -18,7 +18,7 @@ export const EmailBox = ({
     if (ref.current && autoFocus) {
       ref.current.focus();
     }
-  }, [ref, autoFocus]);
+  }, [ref]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -1,6 +1,6 @@
 import { difference } from "@turf/turf";
 import { createContext, Dispatch, useContext, useReducer } from "react";
-import { UseMutateFunction, useQueryClient } from "react-query";
+import { QueryClient, UseMutateFunction, useQueryClient } from "react-query";
 import {
   GeofencerService,
   GeoShape,

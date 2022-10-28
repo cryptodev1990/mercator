@@ -57,7 +57,7 @@ export function Tooltip() {
         el.removeEventListener("mouseout", () => {});
       }
     };
-  }, [renderCount, skew]);
+  }, [renderCount]);
 
   // poll document until all data-tip elements are loaded
   useEffect(() => {

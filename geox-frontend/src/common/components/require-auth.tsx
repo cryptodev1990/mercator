@@ -21,7 +21,7 @@ function RequireAuth({
     if (isAuthenticated && isTokenSet) {
       setLoading(false);
     }
-  }, [authLoading, isTokenSet, isAuthenticated]);
+  }, [authLoading, isTokenSet]);
 
   useEffect(() => {
     setTimeout(() => {
