@@ -124,10 +124,9 @@ export const ToolButtonBank = () => {
         }
         if (mode.name === "Drive time") {
           return (
-            <div className="bg-blue-500 flex flex-row-reverse">
+            <div className="bg-blue-500 flex flex-row-reverse" key={mode.name}>
               <button
                 onClick={mode.onClick}
-                key={mode.name}
                 disabled={mode.disabled}
                 data-tip={mode.dataTip}
                 data-tip-skew="left"
@@ -141,10 +140,9 @@ export const ToolButtonBank = () => {
           );
         }
         return (
-          <div>
+          <div key={mode.name}>
             <button
               // data-tip={mode.dataTip}
-              key={mode.name}
               disabled={mode.disabled}
               data-tip={mode.dataTip}
               data-tip-skew="left"
