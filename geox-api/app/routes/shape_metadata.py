@@ -83,15 +83,19 @@ def _get_shape_metadata(
     ),
     namespace: Optional[UUID4] = Query(default=None, title="Namespace id."),
     shape_ids: Optional[List[UUID4]] = Query(default=None, title="Shape ids."),
-    bbox: Tuple[Longitude, Latitude, Longitude, Latitude] = Query(
+    bbox: Optional[Tuple[Longitude, Latitude, Longitude, Latitude]] = Query(
         default=None, title="Bounding box (min x, min y, max x, max y)"
     ),
 ) -> List[GeoShapeMetadata]:
     """Get all shape metadata with pagination."""
-    try:
-        bbox_obj = ViewportBounds.from_list(bbox)
-    except ValueError:
-        raise HTTPException(422, "Invalid bbox")
+    bbox_obj: Optional[ViewportBounds]
+    if bbox:
+        try:
+            bbox_obj = ViewportBounds.from_list(bbox)
+        except (ValueError, TypeError):
+            raise HTTPException(422, "Invalid bbox")
+    else:
+        bbox_obj = None
     user_id = user_conn.user.id if user else None
     return list(
         select_shape_metadata(

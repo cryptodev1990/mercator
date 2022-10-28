@@ -207,7 +207,7 @@ def _get_shapes(
     offset: int = Query(default=0, title="Item offset", ge=0),
     limit: int = Query(default=300, title="Number of shapes to retrieve", ge=1),
     shape_ids: Optional[List[UUID4]] = Query(None, title="List of shape ids"),
-    bbox: Tuple[Longitude, Latitude, Longitude, Latitude] = Query(
+    bbox: Optional[Tuple[Longitude, Latitude, Longitude, Latitude]] = Query(
         default=None, title="Bounding box (min x, min y, max x, max y)"
     ),
 ) -> List[GeoShape]:
@@ -219,10 +219,14 @@ def _get_shapes(
     All non-empty query parameters are combined with `AND`.
 
     """
-    try:
-        bbox_obj = ViewportBounds.from_list(bbox)
-    except ValueError:
-        raise HTTPException(422, "Invalid bbox")
+    bbox_obj: Optional[ViewportBounds]
+    if bbox:
+        try:
+            bbox_obj = ViewportBounds.from_list(bbox)
+        except (ValueError, TypeError):
+            raise HTTPException(422, "Invalid bbox")
+    else:
+        bbox_obj = None
     user_id = user_conn.user.id if user else None
     return list(
         select_shapes(
@@ -232,7 +236,7 @@ def _get_shapes(
             offset=offset,
             limit=limit,
             ids=shape_ids,
-            bbox=bbox_obj
+            bbox=bbox_obj,
         )
     )
 
