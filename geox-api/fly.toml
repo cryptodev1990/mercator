@@ -17,6 +17,8 @@ processes = []
   ENGINE_OPTS__ECHO_POOL = true
   BACKEND_CORS_ORIGINS = "[\"*\"]"
   PORT = "8080"
+  # App workers
+  APP_WORKERS=17
 
 [experimental]
   allowed_public_ports = []

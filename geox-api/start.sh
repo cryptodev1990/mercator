@@ -22,6 +22,8 @@ APP_PORT=${APP_PORT:-8080}
 APP_LOG_LEVEL=${APP_LOG_LEVEL:-info}
 export DD_TRACE_ENABLED=${DD_TRACE_ENABLED:-false}
 
+APP_WORKERS=${APP_WORKERS:-8}
+
 __prestart_app() {
     # Put all pre-start logic in a function - easier to comment out or make conditional if needed
     # Let the DB start
@@ -48,5 +50,4 @@ then
     RELOAD_OPT="--reload"
 fi;
 
-# exec ddtrace-run hypercorn $RELOAD_OPT "$APP_MODULE" --workers 8 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
-exec hypercorn $RELOAD_OPT "$APP_MODULE" --workers 17 --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
+exec hypercorn $RELOAD_OPT "$APP_MODULE" --workers $APP_WORKERS --bind "$APP_HOST":"$APP_PORT" --config hypercorn.toml
