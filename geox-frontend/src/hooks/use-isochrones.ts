@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 
 function reverseArr(input: any) {
@@ -13,7 +13,7 @@ function reverseArr(input: any) {
 export const useIsochrones = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isochrones, setIsochrones] = useState(null);
+  const isochrones = useState(null)[0];
 
   // TODO this needs to be a backend URL
   const URL = "https://graphhopper.com/api/1/isochrone";

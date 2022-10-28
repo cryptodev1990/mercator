@@ -5,7 +5,6 @@ import { GeofencerNavbar } from "../navbar";
 import { ListDetailsIcon } from "../../../../common/components/icons";
 import { NotebookIcon } from "../../../../common/components/icons";
 import { useShapes } from "../../hooks/use-shapes";
-import { Tooltip } from "../../../../common/components/tooltip";
 
 export function Tabs({
   children,

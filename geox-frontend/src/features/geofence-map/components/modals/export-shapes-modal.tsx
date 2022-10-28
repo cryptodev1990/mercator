@@ -9,10 +9,10 @@ import { ModalCard } from "./modal-card";
 
 export const ExportShapesModal = () => {
   const { modal, closeModal } = useUiModals();
-  const { numShapes, numShapesIsLoading } = useShapes();
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
-  const { data, isFetching } = useGetAllShapes(limit, offset);
+  const { numShapes } = useShapes();
+  const limit = useState(20)[0];
+  const offset = useState(0)[0];
+  const { data } = useGetAllShapes(limit, offset);
   const [exportable, setExportable] = useState<any>();
 
   useEffect(() => {

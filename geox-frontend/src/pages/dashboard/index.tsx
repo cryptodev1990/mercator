@@ -24,7 +24,7 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
       tabIndex={props.tabindex}
       className="max-w-sm cursor-pointer rounded overflow-hidden shadow-lg bg-slate-100 focus:shadow-none"
     >
-      <a>
+      <div>
         <div className="bg-slate-600 text-white">
           <img src={props.svg} alt="logo" className="h-[300px] mx-auto" />
         </div>
@@ -32,7 +32,7 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
           <div className="font-bold text-xl pb-2">{props.name}</div>
           <p className="text-gray-700 text-base">{props.description}</p>
         </div>
-      </a>
+      </div>
     </div>
   );
 };

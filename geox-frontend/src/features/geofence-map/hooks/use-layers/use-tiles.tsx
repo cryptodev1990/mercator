@@ -73,8 +73,7 @@ export function useTiles() {
 
 const useTileArgs = (isHovering: any, setIsHovering: any) => {
   const { idToken } = useIdToken();
-  const { visibleNamepaces, numShapes, updatedShapeIds, deletedShapeIds } =
-    useShapes();
+  const { visibleNamepaces, numShapes, deletedShapeIds } = useShapes();
 
   const { isSelected, selectOneShapeUuid } = useSelectedShapes();
 
