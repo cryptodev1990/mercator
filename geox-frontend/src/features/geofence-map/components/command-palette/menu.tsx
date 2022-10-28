@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
+import { OutlineCloseIcon } from "../../../../common/components/icons";
 import { Feature } from "../../../../client";
 import { bboxToZoom } from "../../utils";
 import { getNominatimData } from "./api/nominatim-api";
@@ -146,7 +146,7 @@ export const Menu = ({
             onClick={() => setHidden(true)}
           >
             <span className="hover:cursor-pointer">
-              <AiOutlineClose />
+              <OutlineCloseIcon />
             </span>
           </div>
         </div>

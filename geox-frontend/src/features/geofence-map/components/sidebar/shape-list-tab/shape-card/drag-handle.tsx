@@ -1,5 +1,5 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setDragImage
-import { MdDragIndicator } from "react-icons/md";
+import { DragIndicatorIcon } from "../../../../../../common/components/icons";
 // drag handle in pure html and css
 export const DragHandle = ({
   transferData,
@@ -30,7 +30,7 @@ export const DragHandle = ({
             className="absolute w-5 h-5 bg-red-0 z-10 cursor-grab"
           ></div>
           <div className="w-4 h-4">
-            <MdDragIndicator className="text-gray-400 z-0" />
+            <DragIndicatorIcon className="text-gray-400 z-0" />
           </div>
         </div>
       </div>

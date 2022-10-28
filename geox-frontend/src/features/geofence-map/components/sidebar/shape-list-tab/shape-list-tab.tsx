@@ -1,7 +1,9 @@
 import { useShapes } from "../../../hooks/use-shapes";
-import { BiAddToQueue } from "react-icons/bi";
-import { VscJson } from "react-icons/vsc";
-import { AiFillDatabase } from "react-icons/ai";
+import {
+  AddToQueueIcon,
+  JsonIcon,
+  FillDatabaseIcon,
+} from "../../../../../common/components/icons";
 import Loading from "react-loading";
 import { useUiModals } from "../../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../../types";
@@ -20,7 +22,7 @@ const EmptyMessage = () => {
       <p className="text-white text-left">
         Click the{" "}
         <span className="inline-flex">
-          <BiAddToQueue />
+          <AddToQueueIcon />
         </span>{" "}
         button to add shapes.
       </p>
@@ -42,14 +44,14 @@ export const ShapeBarPaginator = () => {
 
   const topBarButtons = [
     {
-      icon: <BiAddToQueue className="fill-white" />,
+      icon: <AddToQueueIcon className="fill-white" />,
       disabled: false,
       onClick: () => openModal(UIModalEnum.UploadShapesModal),
       text: "Upload",
       dataTip: "Upload a GeoJSON or other shape file",
     },
     {
-      icon: <VscJson className="fill-white" size={15} />,
+      icon: <JsonIcon className="fill-white" size={15} />,
       disabled: numShapes === 0,
       dataTip: "Export shapes as GeoJSON",
       onClick: () => openModal(UIModalEnum.ExportShapesModal),
@@ -59,7 +61,7 @@ export const ShapeBarPaginator = () => {
       icon: isPolling ? (
         <Loading className="spin" height={20} width={20} />
       ) : (
-        <AiFillDatabase className="fill-white" />
+        <FillDatabaseIcon className="fill-white" />
       ),
       dataTip: "Publish shapes to your Snowflake or Redshift database",
       disabled: isPolling || numShapes === 0,
@@ -93,7 +95,7 @@ export const ShapeBarPaginator = () => {
         <NamespaceSection
           className="
           flex-1
-          h-full p-1 bg-gradient-to-b from-slate-600 to-slate-700 
+          h-full p-1 bg-gradient-to-b from-slate-600 to-slate-700
       "
         />
       )}

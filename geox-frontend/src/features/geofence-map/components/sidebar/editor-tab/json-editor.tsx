@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { TbTrash } from "react-icons/tb";
+import { TrashIcon } from "../../../../../common/components/icons";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -131,7 +131,7 @@ export function JsonEditor({
                         type="button"
                         onClick={remove(index)}
                       >
-                        <TbTrash />
+                        <TrashIcon />
                       </button>
                     </td>
                   </tr>

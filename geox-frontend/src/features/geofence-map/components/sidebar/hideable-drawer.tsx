@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MdOutlineArrowForwardIos } from "react-icons/md";
+import { OutlineArrowForwardIcon } from "../../../../common/components/icons";
 import { Transition } from "react-transition-group";
 
 const ArrowBox = ({ handleClick }: { handleClick: any }) => {
@@ -10,7 +10,7 @@ const ArrowBox = ({ handleClick }: { handleClick: any }) => {
         "flex z-10 bg-slate-600 mx-5 p-1 justify-center cursor-pointer items-center h-fit w-fit"
       }
     >
-      <MdOutlineArrowForwardIos size={15} />
+      <OutlineArrowForwardIcon size={15} />
     </div>
   );
 };

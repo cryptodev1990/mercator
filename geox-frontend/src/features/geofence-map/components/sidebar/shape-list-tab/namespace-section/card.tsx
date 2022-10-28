@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
-import { TbCaretRight } from "react-icons/tb";
+import {
+  EyeFillIcon,
+  EyeSlashFillIcon,
+  CaretRightIcon,
+} from "../../../../../../common/components/icons";
 import { Virtuoso } from "react-virtuoso";
 import { Namespace } from "../../../../../../client";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
@@ -57,7 +60,7 @@ export const NamespaceCard = ({
           onClick={onClickCaret}
           className={`transition ${shouldOpen ? "rotate-90" : ""}`}
         >
-          <TbCaretRight />
+          <CaretRightIcon />
         </button>
         <div>
           <EditableLabel
@@ -90,7 +93,7 @@ export const NamespaceCard = ({
             }}
           >
             <span data-tip="Click to show/hide layer" data-tip-skew="right">
-              {isVisible ? <BsEyeFill /> : <BsEyeSlashFill />}
+              {isVisible ? <EyeFillIcon /> : <EyeSlashFillIcon />}
             </span>
           </div>
         </div>

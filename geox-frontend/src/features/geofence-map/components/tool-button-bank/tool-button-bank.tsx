@@ -2,13 +2,16 @@
 import { useCursorMode } from "../../hooks/use-cursor-mode";
 
 import { EditorMode } from "../../cursor-modes";
-import { BsScissors } from "react-icons/bs";
-import { TbLasso } from "react-icons/tb";
-import { CgEditMarkup } from "react-icons/cg";
-import { RiCursorLine } from "react-icons/ri";
-import { FaClock, FaDrawPolygon } from "react-icons/fa";
+import {
+  ScissorsIcon,
+  LassoIcon,
+  EditMarkupIcon,
+  CursorLineIcon,
+  ClockIcon,
+  DrawPolygonIcon,
+  DriveEtaIcon,
+} from "../../../../common/components/icons";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
-import { MdDriveEta } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { IsochroneControls } from "./isochrone-controls";
 
@@ -30,7 +33,7 @@ export const ToolButtonBank = () => {
   const modes: ToolButtonBankMode[] = [
     {
       name: "View",
-      icon: <RiCursorLine />,
+      icon: <CursorLineIcon />,
       onClick: () => setCursorMode(EditorMode.ViewMode),
       dataTip: "View-only mode (Esc)",
       active: cursorMode === EditorMode.ViewMode,
@@ -38,7 +41,7 @@ export const ToolButtonBank = () => {
     },
     {
       name: "Edit",
-      icon: <FaDrawPolygon />,
+      icon: <DrawPolygonIcon />,
       onClick: () => setCursorMode(EditorMode.EditMode),
       dataTip: "Draw a shape by clicking",
       active: cursorMode === EditorMode.EditMode,
@@ -46,7 +49,7 @@ export const ToolButtonBank = () => {
     },
     {
       name: "Drive time",
-      icon: <MdDriveEta />,
+      icon: <DriveEtaIcon />,
       onClick: () => setCursorMode(EditorMode.DrawIsochroneMode),
       dataTip: "Drive time distance",
       active: cursorMode === EditorMode.ModifyMode,
@@ -61,7 +64,7 @@ export const ToolButtonBank = () => {
     // },
     {
       name: "Polygon Lasso",
-      icon: <TbLasso />,
+      icon: <LassoIcon />,
       onClick: () => setCursorMode(EditorMode.LassoDrawMode),
       dataTip: "Freely draw a polygon",
       active: cursorMode === EditorMode.LassoDrawMode,
@@ -87,7 +90,7 @@ export const ToolButtonBank = () => {
     // },
     {
       name: "Alter",
-      icon: <CgEditMarkup />,
+      icon: <EditMarkupIcon />,
       onClick: () => setCursorMode(EditorMode.ModifyMode),
       dataTip: "Edit an existing shape",
       active: cursorMode === EditorMode.ModifyMode,
@@ -96,7 +99,7 @@ export const ToolButtonBank = () => {
     },
     {
       name: "Split existing shape",
-      icon: <BsScissors />,
+      icon: <ScissorsIcon />,
       onClick: () => setCursorMode(EditorMode.SplitMode),
       dataTip: "Split a selection by drawing through it",
       active: cursorMode === EditorMode.SplitMode,
@@ -131,7 +134,7 @@ export const ToolButtonBank = () => {
                 data-tip-cx="175"
                 className={classes}
               >
-                <FaClock />
+                <ClockIcon />
               </button>
               {pushOut && <IsochroneControls key={1} />}
             </div>

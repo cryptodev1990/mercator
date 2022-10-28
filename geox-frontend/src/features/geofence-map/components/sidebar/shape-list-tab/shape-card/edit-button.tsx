@@ -1,4 +1,4 @@
-import { BsPencil } from "react-icons/bs";
+import { PencilIcon } from "../../../../../../common/components/icons";
 import { GeoShapeMetadata } from "../../../../../../client/models/GeoShapeMetadata";
 import { useShapes } from "../../../../hooks/use-shapes";
 
@@ -10,7 +10,7 @@ export const MetadataEditButton = ({ shape }: { shape: GeoShapeMetadata }) => {
       data-tip="Edit this shape's text metadata"
       onClick={() => setShapeForPropertyEdit(shape)}
     >
-      <BsPencil className="fill-white" />
+      <PencilIcon className="fill-white" />
     </button>
   );
 };

@@ -2,7 +2,8 @@ import { ReactNode, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useEffect } from "react";
 import { GeofencerNavbar } from "../navbar";
-import { TbListDetails, TbNotebook } from "react-icons/tb";
+import { ListDetailsIcon } from "../../../../common/components/icons";
+import { NotebookIcon } from "../../../../common/components/icons";
 import { useShapes } from "../../hooks/use-shapes";
 import { Tooltip } from "../../../../common/components/tooltip";
 
@@ -48,13 +49,13 @@ export function Tabs({
                 }
               >
                 {index === 0 && (
-                  <TbListDetails
+                  <ListDetailsIcon
                     className={activeColorCss(index === selectedIndex)}
                     data-tip={"Layers list"}
                   />
                 )}
                 {index === 1 && (
-                  <TbNotebook
+                  <NotebookIcon
                     className={activeColorCss(index === selectedIndex)}
                   />
                 )}

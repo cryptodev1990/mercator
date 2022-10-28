@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { BiBug } from "react-icons/bi";
 import Loading from "react-loading";
+import { BugIcon } from "../../../common/components/icons";
 import smallLogo from "../../../common/assets/small-logo-white.svg";
 import { GeoShapeWriteContext } from "../contexts/geoshape-write/context";
 import { useUiModals } from "../hooks/use-ui-modals";
@@ -42,7 +42,7 @@ const GeofencerNavbar = () => {
           className="link text-white hover:text-blue-300 border-none hover:border-none"
           onClick={() => openModal(UIModalEnum.SupportModal)}
         >
-          <BiBug className="float-right" />
+          <BugIcon className="float-right" />
         </button>
       </div>
     </div>

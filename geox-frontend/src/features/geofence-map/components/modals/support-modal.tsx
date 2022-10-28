@@ -7,7 +7,7 @@ import { supabase } from "../../../../common/supabase-client";
 import { toast } from "react-hot-toast";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
-import { BiBug } from "react-icons/bi";
+import { BugIcon } from "../../../../common/components/icons";
 
 interface SupportTicket {
   email: string;
@@ -143,7 +143,7 @@ export const SupportModal = () => {
     <ModalCard
       open={modal === UIModalEnum.SupportModal}
       onClose={closeModal}
-      icon={<BiBug className="h-6 w-6 text-green-600" aria-hidden="true" />}
+      icon={<BugIcon className="h-6 w-6 text-green-600" aria-hidden="true" />}
       title="Report a bug or request a feature"
     >
       <div>

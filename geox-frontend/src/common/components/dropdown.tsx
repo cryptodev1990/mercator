@@ -1,7 +1,7 @@
 import { Menu } from "@headlessui/react";
-import { BsGearFill } from "react-icons/bs";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router";
+import { GearFillIcon } from "../../common/components/icons";
 import { SmoothTransition } from "./smooth-transition";
 import { useUiModals } from "../../features/geofence-map/hooks/use-ui-modals";
 import { UIModalEnum } from "../../features/geofence-map/types";
@@ -19,7 +19,7 @@ export default function Dropdown() {
     <Menu as="div" className="relative z-40 inline-block text-left">
       <div>
         <Menu.Button className="btn btn-square bg-slate-600 text-white">
-          <BsGearFill size={17} />
+          <GearFillIcon size={17} />
         </Menu.Button>
       </div>
 

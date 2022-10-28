@@ -1,4 +1,4 @@
-import { MdDelete } from "react-icons/md";
+import { DeleteIcon } from "../../../../../../common/components/icons";
 import { Namespace } from "../../../../../../client";
 import { useShapes } from "../../../../hooks/use-shapes";
 
@@ -16,7 +16,7 @@ export const DeleteButton = ({ namespace }: { namespace: Namespace }) => {
         removeNamespace(namespace.id);
       }}
     >
-      <MdDelete className="fill-white" />
+      <DeleteIcon className="fill-white" />
     </button>
   );
 };

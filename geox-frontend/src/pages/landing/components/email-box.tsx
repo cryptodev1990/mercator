@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { MdEmail } from "react-icons/md";
+import { EmailIcon } from "../../../common/components/icons";
 import Loading from "react-loading";
 import { supabase } from "../../../common/supabase-client";
 
@@ -77,7 +77,7 @@ export const EmailBox = ({
             {status === "loading" ? (
               <Loading type="spin" color="#000" height={20} width={20} />
             ) : (
-              <MdEmail className="fill-purple-500" />
+              <EmailIcon className="fill-purple-500" />
             )}
           </button>
         </div>

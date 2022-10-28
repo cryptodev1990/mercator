@@ -1,4 +1,4 @@
-import { MdCancel } from "react-icons/md";
+import { CancelIcon } from "../../../../../common/components/icons";
 import Loading from "react-loading";
 
 export function DropZone({
@@ -12,7 +12,7 @@ export function DropZone({
     <li key={file.path} className="flex flex-row space-x-1 cursor-pointer">
       {file.path} - {file.size} bytes
       <button onClick={() => removeFile(file)}>
-        <MdCancel className="hover:fill-red-400" />
+        <CancelIcon className="hover:fill-red-400" />
       </button>
       <div>
         {loading && <Loading type="spin" color="#000" height={20} width={20} />}

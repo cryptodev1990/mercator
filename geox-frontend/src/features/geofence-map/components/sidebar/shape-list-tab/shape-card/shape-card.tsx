@@ -1,10 +1,12 @@
-import { MdDelete } from "react-icons/md";
 import Loading from "react-loading";
 import { MetadataEditButton } from "./edit-button";
 import simplur from "simplur";
 
 import toast from "react-hot-toast";
-import { TbTarget } from "react-icons/tb";
+import {
+  TargetIcon,
+  DeleteIcon,
+} from "../../../../../../common/components/icons";
 import { useViewport } from "../../../../hooks/use-viewport";
 import { useCursorMode } from "../../../../hooks/use-cursor-mode";
 import { EditorMode } from "../../../../cursor-modes";
@@ -109,7 +111,7 @@ export const ShapeCard = ({
                 {updateLoading ? (
                   <Loading height={8} width={8} />
                 ) : (
-                  <MdDelete className="fill-white" />
+                  <DeleteIcon className="fill-white" />
                 )}
               </button>
               <button
@@ -120,7 +122,7 @@ export const ShapeCard = ({
                   snapToBounds({ category: "selected" });
                 }}
               >
-                <TbTarget
+                <TargetIcon
                   className={
                     selectedDataIsLoading
                       ? "fill-gray-400 animate-pulse"

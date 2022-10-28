@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BiDownload } from "react-icons/bi";
+import { DownloadIcon } from "../../../../common/components/icons";
 import { useGetAllShapes } from "../../hooks/use-openapi-hooks";
 import { useShapes } from "../../hooks/use-shapes";
 import { useUiModals } from "../../hooks/use-ui-modals";
@@ -42,7 +42,7 @@ export const ExportShapesModal = () => {
         closeModal();
       }}
       icon={
-        <BiDownload className="h-6 w-6 text-green-600" aria-hidden="true" />
+        <DownloadIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
       }
       title="Download shapes"
     >
