@@ -19,7 +19,7 @@ const ProductDisplayGroup = () => {
           Standard plan
         </h3>
         <p className="font-bold select-none">Two week free trial</p>
-        <p>then $200/month</p>
+        <p>then $250/month</p>
         <br />
         <ul className="list-disc mx-3 select-none">
           <li>Upload or draw thousands of shapes</li>
