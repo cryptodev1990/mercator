@@ -53,7 +53,6 @@ def _responses(*args):
 
 def run_shapes_export(user_conn: UserConnection, settings: Settings):
     org = user_conn.organization
-    print(org.s3_export_enabled)
     if not org.s3_export_enabled:
         raise HTTPException(
             status_code=403, detail="Data export is not enabled for this account."  # type: ignore
