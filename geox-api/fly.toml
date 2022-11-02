@@ -17,8 +17,6 @@ processes = []
   ENGINE_OPTS__ECHO_POOL = true
   BACKEND_CORS_ORIGINS = "[\"*\"]"
   PORT = "8080"
-  # TODO remove this when Swimply and Mercator are whitelisted in production
-  SKIP_STRIPE = true
   # App workers
   APP_WORKERS=17
 
