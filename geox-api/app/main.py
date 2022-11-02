@@ -44,13 +44,17 @@ app = FastAPI(
     ],
 )
 
-app.include_router(routes.osm.router)
-app.include_router(routes.health.router)
-app.include_router(routes.shapes.router)
-app.include_router(routes.shape_metadata.router)
-app.include_router(routes.tasks.router)
-app.include_router(routes.info.router)
-app.include_router(routes.namespaces.router)
+for route in [
+    routes.osm.router,
+    routes.billing.router,
+    routes.health.router,
+    routes.shapes.router,
+    routes.shape_metadata.router,
+    routes.tasks.router,
+    routes.info.router,
+    routes.namespaces.router,
+]:
+    app.include_router(route)
 
 add_tiler_routes(app)
 

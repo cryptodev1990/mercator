@@ -39,8 +39,12 @@ organizations = Table(
         String,
         comment="Snowflake Account ID. Used for data export. See https://docs.snowflake.com/en/user-guide/admin-account-identifier.html.",
     ),
+    Column("stripe_subscription_id", String, nullable=True),
+    Column("stripe_subscription_created_at", DateTime, nullable=True),
+    Column("stripe_paid_at", DateTime, nullable=True),
+    Column("subscription_whitelist", Boolean, nullable=False, default=False),
     *TimestampMixin(),
-    comment="An organization is a collection of members." "",
+    comment="An organization is a collection of members.",
 )
 
 
@@ -54,8 +58,7 @@ organization_members = Table(
         ForeignKey("users.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
-    )
-    # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
+    )    # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
     ,
     Column(
         "organization_id",

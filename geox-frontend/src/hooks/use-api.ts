@@ -12,9 +12,10 @@ type ErrorWithMessage = {
 
 type Nullable<T> = T | null;
 
-interface ApiState {
+export interface ApiState {
   error: Nullable<ErrorWithMessage>;
   data: Nullable<Array<any>>;
+  status: number;
   loading: boolean;
 }
 
@@ -24,6 +25,7 @@ export const useApi = (url: string, fetchOptions: UseApiOptions = {}) => {
   const [state, setState] = useState<ApiState>({
     error: null,
     loading: true,
+    status: 0,
     data: null,
   });
 
@@ -51,6 +53,7 @@ export const useApi = (url: string, fetchOptions: UseApiOptions = {}) => {
         setState({
           ...state,
           data: await res.json(),
+          status: res.status,
           error: null,
           loading: false,
         });

@@ -178,3 +178,9 @@ format:
 
 openapi:
 	ENV_FILE=.env.local python -m app.scripts.create_openapi_schema --output=client/openapi.json
+
+
+## Proxies local web application for stripe, see https://ngrok.com/partners/stripe
+ngrok:
+	echo 'Stripe web portal is here: https://dashboard.stripe.com/webhooks/we_1LxxTtEKpERrAtCs1Vdc0ouK'
+	ngrok http 8080

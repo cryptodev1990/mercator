@@ -25,6 +25,9 @@ const genericErrorHandler = (error: any) => {
     case 401:
       toast.error("Unauthorized");
       break;
+    case 402:
+      toast.error("Your subscription has expired.")
+      break;
     // case 403:
     //   toast.error("Forbidden");
     //   break;

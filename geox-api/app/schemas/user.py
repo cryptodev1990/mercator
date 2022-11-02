@@ -29,6 +29,7 @@ class User(UserBase):
     locale: Optional[str] = None
     picture: Optional[str] = None
     is_active: bool = True
+    email_verified: Optional[bool] = False
 
 
 class UserCreate(User):

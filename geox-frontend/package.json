@@ -20,6 +20,8 @@
     "@nebula.gl/layers": "0.23.8",
     "@reduxjs/toolkit": "^1.8.2",
     "@rjsf/core": "^4.2.2",
+    "@stripe/react-stripe-js": "^1.14.1",
+    "@stripe/stripe-js": "^1.42.0",
     "@supabase/supabase-js": "^1.35.6",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",

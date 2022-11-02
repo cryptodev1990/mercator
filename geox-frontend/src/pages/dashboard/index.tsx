@@ -1,7 +1,9 @@
 import { Navbar } from "../../common/components/navbar";
 import geofencer from "./icons/geofencer-logo.svg";
 import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { NotificationBar } from "../../common/components/notification-bar";
+import { useApi } from "../../hooks/use-api";
+import Loading from "react-loading";
 
 interface AppCardProps {
   css?: string;
@@ -11,6 +13,7 @@ interface AppCardProps {
   navlink: string;
   tabindex: number;
   description: string;
+  disabled?: boolean;
 }
 
 const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
@@ -20,9 +23,16 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
   }
   return (
     <div
-      onClick={() => navigate(props.navlink)}
+      onClick={() => {
+        if (props.disabled) {
+          return;
+        }
+        navigate(props.navlink);
+      }}
       tabIndex={props.tabindex}
-      className="max-w-sm cursor-pointer rounded overflow-hidden shadow-lg bg-slate-100 focus:shadow-none"
+      className={`max-w-sm rounded overflow-hidden shadow-lg bg-slate-100 focus:shadow-none ${
+        props.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer "
+      }`}
     >
       <div>
         <div className="bg-slate-600 text-white">
@@ -38,7 +48,10 @@ const AppCard: React.FC<AppCardProps> = (props: AppCardProps) => {
 };
 
 const DashboardPage = () => {
-  const { user } = useAuth0();
+  const query = new URLSearchParams(window.location.search);
+  const stripeSessionId = query.get("session_id");
+  const { status, loading } = useApi("/subscription_health");
+
   return (
     <main
       className="max-w-full h-screen bg-gray-200 overflow-scroll"
@@ -49,14 +62,46 @@ const DashboardPage = () => {
           <Navbar />
         </div>
       </section>
+      <section className="h-10">
+        {stripeSessionId && (
+          <NotificationBar>
+            Payment successful! Welcome to Mercator.
+          </NotificationBar>
+        )}
+        {status === 402 && (
+          <NotificationBar>
+            You need a subscription to continue using Mercator.{" "}
+            <a
+              href="/subscribe"
+              className="text-blue-500 hover:text-blue-700 underline font-bold"
+            >
+              Subscribe now
+            </a>
+            .
+          </NotificationBar>
+        )}
+      </section>
       <section className="grid grid-cols-3 grid-rows-3 gap-3 max-w-5xl mx-auto my-10">
-        <AppCard
-          tabindex={1}
-          svg={geofencer}
-          name="Geofencer"
-          navlink={"/geofencer"}
-          description="Draw geofences or edit existing ones"
-        />
+        {loading && <Loading></Loading>}
+        {!loading && status === 200 && (
+          <AppCard
+            tabindex={1}
+            svg={geofencer}
+            name="Geofencer"
+            navlink={"/geofencer"}
+            description="Draw geofences or edit existing ones"
+          />
+        )}
+        {!loading && status === 402 && (
+          <AppCard
+            tabindex={2}
+            disabled
+            svg={geofencer}
+            name="Geofencer"
+            navlink={"/geofencer"}
+            description="Draw geofences or edit existing ones"
+          />
+        )}
       </section>
     </main>
   );

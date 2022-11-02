@@ -12,6 +12,7 @@ env:
   AUTH0_MACHINE_CLIENT_ID: ${{ secrets.AUTH0_MACHINE_CLIENT_ID }}
   AUTH0_MACHINE_CLIENT_SECRET: ${{ secrets.AUTH0_MACHINE_CLIENT_SECRET }}
   FERNET_ENCRYPTION_KEY: ${{ secrets.FERNET_ENCRYPTION_KEY }}
+  SKIP_STRIPE: true
 jobs:
   Lint-Code:
     runs-on: ubuntu-latest

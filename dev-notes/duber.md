@@ -1204,3 +1204,40 @@ Branch: ``ajd/cache-madness``
       - Tile Layer B reads from the cache, refreshes
 - [ ] Notion side-drawer of gifs
 
+
+## 10-27-22 through 11-1-22
+
+### Progress
+
+- [X] Get stripe billing working
+  - [X] [frontend] Handle unsubscribed users (notify user that the subscription failed)
+    - [X] Add notification bar to UI
+  - [X] [frontend] Handle subscription flow (pricing page >>> login / signup >>> stripe >>> dashboard)
+  - [X] [backend] Webhook to monitor subscriptions and place changes in the backend
+      - [X] Expire cache for organization
+      - [X] Add subscription to db
+      - [X] Database migration
+  - [X] [backend] Create Stripe redirect
+  - [X] [backend] Add middleware to verify payment
+
+ 
+### Plans
+
+- [ ] Get Stripe to production
+  - [ ] Add environment variables to Github Actions, .env templates, Vercel, and Fly
+  - [X] *Decide how to handle existing orgs*. How do we handle Swimply? How do we handle our own org?
+    - [X] Add a whitelist for both Mercator and Swimply
+  - [ ] Add E2E tests for Stripe
+    - [ ] Test for happy path of checkout
+    - [ ] An unsubscribed user should get a notification on the dashboard that they need to subscribe
+  - [ ] User profile page (ask for Usman)
+    - [ ] User can cancel their subscription or manage their billing (I think this requires a link that redirects to Stripe)
+    - [ ] Reset password button
+    - [ ] Resend verification email
+    - [ ] User can see how many days left in their free trial (secondary)
+  - [ ] Add Stripe free trial (ask for Dayton): https://stripe.com/docs/saas#:~:text=pricing%20tables.-,Trials,-No%20code
+
+### Problems
+
+- How to locate / configure the free trial in Stripe? (assigned to Dayton)
+- Do we do anything about monitoring usage for organizations? E.g. if you've agreed to 3 seats but you actually set up 5, we have no way of telling right now. Punting on this.

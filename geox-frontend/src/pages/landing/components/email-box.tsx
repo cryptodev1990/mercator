@@ -67,7 +67,7 @@ export const EmailBox = ({
             className="focus:outline-none flex-1 pl-5 bg-transparent text-white placeholder:text-purple-200"
             type="email"
             ref={ref}
-            placeholder="Join our waitlist"
+            placeholder="Join our mailing list"
             required={true}
           />
           <button

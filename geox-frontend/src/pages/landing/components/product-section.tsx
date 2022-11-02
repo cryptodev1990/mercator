@@ -67,7 +67,7 @@ export const ProductSection = (): JSX.Element => {
   }, []);
   return (
     <section
-      id="features"
+      id="geofencer-features"
       aria-label="Features for geospaial analysis"
       className="relative overflow-hidden bg-slate-900 pt-20 pb-28 sm:py-32"
     >

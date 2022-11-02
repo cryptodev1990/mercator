@@ -28,3 +28,4 @@ walrus==0.9.*
 python-slugify==6.1.*
 datadog==0.44.*
 ddtrace==1.5.*
+stripe==4.2.0

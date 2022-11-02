@@ -20,3 +20,6 @@ class Organization(BaseModel):
     is_personal: bool = Field(False)
     s3_export_enabled: bool = Field(False)
     snowflake_account_id: Optional[str] = Field(None)
+    stripe_subscription_id: Optional[str] = Field(None)
+    stripe_paid_at: Optional[datetime.datetime] = Field(None)
+    subscription_whitelist: bool = Field(False)

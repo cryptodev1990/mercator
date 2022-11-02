@@ -18,7 +18,7 @@ from app.crud.namespaces import (
     update_namespace,
 )
 from app.crud.shape import select_shape_metadata
-from app.dependencies import UserConnection, get_app_user_connection, verify_token
+from app.dependencies import UserConnection, get_app_user_connection, verify_token, verify_subscription
 from app.schemas import Namespace, NamespaceCreate, NamespaceUpdate, RequestErrorModel
 from app.schemas.namespaces_api import NamespaceResponse
 
@@ -26,11 +26,13 @@ from app.schemas.namespaces_api import NamespaceResponse
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(tags=["namespaces"], dependencies=[Depends(verify_token)])
+router = APIRouter(tags=["namespaces"], dependencies=[
+                   Depends(verify_token), Depends(verify_subscription)])
 
 
 _RESPONSES = {
-    key: (status_code, {"description": description, "model": RequestErrorModel})
+    key: (status_code, {"description": description,
+          "model": RequestErrorModel})
     for key, status_code, description in [
         ("NAMESPACE_EXISTS", 404, "Namespace does not exist"),
         ("NAMESPACE_DOES_NOT_EXIST", 409, "Namespace exists"),
@@ -64,7 +66,7 @@ async def _post_namespaces(
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
 
 
-## Read
+# Read
 @router.get(
     "/geofencer/namespaces/{namespace_id}",
     responses=_responses("NAMESPACE_DOES_NOT_EXIST"),
@@ -77,10 +79,12 @@ async def _get_namespaces__namespace_id(
     """Return a namespace."""
     conn = user_conn.connection
     try:
-        namespace = NamespaceResponse.from_orm(get_namespace(conn, namespace_id))
+        namespace = NamespaceResponse.from_orm(
+            get_namespace(conn, namespace_id))
     except NamespaceDoesNotExistError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
-    namespace.shapes = list(select_shape_metadata(conn, namespace_id=namespace.id))
+    namespace.shapes = list(select_shape_metadata(
+        conn, namespace_id=namespace.id))
     return namespace
 
 
@@ -105,7 +109,7 @@ async def _get_namespaces(
     return namespaces
 
 
-## Update
+# Update
 @router.patch(
     "/geofencer/namespaces/{namespace_id}",
     responses=_responses("NAMESPACE_DOES_NOT_EXIST", "NAMESPACE_EXISTS"),
@@ -129,11 +133,12 @@ async def _patch_namespaces(
     except NamespaceExistsError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
     except DefaultNamespaceCannotBeRenamedError as exc:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
     return namespace
 
 
-## Delete
+# Delete
 @router.delete(
     "/geofencer/namespaces/{namespace_id}",
     status_code=204,
@@ -149,7 +154,8 @@ async def _delete_namespaces(
 
     """
     conn = user_conn.connection
-    default_namespace_id = get_default_namespace(conn, user_conn.organization.id).id
+    default_namespace_id = get_default_namespace(
+        conn, user_conn.organization.id).id
     # The crud function should allow deleting any namespace so implement the inability
     # to delete the default namespace here.
     if namespace_id == default_namespace_id:

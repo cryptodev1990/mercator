@@ -63,6 +63,15 @@ const Navbar: React.FC = () => {
             className={clsx("h-10", onHomepage && !isAuthenticated && "hidden")}
           />
         </a>
+        <div className="space-x-10">
+          {onHomepage && (
+            <div>
+              <a className="hover:underline" href="/subscribe">
+                Pricing
+              </a>
+            </div>
+          )}
+        </div>
       </nav>
       <nav aria-label="Main menu" className="flex">
         {cornerButton}

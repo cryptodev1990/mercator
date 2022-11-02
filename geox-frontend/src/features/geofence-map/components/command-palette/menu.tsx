@@ -68,7 +68,6 @@ export const Menu = ({
           await onIsochrone(values![1] ?? 10, values![2] ?? "minute", "car");
         } else if (value.endsWith("bike ride")) {
           // extract number from string
-          console.log("HEY");
           const values = value.match(/^draw (\d+) (\w+) bike ride*/);
           await onIsochrone(values![1] ?? 10, values![2] ?? "minute", "bike");
         } else if (value.endsWith("scooter ride")) {

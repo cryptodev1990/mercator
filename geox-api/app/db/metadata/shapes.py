@@ -88,9 +88,8 @@ shapes = Table(
         TSVector(),
         Computed("to_tsvector('english', properties)", persisted=True),
     ),
-    Index("ix_properties_fts", "fts", postgresql_using="gin")
     # This is unlikely - actualy behavior - at the app level is to delete the shape when the org is soft-deleted
-    ,
+    Index("ix_properties_fts", "fts", postgresql_using="gin"),
     Column(
         "namespace_id",
         UUID(as_uuid=True),

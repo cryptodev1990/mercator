@@ -4,6 +4,7 @@ import DashboardPage from "./pages/dashboard";
 import RequireAuth from "./common/components/require-auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
+import SubscriptionPage from "./pages/subscription";
 import { useTokenInOpenApi } from "./hooks/use-token-in-openapi";
 
 function Logout() {
@@ -48,6 +49,13 @@ function RoutesIndex() {
         <Route
           path="/dashboard"
           element={<RequireAuth page={<DashboardPage />} />}
+        />
+        <Route path="/subscribe" element={<SubscriptionPage />}>
+          <Route path="checkout" element={<SubscriptionPage />} />
+        </Route>
+        <Route
+          path="/subscribe"
+          element={<RequireAuth page={<SubscriptionPage />} />}
         />
         <Route
           path="/geofencer"

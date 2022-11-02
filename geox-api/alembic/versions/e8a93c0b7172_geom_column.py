@@ -1,7 +1,7 @@
 """Geom column
 
 Revision ID: e8a93c0b7172
-Revises: 66305926d854
+Revises: 5e277ffd0dd3
 Create Date: 2022-10-27 17:04:14.128367
 
 """
@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "e8a93c0b7172"
-down_revision = "66305926d854"
+down_revision = "5e277ffd0dd3"
 branch_labels = None
 depends_on = None
 

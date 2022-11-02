@@ -2,6 +2,8 @@
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
+import datetime
+from http import HTTPStatus
 import logging
 from functools import lru_cache
 from typing import Any, AsyncGenerator, Dict, Optional, Protocol, cast
@@ -22,6 +24,7 @@ from app.db.engine import engine
 from app.db.osm import osm_engine
 from app.schemas import User, UserOrganization
 from app.schemas.organizations import Organization
+
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +139,8 @@ async def get_current_user(
     if user is None:
         logger.debug(f"User {sub_id} not retrieved from cache.")
         with engine.begin() as conn:
-            user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
+            user = create_or_update_user_from_bearer_data(
+                conn, auth_jwt_payload)
             if user is None:
                 raise HTTPException(403)
             if cache:
@@ -223,7 +227,8 @@ async def get_app_user_connection(
 def get_osm_engine() -> Engine:
     """Return OSM Engine."""
     if osm_engine is None:
-        raise HTTPException(501, detail="OSM database not found.")
+        raise HTTPException(HTTPStatus.NOT_IMPLEMENTED,
+                            detail="OSM database not found.")
     return osm_engine
 
 
@@ -234,3 +239,25 @@ async def get_osm_conn(
     # TODO: should we disallow writes to it?
     with engine.begin() as conn:
         yield conn
+
+
+async def verify_subscription(
+    user_org: UserOrganization = Depends(get_current_user_org),
+    settings: Settings = Depends(get_settings),
+) -> bool:
+    """Verify that the user is user is a member of a Mercator-subscribed organization."""
+
+    if settings.skip_stripe:
+        return True
+
+    if user_org.organization.subscription_whitelist:
+        return True
+
+    org = user_org.organization
+    if not org.stripe_subscription_id:
+        raise HTTPException(402, detail="No subscription found.")
+    if not org.stripe_paid_at:
+        raise HTTPException(402, detail="Subscription requires payment.")
+    if org.stripe_paid_at > datetime.datetime.now() + datetime.timedelta(days=30):
+        raise HTTPException(402, detail="Subscription expired.")
+    return True
