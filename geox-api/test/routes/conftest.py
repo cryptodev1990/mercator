@@ -2,7 +2,7 @@
 import random
 from functools import partial
 from string import ascii_letters, digits
-from typing import Callable, Dict, Optional, cast
+from typing import Callable, Dict, Generator, Optional, cast
 
 import pytest
 from fastapi import Depends
@@ -42,7 +42,7 @@ def create_user(conn: Connection, *, email: str, name: str) -> int:
     return user.id
 
 
-def insert_test_users_and_orgs(conn: Connection):
+def insert_test_users_and_orgs(conn: Connection) -> Connection:
     organizations = [
         {
             "name": "Example.com",
@@ -64,10 +64,11 @@ def insert_test_users_and_orgs(conn: Connection):
             user_id = create_user(conn, **user)  # type: ignore
             add_user_to_org(conn, user_id=user_id, organization_id=organization_id)
             set_active_organization(conn, user_id, organization_id)
+    return conn
 
 
 @pytest.fixture(scope="function")
-def conn(engine):
+def conn(engine) -> Generator[Connection, None, None]:
     conn = engine.connect()
     trans = conn.begin()
     try:

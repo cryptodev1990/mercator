@@ -1,6 +1,6 @@
 """Celery worker."""
 from functools import lru_cache
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 from uuid import UUID, uuid4
 
 import geopandas as gpd
@@ -89,14 +89,12 @@ def query_shapes_table(
             """
                 SELECT
                     uuid :: TEXT AS uuid,
-                    -- This is a hack. It should be removed when shapes
-                    -- is cleaned up.
-                    coalesce(geojson->>'name', name) AS name,
+                    name,
                     -- WKB Format in WG84 projection
-                    ST_GeomFromGeoJson(geojson->'geometry') AS geom,
+                    geom,
                     -- to avoid certain issues writing to parquet like
                     -- ArrowNotImplementedError: Cannot write struct type 'properties' with no child field to Parquet. Consider adding a dummy child field.
-                    geojson->>'properties' AS properties,
+                    properties - '__uuid' - 'name' AS properties,
                     -- ensure that there is no timezone
                     created_at::TIMESTAMP AS created_at,
                     updated_at::TIMESTAMP AS updated_at,
@@ -112,8 +110,7 @@ def query_shapes_table(
         df = gpd.read_postgis(
             query, conn, geom_col="geom", params={"organization_id": organization_id}
         )
-        logger.debug(f"Retrieved {df.shape[0]} rows")
-        return df
+        return cast(gpd.GeoDataFrame, df)
 
 
 @celery_app.task(acks_late=True)

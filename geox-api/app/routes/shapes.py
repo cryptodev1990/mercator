@@ -1,14 +1,13 @@
 import logging
-from typing import List, Optional, Union, cast, Tuple
+from typing import List, Optional, Tuple, Union, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from geojson_pydantic import Feature, LineString, Point, Polygon
 from pydantic import UUID4
-from app.schemas import ViewportBounds
-from app.core.datatypes import Latitude, Longitude
 
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
+from app.core.datatypes import Latitude, Longitude
 from app.crud import shape as crud
 from app.crud.namespaces import get_default_namespace
 from app.crud.shape import (
@@ -30,8 +29,10 @@ from app.schemas import (
     GeoShapeUpdate,
     RequestErrorModel,
     ShapeCountResponse,
+    ShapesDeletedResponse,
+    ViewportBounds,
 )
-from app.worker import copy_to_s3, test_celery
+from app.worker import copy_to_s3
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ def get_status(task_id: str):
 def shapes_export(
     user_conn: UserConnection = Depends(get_app_user_connection),
     settings: Settings = Depends(get_settings),
-):
+) -> CeleryTaskResponse:
     """Export shapes to S3.
 
     This is an async task. Use `/tasks/results/{task_id}` to retrieve the status and results.
@@ -137,10 +138,6 @@ def _post_shapes(
     data: GeoShapeCreate, user_conn: UserConnection = Depends(get_app_user_connection)
 ) -> GeoShape:
     """Create a shape."""
-    if data.geojson.properties is None:
-        data.geojson.properties = {}
-    if data.name:
-        data.geojson.properties["name"] = data.name
     namespace_id = (
         data.namespace
         or get_default_namespace(user_conn.connection, user_conn.organization.id).id
@@ -150,6 +147,9 @@ def _post_shapes(
         user_id=user_conn.user.id,
         organization_id=user_conn.organization.id,
         geojson=data.geojson,
+        name=data.name,
+        properties=data.properties,
+        geom=data.geometry,
         namespace_id=namespace_id,
     )
     return shape
@@ -258,13 +258,19 @@ def _update_shapes__shape_id(
 ) -> Optional[GeoShape]:
     """Update a shape."""
     shape: Optional[GeoShape]
-    shape_id = data.uuid
+    if data.uuid is None:
+        raise HTTPException(422, detail="uuid must be provided.")
+    shape_id: UUID4 = data.uuid
     try:
         shape = update_shape(
             user_conn.connection,
-            cast(UUID4, shape_id),
+            shape_id,
             user_id=user_conn.user.id,
             geojson=data.geojson,
+            geometry=data.geometry,
+            properties=data.properties,
+            name=data.name,
+            namespace_id=data.namespace,
         )
     except ShapeDoesNotExist as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
@@ -315,7 +321,6 @@ def bulk_delete_shapes(
     return ShapeCountResponse(num_shapes=len(shapes))
 
 
-# TODO: status_code=204
 @router.delete(
     "/geofencer/shapes/{shape_id}",
     status_code=204,
@@ -335,6 +340,23 @@ def _delete_shapes__shape_id(
     except ShapeDoesNotExist as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
     return None
+
+
+@router.delete("/geofencer/shapes", response_model=ShapesDeletedResponse)
+def _delete_shapes(
+    shape_ids: Optional[List[UUID4]] = Query(None),
+    user_conn: UserConnection = Depends(get_app_user_connection),
+) -> ShapesDeletedResponse:
+    """Create multiple shapes."""
+    shapes = list(
+        delete_many_shapes(
+            user_conn.connection,
+            user_id=user_conn.user.id,
+            ids=shape_ids,
+            exclusive=False,
+        )
+    )
+    return ShapesDeletedResponse(deleted_ids=shapes)
 
 
 ## Operations

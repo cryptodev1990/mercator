@@ -1,6 +1,5 @@
 """Health routes."""
 import ddtrace
-
 from datadog import statsd
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -22,7 +21,7 @@ health_counter = Counter(
 async def health():
     with ddtrace.tracer.trace("health_check"):
         health_counter.inc()
-        statsd.increment('health_check')
+        statsd.increment("health_check")
         return {"message": "OK"}
 
 

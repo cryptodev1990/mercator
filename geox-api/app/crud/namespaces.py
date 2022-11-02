@@ -152,11 +152,14 @@ def get_namespace(conn, id_: UUID4, include_deleted: bool = False) -> Namespace:
     return Namespace.from_orm(res)
 
 
-def get_namespace_by_slug(conn, slug: str) -> Namespace:
+def get_namespace_by_slug(
+    conn, slug: str, organization_id: Optional[UUID4] = None
+) -> Namespace:
     """Get a namespace by its id."""
-    # Note: function assumes an RLS user
     # No include_deleted because slug is unique only for undeleted namespaces
     stmt = select(namespaces_tbl).where(namespaces_tbl.c.slug == slug)  # type: ignore
+    if organization_id is not None:
+        stmt = stmt.where(namespaces_tbl.c.organization_id == organization_id)
     res = conn.execute(stmt).first()
     if res is None:
         raise NamespaceWithThisSlugDoesNotExistError(slug)

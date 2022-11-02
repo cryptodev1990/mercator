@@ -1,13 +1,11 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query
-
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import UUID4
 
 from app.crud.shape import get_shape_metadata_matching_search, select_shape_metadata
 from app.dependencies import UserConnection, get_app_user_connection, verify_token
 from app.schemas import GeoShapeMetadata, ViewportBounds
-from fastapi import HTTPException
 
 router = APIRouter(
     tags=["geofencer", "shape-metadata"], dependencies=[Depends(verify_token)]
@@ -64,6 +62,7 @@ def _get_shape_metadata__search(
 
 
 from typing import Tuple
+
 from app.core.datatypes import Latitude, Longitude
 
 

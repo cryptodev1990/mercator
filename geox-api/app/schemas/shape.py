@@ -1,9 +1,8 @@
 """API Schema."""
 import datetime
-from typing import Any, Dict, Optional, Union, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from geojson_pydantic import Feature, GeometryCollection
-from geojson_pydantic.features import GeometryCollection
 from geojson_pydantic.geometries import Geometry
 from pydantic import UUID4, Field, root_validator
 
@@ -77,8 +76,14 @@ class GeoShape(BaseModel):
 
 class GeoShapeCreate(BaseModel):
     name: Optional[str] = Field(None, description="Name of the shape")
-    geojson: Feature = Field(..., description="GeoJSON representation of the shape")
+    geojson: Optional[Feature] = Field(
+        None, description="GeoJSON representation of the shape"
+    )
     namespace: Optional[UUID4] = Field(None, description="Namespace id.")
+    geometry: Union[None, Geometry, GeometryCollection] = Field(
+        None, description="New shape"
+    )
+    properties: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
     class Config:
         schema_extra = {
@@ -106,6 +111,10 @@ class GeoShapeUpdate(BaseModel):
                 "namespace_id": "cf9f83cd-d454-4abb-b77c-c6d639804618",
             }
         }
+
+
+class ShapesDeletedResponse(BaseModel):
+    deleted_ids: List[UUID4] = Field(default_factory=list)
 
 
 class ShapeCountResponse(BaseModel):

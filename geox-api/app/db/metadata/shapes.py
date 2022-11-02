@@ -12,9 +12,10 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
+    func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR, UUID
-from sqlalchemy.sql import func
 from sqlalchemy.types import TypeDecorator
 
 from app.db.metadata.common import metadata
@@ -66,9 +67,14 @@ shapes = Table(
     ),
     Column("deleted_at", DateTime, nullable=True, index=True),
     Column("deleted_by_user_id", Integer, ForeignKey("users.id"), nullable=True),
-    Column("geojson", JSONB, nullable=False),
     Column("geom", Geometry(srid=4326), nullable=True),
-    Column("properties", JSONB, nullable=True),
+    Column(
+        "properties",
+        JSONB,
+        nullable=False,
+        default=dict(),
+        server_default="json_build_object()",
+    ),
     Column(
         "organization_id",
         UUID(as_uuid=True),

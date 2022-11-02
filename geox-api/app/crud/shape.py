@@ -6,15 +6,16 @@ import datetime
 import logging
 from enum import Enum
 from typing import Any, Dict, Generator, List, Optional, Sequence, Union
-from sqlalchemy.sql import FromClause, ColumnElement
+
 import jinja2
 import sqlalchemy as sa
 from geojson_pydantic import Feature, GeometryCollection, LineString, Point, Polygon
 from geojson_pydantic.geometries import Geometry
 from pydantic import UUID4
-from sqlalchemy import func, insert, select, update  # type: ignore
+from sqlalchemy import String, and_, func, insert, or_, select, update
 from sqlalchemy.engine import Connection
-from sqlalchemy.sql import Select
+from sqlalchemy.sql import ColumnElement, Select, bindparam
+
 from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBounds
@@ -42,7 +43,9 @@ GEOSHAPE_COLS = [
     shapes_tbl.c.namespace_id,
     shapes_tbl.c.created_at,
     shapes_tbl.c.updated_at,
-    shapes_tbl.c.geojson,
+    func.shape_geojson(
+        shapes_tbl.c.uuid, shapes_tbl.c.geom, shapes_tbl.c.properties, shapes_tbl.c.name
+    ).label("geojson"),
 ]
 
 ## Read Shapes
@@ -58,78 +61,78 @@ class ShapeDoesNotExist(Exception):
 
 ## Create Shapes
 
-_select_shapes: Select = select(shapes_tbl).where(shapes_tbl.c.deleted_at.is_(None))  # type: ignore
-
 
 def create_shape(
     conn: Connection,
     *,
     user_id: int,
-    geojson: Feature,
     organization_id: UUID4,
     name: Optional[str] = None,
     namespace_id: Optional[UUID4] = None,
+    geom: Union[None, Geometry, GeometryCollection] = None,
+    properties: Optional[Dict[str, Any]] = None,
+    geojson: Optional[Feature] = None,
 ) -> GeoShape:
     """Create a new shape."""
     # The trigger that updates properties from geojson does not run until
     # after returning retrieves values for the row. the following lines
     # work around that
-    stmt = insert(shapes_tbl).returning(*GEOSHAPE_COLS)
+    stmt = (
+        insert(shapes_tbl)
+        .values(
+            created_by_user_id=user_id,
+            updated_by_user_id=user_id,
+            organization_id=organization_id,
+            namespace_id=namespace_id
+            or get_default_namespace(conn, organization_id).id,
+            geom=func.ST_GeomFromGeoJSON(bindparam("geom")),
+        )
+        .returning(*GEOSHAPE_COLS)
+    )  # type: ignore
     values = {
-        "created_by_user_id": user_id,
-        "updated_by_user_id": user_id,
-        "organization_id": organization_id,
-        "geojson": _update_geojson(geojson, name=name).dict(),
-        "namespace_id": namespace_id or get_default_namespace(conn, organization_id).id,
+        **_parse_shape_args(
+            geojson=geojson, name=name, properties=properties, geom=geom
+        ),
     }
+    values["properties"] = values.get("properties") or {}
     res = conn.execute(stmt, values).first()
     return GeoShape.from_orm(res)
 
 
-def _update_geojson(
-    geojson: Feature,
+def _parse_shape_args(
     *,
-    geojson_new: Optional[Feature] = None,
-    geometry: Union[None, Geometry, GeometryCollection] = None,
+    geojson: Optional[Feature],
+    geom: Union[None, Geometry, GeometryCollection] = None,
     properties: Optional[Dict[str, Any]] = None,
     name: Optional[str] = None,
-) -> Feature[Union[Geometry, GeometryCollection], Dict[str, Any]]:
+) -> Dict[str, Any]:
     """Combine geojson objects with components."""
-    geometry_new = (
-        geometry or (geojson_new.geometry if geojson_new else None) or geojson.geometry
+    out = {}
+    # Geom
+    geom_new = geom or (geojson.geometry if geojson is not None else geojson)
+    if geom_new is not None:
+        # returning geom as a string makes it easier to include as a param in input/update queries
+        out["geom"] = geom_new.json()
+    properties_new = (properties if properties is not None else None) or (
+        geojson.properties if geojson is not None else None
     )
-    # where to get the properties from
-    properties_new = (
-        (
-            properties if properties is not None else None
-        )  # {} will delete all properties
-        or (
-            (
-                (geojson_new.properties if geojson_new.properties is not None else None)
-                if geojson_new
-                else None
-            )
-        )
-        or geojson.properties
-        or {}
-    )
-    # where to get the name from
+    # Properties
+    if properties_new is not None:
+        out["properties"] = properties_new
+        for k in ("__uuid", "name"):
+            try:
+                del properties_new[k]
+            except KeyError:
+                pass
+    # Name
     name_new = (
         name
         or (properties or {}).get("name")
-        or (((geojson_new.properties or {}).get("name") if geojson_new else None))
-        or (geojson.properties or {}).get("name")
+        or ((geojson.properties or {}).get("name") if geojson is not None else None)
     )
-    properties_new["name"] = name_new
-    # Remove __uuid and __parent_uuid from properties if they were included
-    # This prevents reuploaded data from including a different UUID that may be
-    # used by the frontend.
-    for k in "__uuid":
-        try:
-            del properties_new[k]
-        except KeyError:
-            pass
-    return Feature.parse_obj({"geometry": geometry_new, "properties": properties_new})
+    if name_new is not None:
+        out["name"] = name_new
+    return out
 
 
 def create_many_shapes(
@@ -146,19 +149,22 @@ def create_many_shapes(
             created_by_user_id=user_id,
             updated_by_user_id=user_id,
             organization_id=organization_id,
+            geom=func.ST_GeomFromGeoJSON(func.cast(bindparam("geom"), String)),
         )
         .returning(shapes_tbl.c.uuid)
     )
     ## TODO: remove exception after migration
     default_namespace = namespace_id or get_default_namespace(conn, organization_id).id
-    values = [
+    params = [
         {
-            "geojson": _update_geojson(x.geojson, name=x.name).dict(),
+            **_parse_shape_args(
+                geojson=x.geojson, name=x.name, properties=x.properties, geom=x.geometry
+            ),
             "namespace_id": x.namespace or default_namespace,
         }
         for x in data
     ]
-    new_shapes = conn.execute(stmt, values)
+    new_shapes = conn.execute(stmt, params)
     for row in new_shapes:
         yield row.uuid
 
@@ -172,7 +178,7 @@ def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bo
 
 def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoShape:
     """Get a shape."""
-    stmt = select(shapes_tbl).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
+    stmt = select(GEOSHAPE_COLS).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
@@ -326,25 +332,32 @@ def update_shape(
     values: Dict[str, Any] = {
         "updated_by_user_id": user_id,
         "updated_at": datetime.datetime.utcnow(),
+        **_parse_shape_args(
+            geojson=geojson,
+            geom=geometry,
+            name=name,
+            properties=properties,
+        ),
     }
+    params = {}
+    if values.get("geom"):
+        # Need to transform
+        params["geom"] = values["geom"]
+        values["geom"] = func.ST_GeomFromGeoJSON(func.cast(bindparam("geom"), String))
     # If geojson is not specified, then these are updated.
-    values["geojson"] = _update_geojson(
-        get_shape(conn, id_).geojson,
-        geojson_new=geojson,
-        geometry=geometry,
-        name=name,
-        properties=properties,
-    ).dict()
     if namespace_id:
         values["namespace_id"] = namespace_id
-    stmt = update(shapes_tbl).where(shapes_tbl.c.uuid == id_).returning(*GEOSHAPE_COLS)
-    res = conn.execute(stmt, values).first()
+    stmt = (
+        update(shapes_tbl)
+        .where(shapes_tbl.c.uuid == id_)
+        .values(**values)
+        .returning(*GEOSHAPE_COLS)
+    )
+    res = conn.execute(stmt, params).first()
+    print(res)
     if res is None:
         raise ShapeDoesNotExist(id_)
-    # The trigger that updates properties from geojson does not run until
-    # after returning retrieves values for the row. the following lines
-    # work around that
-    return GeoShape.parse_obj(res)
+    return GeoShape.from_orm(res)
 
 
 ### Deleting ###
@@ -370,6 +383,7 @@ def delete_many_shapes(
     ids: Optional[Sequence[UUID4]] = None,
     namespace_id: Optional[UUID4] = None,
     organization_id: Optional[UUID4] = None,
+    exclusive: bool = False,
 ) -> List[UUID4]:
     """Delete many shapes."""
     values = {
@@ -381,15 +395,19 @@ def delete_many_shapes(
         .where(shapes_tbl.c.deleted_at.is_(None))
         .returning(shapes_tbl.c.uuid)
     )
+    filters = []
     if namespace_id:
-        stmt = stmt.where(shapes_tbl.c.namespace_id == namespace_id)
+        filters.append(shapes_tbl.c.namespace_id == namespace_id)
     if organization_id:
-        stmt = stmt.where(shapes_tbl.c.organization_id == organization_id)
+        filters.append(shapes_tbl.c.organization_id == organization_id)
     if user_id:
-        stmt = stmt.where(shapes_tbl.c.created_by_user_id == user_id)
-    # TODO: should this raise an exception if ids are expplicitly
+        filters.append(shapes_tbl.c.created_by_user_id == user_id)
     if ids:
         stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
+    if exclusive:
+        stmt = stmt.where(and_(True, *filters))
+    else:
+        stmt = stmt.where(or_(*filters))
     res = conn.execute(stmt, values)
     return [row.uuid for row in res]
 
@@ -411,7 +429,7 @@ def get_shapes_containing_point(
     """Get the shape that contains a point."""
     stmt = sa.text(
         """
-    SELECT geojson
+    SELECT shape_geojson(uuid, geom, properties, name) AS geojson
     FROM shapes
     WHERE 1=1
       AND ST_Contains(geom, ST_GeomFromText('POINT(:lng :lat)', 4326))
@@ -441,7 +459,7 @@ def get_shapes_related_to_geom(
     stmt = sa.text(
         jinja2.Template(
             """
-    SELECT geojson
+    SELECT shape_geojson(uuid, geom, properties, name) AS geojson
     FROM shapes
     WHERE 1=1
       AND ST_{{operation}}(geom, ST_GeomFromGeoJSON(:geom))
