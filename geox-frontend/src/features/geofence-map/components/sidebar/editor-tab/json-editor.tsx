@@ -151,9 +151,6 @@ export function JsonEditor({
           <button
             className="btn btn-sm btn-accent bg-green-600"
             disabled={disableSubmit}
-            onSubmit={(d: any) => {
-              onFormSubmit(d);
-            }}
             type="submit"
           >
             Submit
