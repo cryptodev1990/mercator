@@ -15,13 +15,13 @@ export const Menu = ({
   onDelete,
   onIsochrone,
 }: {
-  onNominatim: any;
-  onOSM: any;
-  onBuffer: any;
-  onPublish: any;
-  onUnion: any;
-  onDelete: any;
-  onIsochrone: any;
+  onNominatim: Function;
+  onOSM: Function;
+  onBuffer: Function;
+  onPublish: Function;
+  onUnion: Function;
+  onDelete: Function;
+  onIsochrone: Function;
 }) => {
   const [hidden, setHidden] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
@@ -136,7 +136,9 @@ export const Menu = ({
             setValue("");
           }}
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e: any) => (e.key === "Enter" ? handleSubmit() : null)}
+          onKeyDown={(e: React.KeyboardEvent) =>
+            e.key === "Enter" ? handleSubmit() : null
+          }
           autoFocus
           className="h-15 p-2 w-[400px] rounded"
         ></input>

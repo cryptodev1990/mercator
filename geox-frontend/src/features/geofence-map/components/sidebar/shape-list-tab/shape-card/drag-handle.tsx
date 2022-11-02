@@ -1,4 +1,5 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setDragImage
+import React from "react";
 import { DragIndicatorIcon } from "../../../../../../common/components/icons";
 // drag handle in pure html and css
 export const DragHandle = ({
@@ -48,9 +49,9 @@ export const DragTarget = ({
 }: {
   id: string;
   children: any;
-  handleDragOver: (e: any) => void;
+  handleDragOver: (e: React.DragEvent) => void;
   className?: string;
-  style?: any;
+  style?: React.CSSProperties;
 }) => {
   function dropHandler(ev: any) {
     ev.preventDefault();
@@ -61,7 +62,7 @@ export const DragTarget = ({
     <div
       id={id}
       onDragOver={(e) => e.preventDefault()}
-      onDrop={(e: any) => dropHandler(e)}
+      onDrop={(e: React.DragEvent<HTMLDivElement>) => dropHandler(e)}
       style={style}
       className={className}
     >

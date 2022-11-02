@@ -9,6 +9,7 @@ import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { useShapes } from "../../hooks/use-shapes";
 import { toast } from "react-hot-toast";
 import { polygon, union } from "@turf/turf";
+import { GeoShapeMetadata } from "../../../../../autogen";
 
 export const CommandPalette = () => {
   const { tentativeShapes, setTentativeShapes, setViewport } =
@@ -32,7 +33,7 @@ export const CommandPalette = () => {
         setViewport(res);
       }}
       onDelete={() => {
-        bulkDeleteShapes(shapeMetadata.map((s: any) => s.uuid));
+        bulkDeleteShapes(shapeMetadata.map((s: GeoShapeMetadata) => s.uuid));
         setTentativeShapes([]);
       }}
       onUnion={() => {

@@ -16,6 +16,7 @@ import { useShapes } from "../../../../hooks/use-shapes";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { DragHandle } from "./drag-handle";
 import { SHAPE_CARD_IMAGE } from "./drag-images";
+import React from "react";
 
 export const ShapeCard = ({
   shape,
@@ -24,8 +25,8 @@ export const ShapeCard = ({
   isHovered,
 }: {
   shape: GeoShapeMetadata;
-  onMouseEnter: (e: any) => void;
-  onMouseLeave: (e: any) => void;
+  onMouseEnter: (e: React.MouseEvent) => void;
+  onMouseLeave: (e: React.MouseEvent) => void;
   isHovered: boolean;
 }) => {
   const {

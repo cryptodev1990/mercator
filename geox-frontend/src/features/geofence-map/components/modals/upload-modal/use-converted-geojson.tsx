@@ -64,7 +64,7 @@ export const useConvertedGeojson = () => {
     const blob = new Blob([jsonFile]);
     reader.readAsText(blob);
     const bytes = blob.size;
-    reader.onload = (e: any) => {
+    reader.onload = () => {
       load(jsonFile, [GeoJSONLoader]).then((geojsonRes: any) => {
         const out = normalizeGeojson(geojsonRes, () => {});
         if (!out) {
