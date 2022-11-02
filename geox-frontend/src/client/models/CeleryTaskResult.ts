@@ -1,13 +1,10 @@
-// import { ApiResult } from "../core/ApiResult";
-// import { ApiError } from "../core/ApiError";
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 /**
  * Result of a Celery task.
  */
-export type CeleryTaskResult = {
+ export type CeleryTaskResult = {
   /**
    * Task id.
    */
@@ -19,6 +16,5 @@ export type CeleryTaskResult = {
   /**
    * Task results.
    */
-  //   task_result: ApiResult | ApiError;
   task_result: any;
 };
