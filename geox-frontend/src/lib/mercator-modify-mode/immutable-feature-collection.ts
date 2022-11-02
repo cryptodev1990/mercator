@@ -39,7 +39,7 @@ export class ImmutableFeatureCollection {
 
     const isPolygonal =
       geometry.type === "Polygon" || geometry.type === "MultiPolygon";
-    const updatedGeometry: any = {
+    const updatedGeometry: Geometry = {
       ...geometry,
       coordinates: immutablyReplacePosition(
         geometry.coordinates,
@@ -122,7 +122,7 @@ export class ImmutableFeatureCollection {
 
     const isPolygonal =
       geometry.type === "Polygon" || geometry.type === "MultiPolygon";
-    const updatedGeometry: any = {
+    const updatedGeometry: Geometry = {
       ...geometry,
       coordinates: immutablyRemovePosition(
         geometry.coordinates,
@@ -160,7 +160,7 @@ export class ImmutableFeatureCollection {
 
     const isPolygonal =
       geometry.type === "Polygon" || geometry.type === "MultiPolygon";
-    const updatedGeometry: any = {
+    const updatedGeometry: Geometry = {
       ...geometry,
       coordinates: immutablyAddPosition(
         geometry.coordinates,
@@ -182,7 +182,7 @@ export class ImmutableFeatureCollection {
       geometry,
     };
 
-    const updatedFeatureCollection = {
+    const updatedFeatureCollection: FeatureCollection = {
       ...this.featureCollection,
       features: [
         ...this.featureCollection.features.slice(0, featureIndex),
