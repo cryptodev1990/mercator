@@ -1,20 +1,23 @@
 """Utility to create a common test organization and some users"""
-from typing import Dict, Optional, Tuple, cast
-
 import random
+from string import ascii_letters, digits
+from typing import Dict, Optional, Tuple, cast
 from uuid import UUID
-from pydantic import UUID4
+
 import pytest
 import ruamel.yaml
-
-from string import ascii_letters, digits
-
+from pydantic import UUID4
 from sqlalchemy.engine import Connection
 
-from app.crud.user import create_user as crud_create_user, get_user_by_email
-from app.crud.organization import add_user_to_org, create_organization, get_active_organization, set_active_organization
+from app.crud.organization import (
+    add_user_to_org,
+    create_organization,
+    get_active_organization,
+    set_active_organization,
+)
+from app.crud.user import create_user as crud_create_user
+from app.crud.user import get_user_by_email
 from app.dependencies import set_app_user_settings
-
 
 yaml = ruamel.yaml.YAML(typ="safe")
 
@@ -59,8 +62,7 @@ def insert_test_users_and_orgs(conn: Connection):
         ).id
         for user in org["users"]:
             user_id = create_user(conn, **user)  # type: ignore
-            add_user_to_org(conn, user_id=user_id,
-                            organization_id=organization_id)
+            add_user_to_org(conn, user_id=user_id, organization_id=organization_id)
             set_active_organization(conn, user_id, organization_id)
 
 

@@ -59,8 +59,7 @@ organization_members = Table(
         ForeignKey("users.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
-    )    # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
-    ,
+    ),  # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
     Column(
         "organization_id",
         UUID(as_uuid=True),

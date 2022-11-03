@@ -1,13 +1,12 @@
 """CRUD functions for organizations."""
 from typing import List
+
 from pydantic import UUID4
 from sqlalchemy import insert, select, text, update
 from sqlalchemy.engine import Connection
 
-from app.db.metadata import (
-    organization_members as org_mbr_tbl,
-    organizations as org_tbl,
-)
+from app.db.metadata import organization_members as org_mbr_tbl
+from app.db.metadata import organizations as org_tbl
 from app.schemas import Organization, User
 
 
@@ -81,8 +80,9 @@ def get_organization(conn: Connection, organization_id: UUID4) -> Organization:
         values.
 
     """
-    stmt = select(org_tbl).where(org_tbl.c.id ==  # type: ignore
-                                 organization_id)  # type: ignore
+    stmt = select(org_tbl).where(        # type: ignore
+        org_tbl.c.id == organization_id  # type: ignore
+    )  # type: ignore
     res = conn.execute(stmt, {"id": organization_id}).first()
     if res is None:
         raise OrganizationDoesNotExistError(organization_id)
@@ -101,8 +101,7 @@ def is_user_in_org(conn: Connection, *, user_id: int, organization_id: UUID4) ->
     stmt = text(
         "SELECT id FROM organization_members WHERE user_id = :user_id AND organization_id = :organization_id"
     )
-    res = conn.execute(
-        stmt, {"organization_id": organization_id, "user_id": user_id})
+    res = conn.execute(stmt, {"organization_id": organization_id, "user_id": user_id})
     return bool(res is not None)
 
 
@@ -155,8 +154,7 @@ def set_active_organization(
             AND deleted_at IS NULL
         """
     )
-    conn.execute(stmt, {"user_id": user_id,
-                 "organization_id": organization_id})
+    conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
 
 
 def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
@@ -216,7 +214,9 @@ def get_active_organization(conn: Connection, user_id: int) -> Organization:
     return Organization.from_orm(res)
 
 
-def add_subscription(conn: Connection, *, organization_id: UUID4, stripe_sub_id: str) -> Organization:
+def add_subscription(
+    conn: Connection, *, organization_id: UUID4, stripe_sub_id: str
+) -> Organization:
     """Add subscription ID to organization by UUID
 
     Args:
@@ -237,8 +237,9 @@ def add_subscription(conn: Connection, *, organization_id: UUID4, stripe_sub_id:
         RETURNING *
         """
     )
-    res = conn.execute(stmt, {"stripe_sub_id": stripe_sub_id,
-                       "organization_id": organization_id}).first()
+    res = conn.execute(
+        stmt, {"stripe_sub_id": stripe_sub_id, "organization_id": organization_id}
+    ).first()
     return Organization.from_orm(res)
 
 
@@ -299,31 +300,39 @@ def get_org_by_subscription_id(conn: Connection, stripe_sub_id: str) -> Organiza
     return Organization.from_orm(res)
 
 
-def update_stripe_whitelist_status(conn: Connection, organization_id: UUID4, should_add=False) -> Organization:
+def update_stripe_whitelist_status(
+    conn: Connection, organization_id: UUID4, should_add=False
+) -> Organization:
     """Add the organization to a whitelist where users do not have to pay for the product"""
-    stmt = text("""
+    stmt = text(
+        """
         UPDATE organizations
         SET subscription_whitelist = :should_add
         WHERE id = :organization_id
         RETURNING *
-        """)
-    res = conn.execute(stmt, {"should_add": should_add,
-                       "organization_id": organization_id}).first()
+        """
+    )
+    res = conn.execute(
+        stmt, {"should_add": should_add, "organization_id": organization_id}
+    ).first()
     if res is None:
         raise OrganizationDoesNotExistError(organization_id)
     return Organization.from_orm(res)
 
 
-def update_stripe_subscription_status(conn: Connection, stripe_sub_id: str, status: str) -> Organization:
+def update_stripe_subscription_status(
+    conn: Connection, stripe_sub_id: str, status: str
+) -> Organization:
     """Update the organization's trial end date"""
-    stmt = text("""
+    stmt = text(
+        """
         UPDATE organizations
         SET stripe_subscription_status = :status
         WHERE stripe_subscription_id = :stripe_sub_id
         RETURNING *
-        """)
-    res = conn.execute(stmt, {"status": status,
-                       "stripe_sub_id": stripe_sub_id}).first()
+        """
+    )
+    res = conn.execute(stmt, {"status": status, "stripe_sub_id": stripe_sub_id}).first()
     if res is None:
         raise StripeSubscriptionDoesNotExistError(stripe_sub_id)
     return Organization.from_orm(res)

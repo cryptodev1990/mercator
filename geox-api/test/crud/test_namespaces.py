@@ -1,4 +1,5 @@
 import uuid
+from test.crud.common import get_alice_ids, insert_test_users_and_orgs
 from typing import Any, Dict, List
 from uuid import UUID
 
@@ -19,7 +20,6 @@ from app.crud.namespaces import (
     update_namespace,
 )
 from app.schemas import Namespace
-from test.crud.common import get_alice_ids, insert_test_users_and_orgs
 
 
 @pytest.fixture(scope="function")
@@ -189,8 +189,7 @@ def test_get_namespace_by_slug(conn):
 def test_get_namespace_by_slug_not_exists(conn):
     """Check that update namespace by name works correctly."""
     with pytest.raises(NamespaceWithThisSlugDoesNotExistError):
-        get_namespace_by_slug(
-            conn, "sgasgdgsa-asgsdgsa-asdgasgsa-adgasdgsa-agsdgsg")
+        get_namespace_by_slug(conn, "sgasgdgsa-asgsdgsa-asdgasgsa-adgasdgsa-agsdgsg")
 
 
 def test_namespace_can_have_a_deleted_name(conn):

@@ -20,7 +20,12 @@ from app.crud.shape import (
     select_shapes,
     update_shape,
 )
-from app.dependencies import UserConnection, get_app_user_connection, verify_token, verify_subscription
+from app.dependencies import (
+    UserConnection,
+    get_app_user_connection,
+    verify_subscription,
+    verify_token,
+)
 from app.schemas import (
     CeleryTaskResponse,
     CeleryTaskResult,
@@ -36,18 +41,17 @@ from app.worker import copy_to_s3
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(tags=["geofencer"], dependencies=[
-    Depends(verify_token), Depends(verify_subscription)
-])
+router = APIRouter(
+    tags=["geofencer"],
+    dependencies=[Depends(verify_token), Depends(verify_subscription)],
+)
 
 
 _RESPONSES = {
-    key: (status_code, {"description": description,
-          "model": RequestErrorModel})
+    key: (status_code, {"description": description, "model": RequestErrorModel})
     for key, status_code, description in [
         ("SHAPE_DOES_NOT_EXIST", 404, "Shape does not exist"),
-        ("SERVICE_MISSING_FROM_SERVER", 501,
-         "Data export not supported on the server"),
+        ("SERVICE_MISSING_FROM_SERVER", 501, "Data export not supported on the server"),
     ]
 }
 
@@ -209,8 +213,7 @@ def _get_shapes(
     ),
     user_conn: UserConnection = Depends(get_app_user_connection),
     offset: int = Query(default=0, title="Item offset", ge=0),
-    limit: int = Query(
-        default=300, title="Number of shapes to retrieve", ge=1),
+    limit: int = Query(default=300, title="Number of shapes to retrieve", ge=1),
     shape_ids: Optional[List[UUID4]] = Query(None, title="List of shape ids"),
     bbox: Optional[Tuple[Longitude, Latitude, Longitude, Latitude]] = Query(
         default=None, title="Bounding box (min x, min y, max x, max y)"
@@ -379,6 +382,5 @@ def get_shapes_by_operation(
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[Feature]:
     """Get shapes by operation."""
-    shapes = crud.get_shapes_related_to_geom(
-        user_conn.connection, operation, geom)
+    shapes = crud.get_shapes_related_to_geom(user_conn.connection, operation, geom)
     return shapes

@@ -7,7 +7,7 @@ from prometheus_client import Counter
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-from app.dependencies import get_connection, verify_token, verify_subscription
+from app.dependencies import get_connection, verify_subscription, verify_token
 
 router = APIRouter()
 
@@ -30,7 +30,11 @@ async def protected_health():
     return {"message": "OK"}
 
 
-@router.get("/subscription_health", tags=["health"], dependencies=[Depends(verify_token), Depends(verify_subscription)])
+@router.get(
+    "/subscription_health",
+    tags=["health"],
+    dependencies=[Depends(verify_token), Depends(verify_subscription)],
+)
 async def subscription_health():
     return {"message": "OK"}
 

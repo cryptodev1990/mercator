@@ -1,9 +1,6 @@
-
-import pytest
-
 from test.crud.common import insert_test_users_and_orgs
 
-
+import pytest
 from sqlalchemy.engine import Connection
 
 

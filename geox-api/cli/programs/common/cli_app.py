@@ -19,7 +19,7 @@ class CLIApp(ABC):
     and a function to run the program from the CLI.
     """
 
-    APP_NAME = None
+    APP_NAME: str = ""
 
     @abstractmethod
     def run(self, args, loop) -> None:

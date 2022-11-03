@@ -98,8 +98,7 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(
-        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
@@ -117,11 +116,9 @@ class Settings(BaseSettings):
     statsd_tags: List[str] = Field([], env="STATSD_TAGS")
 
     # Stripe API key
-    stripe_api_key: str = Field(None, env="STRIPE_API_KEY")
-    stripe_webhook_secret: str = Field(None, env="STRIPE_WEBHOOK_SECRET")
-    skip_stripe: Optional[bool] = Field(
-        None, env="SKIP_STRIPE"
-    )
+    stripe_api_key: Optional[str] = Field(None, env="STRIPE_API_KEY")
+    stripe_webhook_secret: Optional[str] = Field(None, env="STRIPE_WEBHOOK_SECRET")
+    skip_stripe: Optional[bool] = Field(None, env="SKIP_STRIPE")
 
     # Datadog Tracer
     tracer_host: str = Field("mercator-dd-agent.internal", env="TRACER_HOST")
@@ -149,8 +146,7 @@ class Settings(BaseSettings):
     @validator("machine_account_email")
     def _validate_machine_account_email(cls, v: str) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(
-                f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     @property
@@ -255,8 +251,7 @@ class Settings(BaseSettings):
             from git.repo import Repo
 
             # TODO: be more careful about where this is searching and handling specific errors
-            git_repo = Repo(Path(__file__).resolve(),
-                            search_parent_directories=True)
+            git_repo = Repo(Path(__file__).resolve(), search_parent_directories=True)
             if git_repo.is_dirty():
                 logger.warning(
                     "Git repo is dirty. The setting `git_commit` does not reflect local changes."
