@@ -101,7 +101,31 @@
         ]
       }
     },
-    "/db-health": {
+    "/subscription_health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Subscription Health",
+        "operationId": "subscription_health_subscription_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/db_health": {
       "get": {
         "tags": [
           "health"
@@ -457,6 +481,56 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GeoShape"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "geofencer"
+        ],
+        "summary": " Delete Shapes",
+        "description": "Create multiple shapes.",
+        "operationId": "_delete_shapes_geofencer_shapes_delete",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Shape Ids",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid4"
+              }
+            },
+            "name": "shape_ids",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShapesDeletedResponse"
                 }
               }
             }
@@ -1804,7 +1878,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "Feature",
             "const": "Feature"
           },
           "geometry": {
@@ -1888,9 +1961,6 @@
       },
       "GeoShapeCreate": {
         "title": "GeoShapeCreate",
-        "required": [
-          "geojson"
-        ],
         "type": "object",
         "properties": {
           "name": {
@@ -1912,6 +1982,37 @@
             "type": "string",
             "description": "Namespace id.",
             "format": "uuid4"
+          },
+          "geometry": {
+            "title": "Geometry",
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPoint"
+              },
+              {
+                "$ref": "#/components/schemas/LineString"
+              },
+              {
+                "$ref": "#/components/schemas/MultiLineString"
+              },
+              {
+                "$ref": "#/components/schemas/Polygon"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPolygon"
+              },
+              {
+                "$ref": "#/components/schemas/GeometryCollection"
+              }
+            ],
+            "description": "New shape"
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
           }
         },
         "example": {
@@ -2100,7 +2201,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "GeometryCollection",
             "const": "GeometryCollection"
           },
           "geometries": {
@@ -2175,7 +2275,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "LineString",
             "const": "LineString"
           }
         },
@@ -2205,7 +2304,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "MultiLineString",
             "const": "MultiLineString"
           }
         },
@@ -2232,7 +2330,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "MultiPoint",
             "const": "MultiPoint"
           }
         },
@@ -2262,7 +2359,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "MultiPolygon",
             "const": "MultiPolygon"
           }
         },
@@ -2430,7 +2526,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "Point",
             "const": "Point"
           }
         },
@@ -2455,7 +2550,6 @@
           "type": {
             "title": "Type",
             "type": "string",
-            "default": "Polygon",
             "const": "Polygon"
           }
         },
@@ -2489,6 +2583,20 @@
         },
         "example": {
           "num_shapes": 5
+        }
+      },
+      "ShapesDeletedResponse": {
+        "title": "ShapesDeletedResponse",
+        "type": "object",
+        "properties": {
+          "deleted_ids": {
+            "title": "Deleted Ids",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid4"
+            }
+          }
         }
       },
       "TileMatrixSetNames": {
