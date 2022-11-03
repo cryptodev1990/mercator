@@ -1,3 +1,4 @@
+import datetime
 import logging
 from typing import Any, Dict, Optional
 
@@ -7,11 +8,19 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.engine import Engine
 
 from app.schemas.common import BaseModel
+from app.schemas.organizations import StripeSubscriptionStatus
 
 import stripe
 
 from app.core.config import get_settings
-from app.crud.organization import get_organization, update_payment_time, add_subscription, get_active_org_id, get_all_org_members, get_org_by_subscription_id
+from app.crud.organization import (
+    update_stripe_subscription_status,
+    update_payment_time,
+    add_subscription,
+    get_active_organization,
+    get_all_org_members,
+    get_org_by_subscription_id
+)
 
 
 logger = logging.getLogger(__name__)
@@ -83,17 +92,18 @@ async def webhook_received(
     if event_type == 'checkout.session.completed':
         # NOTE the client_reference_id is the user_id and is set in the create_checkout_session function
         # It is read from the JWT
+        # This event pairs a user ID with their subscription ID
         user_id = int(data['object']['client_reference_id'])
 
         with engine.begin() as conn:
             if cache:
                 cache.delete(f"app:cache:user_org:{user_id}")
             subscription_id = str(data['object']['subscription'])
-            user_id = get_active_org_id(conn, user_id)
-            org = get_organization(conn, user_id)
+            org = get_active_organization(conn, user_id)
             add_subscription(
                 conn, organization_id=org.id, stripe_sub_id=subscription_id)
     elif event_type == 'invoice.paid':
+        # This event pairs a subscription ID with a payment time
         with engine.begin() as conn:
             subscription_id = str(data['object']['subscription'])
             # Clear cache for all users in the org
@@ -104,6 +114,19 @@ async def webhook_received(
                     cache.delete(f"app:cache:user_org:{u.id}")
             update_payment_time(conn, stripe_sub_id=subscription_id)
             logging.info({"msg": "Payment succeeded."})
+    elif event_type.startswith('customer.subscription.'):
+        # This event pairs a subscription ID with a trial end time
+        with engine.begin() as conn:
+            subscription_id = str(data['object']['id'])
+            status = data['object']['status']
+            org = get_org_by_subscription_id(conn, subscription_id)
+            users = get_all_org_members(conn, org.id)
+            for u in users:
+                if cache:
+                    cache.delete(f"app:cache:user_org:{u.id}")
+            update_stripe_subscription_status(
+                conn, stripe_sub_id=subscription_id, status=status
+            )
     elif event_type == 'invoice.payment_failed':
         # The payment failed or the customer does not have a valid payment method.
         # The subscription becomes past_due. Notify your customer and send them to the

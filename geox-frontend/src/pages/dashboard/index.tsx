@@ -63,7 +63,7 @@ const DashboardPage = () => {
         </div>
       </section>
       <section className="h-10">
-        {stripeSessionId && (
+        {stripeSessionId && status === 200 && (
           <NotificationBar>
             Payment successful! Welcome to Mercator.
           </NotificationBar>

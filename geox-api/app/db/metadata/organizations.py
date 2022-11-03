@@ -43,6 +43,7 @@ organizations = Table(
     Column("stripe_subscription_created_at", DateTime, nullable=True),
     Column("stripe_paid_at", DateTime, nullable=True),
     Column("subscription_whitelist", Boolean, nullable=False, default=False),
+    Column("stripe_subscription_status", String, nullable=True),
     *TimestampMixin(),
     comment="An organization is a collection of members.",
 )

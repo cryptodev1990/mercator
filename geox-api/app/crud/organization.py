@@ -312,3 +312,18 @@ def update_stripe_whitelist_status(conn: Connection, organization_id: UUID4, sho
     if res is None:
         raise OrganizationDoesNotExistError(organization_id)
     return Organization.from_orm(res)
+
+
+def update_stripe_subscription_status(conn: Connection, stripe_sub_id: str, status: str) -> Organization:
+    """Update the organization's trial end date"""
+    stmt = text("""
+        UPDATE organizations
+        SET stripe_subscription_status = :status
+        WHERE stripe_subscription_id = :stripe_sub_id
+        RETURNING *
+        """)
+    res = conn.execute(stmt, {"status": status,
+                       "stripe_sub_id": stripe_sub_id}).first()
+    if res is None:
+        raise StripeSubscriptionDoesNotExistError(stripe_sub_id)
+    return Organization.from_orm(res)

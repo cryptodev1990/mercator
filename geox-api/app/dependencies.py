@@ -23,7 +23,7 @@ from app.db.app_user import set_app_user_id, set_app_user_org
 from app.db.engine import engine
 from app.db.osm import osm_engine
 from app.schemas import User, UserOrganization
-from app.schemas.organizations import Organization
+from app.schemas.organizations import Organization, StripeSubscriptionStatus
 
 
 logger = logging.getLogger(__name__)
@@ -256,8 +256,8 @@ async def verify_subscription(
     org = user_org.organization
     if not org.stripe_subscription_id:
         raise HTTPException(402, detail="No subscription found.")
-    if not org.stripe_paid_at:
+    if not org.stripe_subscription_status:
         raise HTTPException(402, detail="Subscription requires payment.")
-    if org.stripe_paid_at > datetime.datetime.now() + datetime.timedelta(days=30):
+    if org.stripe_subscription_status not in (StripeSubscriptionStatus.active, StripeSubscriptionStatus.trialing):
         raise HTTPException(402, detail="Subscription expired.")
     return True
