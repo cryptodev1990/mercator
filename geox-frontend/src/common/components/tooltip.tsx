@@ -83,7 +83,7 @@ export function Tooltip() {
         margin: "1rem",
         float: skew !== "left" ? "left" : "right",
         minHeight: tooltipHeight,
-        visibility: tooltip ? "visible" : "hidden",
+        display: tooltip ? "block" : "none",
         lineHeight: "1.5rem",
         whiteSpace: "pre-wrap",
         textAlign: "center",

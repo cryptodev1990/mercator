@@ -46,8 +46,8 @@ const GeofencerApp = () => {
       <CommandPalette />
       <RightClickMenu />
       <GlobalModal />
-      <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden">
-        <div className="flex-auto w-screen relative">
+      <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden border ">
+        <div className="flex-auto w-screen relative border m-0 p-0">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
             <div className="z-30 mx-2 flex flex-col space-y-3 items-end">
               <Dropdown />

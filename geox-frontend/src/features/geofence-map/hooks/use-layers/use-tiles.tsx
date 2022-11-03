@@ -77,10 +77,6 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
 
   const { isSelected, selectOneShapeUuid } = useSelectedShapes();
 
-  useEffect(() => {
-    console.log("yooooooo", deletedShapeIds);
-  }, [deletedShapeIds]);
-
   const { cursorMode } = useCursorMode();
 
   useEffect(() => {

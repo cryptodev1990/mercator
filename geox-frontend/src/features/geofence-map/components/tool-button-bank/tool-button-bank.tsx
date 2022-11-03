@@ -47,14 +47,14 @@ export const ToolButtonBank = () => {
       active: cursorMode === EditorMode.EditMode,
       key: "mode-edit",
     },
-    {
-      name: "Drive time",
-      icon: <DriveEtaIcon />,
-      onClick: () => setCursorMode(EditorMode.DrawIsochroneMode),
-      dataTip: "Drive time distance",
-      active: cursorMode === EditorMode.ModifyMode,
-      key: "mode-drive-time",
-    },
+    // {
+    //   name: "Drive time",
+    //   icon: <DriveEtaIcon />,
+    //   onClick: () => setCursorMode(EditorMode.DrawIsochroneMode),
+    //   dataTip: "Drive time distance",
+    //   active: cursorMode === EditorMode.DrawIsochroneMode,
+    //   key: "mode-drive-time",
+    // },
     // {
     //   name: "Lasso",
     //   icon: <MdOutlineEditRoad />,
@@ -122,23 +122,23 @@ export const ToolButtonBank = () => {
         if (mode.active) {
           classes += " bg-blue-500";
         }
-        if (mode.name === "Drive time") {
-          return (
-            <div className="bg-blue-500 flex flex-row-reverse" key={mode.name}>
-              <button
-                onClick={mode.onClick}
-                disabled={mode.disabled}
-                data-tip={mode.dataTip}
-                data-tip-skew="left"
-                data-tip-cx="175"
-                className={classes}
-              >
-                <ClockIcon />
-              </button>
-              {pushOut && <IsochroneControls key={1} />}
-            </div>
-          );
-        }
+        // if (mode.name === "Drive time") {
+        //   return (
+        //     <div className="bg-blue-500 flex flex-row-reverse" key={mode.name}>
+        //       <button
+        //         onClick={mode.onClick}
+        //         disabled={mode.disabled}
+        //         data-tip={mode.dataTip}
+        //         data-tip-skew="left"
+        //         data-tip-cx="175"
+        //         className={classes}
+        //       >
+        //         <ClockIcon />
+        //       </button>
+        //       {pushOut && <IsochroneControls key={1} />}
+        //     </div>
+        //   );
+        // }
         return (
           <div key={mode.name}>
             <button
