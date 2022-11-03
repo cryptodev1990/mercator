@@ -1223,21 +1223,18 @@ Branch: ``ajd/cache-madness``
  
 ### Plans
 
-- [ ] Get Stripe to production
-  - [ ] Add environment variables to Github Actions, .env templates, Vercel, and Fly
+- [X] Get Stripe to production
+  - [X] Add environment variables to Github Actions, .env templates, Vercel, and Fly
   - [X] *Decide how to handle existing orgs*. How do we handle Swimply? How do we handle our own org?
     - [X] Add a whitelist for both Mercator and Swimply
-  - [ ] Add E2E tests for Stripe
+  - [ ] Add E2E tests for Stripe (delayed)
     - [ ] Test for happy path of checkout
     - [ ] An unsubscribed user should get a notification on the dashboard that they need to subscribe
-  - [ ] User profile page (ask for Usman)
-    - [ ] User can cancel their subscription or manage their billing (I think this requires a link that redirects to Stripe)
-    - [ ] Reset password button
-    - [ ] Resend verification email
-    - [ ] User can see how many days left in their free trial (secondary)
-  - [ ] Add Stripe free trial (ask for Dayton): https://stripe.com/docs/saas#:~:text=pricing%20tables.-,Trials,-No%20code
+  - [X] Add Stripe free trial
 
-### Problems
+## 11-3-22
 
-- How to locate / configure the free trial in Stripe? (assigned to Dayton)
-- Do we do anything about monitoring usage for organizations? E.g. if you've agreed to 3 seats but you actually set up 5, we have no way of telling right now. Punting on this.
+### Plans
+
+- [ ] Hide isochrones
+- [ ] Docs sidebar
