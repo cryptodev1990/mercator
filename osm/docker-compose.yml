@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  osm:
+    build: .
+    container_name: osm-postgis
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5438:5432'
+    volumes:
+      - osm-data:/var/lib/postgresql/data
+volumes:
+  osm-data:
