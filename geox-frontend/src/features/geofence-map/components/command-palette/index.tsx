@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { GeofencerContext } from "../../contexts/geofencer-context";
-import { Feature, GeoShapeCreate } from "../../../../client";
+import { Feature, GeoShapeCreate, GeoShapeMetadata } from "../../../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
 
@@ -9,7 +9,6 @@ import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { useShapes } from "../../hooks/use-shapes";
 import { toast } from "react-hot-toast";
 import { polygon, union } from "@turf/turf";
-import { GeoShapeMetadata } from "../../../../../autogen";
 
 export const CommandPalette = () => {
   const { tentativeShapes, setTentativeShapes, setViewport } =
