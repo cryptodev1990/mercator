@@ -3,7 +3,7 @@ import destination from "@turf/destination";
 import bearing from "@turf/bearing";
 import pointToLineDistance from "@turf/point-to-line-distance";
 import { flattenEach } from "@turf/meta";
-import { point, MultiLineString, Geometries } from "@turf/helpers";
+import { point } from "@turf/helpers";
 import { getCoords } from "@turf/invariant";
 import WebMercatorViewport from "viewport-mercator-project";
 import {
