@@ -1,22 +1,16 @@
-FROM postgis/postgis:14-3.3
+# Builds app for deployment
+# See https://fastapi.tiangolo.com/deployment/docker/#docker-image-with-poetry
+FROM python:3.10 as requirements-stage
 
-# Upgrade using backports to get osm2pgsql 1.7+
-RUN echo 'deb http://deb.debian.org/debian bullseye-backports main' >> /etc/apt/sources.list
+WORKDIR /tmp
 
-RUN apt-get update \
-    && apt-get -t bullseye-backports -y install osm2pgsql \
-    && rm -rf /var/lib/apt/lists/*
+RUN pip install poetry --update
+COPY ./pyproject.toml ./poetry.lock* /tmp/
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-# need curl to download stuff
-RUN apt-get update \
-    && apt-get install -y curl \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-ENV PBF_DOWNLOAD_URL https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
-WORKDIR /data
-RUN curl -s -o osm.pbf ${PBF_DOWNLOAD_URL}
-RUN curl https://raw.githubusercontent.com/openstreetmap/osm2pgsql/master/flex-config/generic.lua -O
+EXPOSE 8080
+COPY start.sh .
 
-COPY ./docker-entrypoint-initdb.d/* /docker-entrypoint-initdb.d/
-
-WORKDIR /
+CMD ["./start.sh"]

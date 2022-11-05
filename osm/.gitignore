@@ -1,1 +1,9 @@
-*.pbf
+dump.rdb
+*.whl
+*.tar.gz
+*.pyc
+.mypy_cache
+.coverage
+htmlcov
+Untitled*.ipynb
+*.pem

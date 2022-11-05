@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "osm-search"
+version = "0.1.0"
+description = ""
+authors = ["Jeffrey Arnold <jeffrey@mercator.tech>"]
+readme = "README.md"
+packages = [{include = "osm_search"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+uvicorn = "^0.19.0"
+fastapi = "^0.86.0"
+geojson-pydantic = "^0.4.3"
+pydantic = "^1.10.2"
+sqlalchemy = "^1.4.43"
+jupyterlab = "^3.5.0"
+pandas = "^1.5.1"
+geopandas = "^0.12.1"
+shapely = "^1.8.5.post1"
+asyncpg = "^0.27.0"
+python-dotenv = "^0.21.0"
+greenlet = "^2.0.0.post0"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.6.0"
+ipykernel = "^6.17.0"
+isort = "^5.10.1"
+black = {extras = ["jupyter"], version = "^22.10.0"}
+mypy = "^0.982"
+sqlalchemy-stubs = "^0.4"
+pytest-cov = "^4.0.0"
+pytest-fastapi-deps = "^0.2.3"
+pylint-pytest = "^1.1.2"
+pytest-asyncio = "^0.20.1"
+types-requests = "^2.28.11.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint."messages control"]
+disable = ["too-few-public-methods"]
+enable = []
+
+[tool.pylint]
+ignore-long-lines = "^(\\s*(# ).*|.*<https?://.*)$"
+max-line-length = 90
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+
+[tool.isort]
+py_version = 310
+skip_gitignore = true
+skip_glob = ["env/**", "alembic/versions/**"]
+profile = "black"
+
+[tool.black]
+line-length = 90
+target-version = ['py310']
+exclude = "env/|alembic/versions|\\.ipynb$|\\.ipynb_checkpoints/"
+
+[tool.mypy]
+python_version = "3.9"
+exclude = '''(?x)
+    ^env/
+    | ^alembic/versions
+'''
+plugins = ["pydantic.mypy", "sqlmypy"]
+ignore_missing_imports = false
+allow_untyped_defs = false
+
+
+[tool.pyright]
+include = ["app", "test", "cli"]
+exclude = ["**/node_modules",
+    "**/__pycache__",
+    "**/.ipynb_checkpoints"
+]
+pythonVersion = "3.9"

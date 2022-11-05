@@ -1,0 +1,8 @@
+# Ignore generated files
+**/*.pyc
+**/__pycache__
+.dockerignore
+docker-compose*
+Dockerfile*
+.gitignore
+fly.toml

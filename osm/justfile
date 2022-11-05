@@ -1,0 +1,27 @@
+# Command runner for Mercator backend
+# This is a [justfile](https://github.com/casey/juste)
+
+# set the default shell (to be safe)
+set shell := ["zsh", "-uc"]
+
+git_commit_hash := `git rev-parse HEAD`
+
+default:
+	@just --list
+
+test:
+	poetry run pytest --cov=app test
+
+run:
+	poetry run ./start.sh
+
+lint:
+	mypy .
+	poetry run pylint app test
+
+format:
+	poetry run isort --quiet .
+	poetry run black .
+
+db:
+	docker
