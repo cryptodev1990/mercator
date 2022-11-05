@@ -1,8 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, Query, Request, Response
-from morecantile import Tile, TileMatrixSet
-from pydantic import UUID4
+from morecantile.commons import Tile
+from morecantile.models import TileMatrixSet
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 from timvt.dependencies import LayerParams, TileMatrixSetParams, TileParams
 from timvt.factory import TILE_RESPONSE_PARAMS
 from timvt.layer import Layer

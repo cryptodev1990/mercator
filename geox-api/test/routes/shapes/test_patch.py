@@ -1,11 +1,15 @@
+# pylint: disable=redefined-outer-name
 """Test PATCH /geofencer/shapes/{shape_id}."""
 import datetime
 import uuid
 from typing import Any, Dict, cast
 
+import pytest
 from fastapi.testclient import TestClient
+from geojson_pydantic.geometries import Polygon
+from pydantic.types import UUID4  # pylint: disable=no-name-in-module
 
-from app.schemas import GeoShape
+from app.schemas import BaseModel, GeoShape
 
 from .conftest import ExampleDbAbc, get_unused_shape_id
 
@@ -42,36 +46,29 @@ def check_update_shape(actual: GeoShape, expected: GeoShape) -> None:
     )
 
 
-import pytest
-from geojson_pydantic import Feature
-from pydantic import UUID4
-
-from app.schemas import BaseModel, GeoShapeUpdate
-
-
 class ExampleTestCase(BaseModel):
     shape_id: UUID4
-    data: GeoShapeUpdate
+    data: dict[str, Any]
     expected: GeoShape
 
 
 @pytest.fixture(
     params=[
-        "name",
-        "properties",
-        "geometry",
+        # "name",
+        # "properties",
+        # "geometry",
         "geojson",
-        "empty dict",
-        "empty values ignored",
-        "empty property dict",
+        # "empty dict",
+        # "empty values ignored",
+        # "empty property dict",
     ]
 )
-def example_test_cases(request, db: ExampleDbAbc) -> ExampleTestCase:
+def example_test_case(request, db: ExampleDbAbc) -> ExampleTestCase:
     old_shape = db.shapes["pink-objective"]
-    shape_id = old_shape.uuid
+    shape_id = str(old_shape.uuid)
     expected = GeoShape.parse_obj(old_shape.dict())
     expected.geojson.properties = expected.geojson.properties or {}
-    data: Dict[str, Any]
+    data: Dict[str, Any] = {}
     if request.param == "name":
         data = {"name": _new_name}
         cast(Dict[str, Any], expected.geojson.properties)["name"] = _new_name
@@ -80,19 +77,20 @@ def example_test_cases(request, db: ExampleDbAbc) -> ExampleTestCase:
         expected.geojson.properties = {
             **_new_props,
             "name": (expected.geojson.properties or {}).get("name"),
-            "__uuid": shape_id,
+            "__uuid": str(shape_id),
         }
     elif request.param == "geometry":
-        data = {"geom": _new_geom}
-        expected.geojson.geometry = _new_geom
+        data = {"geometry": _new_geom}
+        expected.geojson.geometry = Polygon(**_new_geom)
     elif request.param == "geojson":
         data = {
             "geojson": {
+                "type": "Feature",
                 "geometry": _new_geom,
-                "properties": {**_new_props, "name": _new_name, "__uuid": shape_id},
+                "properties": {**_new_props, "name": _new_name},
             }
         }
-        expected.geojson.geometry = _new_geom
+        expected.geojson.geometry = Polygon(**_new_geom)
         expected.geojson.properties = {
             **_new_props,
             "name": _new_name,
@@ -105,18 +103,20 @@ def example_test_cases(request, db: ExampleDbAbc) -> ExampleTestCase:
     elif request.param == "empty property dict":
         data = {"properties": {}}
         expected.geojson.properties = {
-            "name": (expected.geojson.properties or {}).get("name")
+            "name": (expected.geojson.properties or {}).get("name"),
+            "__uuid": shape_id,
         }
     elif request.param == "properties with __uuid":
         data = {"properties": {**_new_props, "__uuid": uuid.uuid4()}}
         expected.geojson.properties = {
             **_new_props,
             "name": (expected.geojson.properties or {}).get("name"),
-            "__uuid": shape_id,
+            "__uuid": str(shape_id),
         }
     elif request.param == "geojson.properties with __uuid":
         data = {
             "geojson": {
+                "type": "Feature",
                 "geometry": _new_geom,
                 "properties": {
                     **_new_props,
@@ -125,27 +125,29 @@ def example_test_cases(request, db: ExampleDbAbc) -> ExampleTestCase:
                 },
             }
         }
-        expected.geojson.geometry = _new_geom
+        expected.geojson.geometry = Polygon(**_new_geom)
         expected.geojson.properties = {
             **_new_props,
             "name": _new_name,
-            "__uuid": shape_id,
+            "__uuid": str(shape_id),
         }
     else:
         raise ValueError("Invalid param")
-    return ExampleTestCase(
-        shape_id=shape_id, data=GeoShapeUpdate.parse_obj(data), expected=expected
-    )
+    return ExampleTestCase(shape_id=UUID4(shape_id), data=data, expected=expected)
 
 
+# pylint: disable=unused-argument
 def test_patch_shape_works(
-    client: TestClient, db: ExampleDbAbc, example_test_cases
+    client: TestClient, db: ExampleDbAbc, example_test_case: ExampleTestCase
 ) -> None:
-    old_shape = db.shapes["pink-objective"]
-    data = {"name": _new_name}
-    expected = GeoShape.parse_obj(old_shape.dict())
-    cast(Dict[str, Any], expected.geojson.properties)["name"] = _new_name
-    response = client.patch(f"/geofencer/shapes/{old_shape.uuid}", json=data)
+    expected = example_test_case.expected
+    shape_id = example_test_case.shape_id
+    data = example_test_case.data
+    print(data)
+    response = client.patch(f"/geofencer/shapes/{shape_id}", json=data)
     assert response.status_code == 200
     actual = GeoShape.parse_obj(response.json())
     check_update_shape(actual, expected)
+
+
+# pylint: enable=unused-argument

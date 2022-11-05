@@ -9,7 +9,7 @@ from cli.programs.common.cli_app import CLIApp
 
 class GetJWT(CLIApp):
 
-    APP_NAME = "get_jwt"
+    APP_NAME: str = "get_jwt"
 
     def generate_cli(
         self, subparsers: argparse._SubParsersAction

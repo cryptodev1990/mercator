@@ -15,8 +15,6 @@ from app.schemas import User
 class NoUserException(Exception):
     """No user exists exception."""
 
-    pass
-
 
 class NoUserWithIdException(NoUserException):
     """No user exists with this id exception."""
@@ -154,7 +152,7 @@ def create_user(
             },
         ).first()
     except IntegrityError:
-        raise UserExistsError()
+        raise UserExistsError() from None
     return User.from_orm(res)
 
 

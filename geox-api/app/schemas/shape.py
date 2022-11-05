@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 
 from geojson_pydantic import Feature, GeometryCollection
 from geojson_pydantic.geometries import Geometry
-from pydantic import UUID4, Field, root_validator
+from pydantic import UUID4, Field, root_validator  # pylint: disable=no-name-in-module
 
 from app.core.datatypes import Latitude, Longitude
 from app.schemas.common import BaseModel
@@ -137,6 +137,7 @@ class ViewportBounds(BaseModel):
     max_y: Latitude = Field(..., description="Maximum Y coordinate")
 
     # validate that the minimums are less than the maximums
+    # pylint: disable=no-self-argument
     @root_validator()
     def validate_min_max(cls, value: Any) -> Any:
         if value["min_x"] > value["max_x"]:
@@ -145,6 +146,9 @@ class ViewportBounds(BaseModel):
             raise ValueError("min_y must be less than max_y")
         return value
 
+    # pylint: enable=no-self-argument
+
+    # pylint: disable=no-self-argument
     @classmethod
     def from_list(cls, coordinates: Sequence[float]) -> "ViewportBounds":
         """Create a viewport from a list of coordinates."""
@@ -152,6 +156,8 @@ class ViewportBounds(BaseModel):
             raise ValueError("Four coordinates must be provided.")
         min_x, min_y, max_x, max_y = coordinates
         return cls(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
+
+    # pylint: enable=no-self-argument
 
     class Config:
         schema_extra = {

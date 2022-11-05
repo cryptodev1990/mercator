@@ -34,6 +34,7 @@ class VerifyToken:
         # the keys available
         jwks_url = f"https://{self.domain}/.well-known/jwks.json"
         self.jwks_client = jwt.PyJWKClient(jwks_url)
+        self.signing_key: Any = None
 
     def verify(self) -> Dict[str, Any]:
         """Verify the JWT."""
@@ -41,9 +42,9 @@ class VerifyToken:
         try:
             self.signing_key = self.jwks_client.get_signing_key_from_jwt(self.token).key
         except jwt.exceptions.PyJWKClientError as error:
-            return {"status": "error", "msg": error.__str__()}
+            return {"status": "error", "msg": str(error)}
         except jwt.exceptions.DecodeError as error:
-            return {"status": "error", "msg": error.__str__()}
+            return {"status": "error", "msg": str(error)}
         try:
             payload = jwt.decode(
                 self.token,
@@ -52,7 +53,7 @@ class VerifyToken:
                 audience=self.api_audience,
                 issuer=self.issuer,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             return {"status": "error", "msg": str(e)}
 
         if self.scopes:

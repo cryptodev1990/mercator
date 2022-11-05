@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Union, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from geojson_pydantic import Feature, LineString, Point, Polygon
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
@@ -42,8 +42,7 @@ from app.worker import copy_to_s3
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    tags=["geofencer"],
-    dependencies=[Depends(verify_token), Depends(verify_subscription)],
+    tags=["geofencer"], dependencies=[Depends(verify_token), Depends(verify_subscription)]
 )
 
 
@@ -57,7 +56,7 @@ _RESPONSES = {
 
 
 def _responses(*args):
-    return dict([_RESPONSES[key] for key in args])
+    return dict(_RESPONSES[key] for key in args)
 
 
 def run_shapes_export(user_conn: UserConnection, settings: Settings):
@@ -195,7 +194,7 @@ def _get_shapes__shape_id(
     try:
         shape = get_shape(user_conn.connection, shape_id)
     except ShapeDoesNotExist as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
     return shape
 
 
@@ -232,7 +231,7 @@ def _get_shapes(
         try:
             bbox_obj = ViewportBounds.from_list(bbox)
         except (ValueError, TypeError):
-            raise HTTPException(422, "Invalid bbox")
+            raise HTTPException(422, "Invalid bbox") from None
     else:
         bbox_obj = None
     user_id = user_conn.user.id if user else None
@@ -281,7 +280,7 @@ def _update_shapes__shape_id(
             namespace_id=data.namespace,
         )
     except ShapeDoesNotExist as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
     return shape
 
 
@@ -308,7 +307,7 @@ def _patch_shapes__shape_id(
             namespace_id=data.namespace,
         )
     except ShapeDoesNotExist as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
     return shape
 
 
@@ -346,8 +345,7 @@ def _delete_shapes__shape_id(
             user_id=user_conn.user.id,
         )
     except ShapeDoesNotExist as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
-    return None
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
 
 
 @router.delete("/geofencer/shapes", response_model=ShapesDeletedResponse)

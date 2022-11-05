@@ -3,10 +3,7 @@ from textwrap import dedent
 from alembic_utils.pg_trigger import PGTrigger
 
 __all__ = [
-    "users_delete_trigger",
     "users_insert_trigger",
-    "shapes_create_geom_trigger",
-    "shapes_update_geom_trigger",
     "organizations_insert_trigger",
 ]
 entities = []

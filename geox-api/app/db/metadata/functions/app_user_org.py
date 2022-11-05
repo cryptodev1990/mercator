@@ -1,5 +1,3 @@
-from textwrap import dedent
-
 from alembic_utils.pg_function import PGFunction
 
 __all__ = ["app_user_org"]

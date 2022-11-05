@@ -6,6 +6,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, cast
 
+from git.repo import Repo
+
+# pylint: disable=no-name-in-module
 from pydantic import (
     BaseModel,
     BaseSettings,
@@ -16,6 +19,8 @@ from pydantic import (
     SecretStr,
     validator,
 )
+
+# pylint: enable=no-name-in-module
 from timvt.db import PostgresSettings as TimVTPostgresSettings
 
 from app.core.datatypes import (
@@ -80,17 +85,13 @@ class CacheOptions(BaseModel):
     enabled: bool = Field(
         True, description="If true, then use a cache. If false, no cache."
     )
-    timeout: int = Field(
-        3600, ge=0, description="Cache key default timeout in seconds."
-    )
+    timeout: int = Field(3600, ge=0, description="Cache key default timeout in seconds.")
 
 
 class Settings(BaseSettings):
     """Config settings."""
 
-    version: str = Field(
-        __VERSION__, description="App version number", env="APP_VERSION"
-    )
+    version: str = Field(__VERSION__, description="App version number", env="APP_VERSION")
     app_secret_key: SecretStr = Field(...)
 
     # Auth For JWT
@@ -124,12 +125,15 @@ class Settings(BaseSettings):
     tracer_host: str = Field("mercator-dd-agent.internal", env="TRACER_HOST")
     tracer_port: int = Field(8126, env="TRACER_PORT")
 
+    # pylint: disable=no-self-argument
     @validator("aws_s3_url", pre=True)
-    def _validate_aws_s3_url(cls, v):
+    def _validate_aws_s3_url(cls, v):  # pylint: disable=no-self-argument
         """Ensure the S3 URL always ends with a backslash."""
         if v and not v.endswith("/"):
             v = f"{v}/"
         return v
+
+    # pylint: enable=no-self-argument
 
     aws_s3_upload_access_key_id: Optional[str] = Field(
         None, env="AWS_S3_UPLOAD_ACCESS_KEY_ID"
@@ -138,16 +142,19 @@ class Settings(BaseSettings):
         None, env="AWS_S3_UPLOAD_SECRET_ACCESS_KEY"
     )
 
-    machine_account_email: EmailStr = Field(
-        cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL)
-    )
+    machine_account_email: EmailStr = Field(cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
     contact_email: EmailStr = Field(cast(EmailStr, CONTACT_EMAIL))
 
+    # pylint: disable=no-self-argument
     @validator("machine_account_email")
-    def _validate_machine_account_email(cls, v: str) -> str:
+    def _validate_machine_account_email(
+        cls, v: str  # pylint: disable=no-self-argument
+    ) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
             raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
+
+    # pylint: enable=no-self-argument
 
     @property
     def machine_account_sub_id(self) -> str:
@@ -164,8 +171,9 @@ class Settings(BaseSettings):
     """,
     )
 
+    # pylint: disable=no-self-argument
     @validator("backend_cors_origins", pre=True)
-    def _assemble_cors_origins(cls, v):
+    def _assemble_cors_origins(cls, v):  # pylint: disable=no-self-argument
         # Note - pre validation is done AFTER environment variable parsing
         # environment variables are parsed as JSON.
         # See https://pydantic-docs.helpmanual.io/usage/settings/#parsing-environment-variable-values for what to do
@@ -173,6 +181,8 @@ class Settings(BaseSettings):
         if v is None or v == "":
             return tuple(["*"])
         return v
+
+    # pylint: enable=no-self-argument
 
     # db connection info
     # These are named so that the same environment variables can be used between the postgres docker container
@@ -197,11 +207,12 @@ class Settings(BaseSettings):
         description="Options to apply to the connections used by Celery workers to access the app database.",
     )
 
+    # pylint: disable=no-self-argument
     # validation is done in the order fields are defined. sqlalchemy_database_uri
     # needs to be defined after its subcomponents
     @validator("sqlalchemy_database_uri", pre=True)
     def _validate_sqlalchemy_database_uri(
-        cls, v: Optional[str], values: Dict[str, Any]
+        cls, v: Optional[str], values: Dict[str, Any]  # pylint: disable=no-self-argument
     ) -> Any:
         """Return the SQLAlchemy database URI."""
         # Treat None and empty string as existence
@@ -216,6 +227,8 @@ class Settings(BaseSettings):
             path=f"/{values.get('postgres_db', '')}",
         )
         return dsn
+
+    # pylint: enable=no-self-argument
 
     sqlalchemy_osm_database_uri: Optional[PostgresDsn] = Field(
         None, env="SQLALCHEMY_OSM_DATABASE_URI"
@@ -241,15 +254,14 @@ class Settings(BaseSettings):
         None, description="Git commit of the app source code being used."
     )  # type: ignore
 
+    # pylint: disable=no-self-argument
     @validator("git_commit", pre=True, always=True)
-    def _validate_git_commit(cls, v):
+    def _validate_git_commit(cls, v):  # pylint: disable=no-self-argument
         # Case in which GIT_COMMIT exists - treat empty string as non-existence
         if v:
             return str(v).lower()
         # Case in which GIT_COMMIT does not exist
         try:
-            from git.repo import Repo
-
             # TODO: be more careful about where this is searching and handling specific errors
             git_repo = Repo(Path(__file__).resolve(), search_parent_directories=True)
             if git_repo.is_dirty():
@@ -258,16 +270,21 @@ class Settings(BaseSettings):
                 )
             branch = str(git_repo.active_branch.commit).lower()
             return branch
-        except:
+        except Exception:  # pylint: disable=broad-except
             return None
+
+    # pylint: enable=no-self-argument
 
     app_env: AppEnvEnum = Field(AppEnvEnum.dev)
     app_log_level: LogLevel = Field(LogLevel.INFO, describe="Log level")
 
+    # pylint: disable=no-self-argument
     @validator("app_env", pre=True)
-    def _validate_app_env(cls, v):
+    def _validate_app_env(cls, v):  # pylint: disable=no-self-argument
         v = str(v).lower()
         return v
+
+    # pylint: enable=no-self-argument
 
     class Config:  # noqa
         env_file = ".env"

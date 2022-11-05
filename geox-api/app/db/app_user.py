@@ -1,11 +1,10 @@
 """Functions to get and set app user and org settings."""
-from typing import Optional, Union
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 from sqlalchemy.engine.cursor import CursorResult
-from sqlalchemy.orm import Session
 
 # Postgres allows custom settings
 # https://www.postgresql.org/docs/current/runtime-config-custom.html
@@ -29,7 +28,7 @@ def unset_app_user_id(conn: Connection, local: bool = False) -> CursorResult:
 
 def get_app_user_id(conn: Connection) -> Optional[str]:
     """Reset Postgres setting ``app.auth_user_id`` to ``auth_user_id``."""
-    stmt = text(f"SELECT nullif(current_setting('app.user_id', TRUE), '')")
+    stmt = text("SELECT nullif(current_setting('app.user_id', TRUE), '')")
     res = conn.execute(stmt).scalar()
     return res if res else None
 
@@ -51,6 +50,6 @@ def unset_app_user_org(conn: Connection, local: bool = False) -> None:
 
 def get_app_user_org(conn: Connection) -> Optional[UUID]:
     """Reset Postgres setting ``app.user_id`` to ``user_id``."""
-    stmt = text(f"SELECT nullif(current_setting('app.user_org', TRUE), '')")
+    stmt = text("SELECT nullif(current_setting('app.user_org', TRUE), '')")
     res = conn.execute(stmt).scalar()
     return UUID(res) if res else None

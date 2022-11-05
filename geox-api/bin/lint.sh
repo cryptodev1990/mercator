@@ -31,9 +31,15 @@ function _yamllint() {
     yamllint -c yamllint.yml ./*.yml
 }
 
+# Lint shell scripts (*.sh)
+function _pylint() {
+    echo "Running pylint"
+    pylint app test
+}
+
 # TODO: could customize which are run
 
-cmds="_mypy _shellcheck _yamllint"
+cmds="_mypy _shellcheck _yamllint _pylint"
 num_failures=0
 for cmd in $cmds;
 do

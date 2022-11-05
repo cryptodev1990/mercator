@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Functions run prior to starting celery workers."""
 import logging
 

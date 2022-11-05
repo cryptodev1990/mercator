@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.core.celery_app import celery_app
-from app.core.config import Settings, get_settings
-from app.dependencies import UserConnection, get_app_user_connection, verify_token
-from app.routes.shapes import run_shapes_export
+from app.dependencies import verify_token
 from app.schemas import CeleryTaskResponse, CeleryTaskResult
 from app.worker import test_celery
 

@@ -11,7 +11,7 @@ import jinja2
 import sqlalchemy as sa
 from geojson_pydantic import Feature, GeometryCollection, LineString, Point, Polygon
 from geojson_pydantic.geometries import Geometry
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 from sqlalchemy import String, and_, func, insert, or_, select, update
 from sqlalchemy.engine import Connection
 from sqlalchemy.sql import ColumnElement, Select, bindparam
@@ -83,16 +83,13 @@ def create_shape(
             created_by_user_id=user_id,
             updated_by_user_id=user_id,
             organization_id=organization_id,
-            namespace_id=namespace_id
-            or get_default_namespace(conn, organization_id).id,
+            namespace_id=namespace_id or get_default_namespace(conn, organization_id).id,
             geom=func.ST_GeomFromGeoJSON(bindparam("geom")),
         )
         .returning(*GEOSHAPE_COLS)
     )  # type: ignore
     values = {
-        **_parse_shape_args(
-            geojson=geojson, name=name, properties=properties, geom=geom
-        ),
+        **_parse_shape_args(geojson=geojson, name=name, properties=properties, geom=geom),
     }
     values["properties"] = values.get("properties") or {}
     res = conn.execute(stmt, values).first()
@@ -101,37 +98,54 @@ def create_shape(
 
 def _parse_shape_args(
     *,
-    geojson: Optional[Feature],
+    geojson: Optional[Feature] = None,
     geom: Union[None, Geometry, GeometryCollection] = None,
     properties: Optional[Dict[str, Any]] = None,
     name: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Combine geojson objects with components."""
-    out = {}
+    out: Dict[str, Any] = {}
     # Geom
-    geom_new = geom or (geojson.geometry if geojson is not None else geojson)
+    geom_new = None
+    if geom:
+        geom_new = geom
+    if geojson is not None:
+        geom_new = geojson.geometry
     if geom_new is not None:
         # returning geom as a string makes it easier to include as a param in input/update queries
         out["geom"] = geom_new.json()
-    properties_new = (properties if properties is not None else None) or (
-        geojson.properties if geojson is not None else None
-    )
+    properties_new: Optional[Dict[str, Any]] = None
+
+    def _get_name(d: Dict[str, Any]) -> Optional[str]:
+        for k in d:
+            if str(k).lower().strip() == "name" and d[k]:
+                return str(d[k])
+        return None
+
+    # Name
+    name_new = None
+    if name:
+        name_new = name
+    elif name_new := _get_name(properties or {}):
+        pass
+    elif name_new := _get_name(geojson.properties or {}) if geojson else None:
+        pass
+    if name_new:
+        out["name"] = str(name_new)
+    # This allows {} to remove properties
+    if properties is not None:
+        properties_new = properties
+    elif geojson is not None and geojson.properties is not None:
+        properties_new = {**geojson.properties}
     # Properties
     if properties_new is not None:
+        delete_keys: List[str] = ["__uuid"]
+        properties_new = {
+            k: v
+            for k, v in properties_new.items()
+            if k not in delete_keys and str(k).lower().strip() != "name"
+        }
         out["properties"] = properties_new
-        for k in ("__uuid", "name"):
-            try:
-                del properties_new[k]
-            except KeyError:
-                pass
-    # Name
-    name_new = (
-        name
-        or (properties or {}).get("name")
-        or ((geojson.properties or {}).get("name") if geojson is not None else None)
-    )
-    if name_new is not None:
-        out["name"] = name_new
     return out
 
 
@@ -354,7 +368,6 @@ def update_shape(
         .returning(*GEOSHAPE_COLS)
     )
     res = conn.execute(stmt, params).first()
-    print(res)
     if res is None:
         raise ShapeDoesNotExist(id_)
     return GeoShape.from_orm(res)
@@ -373,7 +386,6 @@ def delete_shape(conn: Connection, id_: UUID4, *, user_id: int) -> None:
     res = conn.execute(stmt, values)
     if not res.rowcount:
         raise ShapeDoesNotExist(id_)
-    return None
 
 
 def delete_many_shapes(
@@ -417,7 +429,7 @@ def get_shape_count(conn: Connection) -> int:
     stmt = (
         sa.select(sa.func.count(shapes_tbl.c.uuid))
         .where(shapes_tbl.c.organization_id == sa.func.app_user_org())
-        .where(shapes_tbl.c.deleted_at == None)
+        .where(shapes_tbl.c.deleted_at.is_(None))
     )
     res = conn.execute(stmt).scalar()
     return res

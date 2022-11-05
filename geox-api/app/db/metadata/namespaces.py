@@ -50,7 +50,7 @@ namespaces = Table(
         nullable=False,
         comment="Dict of properties used in the frontend, e.g. color.",
         server_default=text("'{}'::JSONB"),
-        default=dict(),
+        default=dict,
     ),
     *TimestampMixin(),
     Column("deleted_at", DateTime, nullable=True),

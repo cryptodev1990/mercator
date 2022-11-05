@@ -1,10 +1,7 @@
 import os
 import pathlib
 
-import pytest
-
 from app.core.access_token import get_access_token
-from app.main import app
 
 access_token = get_access_token()
 
@@ -20,7 +17,7 @@ def test_read_health(client):
 
 # TODO this is an integration test and should be in its own module
 def test_invalid_jwt_auth(client):
-    with open(os.path.join(here, "fixtures/fake-jwt.txt"), "r") as f:
+    with open(os.path.join(here, "fixtures/fake-jwt.txt"), "r", encoding="utf-8") as f:
         fake_jwt = f.read()
         client.get("/protected_health", headers={"Authorization": f"Bearer {fake_jwt}"})
         response = client.get("/protected_health")

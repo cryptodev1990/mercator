@@ -5,7 +5,7 @@ import pydantic
 __all__ = ["BaseModel", "RequestErrorModel"]
 
 
-class BaseModel(pydantic.BaseModel):
+class BaseModel(pydantic.BaseModel):  # pylint: disable=no-member
     class Config:
         orm_mode = True
         arbitrary_types_allowed = True

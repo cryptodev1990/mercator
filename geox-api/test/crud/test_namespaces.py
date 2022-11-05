@@ -1,10 +1,10 @@
+# pylint: disable=redefined-outer-name
 import uuid
 from test.crud.common import get_alice_ids, insert_test_users_and_orgs
 from typing import Any, Dict, List
 from uuid import UUID
 
 import pytest
-from pydantic import UUID4
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
@@ -66,9 +66,7 @@ def test_create_namespace_error_if_existing(conn: Connection):
     values: Dict[str, Any] = {"name": "Default"}
     user_id, organization_id = get_alice_ids(conn)
     with pytest.raises(NamespaceExistsError):
-        create_namespace(
-            conn, user_id=user_id, organization_id=organization_id, **values
-        )
+        create_namespace(conn, user_id=user_id, organization_id=organization_id, **values)
 
 
 def test_create_namespace_error_if_existing_2(conn):
@@ -125,14 +123,14 @@ def test_update_namespace_when_existing_name(conn):
         organization_id=organization_id,
         name="Namespace 1",
     )
-    namespace_2 = create_namespace(
+    create_namespace(
         conn,
         user_id=user_id,
         organization_id=organization_id,
         name="Namespace 2",
     )
     with pytest.raises(NamespaceExistsError):
-        update_namespace(conn, namespace_1.id, name=namespace_1.name)
+        update_namespace(conn, namespace_1.id, name="Namespace 2")
 
 
 def test_delete_namespace(conn):

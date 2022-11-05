@@ -11,6 +11,7 @@ from tenacity.wait import wait_fixed
 
 from app.db.engine import engine
 
+# pylint: disable=duplicate-code
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

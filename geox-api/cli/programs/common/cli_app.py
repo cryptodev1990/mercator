@@ -6,6 +6,7 @@ and a function to run the program from the CLI.
 
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
+from typing import Optional
 
 from app.core.config import get_settings
 
@@ -19,7 +20,7 @@ class CLIApp(ABC):
     and a function to run the program from the CLI.
     """
 
-    APP_NAME: str = ""
+    APP_NAME: Optional[str] = None
 
     @abstractmethod
     def run(self, args, loop) -> None:

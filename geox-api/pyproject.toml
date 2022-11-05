@@ -5,7 +5,7 @@ skip_glob = ["env/**", "alembic/versions/**"]
 profile = "black"
 
 [tool.black]
-line-length = 88
+line-length = 90
 target-version = ['py39']
 exclude = "env/|alembic/versions|\\.ipynb$|\\.ipynb_checkpoints/"
 
@@ -34,3 +34,18 @@ exclude = ["**/node_modules",
     "**/.ipynb_checkpoints"
 ]
 pythonVersion = "3.9"
+
+[tool.pylint.messages_control]
+max-line-length = 90
+disable = [
+    "missing-docstring",
+    "too-many-arguments",
+    "invalid-name",
+    "fixme",
+    "line-too-long",
+    "too-few-public-methods",
+    "too-many-instance-attributes"
+]
+
+[tool.pylint.similarities]
+min-similarity-lines=10

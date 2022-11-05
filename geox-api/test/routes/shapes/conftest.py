@@ -1,12 +1,12 @@
+# pylint: disable=redefined-outer-name
 """Common fixtures."""
 import uuid
 from functools import partial
 from typing import Any, Dict, Generator, List, Literal, TypedDict, cast
 
 import pytest
-from fastapi import FastAPI
 from geojson_pydantic import Polygon
-from pydantic import UUID4, Field
+from pydantic import UUID4, Field  # pylint: disable=no-name-in-module
 from pytest_fastapi_deps import DependencyOverrider
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
@@ -24,7 +24,6 @@ from app.crud.user import get_user_by_email
 from app.dependencies import get_connection, get_current_user_org, verify_token
 from app.main import app
 from app.schemas import GeoShape, Namespace, Organization, User, UserOrganization
-from app.schemas.organizations import Organization
 
 from ..conftest import get_connection_override, get_current_user_org_override
 
@@ -379,14 +378,17 @@ class DbExampleOrg(Organization):
 DbExampleUser.update_forward_refs()
 
 
+# pylint: disable=unused-argument
 def create_user(
     conn: Connection, *, email: str, name: str, sub_id: str, iss: str, **kwargs
 ) -> User:
-
     user = crud_create_user(
         conn, email=email, name=name, nickname=name, sub_id=sub_id, iss=iss
     )
     return user
+
+
+# pylint: enable=unused-argument
 
 
 class ExampleDbAbc:
@@ -428,6 +430,7 @@ class ExampleDbAbc:
     def __getitem__(self, name: str) -> DbExampleOrg:
         return self.organizations[name]
 
+    # pylint: disable=redefined-outer-name
     def dep_overrides(self) -> DependencyOverrider:
         return DependencyOverrider(
             app,
@@ -439,15 +442,6 @@ class ExampleDbAbc:
                 verify_token: lambda: {},
             },
         )
-
-    def __enter__(self, app: FastAPI) -> DependencyOverrider:
-        """Provide fastapi dependency overrides."""
-        self.__dep_overrider = self.dep_overrides
-        return self.__dep_overrider.__enter__()  # type: ignore
-
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
-        """Provide fastapi dependency overrides."""
-        return self.__dep_overrider.__exit__(exc_type, exc_value, traceback)  # type: ignore
 
 
 @pytest.fixture()

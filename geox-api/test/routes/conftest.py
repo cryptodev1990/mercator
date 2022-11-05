@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name
 """Common functions and fixtures used in testing API routes."""
 import random
 from functools import partial
@@ -6,7 +7,7 @@ from typing import Callable, Dict, Generator, Optional, cast
 
 import pytest
 from fastapi import Depends
-from pydantic import UUID4
+from pydantic.types import UUID4  # pylint: disable=no-name-in-module
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 

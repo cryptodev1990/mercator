@@ -2,7 +2,6 @@
 
 See `FastAPI dependency injection <https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/>`__.
 """
-import datetime
 import logging
 from functools import lru_cache
 from http import HTTPStatus
@@ -11,7 +10,7 @@ from typing import Any, AsyncGenerator, Dict, Optional, Protocol, cast
 import walrus
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 from sqlalchemy import text
 from sqlalchemy.engine import Connection, Engine
 
@@ -34,7 +33,7 @@ async def get_engine() -> Engine:
 
 
 async def get_connection(
-    engine: Engine = Depends(get_engine),
+    engine: Engine = Depends(get_engine),  # pylint: disable=redefined-outer-name
 ) -> AsyncGenerator[Connection, None]:
     """Yield a connection with an open transaction."""
     # engine.begin() yields a connection and also opens a transaction.
@@ -86,8 +85,8 @@ def get_cache() -> Optional[Cache]:
             )
             cache: walrus.Cache = db.cache(default_timeout=opts.timeout)
             return cache
-        except Exception as exc:
-            logger.error("Error initializing the cache", exc)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.error("Error initializing the cache: %s", exc)
     return None
 
 
@@ -96,7 +95,7 @@ def _current_user_key_fn(sub_id: str) -> str:
 
 
 async def get_current_user(
-    engine: Engine = Depends(get_engine),
+    engine: Engine = Depends(get_engine),  # pylint: disable=redefined-outer-name
     auth_jwt_payload: Dict[str, Any] = Depends(verify_token),
     cache: Optional[Cache] = Depends(get_cache),
 ) -> User:
@@ -129,14 +128,14 @@ async def get_current_user(
             user = cache.get(key)
             try:
                 assert isinstance(user, User)
-                logger.debug(f"User {sub_id} retrieved from cache.")
+                logger.debug("User retrieved %s from cache.", sub_id)
             except AssertionError:
-                logger.warning(f"Cache error: value of {key} is invalid")
+                logger.warning("Cache error: value of %s is invalid", key)
                 cache.set(key, None)
-        except Exception as exc:
-            logger.warning("Cache error: ", exc)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.warning("Cache error: %s", exc)
     if user is None:
-        logger.debug(f"User {sub_id} not retrieved from cache.")
+        logger.debug("User %s not retrieved from cache.", sub_id)
         with engine.begin() as conn:
             user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
             if user is None:
@@ -151,7 +150,7 @@ def _current_user_org_key_fn(user_id: int) -> str:
 
 
 async def get_current_user_org(
-    engine: Engine = Depends(get_engine),
+    engine: Engine = Depends(get_engine),  # pylint: disable=redefined-outer-name
     user: User = Depends(get_current_user),
     cache: Optional[Cache] = Depends(get_cache),
 ) -> UserOrganization:
@@ -166,13 +165,13 @@ async def get_current_user_org(
             try:
                 assert isinstance(org, Organization)
                 logger.debug(
-                    f"Organization for user {user_id} retried from cache {key}"
+                    "Organization for user %s retried from cache %s", user_id, key
                 )
             except AssertionError:
-                logger.warning(f"Cache error: value of {key} is invalid")
+                logger.warning("Cache error: value of %s is invalid", key)
                 cache.set(key, None)
-        except Exception as exc:
-            logger.warning("Cache error: ", exc)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.warning("Cache error: %s", exc)
     if org is None:
         with engine.begin() as conn:
             org = get_active_organization(conn, user_id)
@@ -225,14 +224,12 @@ async def get_app_user_connection(
 def get_osm_engine() -> Engine:
     """Return OSM Engine."""
     if osm_engine is None:
-        raise HTTPException(
-            HTTPStatus.NOT_IMPLEMENTED, detail="OSM database not found."
-        )
+        raise HTTPException(HTTPStatus.NOT_IMPLEMENTED, detail="OSM database not found.")
     return osm_engine
 
 
 async def get_osm_conn(
-    engine=Depends(get_osm_engine),
+    engine=Depends(get_osm_engine),  # pylint: disable=redefined-outer-name
 ) -> AsyncGenerator[Connection, None]:
     """Return a connection to an OSM database."""
     # TODO: should we disallow writes to it?

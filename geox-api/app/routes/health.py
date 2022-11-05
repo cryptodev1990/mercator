@@ -45,5 +45,5 @@ async def db_health(conn: Connection = Depends(get_connection)):
         res = conn.execute(text("SELECT 1")).scalar()
         assert res == 1
         return JSONResponse({"message": "OK"})
-    except Exception as e:
+    except Exception:  # pylint: disable=broad-except
         return JSONResponse({"message": "ERROR"}, status_code=500)

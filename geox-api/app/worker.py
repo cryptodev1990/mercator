@@ -1,5 +1,4 @@
 """Celery worker."""
-from functools import lru_cache
 from typing import Any, Dict, Optional, cast
 from uuid import UUID, uuid4
 
@@ -29,7 +28,6 @@ def test_celery(word: str) -> str:
 # routes.
 
 
-@lru_cache(None)
 def get_postgres_engine(
     postgres_connection_url, engine_opts: Optional[EngineOptions] = None
 ):
@@ -81,7 +79,7 @@ def query_shapes_table(
     app_db_connection_url: str,
     engine_opts: Optional[EngineOptions] = None,
 ) -> gpd.GeoDataFrame:
-    engine = get_postgres_engine(app_db_connection_url, engine_opts=None)
+    engine = get_postgres_engine(app_db_connection_url, engine_opts=engine_opts)
     with engine.begin() as conn:
         logger.debug(f"Copy shapes for {organization_id}")
         # TODO: save as geoparquet with geopandas
@@ -154,7 +152,7 @@ def copy_to_s3(
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
         )
-        logger.debug(f"Exported data to {output_path}")
+        logger.debug("Exported data to %s", output_path)
     else:
         logger.debug("No results, not exporting shapes to S3.")
     return {

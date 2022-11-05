@@ -20,7 +20,7 @@ import logging
 from typing import Any, Dict, Generator, List, Optional, cast
 from uuid import UUID
 
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 from slugify import slugify
 from sqlalchemy import select, text, update
 from sqlalchemy.dialects.postgresql import insert
@@ -36,8 +36,6 @@ logger = logging.getLogger(__name__)
 
 class NamespaceDoesNotExistError(Exception):
     """Namespace does not exist error."""
-
-    pass
 
 
 class NamespaceWithThisIdDoesNotExistError(NamespaceDoesNotExistError):
@@ -79,7 +77,9 @@ class DefaultNamespaceCannotBeRenamedError(Exception):
         self.id = id_
 
     def __str__(self):
-        return f"Namespace '{self.id_}' is the default namespace. Its name cannot be changed."
+        return (
+            f"Namespace '{self.id}' is the default namespace. Its name cannot be changed."
+        )
 
 
 class DefaultNamespaceDoesNotExistError(Exception):
@@ -89,7 +89,7 @@ class DefaultNamespaceDoesNotExistError(Exception):
         self.id = organization_id
 
     def __str__(self):
-        return f"No default namespace exists for organization '{self.organization_id}'."
+        return f"No default namespace exists for organization '{self.id}'."
 
 
 def _add_user_org_to_params(conn: Connection, params: Dict[str, Any]) -> Dict[str, Any]:
@@ -209,7 +209,7 @@ def create_namespace(
     nested_trans = conn.begin_nested()
     try:
         res = conn.execute(stmt, params).first()
-    except IntegrityError as exc:
+    except IntegrityError:
         nested_trans.rollback()
         try:
             existing_namespace = get_namespace_by_slug(conn, slug)
@@ -222,7 +222,7 @@ def create_namespace(
             cast(Namespace, existing_namespace).name,
             cast(Namespace, existing_namespace).slug,
             cast(Namespace, existing_namespace).id,
-        )
+        ) from None
     return Namespace.from_orm(res)
 
 
@@ -260,9 +260,7 @@ def update_namespace(
         values["properties"] = properties
 
     stmt = (
-        update(namespaces_tbl)
-        .where(namespaces_tbl.c.id == id_)
-        .returning(namespaces_tbl)
+        update(namespaces_tbl).where(namespaces_tbl.c.id == id_).returning(namespaces_tbl)
     )
     nested_trans = conn.begin_nested()
     try:
@@ -278,12 +276,12 @@ def update_namespace(
             existing_namespace = get_namespace_by_slug(conn, values["slug"])
             raise NamespaceExistsError(
                 existing_namespace.name, existing_namespace.slug, existing_namespace.id
-            )
+            ) from None
         except NamespaceWithThisSlugDoesNotExistError:
             # this shouldn't happen - so set the value to null and then when NamespaceExistsError
             # is raised, an exception for missing attribute errors will be raised - indicating
             # that something went horribly wrong
-            raise exc
+            raise exc from exc
     # If None is returned - then no row was updated - meaning
     # that the namespace doesn't exist. However, we checked for existence
     # with get_namespace()

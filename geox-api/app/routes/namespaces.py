@@ -1,10 +1,8 @@
-# TODO: uncomment after launching namespaces
 import logging
-from email.policy import HTTP
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 
 from app.crud.namespaces import (
     DefaultNamespaceCannotBeRenamedError,
@@ -45,9 +43,12 @@ _RESPONSES = {
     ]
 }
 
-
+# pylint: disable=consider-using-dict-comprehension
 def _responses(*args):
     return dict([_RESPONSES[key] for key in args])
+
+
+# pylint: enable=consider-using-dict-comprehension
 
 
 @router.post(
@@ -69,7 +70,7 @@ async def _post_namespaces(
             organization_id=user_conn.organization.id,
         )
     except NamespaceExistsError as exc:
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc)) from None
 
 
 # Read
@@ -87,14 +88,16 @@ async def _get_namespaces__namespace_id(
     try:
         namespace = NamespaceResponse.from_orm(get_namespace(conn, namespace_id))
     except NamespaceDoesNotExistError as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
     namespace.shapes = list(select_shape_metadata(conn, namespace_id=namespace.id))
     return namespace
 
 
 @router.get("/geofencer/namespaces", response_model=List[NamespaceResponse])
 async def _get_namespaces(
+    # pylint: disable=redefined-builtin
     id: Optional[UUID4] = Query(default=None, title="ID of the namespace"),
+    # pylint: enable=redefined-builtin
     name: Optional[str] = Query(default=None, title="Name of the namespace"),
     includeShapes: bool = Query(default=True),
     user_conn: UserConnection = Depends(get_app_user_connection),
@@ -133,11 +136,13 @@ async def _patch_namespaces(
             properties=data.properties,
         )
     except NamespaceDoesNotExistError as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
     except NamespaceExistsError as exc:
-        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc))
+        raise HTTPException(status.HTTP_409_CONFLICT, detail=str(exc)) from None
     except DefaultNamespaceCannotBeRenamedError as exc:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from None
     return namespace
 
 
@@ -163,11 +168,11 @@ async def _delete_namespaces(
     if namespace_id == default_namespace_id:
         raise HTTPException(
             status.HTTP_409_CONFLICT, detail="Unable to delete the default namespace."
-        )
+        ) from None
     try:
         delete_namespace(user_conn.connection, namespace_id)
     except NamespaceDoesNotExistError as exc:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc))
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
     return None
 
 

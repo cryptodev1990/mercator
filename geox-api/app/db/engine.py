@@ -36,16 +36,22 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
     params: Dict[str, Any] = {"future": True, "pool_pre_ping": True}
     params.update(settings.engine_opts.dict())
     params.update(kwargs)
+    # pylint: disable=redefined-outer-name
     engine = sa.create_engine(uri, **params)
+    # pylint: enable=redefined-outer-name
 
     # Adds events to set/reset values of app_user_id settings
     # Called when a connection is created
     # https://docs.sqlalchemy.org/en/14/core/events.html#sqlalchemy.events.PoolEvents.connect
+    # pylint: disable=unused-argument
     @event.listens_for(engine, "connect")
     def receive_connect(dbapi_connection, connection_record):
         """Ensure connections have the setting app.user_id defined."""
         _set_default_app_user_id(dbapi_connection)
 
+    # pylint: enable=unused-argument
+
+    # pylint: disable=unused-argument
     # Called when a connection is checked out from the pool before it is used
     @event.listens_for(engine, "checkout")
     def receive_checkout(dbapi_connection, connection_record, connection_proxy):
@@ -53,13 +59,17 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs) -> Engine:
         # This is a redundancy in case somehow app.user_id was not cleared
         _set_default_app_user_id(dbapi_connection)
 
+    # pylint: enable=unused-argument
+
     # conn returned to pool
+    # pylint: disable=unused-argument
     @event.listens_for(engine, "reset")
     def receive_reset(dbapi_connection, connection_record):
         """Ensure that connections returned to the pool have app.user_id reset default state."""
         # This is a redundancy in case somehow app.user_id was not cleared
         _set_default_app_user_id(dbapi_connection)
 
+    # pylint: enable=unused-argument
     return engine
 
 

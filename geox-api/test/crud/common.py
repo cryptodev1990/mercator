@@ -1,3 +1,4 @@
+# pylint: disable=R0801,redefined-outer-name
 """Utility to create a common test organization and some users"""
 import random
 from string import ascii_letters, digits
@@ -5,8 +6,7 @@ from typing import Dict, Optional, Tuple, cast
 from uuid import UUID
 
 import pytest
-import ruamel.yaml
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 from sqlalchemy.engine import Connection
 
 from app.crud.organization import (
@@ -18,9 +18,6 @@ from app.crud.organization import (
 from app.crud.user import create_user as crud_create_user
 from app.crud.user import get_user_by_email
 from app.dependencies import set_app_user_settings
-
-yaml = ruamel.yaml.YAML(typ="safe")
-
 
 _ASCII_ALPHANUMERIC = ascii_letters + digits
 

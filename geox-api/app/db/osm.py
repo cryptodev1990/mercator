@@ -4,7 +4,6 @@ from typing import Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker
 
 from app.core.config import Settings, get_settings
 

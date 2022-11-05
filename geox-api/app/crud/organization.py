@@ -1,8 +1,8 @@
 """CRUD functions for organizations."""
 from typing import List
 
-from pydantic import UUID4
-from sqlalchemy import insert, select, text, update
+from pydantic import UUID4  # pylint: disable=no-name-in-module
+from sqlalchemy import insert, select, text
 from sqlalchemy.engine import Connection
 
 from app.db.metadata import organization_members as org_mbr_tbl
@@ -80,9 +80,7 @@ def get_organization(conn: Connection, organization_id: UUID4) -> Organization:
         values.
 
     """
-    stmt = select(org_tbl).where(        # type: ignore
-        org_tbl.c.id == organization_id  # type: ignore
-    )  # type: ignore
+    stmt = select(org_tbl).where(org_tbl.c.id == organization_id)  # type: ignore
     res = conn.execute(stmt, {"id": organization_id}).first()
     if res is None:
         raise OrganizationDoesNotExistError(organization_id)
@@ -138,11 +136,6 @@ def set_active_organization(
         conn: Database connection
         user_id: ID of the user.
         organization_id: Organization to set for the user.
-
-    Returns:
-        Always returns true if it executes. If organization id is not already an organzation of the
-        user, then nothing will happen and active membership is False for all organizations that the
-        user belongs to.
     """
     if not is_user_in_org(conn, user_id=user_id, organization_id=organization_id):
         raise UserNotInOrgError(user_id, organization_id)
@@ -164,11 +157,6 @@ def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
 
     Args:
         conn: Database connection
-
-    Returns:
-        Id of the active organization if one exists. ``None`` if there is no active org.
-        Users of this function are responsible for raising exceptions or otherwise
-        handling the case of no active organization for the user.
     """
     stmt = text(
         """
@@ -202,7 +190,7 @@ def get_active_organization(conn: Connection, user_id: int) -> Organization:
         SELECT o.*
         FROM organization_members om
         JOIN organizations o
-         ON o.id = om.organization_id
+            ON o.id = om.organization_id
         WHERE om.user_id = :user_id
             AND om.deleted_at IS NULL
             AND om.active
@@ -303,7 +291,7 @@ def get_org_by_subscription_id(conn: Connection, stripe_sub_id: str) -> Organiza
 def update_stripe_whitelist_status(
     conn: Connection, organization_id: UUID4, should_add=False
 ) -> Organization:
-    """Add the organization to a whitelist where users do not have to pay for the product"""
+    """Add the organization to a whitelist where users do not have to pay for the product."""
     stmt = text(
         """
         UPDATE organizations

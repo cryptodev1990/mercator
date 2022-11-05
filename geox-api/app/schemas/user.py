@@ -1,8 +1,7 @@
 import datetime
-from email.message import EmailMessage
 from typing import Optional
 
-from pydantic import UUID4, EmailStr, Field
+from pydantic import EmailStr, Field  # pylint: disable=no-name-in-module
 
 from app.schemas.common import BaseModel
 

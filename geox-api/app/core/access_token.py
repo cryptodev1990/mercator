@@ -19,7 +19,10 @@ def get_access_token() -> str:
         "audience": settings.auth_audience,
     }
     response = requests.post(
-        f"https://{settings.auth_domain}/oauth/token", json=payload, headers=headers
+        f"https://{settings.auth_domain}/oauth/token",
+        json=payload,
+        headers=headers,
+        timeout=30,
     )
     data = response.json()
     return data["access_token"]
@@ -27,8 +30,6 @@ def get_access_token() -> str:
 
 def main() -> None:
     """Generate an Auth0 access token."""
-    import typer
-
     typer.echo(get_access_token())
 
 

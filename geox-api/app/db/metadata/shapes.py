@@ -13,7 +13,6 @@ from sqlalchemy import (
     String,
     Table,
     func,
-    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR, UUID
 from sqlalchemy.types import TypeDecorator
@@ -72,7 +71,7 @@ shapes = Table(
         "properties",
         JSONB,
         nullable=False,
-        default=dict(),
+        default=dict,
         server_default="json_build_object()",
     ),
     Column(

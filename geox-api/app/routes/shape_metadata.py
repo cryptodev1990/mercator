@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import UUID4
+from pydantic import UUID4  # pylint: disable=no-name-in-module
 
 from app.core.datatypes import Latitude, Longitude
 from app.crud.shape import get_shape_metadata_matching_search, select_shape_metadata
@@ -34,16 +34,12 @@ def _get_shape_metadata__bbox(
     max_y: float = Query(ge=-90, le=90),
     user_conn: UserConnection = Depends(get_app_user_connection),
     offset: int = Query(default=0, title="Item offset", ge=0),
-    limit: int = Query(
-        default=DEFAULT_LIMIT, title="Number of shapes to retrieve", ge=1
-    ),
+    limit: int = Query(default=DEFAULT_LIMIT, title="Number of shapes to retrieve", ge=1),
 ) -> List[GeoShapeMetadata]:
     """Get shape metadata by bounding box."""
     bbox = ViewportBounds(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
     shapes = list(
-        select_shape_metadata(
-            user_conn.connection, bbox=bbox, limit=limit, offset=offset
-        )
+        select_shape_metadata(user_conn.connection, bbox=bbox, limit=limit, offset=offset)
     )
     return shapes
 
@@ -56,9 +52,7 @@ def _get_shape_metadata__bbox(
 def _get_shape_metadata__search(
     query: str,
     offset: int = Query(default=0, title="Item offset", ge=0),
-    limit: int = Query(
-        default=DEFAULT_LIMIT, title="Number of shapes to retrieve", ge=1
-    ),
+    limit: int = Query(default=DEFAULT_LIMIT, title="Number of shapes to retrieve", ge=1),
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> List[GeoShapeMetadata]:
     """Get shape metadata by bounding box."""
@@ -95,7 +89,7 @@ def _get_shape_metadata(
         try:
             bbox_obj = ViewportBounds.from_list(bbox)
         except (ValueError, TypeError):
-            raise HTTPException(422, "Invalid bbox")
+            raise HTTPException(422, "Invalid bbox") from None
     else:
         bbox_obj = None
     user_id = user_conn.user.id if user else None

@@ -6,7 +6,6 @@ from sqlalchemy.engine import Connection
 # otherwise, SQL Alchemy might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
-
+# pylint: disable=unused-argument
 def init_db(conn: Connection) -> None:
     """Initialize the app database."""
-    pass

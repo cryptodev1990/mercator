@@ -1,6 +1,6 @@
-import datetime
+# pylint: disable=too-many-locals
 import logging
-from typing import Any, Dict, Optional
+from typing import Optional
 
 import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -25,7 +25,6 @@ from app.dependencies import (
     verify_token,
 )
 from app.schemas.common import BaseModel
-from app.schemas.organizations import StripeSubscriptionStatus
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,7 @@ class CheckoutSession(BaseModel):
 async def create_checkout_session(
     checkout_session: CheckoutSession,
     user_conn: UserConnection = Depends(get_app_user_connection),
-):
+) -> JSONResponse:
     session = stripe.checkout.Session.create(
         success_url=checkout_session.success_url + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=checkout_session.cancel_url,
@@ -65,7 +64,7 @@ async def webhook_received(
     request: Request,
     engine: Engine = Depends(get_engine),
     cache: Optional[Cache] = Depends(get_cache),
-):
+) -> JSONResponse:
     # To do development work on this webhook, you want to use the Stripe CLI
     # https://stripe.com/docs/stripe-cli
     # or use ngrok
@@ -83,7 +82,7 @@ async def webhook_received(
         )
         data = event["data"]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from None
 
     event_type = event["type"]
 
@@ -98,9 +97,7 @@ async def webhook_received(
                 cache.delete(f"app:cache:user_org:{user_id}")
             subscription_id = str(data["object"]["subscription"])
             org = get_active_organization(conn, user_id)
-            add_subscription(
-                conn, organization_id=org.id, stripe_sub_id=subscription_id
-            )
+            add_subscription(conn, organization_id=org.id, stripe_sub_id=subscription_id)
     elif event_type == "invoice.paid":
         # This event pairs a subscription ID with a payment time
         with engine.begin() as conn:
@@ -134,7 +131,8 @@ async def webhook_received(
         logging.warning({"msg": "Payment failed."})
     else:
         return JSONResponse(
-            {"msg": "Unhandled event type {}".format(event_type)}, status_code=400
+            {"msg": f"Unhandled event type {event_type}"},
+            status_code=400,
         )
 
     return JSONResponse({"status": "success"})

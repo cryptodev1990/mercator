@@ -3,7 +3,10 @@ import re
 from enum import Enum
 from typing import TYPE_CHECKING, Literal, Union
 
+# pylint: disable=no-name-in-module
 from pydantic import AnyHttpUrl, AnyUrl, ConstrainedFloat, ConstrainedStr, constr
+
+# pylint: enable=no-name-in-module
 
 AnyHttpURLorAsterisk = Union[AnyHttpUrl, Literal["*"]]
 """A valid HTTP URL or *."""

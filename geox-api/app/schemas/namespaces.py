@@ -1,9 +1,7 @@
 import datetime
-import re
 from typing import Any, Dict, List, Optional
 
-from pydantic import UUID4, Field, validator
-from slugify import slugify
+from pydantic import UUID4, Field, validator  # pylint: disable=no-name-in-module
 
 from app.core.datatypes import Slug
 

@@ -9,7 +9,7 @@ from app.dependencies import verify_token
 from app.tiler.authorized_tile_function import AuthorizedTileFunction
 from app.tiler.authorized_tile_router import router
 
-dir = os.path.dirname(__file__)
+current_dir = os.path.dirname(__file__)
 
 
 def add_tiler_routes(app: FastAPI) -> None:
@@ -35,7 +35,7 @@ def add_tiler_routes(app: FastAPI) -> None:
     app.state.timvt_function_catalog.register(
         AuthorizedTileFunction.from_file(
             id="generate_shape_tile",
-            infile=os.path.join(dir, "generate_shape_tile.sql"),
+            infile=os.path.join(current_dir, "generate_shape_tile.sql"),
         )
     )
 

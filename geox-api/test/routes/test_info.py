@@ -1,8 +1,9 @@
+# pylint: disable=redefined-outer-name
 import os
 from uuid import UUID
 
 from fastapi.testclient import TestClient
-from pytest_fastapi_deps import fastapi_dep
+from pytest_fastapi_deps import fastapi_dep  # pylint: disable=unused-import
 
 from app import schemas
 from app.core.config import Settings, get_settings
@@ -43,9 +44,7 @@ def get_current_user_org_override():
 
 
 def test_current_user(fastapi_dep):
-    with fastapi_dep(app).override(
-        {get_current_user_org: get_current_user_org_override}
-    ):
+    with fastapi_dep(app).override({get_current_user_org: get_current_user_org_override}):
         response = client.get("/current_user")
         data = response.json()
         assert data == {"user_id": 42}
