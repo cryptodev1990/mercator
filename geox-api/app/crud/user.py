@@ -66,7 +66,7 @@ def get_user(conn: Connection, user_id: int) -> User:
         """
     SELECT *
     FROM users
-    WHERE user_id = :user_id
+    WHERE id = :user_id
     """
     )
     user = conn.execute(stmt, {"user_id": user_id}).first()

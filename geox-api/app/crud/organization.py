@@ -99,7 +99,8 @@ def is_user_in_org(conn: Connection, *, user_id: int, organization_id: UUID4) ->
     stmt = text(
         "SELECT id FROM organization_members WHERE user_id = :user_id AND organization_id = :organization_id"
     )
-    res = conn.execute(stmt, {"organization_id": organization_id, "user_id": user_id})
+    res = conn.execute(
+        stmt, {"organization_id": organization_id, "user_id": user_id})
     return bool(res is not None)
 
 
@@ -147,11 +148,12 @@ def set_active_organization(
             AND deleted_at IS NULL
         """
     )
-    conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
+    conn.execute(stmt, {"user_id": user_id,
+                 "organization_id": organization_id})
 
 
 def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
-    """Get the acttive organization of a user.
+    """Get the active organization of a user.
 
     A user will only have one active organization at a time.
 
@@ -219,14 +221,14 @@ def add_subscription(
     stmt = text(
         """
         UPDATE organizations
-        SET stripe_subscription_id = :stripe_sub_id
-        , stripe_subscription_created_at = NOW()
-        WHERE id = :organization_id
+        SET stripe_subscription_id = :stripe_sub_id, stripe_subscription_created_at = NOW()
+        WHERE id= :organization_id
         RETURNING *
         """
     )
     res = conn.execute(
-        stmt, {"stripe_sub_id": stripe_sub_id, "organization_id": organization_id}
+        stmt, {"stripe_sub_id": stripe_sub_id,
+               "organization_id": organization_id}
     ).first()
     return Organization.from_orm(res)
 
@@ -246,7 +248,7 @@ def update_payment_time(conn: Connection, *, stripe_sub_id: str) -> Organization
     stmt = text(
         """
         UPDATE organizations
-        SET stripe_paid_at = NOW()
+        SET stripe_paid_at=NOW()
         WHERE 1=1
           AND stripe_subscription_id = :stripe_sub_id
         RETURNING *
@@ -263,7 +265,7 @@ def get_all_org_members(conn: Connection, organization_id: UUID4) -> List[User]:
         SELECT u.*
         FROM users AS u
         JOIN organization_members AS om
-        ON u.id = om.user_id
+        ON u.id=om.user_id
         WHERE 1=1
           AND om.organization_id = :organization_id
           AND om.deleted_at IS NULL
@@ -273,13 +275,52 @@ def get_all_org_members(conn: Connection, organization_id: UUID4) -> List[User]:
     return [User.from_orm(user) for user in res]
 
 
+def create_org_member(conn: Connection, *, organization_id: UUID4, user_id: int, active: bool) -> bool:
+    """Add a user to an organization."""
+
+    stmt = text(
+        """
+        INSERT INTO organization_members(created_at, updated_at, organization_id, user_id, active)
+        VALUES(NOW(), NOW(), :organization_id, :user_id, :active)
+        """
+    )
+
+    conn.execute(
+        stmt, {"organization_id": organization_id,
+               "user_id": user_id, "active": active}
+    )
+
+    return True
+
+
+def check_if_org_member(conn: Connection, *, organization_id: UUID4, user_id: int) -> bool:
+    """Check if a user is a member of an organization."""
+
+    stmt = text(
+        """
+        SELECT 1
+        FROM organization_members
+        WHERE 1=1
+          AND organization_id= :organization_id
+          AND user_id= :user_id
+          AND deleted_at IS NULL
+        """
+    )
+
+    res = conn.execute(
+        stmt, {"organization_id": organization_id, "user_id": user_id}
+    ).first()
+
+    return res is not None
+
+
 def get_org_by_subscription_id(conn: Connection, stripe_sub_id: str) -> Organization:
     """Return the organization that the user belongs to."""
     stmt = text(
         """
         SELECT *
         FROM organizations
-        WHERE stripe_subscription_id = :stripe_sub_id
+        WHERE stripe_subscription_id= :stripe_sub_id
         """
     )
     res = conn.execute(stmt, {"stripe_sub_id": stripe_sub_id}).first()
@@ -295,8 +336,7 @@ def update_stripe_whitelist_status(
     stmt = text(
         """
         UPDATE organizations
-        SET subscription_whitelist = :should_add
-        WHERE id = :organization_id
+        SET subscription_whitelist= :should_add
         RETURNING *
         """
     )
@@ -315,12 +355,13 @@ def update_stripe_subscription_status(
     stmt = text(
         """
         UPDATE organizations
-        SET stripe_subscription_status = :status
-        WHERE stripe_subscription_id = :stripe_sub_id
+        SET stripe_subscription_status= :status
+        WHERE stripe_subscription_id= :stripe_sub_id
         RETURNING *
         """
     )
-    res = conn.execute(stmt, {"status": status, "stripe_sub_id": stripe_sub_id}).first()
+    res = conn.execute(
+        stmt, {"status": status, "stripe_sub_id": stripe_sub_id}).first()
     if res is None:
         raise StripeSubscriptionDoesNotExistError(stripe_sub_id)
     return Organization.from_orm(res)

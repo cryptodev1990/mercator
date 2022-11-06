@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-from getpass import getpass
 
 from pydantic import UUID4
 

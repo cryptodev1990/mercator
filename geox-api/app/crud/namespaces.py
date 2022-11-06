@@ -106,7 +106,8 @@ def _add_user_org_to_params(conn: Connection, params: Dict[str, Any]) -> Dict[st
     return params
 
 
-_select_namespaces = select(namespaces_tbl).where(namespaces_tbl.c.deleted_at.is_(None))  # type: ignore
+_select_namespaces = select(namespaces_tbl).where(
+    namespaces_tbl.c.deleted_at.is_(None))  # type: ignore
 
 
 def slugify_name(name: str) -> str:
@@ -134,7 +135,8 @@ def select_namespaces(
 
 def namespace_exists(conn, id_: UUID4, include_deleted: bool = False) -> bool:
     """Check whether a namespace exists or not."""
-    stmt = select(namespaces_tbl.c.id).where(namespaces_tbl.c.id == id_)  # type: ignore
+    stmt = select(namespaces_tbl.c.id).where(
+        namespaces_tbl.c.id == id_)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(namespaces_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
@@ -143,7 +145,8 @@ def namespace_exists(conn, id_: UUID4, include_deleted: bool = False) -> bool:
 
 def get_namespace(conn, id_: UUID4, include_deleted: bool = False) -> Namespace:
     """Get a namespace by its id."""
-    stmt = select(namespaces_tbl).where(namespaces_tbl.c.id == id_)  # type: ignore
+    stmt = select(namespaces_tbl).where(
+        namespaces_tbl.c.id == id_)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(namespaces_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
@@ -157,7 +160,8 @@ def get_namespace_by_slug(
 ) -> Namespace:
     """Get a namespace by its id."""
     # No include_deleted because slug is unique only for undeleted namespaces
-    stmt = select(namespaces_tbl).where(namespaces_tbl.c.slug == slug)  # type: ignore
+    stmt = select(namespaces_tbl).where(
+        namespaces_tbl.c.slug == slug)  # type: ignore
     if organization_id is not None:
         stmt = stmt.where(namespaces_tbl.c.organization_id == organization_id)
     res = conn.execute(stmt).first()
