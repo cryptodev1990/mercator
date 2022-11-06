@@ -39,7 +39,7 @@ function _pylint() {
 
 # TODO: could customize which are run
 
-cmds="_mypy _shellcheck _yamllint _pylint"
+cmds="_mypy _shellcheck _yamllint"
 num_failures=0
 for cmd in $cmds;
 do
