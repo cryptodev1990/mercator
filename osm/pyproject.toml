@@ -20,6 +20,8 @@ shapely = "^1.8.5.post1"
 asyncpg = "^0.27.0"
 python-dotenv = "^0.21.0"
 greenlet = "^2.0.0.post0"
+geoalchemy2 = "^0.12.5"
+pint = "^0.20.1"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.6.0"
@@ -45,6 +47,7 @@ enable = []
 [tool.pylint]
 ignore-long-lines = "^(\\s*(# ).*|.*<https?://.*)$"
 max-line-length = 90
+good-names = ["m"]
 
 
 [tool.pytest.ini_options]
@@ -68,7 +71,7 @@ exclude = '''(?x)
     | ^alembic/versions
 '''
 plugins = ["pydantic.mypy", "sqlmypy"]
-ignore_missing_imports = false
+ignore_missing_imports = true
 allow_untyped_defs = false
 
 

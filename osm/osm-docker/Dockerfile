@@ -14,6 +14,9 @@ RUN apt-get update \
 
 ENV PBF_DOWNLOAD_URL https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
 
+# Set default config
+COPY osm-postgres.conf /etc/postgresql/postgresql.conf
+
 WORKDIR /data
 RUN curl -s -o osm.pbf ${PBF_DOWNLOAD_URL}
 

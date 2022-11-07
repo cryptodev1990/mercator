@@ -14,6 +14,7 @@ from app.db import create_app_engine
 
 logger = logging.getLogger(__name__)
 
+
 @lru_cache()
 def get_engine() -> AsyncEngine:
     """Return an engine to generate connections to the app database."""

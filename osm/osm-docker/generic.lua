@@ -9,33 +9,24 @@
 -- GEOJSON SRID
 local srid = 4326
 
-local tables = {}
+local dtable = osm2pgsql.define_table{
+    name = 'osm',
+    -- This will generate a column "osm_id INT8" for the id, and a column
+    -- "osm_type CHAR(1)" for the type of object: N(ode), W(way), R(relation)
+    ids = { type = 'any', id_column = 'osm_id', type_column = 'osm_type' },
+    columns = {
+        { column = 'attrs', type = 'jsonb' },
+        { column = 'tags',  type = 'jsonb' },
+        { column = 'geom',  type = 'geometry', projection = srid, not_null = true },
+    }
+}
 
-tables.points = osm2pgsql.define_node_table('points', {
-    { column = 'tags', type = 'jsonb' },
-    { column = 'geom', type = 'point', projection = srid, not_null = true },
-})
-
-tables.lines = osm2pgsql.define_way_table('lines', {
-    { column = 'tags', type = 'jsonb' },
-    { column = 'geom', type = 'linestring', projection = srid, not_null = true },
-})
-
-tables.polygons = osm2pgsql.define_area_table('polygons', {
-    { column = 'tags', type = 'jsonb' },
-    { column = 'geom', type = 'geometry', projection = srid, not_null = true },
-    { column = 'area', type = 'area' },
-})
-
-tables.routes = osm2pgsql.define_relation_table('routes', {
-    { column = 'tags', type = 'jsonb' },
-    { column = 'geom', type = 'multilinestring', projection = srid, not_null = true },
-})
-
-tables.boundaries = osm2pgsql.define_relation_table('boundaries', {
-    { column = 'tags', type = 'jsonb' },
-    { column = 'geom', type = 'multilinestring', projection = srid, not_null = true },
-})
+function attrs(object)
+    return {
+        version = object.version,
+        timestamp = object.timestamp,
+    }
+end
 
 -- These tag keys are generally regarded as useless for most rendering. Most
 -- of them are from imports or intended as internal information for mappers.
@@ -227,7 +218,8 @@ function osm2pgsql.process_node(object)
         return
     end
 
-    tables.points:insert({
+    dtable:insert({
+        attrs = attrs(object),
         tags = object.tags,
         geom = object:as_point()
     })
@@ -239,12 +231,14 @@ function osm2pgsql.process_way(object)
     end
 
     if object.is_closed and has_area_tags(object.tags) then
-        tables.polygons:insert({
+        dtable:insert({
+            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_polygon()
         })
     else
-        tables.lines:insert({
+        dtable:insert({
+            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_linestring()
         })
@@ -259,7 +253,8 @@ function osm2pgsql.process_relation(object)
     end
 
     if relation_type == 'route' then
-        tables.routes:insert({
+        dtable:insert({
+            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_multilinestring()
         })
@@ -267,7 +262,8 @@ function osm2pgsql.process_relation(object)
     end
 
     if relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
-        tables.boundaries:insert({
+        dtable:insert({
+            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_multilinestring():line_merge()
         })
@@ -275,7 +271,8 @@ function osm2pgsql.process_relation(object)
     end
 
     if relation_type == 'multipolygon' then
-        tables.polygons:insert({
+        dtable:insert({
+            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_multipolygon()
         })

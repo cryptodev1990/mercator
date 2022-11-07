@@ -2,7 +2,7 @@
 
 from enum import Enum
 
-from pydantic import BaseModel # pylint: disable=no-name-in-module
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
 class Schema(BaseModel):

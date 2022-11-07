@@ -1,18 +1,17 @@
 """Fastapi main"""
 import logging
-from enum import Enum
 
 from fastapi import Depends, FastAPI, HTTPException
-from pydantic import BaseModel # pylint: disable=no-name-in-module
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncConnection # type: ignore
+from sqlalchemy.ext.asyncio import AsyncConnection  # type: ignore
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from app.schemas import HealthResponse, HealthStatus
 from app.core.config import get_settings
-from app.dependencies import get_conn
 from app.db import engine
+from app.dependencies import get_conn
+from app.routes.osm import router as osm_router
+from app.schemas import HealthResponse, HealthStatus
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +32,8 @@ app = FastAPI(
         ),
     ],
 )
+
+app.include_router(osm_router, prefix="/osm", tags=["osm"])
 
 
 async def db_health_check(conn: AsyncConnection) -> None:
@@ -71,7 +72,6 @@ class DatabaseHealthError(Exception):
 async def health() -> HealthResponse:
     """API health check."""
     return HealthResponse(message=HealthStatus.OK)
-
 
 
 @app.get("/health/db", tags=["health"])

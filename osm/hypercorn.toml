@@ -1,4 +1,3 @@
-dogstatsd_tags = "geox_app_web_server"
 include_server_header = false
 accesslog = "-"
 errorlog = "-"

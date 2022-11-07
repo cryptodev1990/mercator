@@ -16,7 +16,7 @@ run:
 	poetry run ./start.sh
 
 lint:
-	mypy .
+	poetry run mypy .
 	poetry run pylint app test
 
 format:
