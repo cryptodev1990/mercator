@@ -7,13 +7,10 @@ import {
   LassoIcon,
   EditMarkupIcon,
   CursorLineIcon,
-  ClockIcon,
   DrawPolygonIcon,
-  DriveEtaIcon,
 } from "../../../../common/components/icons";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { useEffect, useState } from "react";
-import { IsochroneControls } from "./isochrone-controls";
 
 interface ToolButtonBankMode {
   name: string;

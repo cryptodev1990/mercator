@@ -36,3 +36,5 @@ export { TbTrash as TrashIcon } from "react-icons/tb";
 export { TbLasso as LassoIcon } from "react-icons/tb";
 // vsc = vscode icons
 export { VscJson as JsonIcon } from "react-icons/vsc";
+
+export { TfiNewWindow as NewWindowIcon } from "react-icons/tfi";

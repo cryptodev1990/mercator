@@ -52,7 +52,7 @@
     "react-dropzone": "^14.2.2",
     "react-hook-form": "^7.33.1",
     "react-hot-toast": "^2.3.0",
-    "react-icons": "^4.4.0",
+    "react-icons": "^4.6.0",
     "react-loading": "^2.0.3",
     "react-map-gl": "^5.3.17",
     "react-query": "^3.39.1",
