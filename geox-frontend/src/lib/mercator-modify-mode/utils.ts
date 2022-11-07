@@ -3,7 +3,7 @@ import destination from "@turf/destination";
 import bearing from "@turf/bearing";
 import pointToLineDistance from "@turf/point-to-line-distance";
 import { flattenEach } from "@turf/meta";
-import { point, MultiLineString } from "@turf/helpers";
+import { point } from "@turf/helpers";
 import { getCoords } from "@turf/invariant";
 import WebMercatorViewport from "viewport-mercator-project";
 import {
@@ -219,10 +219,10 @@ export function nearestPointOnLine(
   }
 
   // @ts-ignore
-  flattenEach(lines, (line: any) => {
-    const coords: any = getCoords(line);
+  flattenEach(lines, (line: any[] | Feature<G> | G) => {
+    const coords: Array<any> = getCoords(line);
     // @ts-ignore
-    const pointCoords: any = getCoords(inPoint);
+    const pointCoords: Array<any> = getCoords(inPoint);
 
     let minDist;
     let to;

@@ -3,7 +3,7 @@ import { useShapes } from "../../../../hooks/use-shapes";
 import { AddButton } from "./add-button";
 import { NamespaceCard } from "./card";
 
-export const NamespaceSection = ({ className }: any) => {
+export const NamespaceSection = ({ className }: { className: string }) => {
   const {
     namespaces,
     visibleNamepaces,

@@ -1,5 +1,5 @@
 // Patch to get around race condition bug in Nebula
-import { point, lineString as toLineString } from "@turf/helpers";
+import { point, lineString as toLineString, Position } from "@turf/helpers";
 import {
   recursivelyTraverseNestedArrays,
   nearestPointOnProjectedLine,
@@ -71,13 +71,13 @@ export class MercatorModifyMode extends GeoJsonEditMode {
         props.selectedIndexes.includes(featureAsPick.index)
       ) {
         let intermediatePoint: NearestPointType | null | undefined = null;
-        let positionIndexPrefix: any = [];
+        let positionIndexPrefix: any[] = [];
         const referencePoint = point(mapCoords);
         // process all lines of the (single) feature
         recursivelyTraverseNestedArrays(
           featureAsPick.object.geometry.coordinates,
           [],
-          (lineString: any, prefix: any) => {
+          (lineString: Position[], prefix: any[]) => {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.getNearestPoint(
               // @ts-ignore

@@ -54,7 +54,7 @@ export const ProductSection = (): JSX.Element => {
   useEffect(() => {
     let lgMediaQuery: MediaQueryList = window.matchMedia("(min-width: 1024px)");
 
-    function onMediaQueryChange({ matches }: { matches: any }) {
+    function onMediaQueryChange({ matches }: { matches: boolean }) {
       setTabOrientation(matches ? "vertical" : "horizontal");
     }
 

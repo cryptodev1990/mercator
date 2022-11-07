@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import React, { useCallback, useEffect, useState } from "react";
+import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { useShapes } from "../../../hooks/use-shapes";
 
@@ -31,8 +31,8 @@ export const UploadModal = () => {
   const { getRootProps, getInputProps } = useDropzone({
     useFsAccessApi: false,
     onDrop,
-    onDropRejected: (e: any) => {
-      console.error(e);
+    onDropRejected: (fileRejection: FileRejection[], event: DropEvent) => {
+      console.error(event);
       toast.error("Error with file upload, please try again");
     },
   });

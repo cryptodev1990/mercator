@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import React, { useState } from "react";
 import { TrashIcon } from "../../../../../common/components/icons";
 
 interface IDictionary<T> {
@@ -36,7 +36,7 @@ export function JsonEditor({
     handleResults(outputData);
   };
 
-  const addKv = (e: any) => {
+  const addKv = (e: React.MouseEvent) => {
     e.preventDefault();
     setIndexes((prevIndexes) => [...prevIndexes, counter]);
     setCounter((prevCounter) => prevCounter + 1);
@@ -151,9 +151,6 @@ export function JsonEditor({
           <button
             className="btn btn-sm btn-accent bg-green-600"
             disabled={disableSubmit}
-            onSubmit={(d: any) => {
-              onFormSubmit(d);
-            }}
             type="submit"
           >
             Submit

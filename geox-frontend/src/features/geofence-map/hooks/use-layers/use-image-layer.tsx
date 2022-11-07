@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { WebMercatorViewport } from "@deck.gl/core";
 import { GeoJsonImageLayer } from "../../../../common/geojson-image-layer";
 import { useViewport } from "../use-viewport";
+import { EditAction, FeatureCollection } from "@nebula.gl/edit-modes";
 
 type Bounds = [number[], number[], number[], number[]];
 
@@ -34,9 +35,9 @@ export const useImageLayer = () => {
     id: "image-layer",
     // @ts-ignore
     bounds,
-    onEdit: (e: any) => {
+    onEdit: (e: EditAction<FeatureCollection>) => {
       const { updatedData } = e;
-      const [a, b, c, d] = updatedData.features[0].geometry.coordinates[0];
+      const [a, b, c, d]: any = updatedData.features[0].geometry.coordinates[0];
       setBounds([a, b, c, d]);
     },
     image:

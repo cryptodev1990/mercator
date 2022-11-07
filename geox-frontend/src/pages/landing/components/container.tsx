@@ -3,7 +3,6 @@ import clsx from "clsx";
 
 type ContainerProps = {
   className?: string;
-  [key: string]: any;
 };
 
 export const Container = ({

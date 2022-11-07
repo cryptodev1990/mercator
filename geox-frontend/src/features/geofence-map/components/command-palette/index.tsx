@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { GeofencerContext } from "../../contexts/geofencer-context";
-import { Feature, GeoShapeCreate } from "../../../../client";
+import { Feature, GeoShapeCreate, GeoShapeMetadata } from "../../../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
 
@@ -32,7 +32,7 @@ export const CommandPalette = () => {
         setViewport(res);
       }}
       onDelete={() => {
-        bulkDeleteShapes(shapeMetadata.map((s: any) => s.uuid));
+        bulkDeleteShapes(shapeMetadata.map((s: GeoShapeMetadata) => s.uuid));
         setTentativeShapes([]);
       }}
       onUnion={() => {

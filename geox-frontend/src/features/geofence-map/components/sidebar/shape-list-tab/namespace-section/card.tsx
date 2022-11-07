@@ -45,7 +45,7 @@ export const NamespaceCard = ({
     <DragTarget
       id={`namespace-card-${namespace.slug}`}
       className={`snap-start bg-slate-600 border-gray-200`}
-      handleDragOver={(e: any) => {
+      handleDragOver={(e: React.DragEvent) => {
         const data = e.dataTransfer.getData("text");
         partialUpdateShape({ uuid: data, namespace: namespace.id });
       }}
