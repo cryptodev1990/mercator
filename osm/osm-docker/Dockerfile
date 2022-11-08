@@ -20,7 +20,7 @@ COPY osm-postgres.conf /etc/postgresql/postgresql.conf
 WORKDIR /data
 RUN curl -s -o osm.pbf ${PBF_DOWNLOAD_URL}
 
-COPY generic.lua default.style
+COPY ./custom.lua .
 COPY ./docker-entrypoint-initdb.d/* /docker-entrypoint-initdb.d/
 
 WORKDIR /

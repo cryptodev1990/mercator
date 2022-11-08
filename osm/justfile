@@ -23,5 +23,3 @@ format:
 	poetry run isort --quiet .
 	poetry run black .
 
-db:
-	docker
