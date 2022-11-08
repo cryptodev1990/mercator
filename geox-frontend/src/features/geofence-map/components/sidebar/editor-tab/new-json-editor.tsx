@@ -32,6 +32,7 @@ export default function NewJsonEditor({
     },
     mode: "onBlur",
   });
+  console.log("properties", properties);
   const { fields, append, remove } = useFieldArray({
     name: "properties",
     control,
@@ -42,48 +43,51 @@ export default function NewJsonEditor({
       (obj, item) => Object.assign(obj, { [item.key]: item.value }),
       {}
     );
+    console.log("formProperties", formProperties);
     handleResults(formProperties);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {fields
-          .filter((field) => field["key"].startsWith("__"))
-          .map((field, index) => {
-            return (
-              <div key={field.id}>
-                <section className={"section grid grid-cols-10"} key={field.id}>
-                  <input
-                    placeholder="key"
-                    {...register(`properties.${index}.key` as const, {
-                      required: true,
-                    })}
-                    className={`col-span-3 text-black ${
-                      errors?.properties?.[index]?.value ? "error" : ""
-                    }`}
-                  />
-                  <input
-                    placeholder="value"
-                    type="string"
-                    {...register(`properties.${index}.value` as const, {
-                      required: true,
-                    })}
-                    className={`col-span-5 text-black ${
-                      errors?.properties?.[index]?.value ? "error" : ""
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    className="col-span-2"
-                    onClick={() => remove(index)}
-                  >
-                    DELETE
-                  </button>
-                </section>
-              </div>
-            );
-          })}
+        {fields.map((field, index) => {
+          if (field.key.startsWith("__")) {
+            return null;
+          }
+          console.log("field", field);
+          return (
+            <div key={field.id}>
+              <section className={"section grid grid-cols-10"} key={field.id}>
+                <input
+                  placeholder="key"
+                  {...register(`properties.${index}.key` as const, {
+                    required: true,
+                  })}
+                  className={`col-span-3 text-black ${
+                    errors?.properties?.[index]?.value ? "error" : ""
+                  }`}
+                />
+                <input
+                  placeholder="value"
+                  type="string"
+                  {...register(`properties.${index}.value` as const, {
+                    required: true,
+                  })}
+                  className={`col-span-5 text-black ${
+                    errors?.properties?.[index]?.value ? "error" : ""
+                  }`}
+                />
+                <button
+                  type="button"
+                  className="col-span-2"
+                  onClick={() => remove(index)}
+                >
+                  DELETE
+                </button>
+              </section>
+            </div>
+          );
+        })}
 
         <button
           type="button"
