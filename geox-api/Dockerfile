@@ -34,6 +34,7 @@ RUN apt-get update \
 WORKDIR /webapp
 
 COPY ./app /webapp/app
+COPY ./cli /webapp/cli
 COPY ./alembic /webapp/alembic
 COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml /webapp/
 
