@@ -12,6 +12,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
+# silences this warning:
+# WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager.
+# It is recommended to use a virtual environment instead
+ENV PIP_ROOT_USER_ACTION=ignore
 COPY ./requirements.txt /webapp/requirements.txt
 RUN python -m pip install --no-cache-dir --upgrade "pip==22.3.1" "wheel==0.38.3" && \
     pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
