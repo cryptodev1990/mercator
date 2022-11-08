@@ -1,5 +1,5 @@
-import * as React from "react";
-import { useForm, useFieldArray, useWatch, Control } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
+import { TbTrash } from "react-icons/tb";
 
 type FormValues = {
   properties: {
@@ -78,13 +78,15 @@ export default function NewJsonEditor({
                     errors?.properties?.[index]?.value ? "error" : ""
                   }`}
                 />
-                <button
-                  type="button"
-                  className="col-span-2"
-                  onClick={() => remove(index)}
-                >
-                  DELETE
-                </button>
+                {field.key === "name" ? null : (
+                  <button
+                    type="button"
+                    className="col-span-2"
+                    onClick={() => remove(index)}
+                  >
+                    <TbTrash />
+                  </button>
+                )}
               </section>
             </div>
           );
