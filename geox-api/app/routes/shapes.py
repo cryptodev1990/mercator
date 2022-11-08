@@ -80,11 +80,9 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
     aws_access_key_id = settings.aws_s3_upload_access_key_id
     task = copy_to_s3.delay(
         org.id,
-        cast(str, settings.sqlalchemy_database_uri),
         settings.aws_s3_url,
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
-        engine_opts=settings.worker_engine_opts,
     )
     return CeleryTaskResponse(task_id=task.id)
 

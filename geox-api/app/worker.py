@@ -1,15 +1,19 @@
 """Celery worker."""
 from typing import Any, Dict, Optional, cast
 from uuid import UUID, uuid4
+from functools import lru_cache
 
 import geopandas as gpd
 import s3fs
 from celery.utils.log import get_task_logger
 from sqlalchemy import create_engine, text
 
+
 from app.core.celery_app import celery_app
-from app.core.config import EngineOptions
+from app.core.config import get_settings
 from app.core.datatypes import AppEnvEnum
+
+_settings = get_settings()
 
 logger = get_task_logger(__name__)
 
@@ -28,11 +32,11 @@ def test_celery(word: str) -> str:
 # routes.
 
 
-def get_postgres_engine(
-    postgres_connection_url, engine_opts: Optional[EngineOptions] = None
-):
-    opts = engine_opts.dict() if engine_opts else {}
-    return create_engine(postgres_connection_url, pre_ping=True, future=True, **opts)
+@lru_cache(maxsize=1)
+def get_postgres_engine():
+    postgres_connection_url = _settings.sqlalchemy_database_uri
+    opts = _settings.worker_engine_opts.dict()
+    return create_engine(postgres_connection_url, pool_pre_ping=True, future=True, **opts)
 
 
 def send_data_to_s3(
@@ -76,10 +80,8 @@ def send_data_to_s3(
 
 def query_shapes_table(
     organization_id: str,
-    app_db_connection_url: str,
-    engine_opts: Optional[EngineOptions] = None,
 ) -> gpd.GeoDataFrame:
-    engine = get_postgres_engine(app_db_connection_url, engine_opts=engine_opts)
+    engine = get_postgres_engine()
     with engine.begin() as conn:
         logger.debug(f"Copy shapes for {organization_id}")
         # TODO: save as geoparquet with geopandas
@@ -114,7 +116,6 @@ def query_shapes_table(
 @celery_app.task(acks_late=True)
 def copy_to_s3(
     organization_id: str,
-    app_db_connection_url: str,
     aws_s3_url: str,
     aws_access_key_id: Optional[str] = None,
     aws_secret_access_key: Optional[str] = None,
@@ -134,12 +135,10 @@ def copy_to_s3(
         aws_s3_url: S3 url where shape files will go(``s3://bucket-name/path/to/place/files/``)
         aws_access_key_id:. AWS access key to be able to write to ``aws_s3_url``.
         aws_secret_access_key (Optional[str], optional): AWS access key to be able to write to ``aws_s3_url``.
-        snowflake_connection_url (Optional[str], optional): Snowflake connection URL string, e.g. ``snowflake://...`` which is
-            used to copy files from S3 to Snowflake.
     Returns:
         Dict[str, Any]: A dictionary with the number of shapes written.
     """
-    df = query_shapes_table(organization_id, app_db_connection_url)
+    df = query_shapes_table(organization_id)
     # NOTE: Exiting if no shapes are exported means that if there were shapes exported,
     # and the user deleted all shapes, then those shapes would not be deleted. Is this the
     # desired behavior? Not sure.
