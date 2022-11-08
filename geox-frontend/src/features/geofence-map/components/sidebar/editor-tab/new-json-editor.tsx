@@ -32,7 +32,6 @@ export default function NewJsonEditor({
     },
     mode: "onBlur",
   });
-  console.log("properties", properties);
   const { fields, append, remove } = useFieldArray({
     name: "properties",
     control,
@@ -43,7 +42,6 @@ export default function NewJsonEditor({
       (obj, item) => Object.assign(obj, { [item.key]: item.value }),
       {}
     );
-    console.log("formProperties", formProperties);
     handleResults(formProperties);
   };
 
@@ -54,7 +52,6 @@ export default function NewJsonEditor({
           if (field.key.startsWith("__")) {
             return null;
           }
-          console.log("field", field);
           return (
             <div key={field.id}>
               <section className={"section grid grid-cols-10"} key={field.id}>
