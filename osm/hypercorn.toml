@@ -1,5 +1,0 @@
-include_server_header = false
-accesslog = "-"
-errorlog = "-"
-worker_class = "uvloop"
-loglevel = "INFO"
