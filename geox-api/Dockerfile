@@ -4,26 +4,16 @@ FROM python:${PYTHON_VERSION}
 
 # Dockerfile for mercator FastAPI backend.
 # Derived from https://fastapi.tiangolo.com/deployment/docker/?h=containers
-WORKDIR /webapp
-
-COPY ./requirements.txt /webapp/requirements.txt
-RUN python -m pip install --no-cache-dir --upgrade pip==22.1.2 && \
-    pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
-
-COPY ./app /webapp/app
-COPY ./alembic /webapp/alembic
-COPY ./start.sh ./alembic.ini /webapp/
-
-# Builds app for deployment
-ARG PYTHON_VERSION=3.9
-FROM python:${PYTHON_VERSION}
-
-# Dockerfile for mercator FastAPI backend.
-# Derived from https://fastapi.tiangolo.com/deployment/docker/?h=containers
 WORKDIR /code
 
+# gdal is needed for fiona
+RUN apt-get update \
+    && apt-get install -y libgdal-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install python dependencies
 COPY ./requirements.txt /webapp/requirements.txt
-RUN python -m pip install --no-cache-dir --upgrade pip==22.1.2 && \
+RUN python -m pip install --no-cache-dir --upgrade "pip==22.3.1" "wheel==0.38.3" && \
     pip install --no-cache-dir --upgrade -r /webapp/requirements.txt
 
 # Install overmind
@@ -36,12 +26,13 @@ RUN apt-get update \
     && mv overmind /usr/local/bin/overmind \
     && chmod +x /usr/local/bin/overmind
 
+
 WORKDIR /webapp
 
 COPY ./app /webapp/app
 COPY ./alembic /webapp/alembic
-COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/ 
-RUN apt-get install just
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml /webapp/
+
 
 # ARG have to be after FROM to be read
 # This sets GIT_COMMIT in two ways - default env variable (expected not to be overwritten)

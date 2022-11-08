@@ -83,7 +83,7 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
         settings.aws_s3_url,
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
-    )
+j    )
     return CeleryTaskResponse(task_id=task.id)
 
 
