@@ -17,6 +17,7 @@ export function JsonEditor({
   handleResults,
   disableSubmit,
 }: IJsonEditorProps) {
+  console.log("properties", properties);
   const numProps = properties?.length ?? 0;
   const range = [...Array(numProps).keys()];
 
@@ -33,6 +34,7 @@ export function JsonEditor({
       };
       outputData[k] = v;
     }
+    console.log(`outputData ${JSON.stringify(outputData)}`);
     handleResults(outputData);
   };
 
