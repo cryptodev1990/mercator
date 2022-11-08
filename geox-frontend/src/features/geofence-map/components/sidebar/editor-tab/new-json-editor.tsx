@@ -66,6 +66,7 @@ export default function NewJsonEditor({
                   className={`col-span-3 text-black ${
                     errors?.properties?.[index]?.value ? "error" : ""
                   }`}
+                  disabled={field.key === "name" ? true : false}
                 />
                 <input
                   placeholder="value"
@@ -93,8 +94,8 @@ export default function NewJsonEditor({
           type="button"
           onClick={() =>
             append({
-              key: "",
-              value: "",
+              key: `New Key ${fields.length}`,
+              value: `New Value ${fields.length}`,
             })
           }
         >
