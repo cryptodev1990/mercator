@@ -1,5 +1,12 @@
 # Builds app for deployment
 ARG PYTHON_VERSION=3.9
+
+# Build just in a different stage and copy the executable later
+# to minimize the size of the final image
+FROM rust:bullseye as builder
+RUN cargo install just
+
+
 FROM python:${PYTHON_VERSION}
 
 # Dockerfile for mercator FastAPI backend.
@@ -30,13 +37,15 @@ RUN apt-get update \
     && mv overmind /usr/local/bin/overmind \
     && chmod +x /usr/local/bin/overmind
 
+# Copy just executable from builder stage
+COPY --from=builder /usr/local/cargo/bin/just /usr/local/bin/just
 
 WORKDIR /webapp
 
 COPY ./app /webapp/app
 COPY ./cli /webapp/cli
 COPY ./alembic /webapp/alembic
-COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml /webapp/
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/
 
 
 # ARG have to be after FROM to be read

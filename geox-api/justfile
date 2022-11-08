@@ -4,7 +4,8 @@
 # set the default shell (to be safe)
 set shell := ["bash", "-uc"]
 
-git_commit_hash := `git rev-parse HEAD`
+# get git commit hash. The 2>/dev/null is to avoid an error message if there is no git repo
+git_commit_hash := `git rev-parse HEAD 2>/dev/null || echo ""`
 
 default:
 	@just --list
