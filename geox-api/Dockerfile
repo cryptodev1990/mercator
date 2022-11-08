@@ -40,7 +40,7 @@ WORKDIR /webapp
 
 COPY ./app /webapp/app
 COPY ./alembic /webapp/alembic
-COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml /webapp/ ./justfile
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/ 
 RUN apt-get install just
 
 # ARG have to be after FROM to be read
