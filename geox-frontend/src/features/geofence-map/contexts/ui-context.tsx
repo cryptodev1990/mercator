@@ -10,6 +10,11 @@ interface UIContextState {
     timeInMinutes: number;
     travelMode: string;
   };
+  // delete prompt
+  deletePromptCoords: number[];
+  confirmDelete: (coords: number[], onConfirm: () => void) => void;
+  onDeleteConfirm: () => void;
+  onDeleteCancel: () => void;
   setIsochroneParams: (params: {
     timeInMinutes: number;
     travelMode: string;
@@ -21,6 +26,10 @@ export const UIContext = createContext<UIContextState>({
   setModal: () => {},
   showDocs: false,
   setShowDocs: () => {},
+  confirmDelete: () => {},
+  deletePromptCoords: [],
+  onDeleteConfirm: () => {},
+  onDeleteCancel: () => {},
   isochroneParams: {
     timeInMinutes: 5,
     travelMode: "car",
@@ -38,6 +47,25 @@ export const UIContextContainer = ({ children }: { children: any }) => {
 
   // Check local storage for an indicator on the docs
   const [showDocs, setShowDocs] = useState(false);
+
+  const [deletePromptCoords, setDeletePromptCoords] = useState<number[]>([]);
+  const [onDeleteConfirm, setOnDeleteConfirm] = useState<() => void>(
+    () => () => {}
+  );
+
+  function confirmDelete(coords: number[], onConfirm: () => void) {
+    setDeletePromptCoords(coords);
+    setOnDeleteConfirm(() => () => {
+      onConfirm();
+      setOnDeleteConfirm(() => () => {});
+      setDeletePromptCoords([]);
+    });
+  }
+
+  function onDeleteCancel() {
+    setOnDeleteConfirm(() => () => {});
+    setDeletePromptCoords([]);
+  }
 
   useEffect(() => {
     const showDocsLocal = localStorage.getItem("showDocs");
@@ -73,7 +101,14 @@ export const UIContextContainer = ({ children }: { children: any }) => {
         setModal: (modalEnumValue: UIModalEnum | null) =>
           setModal(modalEnumValue),
         showDocs,
-        setShowDocs: (showDocs: boolean) => setShowDocs(showDocs),
+        setShowDocs,
+        // delete prompt
+        confirmDelete: (deletePromptCoords: number[], onConfirm: () => void) =>
+          confirmDelete(deletePromptCoords, onConfirm),
+        deletePromptCoords,
+        onDeleteConfirm,
+        onDeleteCancel,
+        // isochrone
         isochroneParams,
         setIsochroneParams: (params: {
           timeInMinutes: number;

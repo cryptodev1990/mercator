@@ -1232,9 +1232,11 @@ Branch: ``ajd/cache-madness``
     - [ ] An unsubscribed user should get a notification on the dashboard that they need to subscribe
   - [X] Add Stripe free trial
 
-## 11-3-22
+## 11-3-22 through 11-7-22
 
 ### Plans
 
-- [ ] Hide isochrones
-- [ ] Docs sidebar
+- [X] Hide isochrones
+- [X] Docs sidebar
+- [X] "Are you sure?" popup on button select
+

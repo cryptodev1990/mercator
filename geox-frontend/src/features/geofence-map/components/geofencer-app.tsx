@@ -15,6 +15,7 @@ import { GeoShapeWriteContextProvider } from "../contexts/geoshape-write/context
 import { GeoShapeMetadataProvider } from "../contexts/geoshape-metadata/context";
 import { Tooltip } from "../../../common/components/tooltip";
 import { DocsButton, DocsIframe } from "./docs-iframe";
+import { DeletePrompt } from "./delete-prompt";
 
 const ContextProviderNest = ({
   contextProviders,
@@ -46,6 +47,7 @@ const GeofencerApp = () => {
     <ContextProviderNest contextProviders={ctx}>
       <CommandPalette />
       <RightClickMenu />
+      <DeletePrompt />
       <GlobalModal />
       <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden border ">
         <div className="flex-auto w-screen relative border m-0 p-0">

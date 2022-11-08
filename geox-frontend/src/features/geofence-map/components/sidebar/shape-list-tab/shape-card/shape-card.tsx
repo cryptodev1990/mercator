@@ -16,7 +16,8 @@ import { useShapes } from "../../../../hooks/use-shapes";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { DragHandle } from "./drag-handle";
 import { SHAPE_CARD_IMAGE } from "./drag-images";
-import React from "react";
+import React, { useContext } from "react";
+import { UIContext } from "../../../../contexts/ui-context";
 
 export const ShapeCard = ({
   shape,
@@ -35,6 +36,8 @@ export const ShapeCard = ({
     clearSelectedFeatureIndexes,
     updateShape,
   } = useShapes();
+
+  const { confirmDelete } = useContext(UIContext);
 
   const { selectedFeatureCollection } = useSelectedShapes();
 
@@ -96,16 +99,19 @@ export const ShapeCard = ({
               <MetadataEditButton shape={shape} />
               <button
                 className="cx-btn-square hover:bg-red-400 hover:border-red-400 box-border"
-                title="Delete"
                 disabled={updateLoading}
                 data-tip="Delete this shape"
-                onClick={() => {
+                onClick={(e: any) => {
                   if (!shape.uuid) toast.error("Delete shape failed");
                   else {
-                    deleteShapes([shape.uuid]);
-                    clearSelectedShapeUuids();
-                    clearSelectedFeatureIndexes();
-                    setCursorMode(EditorMode.ViewMode);
+                    const coords = [e.clientX, e.clientY];
+                    confirmDelete(coords, () => {
+                      console.log("Deleting shape", shape.uuid);
+                      deleteShapes([shape.uuid]);
+                      clearSelectedShapeUuids();
+                      clearSelectedFeatureIndexes();
+                      setCursorMode(EditorMode.ViewMode);
+                    });
                   }
                 }}
               >
