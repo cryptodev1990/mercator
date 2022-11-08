@@ -91,9 +91,9 @@ def query_shapes_table(
                     name,
                     -- WKB Format in WG84 projection
                     geom,
-                    -- to avoid certain issues writing to parquet like
-                    -- ArrowNotImplementedError: Cannot write struct type 'properties' with no child field to Parquet. Consider adding a dummy child field.
-                    properties - '__uuid' - 'name' AS properties,
+                    -- to avoid certain issues writing to parquet it is easier to
+                    -- save the object as a string
+                    properties::TEXT AS properties,
                     -- ensure that there is no timezone
                     created_at::TIMESTAMP AS created_at,
                     updated_at::TIMESTAMP AS updated_at,
