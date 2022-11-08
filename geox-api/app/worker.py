@@ -118,6 +118,7 @@ def copy_to_s3(
     aws_s3_url: str,
     aws_access_key_id: Optional[str] = None,
     aws_secret_access_key: Optional[str] = None,
+    app_env: AppEnvEnum = AppEnvEnum.dev,
 ) -> Dict[str, Any]:
     """
     Copy data from postgres shapes into S3.
@@ -149,6 +150,7 @@ def copy_to_s3(
             aws_s3_url,
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
+            app_env=app_env,
         )
         logger.debug("Exported data to %s", output_path)
     else:
