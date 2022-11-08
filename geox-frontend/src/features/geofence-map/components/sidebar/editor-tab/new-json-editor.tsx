@@ -37,6 +37,7 @@ export default function NewJsonEditor({
     control,
   });
   const onSubmit = (data: FormValues) => {
+    // convert array of properties to property object
     const formProperties = data["properties"].reduce(
       (obj, item) => Object.assign(obj, { [item.key]: item.value }),
       {}
@@ -47,40 +48,42 @@ export default function NewJsonEditor({
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {fields.map((field, index) => {
-          return (
-            <div key={field.id}>
-              <section className={"section grid grid-cols-10"} key={field.id}>
-                <input
-                  placeholder="key"
-                  {...register(`properties.${index}.key` as const, {
-                    required: true,
-                  })}
-                  className={`col-span-3 text-black ${
-                    errors?.properties?.[index]?.value ? "error" : ""
-                  }`}
-                />
-                <input
-                  placeholder="value"
-                  type="string"
-                  {...register(`properties.${index}.value` as const, {
-                    required: true,
-                  })}
-                  className={`col-span-5 text-black ${
-                    errors?.properties?.[index]?.value ? "error" : ""
-                  }`}
-                />
-                <button
-                  type="button"
-                  className="col-span-2"
-                  onClick={() => remove(index)}
-                >
-                  DELETE
-                </button>
-              </section>
-            </div>
-          );
-        })}
+        {fields
+          .filter((field) => field["key"].startsWith("__"))
+          .map((field, index) => {
+            return (
+              <div key={field.id}>
+                <section className={"section grid grid-cols-10"} key={field.id}>
+                  <input
+                    placeholder="key"
+                    {...register(`properties.${index}.key` as const, {
+                      required: true,
+                    })}
+                    className={`col-span-3 text-black ${
+                      errors?.properties?.[index]?.value ? "error" : ""
+                    }`}
+                  />
+                  <input
+                    placeholder="value"
+                    type="string"
+                    {...register(`properties.${index}.value` as const, {
+                      required: true,
+                    })}
+                    className={`col-span-5 text-black ${
+                      errors?.properties?.[index]?.value ? "error" : ""
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="col-span-2"
+                    onClick={() => remove(index)}
+                  >
+                    DELETE
+                  </button>
+                </section>
+              </div>
+            );
+          })}
 
         <button
           type="button"
