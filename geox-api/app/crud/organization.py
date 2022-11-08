@@ -99,8 +99,7 @@ def is_user_in_org(conn: Connection, *, user_id: int, organization_id: UUID4) ->
     stmt = text(
         "SELECT id FROM organization_members WHERE user_id = :user_id AND organization_id = :organization_id"
     )
-    res = conn.execute(
-        stmt, {"organization_id": organization_id, "user_id": user_id})
+    res = conn.execute(stmt, {"organization_id": organization_id, "user_id": user_id})
     return bool(res is not None)
 
 
@@ -148,8 +147,7 @@ def set_active_organization(
             AND deleted_at IS NULL
         """
     )
-    conn.execute(stmt, {"user_id": user_id,
-                 "organization_id": organization_id})
+    conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
 
 
 def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
@@ -227,8 +225,7 @@ def add_subscription(
         """
     )
     res = conn.execute(
-        stmt, {"stripe_sub_id": stripe_sub_id,
-               "organization_id": organization_id}
+        stmt, {"stripe_sub_id": stripe_sub_id, "organization_id": organization_id}
     ).first()
     return Organization.from_orm(res)
 
@@ -275,7 +272,9 @@ def get_all_org_members(conn: Connection, organization_id: UUID4) -> List[User]:
     return [User.from_orm(user) for user in res]
 
 
-def create_org_member(conn: Connection, *, organization_id: UUID4, user_id: int, active: bool) -> bool:
+def create_org_member(
+    conn: Connection, *, organization_id: UUID4, user_id: int, active: bool
+) -> bool:
     """Add a user to an organization."""
 
     stmt = text(
@@ -286,14 +285,15 @@ def create_org_member(conn: Connection, *, organization_id: UUID4, user_id: int,
     )
 
     conn.execute(
-        stmt, {"organization_id": organization_id,
-               "user_id": user_id, "active": active}
+        stmt, {"organization_id": organization_id, "user_id": user_id, "active": active}
     )
 
     return True
 
 
-def check_if_org_member(conn: Connection, *, organization_id: UUID4, user_id: int) -> bool:
+def check_if_org_member(
+    conn: Connection, *, organization_id: UUID4, user_id: int
+) -> bool:
     """Check if a user is a member of an organization."""
 
     stmt = text(
@@ -360,8 +360,7 @@ def update_stripe_subscription_status(
         RETURNING *
         """
     )
-    res = conn.execute(
-        stmt, {"status": status, "stripe_sub_id": stripe_sub_id}).first()
+    res = conn.execute(stmt, {"status": status, "stripe_sub_id": stripe_sub_id}).first()
     if res is None:
         raise StripeSubscriptionDoesNotExistError(stripe_sub_id)
     return Organization.from_orm(res)

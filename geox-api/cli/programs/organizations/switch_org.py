@@ -4,14 +4,14 @@ import asyncio
 from pydantic import UUID4
 
 from app.crud.organization import (
-    set_active_organization,
+    check_if_org_member,
+    create_org_member,
     get_active_organization,
     get_personal_org,
-    create_org_member,
-    check_if_org_member
+    set_active_organization,
 )
 from app.crud.user import get_user
-from app.dependencies import get_engine, get_cache
+from app.dependencies import get_cache, get_engine
 from cli.programs.common.cli_app import CLIApp
 
 
@@ -28,11 +28,14 @@ class SwitchOrg(CLIApp):
         )
         # required user name
         parser.add_argument(
-            "--organization-id", help="The organization to add the user to",
+            "--organization-id",
+            help="The organization to add the user to",
             default=None,
         )
         parser.add_argument(
-            '--personal-org', help="Move the user back to their personal org", action='store_true',
+            "--personal-org",
+            help="Move the user back to their personal org",
+            action="store_true",
             default=False,
         )
         parser.add_argument(
@@ -44,16 +47,17 @@ class SwitchOrg(CLIApp):
     def run(self, args, loop: asyncio.BaseEventLoop) -> None:
         if args.organization_id and args.personal_org:
             raise ValueError(
-                "You can't specify an organization ID and return to personal org")
+                "You can't specify an organization ID and return to personal org"
+            )
         if args.organization_id is None and not args.personal_org:
             raise ValueError(
-                "At least one of organization ID or return to personal org is required")
+                "At least one of organization ID or return to personal org is required"
+            )
         if args.user_id is None:
             raise ValueError("User ID is required")
 
         loop.run_until_complete(
-            _move_user(args.organization_id, args.user_id,
-                       args.personal_org)
+            _move_user(args.organization_id, args.user_id, args.personal_org)
         )
 
 
@@ -67,25 +71,24 @@ async def _move_user(organization_id: UUID4, user_id: int, return_to_personal_or
 
         active_org = None
         # if the user is already a member of the org, just set it as active
-        if check_if_org_member(
-                conn, organization_id=organization_id, user_id=user_id):
+        if check_if_org_member(conn, organization_id=organization_id, user_id=user_id):
             print("User is already in organization, converting to active")
             set_active_organization(conn, user_id, organization_id)
         else:
             print("User is not a member of the organization")
             create_org_member(
-                conn, organization_id=organization_id, user_id=user_id, active=False)
+                conn, organization_id=organization_id, user_id=user_id, active=False
+            )
             set_active_organization(conn, user_id, organization_id)
         active_org = get_active_organization(conn, user_id)
         user = get_user(conn, user_id)
-        print(
-            f"Moved {user.email} ({user.id}) to {active_org.name} ({active_org.id})"
-        )
+        print(f"Moved {user.email} ({user.id}) to {active_org.name} ({active_org.id})")
     cache = get_cache()
     key = f"app:cache:user_org:{user.id}"
     if not cache:
         raise ValueError(
-            "Cache connection failed - you may want to connect to the cache manually")
+            "Cache connection failed - you may want to connect to the cache manually"
+        )
     if cache.get(key):
         cache.delete(key)
         print("Deleted cache entry for user organization")

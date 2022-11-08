@@ -1,13 +1,12 @@
 """Celery worker."""
+from functools import lru_cache
 from typing import Any, Dict, Optional, cast
 from uuid import UUID, uuid4
-from functools import lru_cache
 
 import geopandas as gpd
 import s3fs
 from celery.utils.log import get_task_logger
 from sqlalchemy import create_engine, text
-
 
 from app.core.celery_app import celery_app
 from app.core.config import get_settings

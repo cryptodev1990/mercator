@@ -137,8 +137,7 @@ async def get_current_user(
     if user is None:
         logger.debug("User %s not retrieved from cache.", sub_id)
         with engine.begin() as conn:
-            user = create_or_update_user_from_bearer_data(
-                conn, auth_jwt_payload)
+            user = create_or_update_user_from_bearer_data(conn, auth_jwt_payload)
             if user is None:
                 raise HTTPException(403)
             if cache:

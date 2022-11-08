@@ -405,8 +405,7 @@ class ExampleDbAbc:
                 user = create_user(conn, **u, organization=org)  # type: ignore
                 add_user_to_org(conn, user_id=user.id, organization_id=org.id)
                 set_active_organization(conn, user.id, org.id)
-                org.users[user.email] = DbExampleUser(
-                    **user.dict(), organization=org)
+                org.users[user.email] = DbExampleUser(**user.dict(), organization=org)
                 namespaces = u.get("namespaces", [])
                 if namespaces:
                     for n in namespaces:

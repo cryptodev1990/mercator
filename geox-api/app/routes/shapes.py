@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Tuple, Union, cast
+from typing import List, Optional, Tuple, Union
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from geojson_pydantic import Feature, LineString, Point, Polygon

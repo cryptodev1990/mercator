@@ -168,8 +168,7 @@ def create_many_shapes(
         .returning(shapes_tbl.c.uuid)
     )
     # TODO: remove exception after migration
-    default_namespace = namespace_id or get_default_namespace(
-        conn, organization_id).id
+    default_namespace = namespace_id or get_default_namespace(conn, organization_id).id
     params = [
         {
             **_parse_shape_args(
@@ -185,8 +184,7 @@ def create_many_shapes(
 
 
 def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bool:
-    stmt = select(shapes_tbl.c.uuid).where(
-        shapes_tbl.c.uuid == shape_id)  # type: ignore
+    stmt = select(shapes_tbl.c.uuid).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     return bool(conn.execute(stmt).scalar())
@@ -194,8 +192,7 @@ def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bo
 
 def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoShape:
     """Get a shape."""
-    stmt = select(GEOSHAPE_COLS).where(
-        shapes_tbl.c.uuid == shape_id)  # type: ignore
+    stmt = select(GEOSHAPE_COLS).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     res = conn.execute(stmt).first()
@@ -360,8 +357,7 @@ def update_shape(
     if values.get("geom"):
         # Need to transform
         params["geom"] = values["geom"]
-        values["geom"] = func.ST_GeomFromGeoJSON(
-            func.cast(bindparam("geom"), String))
+        values["geom"] = func.ST_GeomFromGeoJSON(func.cast(bindparam("geom"), String))
     # If geojson is not specified, then these are updated.
     if namespace_id:
         values["namespace_id"] = namespace_id
