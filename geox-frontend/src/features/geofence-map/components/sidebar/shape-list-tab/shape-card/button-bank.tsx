@@ -52,7 +52,6 @@ const SaveButton = ({
           bulkAddShapes(
             tentativeShapes.map((shape) => ({
               ...shape,
-              namespace: selectedFolder?.id,
             })),
             {
               onSuccess: () => {

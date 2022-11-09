@@ -51,8 +51,8 @@ export function JsonEditor({
 
   return (
     <div className="p-3">
-      <form onSubmit={handleSubmit(onFormSubmit)}>
-        <div className="overflow-scroll h-[500px] scrollbar-thin hover:scrollbar-track-none hover:scrollbar-thumb-slate-900">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="overflow-hidden">
+        <div className="overflow-none h-[500px] scrollbar-thin hover:scrollbar-track-none hover:scrollbar-thumb-slate-900">
           <table>
             <tbody className="">
               {indexes.map((index) => {
@@ -68,7 +68,7 @@ export function JsonEditor({
                           className={
                             "text-white bg-slate-500 font-bold focus:text-black focus:font-normal read-only:font-bold px-2 w-[100px] read-only:bg-slate-400 read-only:text-white focus:bg-white read-only:select-none read-only:cursor-default text-ellipsis" +
                             (properties?.[index]?.key.length > 7
-                              ? " focus:w-[85%] focus:z-50 focus:translate-y-[-5] focus:absolute focus:shadow"
+                              ? " focus:z-50 focus:translate-y-[-5] focus:absolute focus:shadow"
                               : "")
                           }
                           hidden={properties?.[index]?.key.startsWith("__")}
@@ -103,7 +103,7 @@ export function JsonEditor({
                           className={
                             "text-black px-2 w-[150px] disabled:text-white" +
                             (properties?.[index]?.value.length > 9
-                              ? " focus:w-[85%] focus:z-50 focus:translate-y-[-5] focus:absolute focus:shadow"
+                              ? " focus:z-50 focus:translate-y-[-5] focus:absolute focus:shadow"
                               : "")
                           }
                           onKeyDown={(e) => {

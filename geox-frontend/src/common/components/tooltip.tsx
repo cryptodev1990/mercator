@@ -58,6 +58,18 @@ export function Tooltip() {
     };
   }, [renderCount]);
 
+  // Have the tooltip disappear after a few seconds
+  useEffect(() => {
+    if (tooltip) {
+      const timeout = setTimeout(() => {
+        setTooltip(null);
+        setPosX(null);
+        setPosY(null);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [tooltip]);
+
   // poll document until all data-tip elements are loaded
   useEffect(() => {
     const interval = setInterval(() => {

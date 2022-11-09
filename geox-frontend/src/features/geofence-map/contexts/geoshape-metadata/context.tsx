@@ -137,7 +137,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
   }
 
   function setVisibleNamespaces(namespaces: Namespace[]) {
-    console.log({ namespaces });
     dispatch({
       type: "SET_VISIBLE_NAMESPACES",
       namespaces,

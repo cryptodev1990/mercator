@@ -136,7 +136,6 @@ export const GeoShapeWriteContextProvider = ({
 
       for (let i = 1; i < currentFeatures.length; i++) {
         const feature = currentFeatures[i];
-        console.log("feature", feature);
         // ignore if the feature is not a polygon or multipolygon
         if (
           feature.geometry.type !== "Polygon" &&
