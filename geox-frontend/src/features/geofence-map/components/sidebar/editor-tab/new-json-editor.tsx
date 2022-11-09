@@ -1,5 +1,6 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { TbTrash } from "react-icons/tb";
+import { AiOutlinePlus } from "react-icons/ai";
 
 type FormValues = {
   properties: {
@@ -59,7 +60,7 @@ export default function NewJsonEditor({
                 {...register(`properties.${index}.key` as const, {
                   required: true,
                 })}
-                className={`col-span-3 text-black ${
+                className={`col-span-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
                   errors?.properties?.[index]?.value ? "error" : ""
                 }`}
                 disabled={field.key === "name" ? true : false}
@@ -70,13 +71,13 @@ export default function NewJsonEditor({
                 {...register(`properties.${index}.value` as const, {
                   required: true,
                 })}
-                className={`col-span-6 text-black ${
+                className={`col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500${
                   errors?.properties?.[index]?.value ? "error" : ""
                 }`}
               />
               {field.key === "name" ? null : (
                 <button
-                  className="btn btn-error btn-xs p-0 col-span-1"
+                  className="btn btn-error btn-xs p-1 m-1 rounded-lg"
                   onClick={() => remove(index)}
                 >
                   <TbTrash color="white" size={16} />
@@ -86,11 +87,11 @@ export default function NewJsonEditor({
           </div>
         );
       })}
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-2">
         {" "}
         <button
           type="button"
-          className="btn btn-primary btn-sm"
+          className="btn btn-primary btn-xs"
           onClick={() =>
             append({
               key: `New Key ${fields.length}`,
@@ -98,9 +99,9 @@ export default function NewJsonEditor({
             })
           }
         >
-          APPEND
+          <AiOutlinePlus />
         </button>
-        <input type="submit" className="btn btn-success btn-sm" />
+        <input type="submit" className="btn btn-success btn-xs capitalize" />
       </div>
     </form>
   );
