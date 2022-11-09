@@ -19,7 +19,7 @@ class SpatialRelation:
     """Generate SQL for a spatial relation between two geometries."""
 
     def __init__(
-        self, **kwargs: Dict[str, Any] # pylint: disable=unused-argument
+        self, **kwargs: Dict[str, Any]  # pylint: disable=unused-argument
     ) -> None:
         ...
 
@@ -31,7 +31,7 @@ class InSpRelation(SpatialRelation):
     """Generate SQL for A in B spatial relation."""
 
     def __call__(self, geom_a: ColumnElement, geom_b: ColumnElement) -> ColumnElement:
-        return func.St_Contains(geom_a, geom_b)
+        return func.St_CoveredBy(geom_a, geom_b)
 
 
 class BordersSpRelation(SpatialRelation):
@@ -69,7 +69,7 @@ class AtLeastDistSpRelation(SpatialRelation):
         self.dist = dist
 
     def __call__(self, geom_a: ColumnElement, geom_b: ColumnElement) -> ColumnElement:
-        return func.St_DWithin(geom_a, geom_b, self.dist)
+        return func.St_Distance(geom_a, geom_b) > self.dist
 
 
 def _sql_direction(geom_a: ColumnElement, geom_b: ColumnElement) -> ColumnElement:
@@ -128,6 +128,7 @@ class _RelationPattern:
                     "figure": m.group("figure"),
                     "ground": m.group("ground"),
                     "relation": relation,
+                    "relation_text": m.group("relation"),
                 }
         return None
 
@@ -152,24 +153,26 @@ def _process_dist_match(m: Match[str]) -> Dict[str, Any]:
 _RELATION_PATTERNS = {
     # Topology
     "in": _RelationPattern(
-        InSpRelation, ["in|inside|is located in|is included in|within|at"]
+        InSpRelation, ["(?:in|inside|is located in|is included in|within)"]
     ),
     "crosses": _RelationPattern(
-        CrossesSpRelation, ["cross|intersect|crosses|intersects"]
+        CrossesSpRelation, ["(?:cross|intersect|crosses|intersects)"]
     ),
     "borders": _RelationPattern(
         BordersSpRelation,
         [
             "that borders",
             "bordering",
-            "(is|are) at the border of",
-            "(is|are) at the outskirts of",
-            "(is|are) at the boundary of",
+            "(?:is|are) at the border of",
+            "(?:is|are) at the outskirts of",
+            "(?:is|are) at the boundary of",
         ],
     ),
     # distances
     "near": _RelationPattern(
-        AtMostDistSpRelation, r"nearby|close to|around", lambda m: {"dist": NEAR_METERS}
+        AtMostDistSpRelation,
+        r"(?:near|nearby|close to|around)",
+        lambda m: {"dist": NEAR_METERS},
     ),
     "at most x units": _RelationPattern(
         AtMostDistSpRelation,
@@ -182,16 +185,16 @@ _RELATION_PATTERNS = {
         process_match=_process_dist_match,
     ),
     "north": _RelationPattern(
-        DirectionSpRelation, r"(to the )?north(?: of)?", lambda m: {"direction": "N"}
+        DirectionSpRelation, r"(?:to the )?north(?: of)?", lambda m: {"direction": "N"}
     ),
     "south": _RelationPattern(
-        DirectionSpRelation, r"(to the )?south(?: of)?", lambda m: {"direction": "S"}
+        DirectionSpRelation, r"(?:to the )?south(?: of)?", lambda m: {"direction": "S"}
     ),
     "east": _RelationPattern(
-        DirectionSpRelation, r"(to the )?east(?: of)?", lambda m: {"direction": "E"}
+        DirectionSpRelation, r"(?:to the )?east(?: of)?", lambda m: {"direction": "E"}
     ),
     "west": _RelationPattern(
-        DirectionSpRelation, r"(to the )?west(?: of)?", lambda m: {"direction": "W"}
+        DirectionSpRelation, r"(?:to the )?west(?: of)?", lambda m: {"direction": "W"}
     ),
 }
 

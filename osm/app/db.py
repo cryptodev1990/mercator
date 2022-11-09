@@ -3,8 +3,9 @@ import logging
 from typing import Any, Dict
 
 from geoalchemy2 import Geometry
+from sqlalchemy import Computed  # type: ignore
 from sqlalchemy import Column, Integer, MetaData, String, Table
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine  # type: ignore
 
 from app.core.config import Settings, get_settings
@@ -40,7 +41,9 @@ osm = Table(
     metadata,
     Column("osm_id", Integer, primary_key=True),
     Column("osm_type", String(1), nullable=False),
-    Column("tags", JSONB),
-    Column("attrs", JSONB),
-    Column("geom", Geometry),
+    Column("tags", JSONB()),
+    Column("attrs", JSONB()),
+    Column("geom", Geometry(srid=4326)),
+    Column("category", String()),
+    Column("fts", TSVECTOR, Computed("to_tsvector('english', tags)")),
 )

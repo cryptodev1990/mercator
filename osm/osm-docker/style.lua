@@ -13,7 +13,10 @@ local dtable = osm2pgsql.define_table{
     columns = {
         { column = 'attrs', type = 'jsonb' },
         { column = 'tags',  type = 'jsonb' },
-        { column = 'geom',  type = 'geometry', projection = srid, not_null = true },
+        { column = 'geom',  type = 'geometry', projection = srid}, -- not_null = true}
+        -- values: points, lines, polygons, boundary, or route
+        -- these are the separate tables in generic.lua
+        { column = 'category', type = 'text'}
     }
 }
 
@@ -214,10 +217,12 @@ function osm2pgsql.process_node(object)
         return
     end
 
+    -- point
     dtable:insert({
         attrs = attrs(object),
         tags = object.tags,
-        geom = object:as_point()
+        geom = object:as_point(),
+        category = 'point'
     })
 end
 
@@ -226,51 +231,64 @@ function osm2pgsql.process_way(object)
         return
     end
 
+
     if object.is_closed and has_area_tags(object.tags) then
+        -- polygon
         dtable:insert({
             attrs = attrs(object),
             tags = object.tags,
-            geom = object:as_polygon()
+            geom = object:as_polygon(),
+            category = 'polygon'
         })
     else
+        -- line
         dtable:insert({
             attrs = attrs(object),
             tags = object.tags,
-            geom = object:as_linestring()
+            geom = object:as_linestring(),
+            category = 'line'
         })
     end
 end
 
 function osm2pgsql.process_relation(object)
-    local relation_type = object:grab_tag('type')
+    -- keep the type tag
+    -- local relation_type = object:grab_tag('type')
+    local relation_type = object.tags.type
 
     if clean_tags(object.tags) then
         return
     end
 
     if relation_type == 'route' then
+        -- route
         dtable:insert({
             attrs = attrs(object),
             tags = object.tags,
-            geom = object:as_multilinestring()
+            geom = object:as_multilinestring(),
+            category = 'route'
         })
         return
     end
 
+    -- boundary
     if relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
         dtable:insert({
             attrs = attrs(object),
             tags = object.tags,
-            geom = object:as_multilinestring():line_merge()
+            geom = object:as_multilinestring():line_merge(),
+            category = 'boundary'
         })
         return
     end
 
     if relation_type == 'multipolygon' then
+        -- polygon
         dtable:insert({
             attrs = attrs(object),
             tags = object.tags,
-            geom = object:as_multipolygon()
+            geom = object:as_multipolygon(),
+            category = 'polygon'
         })
     end
 end

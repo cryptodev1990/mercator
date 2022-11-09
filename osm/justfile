@@ -23,3 +23,8 @@ format:
 	poetry run isort --quiet .
 	poetry run black .
 
+db-local db input_file *args:
+	createdb {{ db }}
+	psql {{ db }} -c "CREATE EXTENSION postgis;"
+	osm2pgsql -d {{ db }} -O flex -S ./osm-docker/style.lua {{ args }} {{ input_file }}
+	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/30_post-import.sql

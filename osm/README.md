@@ -1,59 +1,61 @@
-# Load OSM
+# OSM Search API
 
-## Local
+## Setup OSM PostGIS Database
 
 The following commands should set up an OSM database that will work with the API.
 It is not formalized into a script because it is not worth handling errors yet.
 
-Assumes that postgres + postgis is running locally.
+**Host postgres:**
+
+This assumes that PostgreSQL and PostGIS are installed and running on the host.
 
 ```shell
 createdb osm
-psql osm -c "CREATE EXTENSION postgis"
-# whatever pbf file you want
-curl -O osm.pdf https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
-osm2pgsql -d osm -O flex -S osm-docker/style.lua default.style osm.pbf
-psql osm -f osm-docker/docker-entrypoint-initdb.d/30_post-import.sql
+curl -O osm.pbf https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
+just local-db osm osm.pbf
 ```
 
-## Docker
+You will need to install [just](https://github.com/casey/just) to use the `just` command.
 
-Create a Docker container that loads a subset of OpenStreetMap data into PostGIS using [osm2pgsql](https://osm2pgsql.org/).
-
-Build and start the container in the backgroud
+**Docker:**
 
 ```shell
-docker compose up --build -d
+cd osm-docker
+curl -O osm.pbf https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
+docker compose up -d
 ```
 
-The first time the container is started it will load data into the database which will take minutes.
+With the default settings, that database runs as: `postgres@localhost:5238/postgres`.
 
-To see the logs:
+## Configuration
+
+Settings for `.env`:
 
 ```shell
-docker compose logs osm
+ENV=DEV
+DB__DATABASE=
+DB__USER=
+DB__PASSWORD=
+DB__PORT=
+DB__HOST=
 ```
 
-To connect to the container from the host:
+See `app.core.config.Settings` for the env variables used to configure the app.
+
+## Run
+
+Install poetry: https://python-poetry.org/docs/
+
+Install dependencies:
 
 ```shell
-psql -U postgres -P 2538 osm
+poetry install
 ```
 
-To connect to the container directly:
+Start the app:
 
 ```shell
-docker compose up osm -it bash
+just run
 ```
 
-or
-
-```shell
-docker compose up osm -it psql -U postgres
-```
-
-The database data is stored in a persistant docker container listed in `docker-compose.yml`.
-
-Notes:
-
-- the downloaded data file is hardcoded right now. When it is time to generalize this, make it an env variable.
+See the API docs in dev: https://localhost:8080/docs.

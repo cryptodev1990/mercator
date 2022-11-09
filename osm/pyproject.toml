@@ -41,7 +41,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint."messages control"]
-disable = ["too-few-public-methods"]
+disable = ["too-few-public-methods", "too-many-arguments"]
 enable = []
 
 [tool.pylint]
