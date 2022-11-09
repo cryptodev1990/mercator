@@ -1,6 +1,7 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { TbTrash } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
+import { MdDelete as DeleteIcon } from "react-icons/md";
 
 type FormValues = {
   properties: {
@@ -77,10 +78,13 @@ export default function NewJsonEditor({
               />
               {field.key === "name" ? null : (
                 <button
-                  className="btn btn-error btn-xs p-1 m-1 rounded-lg"
+                  className="bg-slate-700 hover:bg-red-400 grid place-items-center hover:border-red-400 disabled:bg-slate-700 rounded m-1 disabled:cursor-not-allowed"
+                  title="Delete this namespace"
+                  data-tip={`Delete the property`}
+                  data-tip-skew="right"
                   onClick={() => remove(index)}
                 >
-                  <TbTrash color="white" size={16} />
+                  <DeleteIcon className="fill-white" />
                 </button>
               )}
             </section>
@@ -101,7 +105,11 @@ export default function NewJsonEditor({
         >
           <AiOutlinePlus />
         </button>
-        <input type="submit" className="btn btn-success btn-xs capitalize" />
+        <input
+          type="submit"
+          value="save"
+          className="btn btn-success btn-xs capitalize"
+        />
       </div>
     </form>
   );

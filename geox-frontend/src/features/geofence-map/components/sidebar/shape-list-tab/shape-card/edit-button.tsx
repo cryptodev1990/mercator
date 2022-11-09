@@ -7,7 +7,7 @@ export const MetadataEditButton = ({ shape }: { shape: GeoShapeMetadata }) => {
   return (
     <button
       className="cx-btn-square bg-slate-700 hover:bg-blue-400 hover:border-blue-400 box-border"
-      data-tip="Edit this shape's text metadata"
+      // data-tip="Edit this shape's text metadata"
       onClick={() => setShapeForPropertyEdit(shape)}
     >
       <PencilIcon className="fill-white" />
