@@ -5,6 +5,7 @@ import { useShapes } from "./use-shapes";
 import { GeoShape, GeoShapeCreate } from "../../../client";
 import { bboxToZoom, featureToFeatureCollection } from "../utils";
 import { useSelectedShapes } from "./use-selected-shapes";
+import { toast } from "react-hot-toast";
 
 export const useViewport = () => {
   const { viewport, setViewport } = useContext(GeofencerContext);
@@ -44,10 +45,13 @@ export const useViewport = () => {
     // get bounding box of all shapes
     if (!selectedFeatureCollection && category !== "tentative") return;
     if (category === "tentative" && tentativeShapes.length === 0) return;
+    console.log("zoom", selectedFeatureCollection);
     const fc =
-      featureToFeatureCollection(
-        tentativeShapes.map((shape) => shape.geojson) as any
-      ) || selectedFeatureCollection;
+      category === "tentative"
+        ? featureToFeatureCollection(
+            tentativeShapes.map((shape) => shape.geojson) as any
+          )
+        : selectedFeatureCollection;
     const bounds = bbox(fc);
     const centroid = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
     const [latMin, latMax, lngMin, lngMax] = [

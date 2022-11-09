@@ -121,7 +121,6 @@ export function useEditFunction() {
     // Feature: Add a shape
     const { featureIndexes } = editContext;
     let mostRecentShape: Feature = updatedData.features[featureIndexes[0]];
-    toast.success("GOT HERE");
 
     // Feature: edit kinked shapes
     if (kinks(mostRecentShape as any).features.length > 0) {
