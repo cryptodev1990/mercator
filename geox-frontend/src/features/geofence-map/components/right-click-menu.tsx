@@ -52,11 +52,23 @@ export const RightClickMenu = () => {
     setYPos(yPos);
   };
 
+  const handleLeftClick = (event: MouseEvent) => {
+    console.log("handle left click");
+
+    const selectedShape = shapeMetadata.find((shape) => isSelected(shape.uuid));
+    if (!selectedShape) {
+      toast.error("No shape detected");
+      return;
+    }
+    setShapeForPropertyEdit(selectedShape);
+  };
+
   useEffect(() => {
     // Make the context menu appear on right click only on the map
     if (mapRef?.current) {
       let ref = mapRef.current;
       ref.addEventListener("contextmenu", listenerFunc, false);
+      ref.addEventListener("click", handleLeftClick, false);
 
       return () => {
         ref.removeEventListener("contextmenu", listenerFunc, false);
