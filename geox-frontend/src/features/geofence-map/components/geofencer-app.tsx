@@ -1,8 +1,6 @@
 import { GeofenceMap } from "./shape-map";
 import { GeofencerSidebar } from "./sidebar";
 import { GeofencerContextContainer } from "../contexts/geofencer-context";
-import Dropdown from "../../../common/components/dropdown";
-import { ToolButtonBank } from "./tool-button-bank/tool-button-bank";
 import { CommandPalette } from "./command-palette";
 import { RightClickMenu } from "./right-click-menu";
 import { GlobalModal } from "./modals";
@@ -14,8 +12,9 @@ import { DeckContextProvider } from "../contexts/deck-context";
 import { GeoShapeWriteContextProvider } from "../contexts/geoshape-write/context";
 import { GeoShapeMetadataProvider } from "../contexts/geoshape-metadata/context";
 import { Tooltip } from "../../../common/components/tooltip";
-import { DocsButton, DocsIframe } from "./docs-iframe";
+import { DocsIframe } from "./docs-iframe";
 import { DeletePrompt } from "./delete-prompt";
+import { TopRightCornerBank } from "./top-right-corner-bank";
 
 const ContextProviderNest = ({
   contextProviders,
@@ -52,11 +51,7 @@ const GeofencerApp = () => {
       <div className="text-white h-screen w-screen relative flex flex-col overflow-hidden border ">
         <div className="flex-auto w-screen relative border m-0 p-0">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">
-            <div className="z-10 mx-2 flex flex-col h-screen space-y-3 items-center">
-              <Dropdown />
-              <ToolButtonBank />
-              <DocsButton />
-            </div>
+            <TopRightCornerBank />
             <DocsIframe />
           </div>
           <div className="h-[95vh] px-5 py-5 flex flex-row relative">

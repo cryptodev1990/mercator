@@ -5,7 +5,6 @@ import { useShapes } from "./use-shapes";
 import { GeoShape, GeoShapeCreate } from "../../../client";
 import { bboxToZoom, featureToFeatureCollection } from "../utils";
 import { useSelectedShapes } from "./use-selected-shapes";
-import { toast } from "react-hot-toast";
 
 export const useViewport = () => {
   const { viewport, setViewport } = useContext(GeofencerContext);

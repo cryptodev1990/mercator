@@ -61,12 +61,7 @@ export function Tooltip() {
   // poll document until all data-tip elements are loaded
   useEffect(() => {
     const interval = setInterval(() => {
-      // const tips = document.querySelectorAll("[data-tip]");
-      // jif (tips.length > 0 && tips.length === allElRef.current.length) {
-      // j  clearInterval(interval);
-      // j} else {
       setRenderCount((prev) => prev + 1);
-      // }
     }, 250);
     return () => clearInterval(interval);
   }, []);
