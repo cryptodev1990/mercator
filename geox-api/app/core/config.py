@@ -16,6 +16,7 @@ from pydantic import (
     Field,
     PostgresDsn,
     RedisDsn,
+    root_validator,
     SecretStr,
     validator,
 )
@@ -91,7 +92,10 @@ class CacheOptions(BaseModel):
 class Settings(BaseSettings):
     """Config settings."""
 
-    version: str = Field(__VERSION__, description="App version number", env="APP_VERSION")
+    app_name: str = Field("geox_api", env="APP_NAME")
+    version: str = Field(
+        __VERSION__, description="App version number", env="APP_VERSION"
+    )
     app_secret_key: SecretStr = Field(...)
 
     # Auth For JWT
@@ -111,19 +115,30 @@ class Settings(BaseSettings):
         description="S3 used to store export data, e.g. 's3://bucket/path/as/prefix/'",
     )
 
-    # Datadog Statsd
-    statsd_host: str = Field("mercator-dd-agent.internal", env="STATSD_HOST")
-    statsd_port: int = Field(8125, env="STATSD_PORT")
-    statsd_tags: List[str] = Field([], env="STATSD_TAGS")
-
     # Stripe API key
     stripe_api_key: Optional[str] = Field(None, env="STRIPE_API_KEY")
     stripe_webhook_secret: Optional[str] = Field(None, env="STRIPE_WEBHOOK_SECRET")
     skip_stripe: Optional[bool] = Field(None, env="SKIP_STRIPE")
 
-    # Datadog Tracer
-    tracer_host: str = Field("mercator-dd-agent.internal", env="TRACER_HOST")
-    tracer_port: int = Field(8126, env="TRACER_PORT")
+    # Datadog config
+    dd_api_key: str = Field("", env="DD_API_KEY")
+    dd_app_key: str = Field("", env="DD_APP_KEY")
+    dd_enabled: bool = str(Field("false", env="DD_ENABLED")).lower() == "true"
+
+    # Datadog initialization config
+    dd_init_kwargs: Dict[str, Any] = {}
+    if dd_enabled:
+        dd_init_kwargs.update({"api_key": dd_api_key, "app_key": dd_app_key})
+
+    @root_validator
+    def _validate_dd_config(cls, values):
+        if values["dd_enabled"] and (
+            not values["dd_api_key"] or not values["dd_app_key"]
+        ):
+            raise ValueError(
+                "DataDog APP key (DD_APP_KEY) and API key (DD_API_KEY) are required when DataDog is enabled (DD_ENABLED=true)"
+            )
+        return values
 
     # pylint: disable=no-self-argument
     @validator("aws_s3_url", pre=True)
@@ -277,6 +292,7 @@ class Settings(BaseSettings):
 
     app_env: AppEnvEnum = Field(AppEnvEnum.dev)
     app_log_level: LogLevel = Field(LogLevel.INFO, describe="Log level")
+    worker_id_length: int = Field(8, describe="Length of the generated random worker ID", env_var="WORKER_ID_LENGTH")
 
     # pylint: disable=no-self-argument
     @validator("app_env", pre=True)

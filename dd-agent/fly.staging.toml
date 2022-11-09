@@ -5,13 +5,22 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [env]
-  DD_APM_ENABLED = true
-  DD_APM_NON_LOCAL_TRAFFIC = true
-  DD_DOGSTATSD_NON_LOCAL_TRAFFIC = true
+  DD_APM_ENABLED = "true"
+  DD_APM_NON_LOCAL_TRAFFIC = "true"
+  DD_DOGSTATSD_NON_LOCAL_TRAFFIC = "true"
+  DD_LOGS_ENABLED = "true"
+  DD_ENV = "staging"
   DD_SITE = "datadoghq.com"
+  DD_USE_DOGSTATSD = "true"
 
 [build]
   image = "datadog/agent:7"
+
+[[services]]
+  internal_port = 8125
+  protocol = "udp"
+  [[services.ports]]
+    port = 8125
 
 [[services]]
   internal_port = 8126

@@ -10,6 +10,7 @@ processes = []
   APP_CACHE__ENABLED = true
   APP_CACHE__TIMEOUT = 60
   BACKEND_CORS_ORIGINS = "[\"*\"]"
+  DD_ENABLED = "true"
   PORT = "8080"
 
 [metrics]

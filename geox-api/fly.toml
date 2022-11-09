@@ -16,6 +16,7 @@ processes = []
   ENGINE_OPTS__ECHO = true
   ENGINE_OPTS__ECHO_POOL = true
   BACKEND_CORS_ORIGINS = "[\"*\"]"
+  DD_ENABLED = "true"
   PORT = "8080"
   # App workers
   APP_WORKERS=17

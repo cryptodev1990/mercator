@@ -1,28 +1,20 @@
 """Health routes."""
-import ddtrace
-from datadog import statsd
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from prometheus_client import Counter
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
+from app.core.stats import stats
 from app.dependencies import get_connection, verify_subscription, verify_token
 
 router = APIRouter()
 
-# simple counter to ensure metrics are working properly
-health_counter = Counter(
-    "health_count", "Number of times the /health endpoint was called"
-)
-
 
 @router.get("/health", tags=["health"])
 async def health():
-    with ddtrace.tracer.trace("health_check"):
-        health_counter.inc()
-        statsd.increment("health_check")
-        return {"message": "OK"}
+    return {"message": "OK"}
 
 
 @router.get("/protected_health", tags=["health"], dependencies=[Depends(verify_token)])
