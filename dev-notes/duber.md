@@ -1240,3 +1240,9 @@ Branch: ``ajd/cache-madness``
 - [X] Docs sidebar
 - [X] "Are you sure?" popup on button select
 
+## 11-8-22
+
+- [ ] Fix Publish button
+  - [ ] Change text to say "save"
+  - [ ] Make the button relatively larger
+  - [ ] Configure publishing to specific namespace

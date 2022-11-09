@@ -3,7 +3,7 @@ import { GeofencerContext } from "../contexts/geofencer-context";
 import { centroid, featureCollection, bbox } from "@turf/turf";
 import { useShapes } from "./use-shapes";
 import { GeoShape, GeoShapeCreate } from "../../../client";
-import { bboxToZoom } from "../utils";
+import { bboxToZoom, featureToFeatureCollection } from "../utils";
 import { useSelectedShapes } from "./use-selected-shapes";
 
 export const useViewport = () => {
@@ -42,8 +42,13 @@ export const useViewport = () => {
 
   const snapToBounds = ({ category }: { category: string }) => {
     // get bounding box of all shapes
-    if (!selectedFeatureCollection) return;
-    const bounds = bbox(selectedFeatureCollection);
+    if (!selectedFeatureCollection && category !== "tentative") return;
+    if (category === "tentative" && tentativeShapes.length === 0) return;
+    const fc =
+      featureToFeatureCollection(
+        tentativeShapes.map((shape) => shape.geojson) as any
+      ) || selectedFeatureCollection;
+    const bounds = bbox(fc);
     const centroid = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
     const [latMin, latMax, lngMin, lngMax] = [
       bounds[1],

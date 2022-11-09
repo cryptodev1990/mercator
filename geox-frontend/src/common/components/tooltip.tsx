@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 function getX(rect: any, skew: string) {
   // get the x position of the element if the element were pointed right
   if (skew === "left") {
-    console.log("left");
     return rect.left;
   } else if (skew === "right") {
     return rect.right;

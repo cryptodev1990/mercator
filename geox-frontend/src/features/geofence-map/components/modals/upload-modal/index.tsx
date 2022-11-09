@@ -9,9 +9,10 @@ import { UploadModalView } from "./upload-modal-view";
 import { useUiModals } from "../../../hooks/use-ui-modals";
 
 export const UploadModal = () => {
-  const { setTentativeShapes } = useShapes();
+  const { tentativeShapes, setTentativeShapes } = useShapes();
   const [files, setFiles] = useState<File[]>([]);
   const { modal, closeModal } = useUiModals();
+  const [isUploading, setIsUploading] = useState(false);
 
   const { fetchGeoJson, geojson, loading, error, convertJsonFileToGeojson } =
     useConvertedGeojson();
@@ -44,16 +45,22 @@ export const UploadModal = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (tentativeShapes.length > 0) {
+      closeModal();
+      setIsUploading(false);
+    }
+  }, [tentativeShapes]);
+
   function onPublish() {
+    setIsUploading(true);
     const prospects = geojson.map((feature) => {
       return {
         geojson: feature,
         name: feature.properties?.name ?? "New upload",
-        //name: feature.properties?.name || "New upload",
       };
     });
     setTentativeShapes(prospects);
-    closeModal();
   }
 
   return (
@@ -72,7 +79,7 @@ export const UploadModal = () => {
             loading={loading}
           />
         }
-        loading={loading}
+        loading={loading || isUploading}
       ></UploadModalView>
     </div>
   );

@@ -1,6 +1,18 @@
 import { CancelIcon } from "../../../../../common/components/icons";
 import Loading from "react-loading";
 
+function convertBytesToHumanReadable(bytes) {
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  if (i === 0) {
+    return `${bytes} ${sizes[i]})`;
+  }
+  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
+}
+
 export function DropZone({
   getInputProps,
   getRootProps,
@@ -9,8 +21,8 @@ export function DropZone({
   loading,
 }) {
   const acceptedFilesList = files.map((file) => (
-    <li key={file.path} className="flex flex-row space-x-1 cursor-pointer">
-      {file.path} - {file.size} bytes
+    <li key={file.path} className="flex flex-row space-x-1">
+      {file.path} - {convertBytesToHumanReadable(file.size)}
       <button onClick={() => removeFile(file)}>
         <CancelIcon className="hover:fill-red-400" />
       </button>
@@ -38,10 +50,9 @@ export function DropZone({
       <div
         {...getRootProps({ className: "dropzone" })}
         className="flex items-center align-center justify-center h-full w-full cursor-pointer"
-        // onClick={(e) => toast.success("Click to select a file")}
       >
         <input {...getInputProps()} />
-        <p>Drag file here to upload</p>
+        <p>Drag file or click here to upload</p>
       </div>
     </section>
   );

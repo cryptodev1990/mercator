@@ -1,11 +1,9 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
 import { _GeoJSONLoader as GeoJSONLoader } from "@loaders.gl/json";
 import { load } from "@loaders.gl/core";
 import { GeofencerContext } from "../../../contexts/geofencer-context";
-import { simplify } from "@turf/turf";
-import { toast } from "react-hot-toast";
 import { Feature } from "../../../../../client";
 
 function normalizeGeojson(
@@ -42,22 +40,6 @@ export const useConvertedGeojson = () => {
   const [initialUploadSize, setInitialUploadSize] = useState(0);
   const { uploadedGeojson: geojson, setUploadedGeojson: setGeojson } =
     useContext(GeofencerContext);
-
-  useEffect(() => {
-    if (initialUploadSize > MB_20) {
-      toast("File is too large and will be simplified.");
-      const res = [];
-      for (let i = 0; i < geojson.length; i++) {
-        const simplified = simplify(geojson[i] as any, {
-          tolerance: 0.001,
-          highQuality: true,
-        });
-        res[i] = simplified;
-      }
-      setGeojson(res);
-      setInitialUploadSize(0);
-    }
-  }, [initialUploadSize]);
 
   function convertJsonFileToGeojson(jsonFile: File, transform?: any) {
     const reader = new FileReader();

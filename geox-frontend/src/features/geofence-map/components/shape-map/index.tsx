@@ -133,8 +133,8 @@ const GeofenceMap = () => {
           mapStyle={"mapbox://styles/mapbox/light-v9"}
           onLoad={(map: any) => {
             const attrib = document.createElement("span");
-            attrib.innerText = "© Mercator Labs ";
-            attrib.style.color = "black";
+            attrib.innerText = "© Mercator ";
+            attrib.style.color = "#2d2d2d";
             document
               .getElementsByClassName("mapboxgl-ctrl-attrib-inner")[0]
               .prepend(attrib);
