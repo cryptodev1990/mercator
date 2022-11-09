@@ -2,6 +2,9 @@ const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  daisyui: {
+    themes: ["corporate"],
+  },
   theme: {
     fontFamily: {
       sans: ["Roboto", "sans-serif"],

@@ -67,25 +67,26 @@ export const ShapeEditor = () => {
 
   return (
     <div>
-      <h1 className="px-2 py-1 mx-2 mt-2 bg-red font-semibold">
-        Shape properties
-      </h1>
-      {/* <button
+      <div className="px-2">
+        {" "}
+        <h1 className="py-1 mt-2 bg-red font-semibold">Shape properties</h1>
+        {/* <button
         title="Edit as raw JSON"
         className="btn btn-sm absolute top-2 right-1 text-sm flex flex-row bg-transparent border-none hover:bg-slate-500"
       >
         <BiPencil className="stroke-white fill-white" />
       </button> */}
-      <div>
-        {/* <JsonEditor
+        <div>
+          {/* <JsonEditor
           properties={reformattedProperties as any}
           handleResults={handleSubmit}
           disableSubmit={updateLoading || oneShapeIsLoading}
         /> */}
-        <NewJsonEditor
-          properties={reformattedProperties as any}
-          handleResults={handleSubmit}
-        />
+          <NewJsonEditor
+            properties={reformattedProperties as any}
+            handleResults={handleSubmit}
+          />
+        </div>
       </div>
     </div>
   );
