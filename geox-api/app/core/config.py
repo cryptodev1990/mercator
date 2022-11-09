@@ -4,7 +4,7 @@ import os
 from asyncio.log import logger
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Dict, Optional, Tuple, cast
 
 from git.repo import Repo
 
@@ -16,8 +16,8 @@ from pydantic import (
     Field,
     PostgresDsn,
     RedisDsn,
-    root_validator,
     SecretStr,
+    root_validator,
     validator,
 )
 
@@ -93,9 +93,7 @@ class Settings(BaseSettings):
     """Config settings."""
 
     app_name: str = Field("geox_api", env="APP_NAME")
-    version: str = Field(
-        __VERSION__, description="App version number", env="APP_VERSION"
-    )
+    version: str = Field(__VERSION__, description="App version number", env="APP_VERSION")
     app_secret_key: SecretStr = Field(...)
 
     # Auth For JWT
@@ -130,6 +128,7 @@ class Settings(BaseSettings):
     if dd_enabled:
         dd_init_kwargs.update({"api_key": dd_api_key, "app_key": dd_app_key})
 
+    # pylint: disable=no-self-argument
     @root_validator
     def _validate_dd_config(cls, values):
         if values["dd_enabled"] and (
@@ -139,6 +138,8 @@ class Settings(BaseSettings):
                 "DataDog APP key (DD_APP_KEY) and API key (DD_API_KEY) are required when DataDog is enabled (DD_ENABLED=true)"
             )
         return values
+
+    # pylint: enable=no-self-argument
 
     # pylint: disable=no-self-argument
     @validator("aws_s3_url", pre=True)
@@ -292,11 +293,13 @@ class Settings(BaseSettings):
 
     app_env: AppEnvEnum = Field(AppEnvEnum.dev)
     app_log_level: LogLevel = Field(LogLevel.INFO, describe="Log level")
-    worker_id_length: int = Field(8, describe="Length of the generated random worker ID", env_var="WORKER_ID_LENGTH")
+    worker_id_length: int = Field(
+        8, describe="Length of the generated random worker ID", env_var="WORKER_ID_LENGTH"
+    )
 
     # pylint: disable=no-self-argument
     @validator("app_env", pre=True)
-    def _validate_app_env(cls, v):  # pylint: disable=no-self-argument
+    def _validate_app_env(cls, v) -> str:  # pylint: disable=no-self-argument
         v = str(v).lower()
         return v
 

@@ -1,5 +1,6 @@
+"""Shape routes."""
 import logging
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Dict, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from geojson_pydantic import Feature, LineString, Point, Polygon
@@ -46,7 +47,7 @@ router = APIRouter(
 )
 
 
-_RESPONSES = {
+_RESPONSES: Dict[str, Tuple[int, Dict[str, Any]]] = {
     key: (status_code, {"description": description, "model": RequestErrorModel})
     for key, status_code, description in [
         ("SHAPE_DOES_NOT_EXIST", 404, "Shape does not exist"),
@@ -55,11 +56,13 @@ _RESPONSES = {
 }
 
 
-def _responses(*args):
+def _responses(*args: str) -> Union[Dict[Union[int, str], Dict[str, Any]], None]:
     return dict(_RESPONSES[key] for key in args)
 
 
-def run_shapes_export(user_conn: UserConnection, settings: Settings):
+def run_shapes_export(
+    user_conn: UserConnection, settings: Settings
+) -> CeleryTaskResponse:
     org = user_conn.organization
     if not org.s3_export_enabled:
         raise HTTPException(
@@ -93,7 +96,7 @@ def run_shapes_export(user_conn: UserConnection, settings: Settings):
     response_model=CeleryTaskResult,
     tags=["tasks"],
 )
-def get_status(task_id: str):
+def get_status(task_id: str) -> CeleryTaskResult:
     """Retrieve results of a task."""
     task_result = celery_app.AsyncResult(task_id)
     result = CeleryTaskResult(
@@ -237,7 +240,7 @@ def _get_shapes(
     return list(
         select_shapes(
             user_conn.connection,
-            user_id=user_id,
+            created_by_user_id=user_id,
             namespace_id=namespace,
             offset=offset,
             limit=limit,
@@ -313,7 +316,9 @@ def _patch_shapes__shape_id(
 # Delete
 
 
-@router.delete("/geofencer/shapes/bulk", response_model=ShapeCountResponse)
+@router.delete(
+    "/geofencer/shapes/bulk", response_model=ShapeCountResponse, deprecated=True
+)
 def bulk_delete_shapes(
     shape_uuids: List[UUID4],
     user_conn: UserConnection = Depends(get_app_user_connection),

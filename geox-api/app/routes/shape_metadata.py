@@ -99,7 +99,7 @@ def _get_shape_metadata(
             namespace_id=namespace,
             limit=limit,
             offset=offset,
-            user_id=user_id,
+            created_by_user_id=user_id,
             ids=shape_ids,
             bbox=bbox_obj,
         )

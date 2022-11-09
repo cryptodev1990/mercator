@@ -203,7 +203,7 @@ def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoSh
 
 def _select_shapes_query(
     ids: Optional[Sequence[UUID4]] = None,
-    user_id: Optional[int] = None,
+    created_by_user_id: Optional[int] = None,
     organization_id: Optional[UUID4] = None,
     namespace_id: Optional[UUID4] = None,
     limit: Optional[int] = None,
@@ -219,8 +219,8 @@ def _select_shapes_query(
     stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
     if ids is not None:
         stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
-    if user_id is not None:
-        stmt = stmt.where(shapes_tbl.c.created_by_user_id == user_id)
+    if created_by_user_id is not None:
+        stmt = stmt.where(shapes_tbl.c.created_by_user_id == created_by_user_id)
     if namespace_id is not None:
         stmt = stmt.where(shapes_tbl.c.namespace_id == namespace_id)
     if organization_id is not None:
@@ -246,7 +246,7 @@ def select_shapes(
     conn: Connection,
     *,
     ids: Optional[Sequence[UUID4]] = None,
-    user_id: Optional[int] = None,
+    created_by_user_id: Optional[int] = None,
     organization_id: Optional[UUID4] = None,
     namespace_id: Optional[UUID4] = None,
     limit: Optional[int] = None,
@@ -255,7 +255,7 @@ def select_shapes(
 ) -> Generator[GeoShape, None, None]:
     # This will be called many times - use more advanced caching
     stmt = _select_shapes_query(
-        user_id=user_id,
+        created_by_user_id=created_by_user_id,
         organization_id=organization_id,
         namespace_id=namespace_id,
         limit=limit,
@@ -274,7 +274,7 @@ def select_shape_metadata(
     *,
     ids: Optional[Sequence[UUID4]] = None,
     bbox: Optional[ViewportBounds] = None,
-    user_id: Optional[int] = None,
+    created_by_user_id: Optional[int] = None,
     organization_id: Optional[UUID4] = None,
     namespace_id: Optional[UUID4] = None,
     limit: Optional[int] = None,
@@ -283,7 +283,7 @@ def select_shape_metadata(
     """Query shape metadata."""
     # This will be called many times - use more advanced caching
     stmt = _select_shapes_query(
-        user_id=user_id,
+        created_by_user_id=created_by_user_id,
         organization_id=organization_id,
         namespace_id=namespace_id,
         limit=limit,
@@ -395,9 +395,16 @@ def delete_many_shapes(
     ids: Optional[Sequence[UUID4]] = None,
     namespace_id: Optional[UUID4] = None,
     organization_id: Optional[UUID4] = None,
+    created_by_user_id: Optional[int] = None,
     exclusive: bool = False,
 ) -> List[UUID4]:
-    """Delete many shapes."""
+    """Delete many shapes.
+
+    Args:
+        user_id: The id of the user deleting the shapes.
+        created_by_user_id: Delete shapes by this user.
+
+    """
     values = {
         "deleted_at": datetime.datetime.now(),
         "deleted_by_user_id": user_id,
@@ -412,14 +419,14 @@ def delete_many_shapes(
         filters.append(shapes_tbl.c.namespace_id == namespace_id)
     if organization_id:
         filters.append(shapes_tbl.c.organization_id == organization_id)
-    if user_id:
-        filters.append(shapes_tbl.c.created_by_user_id == user_id)
+    if created_by_user_id:
+        filters.append(shapes_tbl.c.created_by_user_id == created_by_user_id)
     if ids:
-        stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
+        filters.append(shapes_tbl.c.uuid.in_(ids))
     if exclusive:
         stmt = stmt.where(and_(True, *filters))
     else:
-        stmt = stmt.where(or_(*filters))
+        stmt = stmt.where(or_(False, *filters))
     res = conn.execute(stmt, values)
     return [row.uuid for row in res]
 

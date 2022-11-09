@@ -1,8 +1,8 @@
 """Health routes."""
+from typing import Dict
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from prometheus_client import Counter
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
@@ -13,12 +13,12 @@ router = APIRouter()
 
 
 @router.get("/health", tags=["health"])
-async def health():
+async def health() -> Dict[str, str]:
     return {"message": "OK"}
 
 
 @router.get("/protected_health", tags=["health"], dependencies=[Depends(verify_token)])
-async def protected_health():
+async def protected_health() -> Dict[str, str]:
     return {"message": "OK"}
 
 
@@ -27,12 +27,12 @@ async def protected_health():
     tags=["health"],
     dependencies=[Depends(verify_token), Depends(verify_subscription)],
 )
-async def subscription_health():
+async def subscription_health() -> Dict[str, str]:
     return {"message": "OK"}
 
 
 @router.get("/db_health", tags=["health"])
-async def db_health(conn: Connection = Depends(get_connection)):
+async def db_health(conn: Connection = Depends(get_connection)) -> JSONResponse:
     try:
         res = conn.execute(text("SELECT 1")).scalar()
         assert res == 1
