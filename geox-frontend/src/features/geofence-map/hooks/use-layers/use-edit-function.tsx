@@ -52,9 +52,11 @@ export function useEditFunction() {
       }
       const uuid = selectedUuids[0];
 
-      const name = shapeMetadata.find((x) => x.uuid === uuid)?.name;
+      const shape = shapeMetadata.find((x) => x.uuid === uuid);
+      const name = shape?.name ?? "New shape";
+      const namespaceId = shape?.namespace_id;
       delete multiPolygon?.properties?.__uuid;
-      const payload = [
+      const payload: GeoShapeCreate[] = [
         {
           geojson: {
             type: "Feature",
@@ -68,6 +70,7 @@ export function useEditFunction() {
             },
           },
           name,
+          namespace: namespaceId,
         },
         {
           geojson: {
@@ -82,6 +85,7 @@ export function useEditFunction() {
             },
           },
           name,
+          namespace: namespaceId,
         },
       ];
 
