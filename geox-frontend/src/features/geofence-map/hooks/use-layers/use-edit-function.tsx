@@ -4,7 +4,7 @@ import {
   MultiPolygon,
   GeoShapeMetadata,
 } from "../../../../client";
-import { Feature, unkinkPolygon, kinks } from "@turf/turf";
+import { Feature, unkinkPolygon, kinks, union } from "@turf/turf";
 
 import { useShapes } from "../use-shapes";
 import { toast } from "react-hot-toast";
@@ -121,10 +121,18 @@ export function useEditFunction() {
     // Feature: Add a shape
     const { featureIndexes } = editContext;
     let mostRecentShape: Feature = updatedData.features[featureIndexes[0]];
+    toast.success("GOT HERE");
 
     // Feature: edit kinked shapes
     if (kinks(mostRecentShape as any).features.length > 0) {
       mostRecentShape = unkinkPolygon(mostRecentShape as any) as any;
+
+      // @ts-ignore
+      mostRecentShape = mostRecentShape.features.reduce(
+        (acc: any, feature: any) => union(acc, feature),
+        // @ts-ignore
+        mostRecentShape.features[0]
+      );
     }
 
     const newShape = {
