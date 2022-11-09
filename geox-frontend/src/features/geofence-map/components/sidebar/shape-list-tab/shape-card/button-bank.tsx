@@ -29,6 +29,7 @@ const SaveButton = ({
   const {
     tentativeShapes,
     setTentativeShapes,
+    namespaces,
     bulkAddShapes,
     setVisibleNamespaces,
   } = useShapes();
@@ -52,6 +53,7 @@ const SaveButton = ({
           bulkAddShapes(
             tentativeShapes.map((shape) => ({
               ...shape,
+              namespace: selectedFolder?.id,
             })),
             {
               onSuccess: () => {
@@ -138,12 +140,21 @@ const NamespaceSection = ({ selectedFolder, setSelectedFolder }: any) => {
 
 export const TentativeButtonBank = () => {
   // Button bank that pops up for uploaded shapes or shapes from the command palette
-  const { tentativeShapes, setActiveNamespace } = useShapes();
+  const { tentativeShapes, setActiveNamespace, namespaces } = useShapes();
   const { snapToBounds } = useViewport();
   const [selectedFolder, setSelectedFolder] = useState<Namespace | null>(null);
 
   useEffect(() => {
     setActiveNamespace(null);
+  }, []);
+
+  useEffect(() => {
+    const defaultNamespace = namespaces.find(
+      (namespace) => namespace.is_default
+    );
+    if (defaultNamespace) {
+      setSelectedFolder(defaultNamespace);
+    }
   }, []);
 
   return (
