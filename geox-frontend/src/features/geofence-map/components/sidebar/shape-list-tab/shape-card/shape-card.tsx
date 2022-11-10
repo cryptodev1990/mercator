@@ -142,7 +142,13 @@ export const ShapeCard = ({
             </>
           )}
           {!isHovered && numProperties > 0 && (
-            <div className="text-xs font-sans tracking-tight text-white box-border select-none">
+            <div
+              className="
+              whitespace-nowrap
+            text-xs
+            font-sans
+            tracking-tight text-white box-border select-none overflow-none text-ellipsis"
+            >
               {simplur`${numProperties} propert[y|ies]`}
             </div>
           )}
