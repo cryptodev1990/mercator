@@ -69,6 +69,11 @@ class S3Url(AnyUrl):
     __slots__ = ()
 
 
+class MapProjection(int, Enum):
+    WGS84 = 4326
+    WEB_MERCATOR = 3857
+
+
 if TYPE_CHECKING:
     Latitude = float
     Longitude = float

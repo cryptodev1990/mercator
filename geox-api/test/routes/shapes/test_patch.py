@@ -11,7 +11,7 @@ from pydantic.types import UUID4  # pylint: disable=no-name-in-module
 
 from app.schemas import BaseModel, GeoShape
 
-from .conftest import ExampleDbAbc, get_unused_shape_id
+from ..conftest import ExampleDbAbc, get_unused_shape_id
 
 _new_geom = {
     "coordinates": [[[8, -57], [62, 10], [-1, 7], [-88, -27], [8, -57]]],

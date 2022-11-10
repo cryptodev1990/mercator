@@ -137,7 +137,7 @@ export class GeofencerService {
         user: user,
         offset: offset,
         limit: limit,
-        shape_ids: shapeIds,
+        id: shapeIds,
         bbox: bbox,
       },
       errors: {
@@ -417,7 +417,7 @@ export class GeofencerService {
         limit: limit,
         user: user,
         namespace: namespace,
-        shape_ids: shapeIds,
+        id: shapeIds,
         bbox: bbox,
       },
       errors: {

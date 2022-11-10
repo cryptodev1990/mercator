@@ -97,7 +97,7 @@ export class ShapeMetadataService {
         limit: limit,
         user: user,
         namespace: namespace,
-        shape_ids: shapeIds,
+        id: shapeIds,
         bbox: bbox,
       },
       errors: {

@@ -16,7 +16,7 @@ def test_delete(client: TestClient, db: ExampleDbAbc) -> None:
             "several-sword",  # not in the org
         )
     ]
-    response = client.delete("/geofencer/shapes", params={"shape_ids": shape_ids})  # type: ignore
+    response = client.delete("/geofencer/shapes", params={"id": shape_ids})  # type: ignore
     assert response.status_code == 200
     expected_deleted = {
         str(db.shapes[shp].uuid)

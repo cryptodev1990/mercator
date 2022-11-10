@@ -78,7 +78,7 @@ def _get_shape_metadata(
         description="If TRUE, then only return shapes of the requesting user.",
     ),
     namespace: Optional[UUID4] = Query(default=None, title="Namespace id."),
-    shape_ids: Optional[List[UUID4]] = Query(default=None, title="Shape ids."),
+    shape_id: Optional[List[UUID4]] = Query(default=None, alias="id", title="Shape ids."),
     bbox: Optional[Tuple[Longitude, Latitude, Longitude, Latitude]] = Query(
         default=None, title="Bounding box (min x, min y, max x, max y)"
     ),
@@ -100,7 +100,7 @@ def _get_shape_metadata(
             limit=limit,
             offset=offset,
             created_by_user_id=user_id,
-            ids=shape_ids,
+            shape_id=shape_id,
             bbox=bbox_obj,
         )
     )

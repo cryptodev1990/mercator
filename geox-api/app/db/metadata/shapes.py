@@ -22,10 +22,6 @@ from app.db.metadata.common import metadata
 __all__ = ["shapes"]
 
 
-class TSVector(TypeDecorator):
-    impl = TSVECTOR
-
-
 shapes = Table(
     "shapes",
     metadata,
@@ -84,7 +80,7 @@ shapes = Table(
     ),
     Column(
         "fts",
-        TSVector(),
+        TSVECTOR(),
         Computed("to_tsvector('english', properties)", persisted=True),
     ),
     # This is unlikely - actualy behavior - at the app level is to delete the shape when the org is soft-deleted

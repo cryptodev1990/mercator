@@ -5,7 +5,18 @@ NOTE: All queries use `shapes` table and no ORM features
 import datetime
 import logging
 from enum import Enum
-from typing import Any, Dict, Generator, List, Optional, Sequence, Set, Union
+from typing import (
+    Any,
+    Dict,
+    Generator,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import jinja2
 import sqlalchemy as sa
@@ -16,16 +27,14 @@ from sqlalchemy import String, and_, func, insert, or_, select, update
 from sqlalchemy.engine import Connection
 from sqlalchemy.sql import ColumnElement, Select, bindparam
 
+from app.core.datatypes import MapProjection
 from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBounds
 
+T = TypeVar("T")
+
 logger = logging.getLogger(__name__)
-
-
-class MapProjection(int, Enum):
-    WGS84 = 4326
-    WEB_MERCATOR = 3857
 
 
 METADATA_COLS = [
@@ -213,10 +222,10 @@ def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoSh
 
 
 def _select_shapes_query(
-    ids: Optional[Sequence[UUID4]] = None,
-    created_by_user_id: Optional[int] = None,
-    organization_id: Optional[UUID4] = None,
-    namespace_id: Optional[UUID4] = None,
+    shape_id: Union[None, UUID4, Sequence[UUID4]] = None,
+    created_by_user_id: Union[None, int, Sequence[int]] = None,
+    organization_id: Union[None, UUID4, Sequence[UUID4]] = None,
+    namespace_id: Union[None, UUID4, Sequence[UUID4]] = None,
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
     bbox: Optional[ViewportBounds] = None,
@@ -228,14 +237,16 @@ def _select_shapes_query(
     else:
         stmt = select(shapes_tbl)  # type: ignore
     stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
-    if ids is not None:
-        stmt = stmt.where(shapes_tbl.c.uuid.in_(ids))
+    if shape_id:
+        stmt = stmt.where(shapes_tbl.c.uuid.in_(listify(shape_id)))
     if created_by_user_id is not None:
-        stmt = stmt.where(shapes_tbl.c.created_by_user_id == created_by_user_id)
-    if namespace_id is not None:
-        stmt = stmt.where(shapes_tbl.c.namespace_id == namespace_id)
-    if organization_id is not None:
-        stmt = stmt.where(shapes_tbl.c.organization_id == organization_id)
+        stmt = stmt.where(
+            shapes_tbl.c.created_by_user_id.in_(listify(created_by_user_id))
+        )
+    if namespace_id:
+        stmt = stmt.where(shapes_tbl.c.namespace_id.in_(listify(namespace_id)))
+    if organization_id:
+        stmt = stmt.where(shapes_tbl.c.organization_id.in_(listify(organization_id)))
     if bbox:
         stmt = stmt.where(
             func.ST_Intersects(
@@ -249,6 +260,8 @@ def _select_shapes_query(
         stmt = stmt.limit(limit)
     if offset is not None:
         stmt = stmt.offset(offset)
+    # Awlays order by ID
+    stmt = stmt.order_by(shapes_tbl.c.uuid)
 
     return stmt
 
@@ -256,10 +269,10 @@ def _select_shapes_query(
 def select_shapes(
     conn: Connection,
     *,
-    ids: Optional[Sequence[UUID4]] = None,
-    created_by_user_id: Optional[int] = None,
-    organization_id: Optional[UUID4] = None,
-    namespace_id: Optional[UUID4] = None,
+    shape_id: Union[None, UUID4, Sequence[UUID4]] = None,
+    created_by_user_id: Union[None, int, Sequence[int]] = None,
+    organization_id: Union[None, UUID4, Sequence[UUID4]] = None,
+    namespace_id: Union[None, UUID4, Sequence[UUID4]] = None,
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
     bbox: Optional[ViewportBounds] = None,
@@ -272,7 +285,7 @@ def select_shapes(
         limit=limit,
         offset=offset,
         bbox=bbox,
-        ids=ids,
+        shape_id=shape_id,
         columns=GEOSHAPE_COLS,
     )
     res = conn.execute(stmt)
@@ -283,11 +296,11 @@ def select_shapes(
 def select_shape_metadata(
     conn: Connection,
     *,
-    ids: Optional[Sequence[UUID4]] = None,
+    shape_id: Union[None, UUID4, Sequence[UUID4]] = None,
+    created_by_user_id: Union[None, int, Sequence[int]] = None,
+    organization_id: Union[None, UUID4, Sequence[UUID4]] = None,
+    namespace_id: Union[None, UUID4, Sequence[UUID4]] = None,
     bbox: Optional[ViewportBounds] = None,
-    created_by_user_id: Optional[int] = None,
-    organization_id: Optional[UUID4] = None,
-    namespace_id: Optional[UUID4] = None,
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
 ) -> Generator[GeoShapeMetadata, None, None]:
@@ -300,7 +313,7 @@ def select_shape_metadata(
         limit=limit,
         offset=offset,
         bbox=bbox,
-        ids=ids,
+        shape_id=shape_id,
         columns=METADATA_COLS,
     )
     res = conn.execute(stmt)
@@ -399,14 +412,23 @@ def delete_shape(conn: Connection, id_: UUID4, *, user_id: int) -> None:
         raise ShapeDoesNotExist(id_)
 
 
+def listify(value: T) -> List[T]:
+    """Optionally convert single value into a list."""
+    if isinstance(value, (str, bytes)):
+        return [cast(T, value)]
+    if isinstance(value, Sequence):
+        return list(value)
+    return [value]
+
+
 def delete_many_shapes(
     conn: Connection,
     *,
     user_id: int,
-    ids: Optional[Sequence[UUID4]] = None,
-    namespace_id: Optional[UUID4] = None,
-    organization_id: Optional[UUID4] = None,
-    created_by_user_id: Optional[int] = None,
+    shape_id: Union[None, Sequence[UUID4], UUID4] = None,
+    namespace_id: Union[None, Sequence[UUID4], UUID4] = None,
+    organization_id: Union[None, Sequence[UUID4], UUID4] = None,
+    created_by_user_id: Union[None, Sequence[int], UUID4] = None,
     exclusive: bool = False,
 ) -> List[UUID4]:
     """Delete many shapes.
@@ -414,6 +436,14 @@ def delete_many_shapes(
     Args:
         user_id: The id of the user deleting the shapes.
         created_by_user_id: Delete shapes by this user.
+        exclusive: If `True`, then conditions are combined with `AND`;
+            If `False`, then conditions are combined with `OR`.  The
+            default is `False` so that if no conditions are specified,
+            no shapes are deleted.  To delete all shapes in an organization with
+            an `app_user` either set `exclusive=True` with no other args,
+            or set `exclusive=False` with an `organization_id`.
+    Returns:
+        List of shape IDs that were deleted.
 
     """
     values = {
@@ -427,13 +457,13 @@ def delete_many_shapes(
     )
     filters = []
     if namespace_id:
-        filters.append(shapes_tbl.c.namespace_id == namespace_id)
+        filters.append(shapes_tbl.c.namespace_id.in_(listify(namespace_id)))
     if organization_id:
-        filters.append(shapes_tbl.c.organization_id == organization_id)
+        filters.append(shapes_tbl.c.organization_id.in_(listify(organization_id)))
     if created_by_user_id:
-        filters.append(shapes_tbl.c.created_by_user_id == created_by_user_id)
-    if ids:
-        filters.append(shapes_tbl.c.uuid.in_(ids))
+        filters.append(shapes_tbl.c.created_by_user_id.in_(listify(created_by_user_id)))
+    if shape_id:
+        filters.append(shapes_tbl.c.uuid.in_(listify(shape_id)))
     if exclusive:
         stmt = stmt.where(and_(True, *filters))
     else:

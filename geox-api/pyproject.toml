@@ -49,3 +49,14 @@ disable = [
 
 [tool.pylint.similarities]
 min-similarity-lines=10
+
+[tool.coverage.run]
+omit = [
+    "app/tests_pre_start.py",
+    "app/db/metadata/*",
+    "app/db/init_db.py",
+    "app/backend_pre_start.py",
+    "app/celeryworker_pre_start.py",
+    "**/__init__.py",
+    "app/scripts/create_openapi_schema.py"
+]

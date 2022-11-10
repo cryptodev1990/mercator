@@ -1,4 +1,4 @@
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,duplicate-code
 """Common fixtures."""
 from typing import Any, Dict, Generator, List, Literal, TypedDict
 

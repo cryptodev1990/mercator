@@ -215,7 +215,7 @@ def _get_shapes(
     user_conn: UserConnection = Depends(get_app_user_connection),
     offset: int = Query(default=0, title="Item offset", ge=0),
     limit: int = Query(default=300, title="Number of shapes to retrieve", ge=1),
-    shape_ids: Optional[List[UUID4]] = Query(None, title="List of shape ids"),
+    shape_id: Optional[List[UUID4]] = Query(None, alias="id", title="List of shape IDs"),
     bbox: Optional[Tuple[Longitude, Latitude, Longitude, Latitude]] = Query(
         default=None, title="Bounding box (min x, min y, max x, max y)"
     ),
@@ -244,7 +244,7 @@ def _get_shapes(
             namespace_id=namespace,
             offset=offset,
             limit=limit,
-            ids=shape_ids,
+            shape_id=shape_id,
             bbox=bbox_obj,
         )
     )
@@ -323,10 +323,14 @@ def bulk_delete_shapes(
     shape_uuids: List[UUID4],
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> ShapeCountResponse:
-    """Create multiple shapes."""
+    """Create multiple shapes.
+
+    *Deprecated:* Use `DELETE /geofencer/shapes` instead.
+
+    """
     shapes = list(
         delete_many_shapes(
-            user_conn.connection, user_id=user_conn.user.id, ids=shape_uuids
+            user_conn.connection, user_id=user_conn.user.id, shape_id=shape_uuids
         )
     )
     return ShapeCountResponse(num_shapes=len(shapes))
@@ -338,10 +342,10 @@ def bulk_delete_shapes(
     responses=_responses("SHAPE_DOES_NOT_EXIST"),
 )
 def _delete_shapes__shape_id(
-    shape_id: UUID4,
+    shape_id: UUID4 = Path(..., title="ID of the shape to delete."),
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> None:
-    """Delete a shape."""
+    """Delete the shape `shape_id`."""
     try:
         delete_shape(
             user_conn.connection,
@@ -354,15 +358,22 @@ def _delete_shapes__shape_id(
 
 @router.delete("/geofencer/shapes", response_model=ShapesDeletedResponse)
 def _delete_shapes(
-    shape_ids: Optional[List[UUID4]] = Query(None),
+    shape_id: Optional[List[UUID4]] = Query(
+        None, alias="id", title="List of shape IDs to be deleted."
+    ),
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> ShapesDeletedResponse:
-    """Create multiple shapes."""
+    """Delete shapes.
+
+    Deletes shapes with IDs in the list `id`.
+    If `id` is not provided, then no shapes are deleted.
+
+    """
     shapes = list(
         delete_many_shapes(
             user_conn.connection,
             user_id=user_conn.user.id,
-            ids=shape_ids,
+            shape_id=shape_id,
             exclusive=False,
         )
     )

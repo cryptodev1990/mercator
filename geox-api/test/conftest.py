@@ -8,10 +8,5 @@ from app.main import app
 
 
 @pytest.fixture(scope="module")
-def client() -> TestClient:
-    return TestClient(app)
-
-
-@pytest.fixture(scope="module")
 def engine() -> Engine:
     return create_app_engine()

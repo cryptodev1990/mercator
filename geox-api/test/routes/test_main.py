@@ -6,7 +6,7 @@ from app.core.access_token import get_access_token
 access_token = get_access_token()
 
 
-here = pathlib.Path(__file__).parent.resolve()
+here = pathlib.Path(__file__).parent.parent.resolve()
 
 
 def test_read_health(client):
