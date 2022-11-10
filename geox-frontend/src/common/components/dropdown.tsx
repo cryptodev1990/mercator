@@ -14,6 +14,8 @@ export default function Dropdown() {
   const { user } = useAuth0();
   const nav = useNavigate();
   const { openModal } = useUiModals();
+  // check if on geofencer page
+  const isGeofencerPage = window.location.pathname.includes("geofencer");
 
   return (
     <Menu as="div" className="relative z-40 inline-block text-left">
@@ -41,25 +43,27 @@ export default function Dropdown() {
                     "block px-4 py-2 text-sm"
                   )}
                 >
-                  Account settings
+                  Account Settings
                 </a>
               )}
             </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  className={classNames(
-                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "block px-4 py-2 text-sm w-full text-left"
-                  )}
-                  onClick={() => {
-                    openModal(UIModalEnum.SupportModal);
-                  }}
-                >
-                  Support
-                </button>
-              )}
-            </Menu.Item>
+            {isGeofencerPage && (
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    className={classNames(
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "block px-4 py-2 text-sm w-full text-left"
+                    )}
+                    onClick={() => {
+                      openModal(UIModalEnum.SupportModal);
+                    }}
+                  >
+                    Support
+                  </button>
+                )}
+              </Menu.Item>
+            )}
             <Menu.Item>
               {({ active }) => (
                 <a

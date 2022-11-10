@@ -6,6 +6,40 @@ import { useAuth0 } from "@auth0/auth0-react";
 import GeofencerPage from "./pages/geofencer";
 import SubscriptionPage from "./pages/subscription";
 import { useTokenInOpenApi } from "./hooks/use-token-in-openapi";
+import AccountPage from "./pages/account";
+import { Navbar } from "./common/components/navbar";
+import { Link } from "react-router-dom";
+
+// Create a 404 page
+function NotFound() {
+  return (
+    <div
+      className="
+    h-screen w-screen
+    bg-gradient-to-r from-blue-200 to-blue-700
+    "
+    >
+      <div>
+        <div className="max-w-5xl p-3 m-auto">
+          <Navbar></Navbar>
+        </div>
+        <div className="flex flex-col mx-auto items-center py-[20vh] w-screen">
+          <h2 className="text-white text-6xl font-bold">
+            404 - Have no sphere
+          </h2>
+          <div className="text-white text-2xl pl-3 text-center">
+            <p>
+              We don't have a webpage at this URL.{" "}
+              <Link className="link link-primary" to="/">
+                Go back home.
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function Logout() {
   const { logout } = useAuth0();
@@ -62,10 +96,15 @@ function RoutesIndex() {
           element={<RequireAuth page={<GeofencerPage />} />}
         />
         <Route path="/logout" element={<RequireAuth page={<Logout />} />} />
+        <Route
+          path="/account/*"
+          element={<RequireAuth page={<AccountPage />} />}
+        />
         <Route path="/health" element={<HealthRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

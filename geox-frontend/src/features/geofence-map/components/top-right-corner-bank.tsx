@@ -37,7 +37,7 @@ const GuideBar = () => {
   const unhideBtn = (
     <button
       ref={ref}
-      className="btn btn-xs bg-purple-800 text-white mr-3"
+      className="btn btn-xs bg-blue-500 text-white mr-3"
       onClick={toggleHide}
     >
       <BiCaretLeft />
@@ -57,7 +57,7 @@ const GuideBar = () => {
 
   const tipbar = (
     <div>
-      <div className="bg-purple-800 w-[320px] px-2 py-1 mr-3 text-sm rounded flex flex-row">
+      <div className="bg-blue-500 w-[320px] px-2 py-1 mr-3 text-sm rounded flex flex-row">
         <p>{helpTextForMode}</p>
         <CancelIcon
           className="hover:cursor-pointer text-white flex-none ml-auto"

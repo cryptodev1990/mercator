@@ -29,7 +29,6 @@ const SaveButton = ({
   const {
     tentativeShapes,
     setTentativeShapes,
-    namespaces,
     bulkAddShapes,
     setVisibleNamespaces,
   } = useShapes();
