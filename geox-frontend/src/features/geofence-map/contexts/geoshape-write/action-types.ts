@@ -19,8 +19,8 @@ export type Action =
       error: Error;
     }
   | {
-      type: "SET_ACTIVE_NAMESPACE";
-      namespace: Namespace | null;
+      type: "SET_ACTIVE_NAMESPACES";
+      namespaces: Namespace[];
     }
   | {
       type: "SET_VISIBLE_NAMESPACES";

@@ -27,13 +27,13 @@ export interface IGeoShapeMetadataContext {
   shapeMetadataError: Error | null;
   // namespaces
   namespaces: Namespace[];
-  activeNamespace: Namespace | null;
+  activeNamespaces: Namespace[];
   visibleNamepaces: Namespace[];
   // API call - num shapes
   numShapes: number | null;
   numShapesIsLoading: boolean;
   numShapesError: Error | null;
-  setActiveNamespace: (namespace: Namespace | null) => void;
+  setActiveNamespaces: (namespaces: Namespace[]) => void;
   setVisibleNamespaces: any;
   // namespace writes
   addNamespace: (namespace: NamespaceCreate) => void;
@@ -50,8 +50,8 @@ export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
   shapeMetadataIsLoading: false,
   shapeMetadataError: null,
   namespaces: [],
-  activeNamespace: null,
-  setActiveNamespace: () => {},
+  activeNamespaces: [],
+  setActiveNamespaces: () => {},
   visibleNamepaces: [],
   setVisibleNamespaces: async () => {},
   numShapes: null,
@@ -129,10 +129,10 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     shapeMetadataIsSuccess,
   ]);
 
-  function setActiveNamespace(namespace: Namespace | null) {
+  function setActiveNamespaces(namespaces: Namespace[]) {
     dispatch({
-      type: "SET_ACTIVE_NAMESPACE",
-      namespace,
+      type: "SET_ACTIVE_NAMESPACES",
+      namespaces,
     });
   }
 
@@ -225,9 +225,9 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
         shapeMetadataIsLoading,
         shapeMetadataError: state.shapeMetadataError,
         namespaces: state.namespaces,
-        activeNamespace: state.activeNamespace,
+        activeNamespaces: state.activeNamespaces,
         visibleNamepaces: state.visibleNamepaces,
-        setActiveNamespace,
+        setActiveNamespaces,
         setVisibleNamespaces,
         numShapes: state.numShapes,
         numShapesIsLoading: state.numShapesIsLoading,

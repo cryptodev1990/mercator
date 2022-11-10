@@ -67,12 +67,12 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
   );
 
   // remove selection if the visible shapes change
-  const { visibleNamepaces, activeNamespace } = useContext(
+  const { visibleNamepaces, activeNamespaces } = useContext(
     GeoShapeMetadataContext
   );
   useEffect(() => {
     dispatch({ type: "RESET_SELECTION" });
-  }, [visibleNamepaces, activeNamespace]);
+  }, [visibleNamepaces, activeNamespaces]);
 
   return (
     <SelectionContext.Provider

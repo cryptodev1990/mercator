@@ -65,7 +65,7 @@ export function Tooltip() {
         setTooltip(null);
         setPosX(null);
         setPosY(null);
-      }, 3000);
+      }, 1500);
       return () => clearTimeout(timeout);
     }
   }, [tooltip]);

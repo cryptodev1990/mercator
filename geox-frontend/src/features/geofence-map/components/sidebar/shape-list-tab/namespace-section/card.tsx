@@ -1,18 +1,20 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   EyeFillIcon,
   EyeSlashFillIcon,
   CaretRightIcon,
 } from "../../../../../../common/components/icons";
-import { Virtuoso } from "react-virtuoso";
 import { Namespace } from "../../../../../../client";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
-import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { useShapes } from "../../../../hooks/use-shapes";
 import { DragTarget } from "../shape-card/drag-handle";
 import { ShapeCard } from "../shape-card/shape-card";
 import { DeleteButton } from "./delete-button";
 import simplur from "simplur";
+import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
+import { SearchContext } from "../../../../contexts/search-context";
+
+const MAX_DISPLAY_SHAPES = 18;
 
 export const NamespaceCard = ({
   namespace,
@@ -32,10 +34,17 @@ export const NamespaceCard = ({
     updateNamespace,
     partialUpdateShape,
   } = useShapes();
-  const [shapeHovered, setShapeHovered] = useState<string | null>(null);
-
   const { selectOneShapeUuid } = useSelectedShapes();
+  const [shapeHovered, setShapeHovered] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
+  const { searchResults } = useContext(SearchContext);
+
+  useEffect(() => {
+    // select a shape if hovered
+    if (shapeHovered) {
+      selectOneShapeUuid(shapeHovered);
+    }
+  }, [shapeHovered]);
 
   const sectionShapeMetadata = shapeMetadata.filter(
     (shape) => shape.namespace_id === namespace.id
@@ -101,27 +110,33 @@ export const NamespaceCard = ({
       <hr />
       {/* Directory body */}
       {shouldOpen && (
-        <Virtuoso
-          style={{
-            height: 3 * sectionShapeMetadata.length + "rem",
-          }}
-          data={sectionShapeMetadata}
-          itemContent={(index, data) => {
-            const shape = data;
-            return (
-              <ShapeCard
-                shape={shape}
-                key={index}
-                isHovered={shapeHovered === shape.uuid}
-                onMouseEnter={() => {
-                  setShapeHovered(shape.uuid);
-                  selectOneShapeUuid(shape.uuid);
-                }}
-                onMouseLeave={() => setShapeHovered(null)}
-              />
-            );
-          }}
-        />
+        <div>
+          {sectionShapeMetadata.length > 0 &&
+            sectionShapeMetadata
+              .filter((x) => {
+                if (searchResults) {
+                  return searchResults.has(x.uuid);
+                }
+                return true;
+              })
+              .filter((x, i) => i < MAX_DISPLAY_SHAPES)
+              .map((x) => (
+                <ShapeCard
+                  shape={x}
+                  onMouseEnter={() => setShapeHovered(x.uuid)}
+                  onMouseLeave={() => setShapeHovered(null)}
+                  isHovered={shapeHovered === x.uuid}
+                  key={x.uuid}
+                />
+              ))}
+          {sectionShapeMetadata.length > MAX_DISPLAY_SHAPES && (
+            <div className="text-center text-xs text-gray-400">
+              {simplur`${
+                sectionShapeMetadata.length - MAX_DISPLAY_SHAPES
+              } more shape[|s]`}
+            </div>
+          )}
+        </div>
       )}
     </DragTarget>
   );

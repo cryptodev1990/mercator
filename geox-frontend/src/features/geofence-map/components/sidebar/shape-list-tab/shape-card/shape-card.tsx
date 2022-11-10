@@ -66,7 +66,7 @@ export const ShapeCard = ({
           dataTip={`Drag into ${shape.name} another folder`}
         />
         <EditableLabel
-          value={shape?.name || shape?.properties?.name || "New shape"}
+          value={shape?.name || "New shape"}
           disabled={selectedDataIsLoading}
           onChange={(newName) => {
             const geojson = selectedFeatureCollection?.features.find(
@@ -74,6 +74,7 @@ export const ShapeCard = ({
             );
 
             if (!geojson) {
+              console.error("Could not find geojson for shape", shape);
               return;
             }
 
@@ -81,6 +82,7 @@ export const ShapeCard = ({
             geojson.properties.name = newName;
 
             if (newName !== shape.name) {
+              console.log("hey");
               updateShape({
                 ...shape,
                 // @ts-ignore

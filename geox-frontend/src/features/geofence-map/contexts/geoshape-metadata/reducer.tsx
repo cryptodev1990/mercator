@@ -4,7 +4,7 @@ import { Action } from "./action-types";
 export interface State {
   shapeMetadata: GeoShapeMetadata[];
   namespaces: Namespace[];
-  activeNamespace: Namespace | null;
+  activeNamespaces: Namespace[];
   visibleNamepaces: Namespace[];
   shapeMetadataIsLoading: boolean;
   shapeMetadataError: Error | null;
@@ -17,7 +17,7 @@ export interface State {
 export const initialState: State = {
   shapeMetadata: [],
   namespaces: [],
-  activeNamespace: null,
+  activeNamespaces: [],
   visibleNamepaces: [],
   shapeMetadataIsLoading: false,
   shapeMetadataError: null,
@@ -72,10 +72,10 @@ export function geoshapeReducer(state: State, action: Action): State {
         shapeMetadataError: action.error,
       };
     }
-    case "SET_ACTIVE_NAMESPACE": {
+    case "SET_ACTIVE_NAMESPACES": {
       return {
         ...state,
-        activeNamespace: action.namespace,
+        activeNamespaces: action.namespaces,
       };
     }
     case "SET_VISIBLE_NAMESPACES": {

@@ -139,12 +139,12 @@ const NamespaceSection = ({ selectedFolder, setSelectedFolder }: any) => {
 
 export const TentativeButtonBank = () => {
   // Button bank that pops up for uploaded shapes or shapes from the command palette
-  const { tentativeShapes, setActiveNamespace, namespaces } = useShapes();
+  const { tentativeShapes, setActiveNamespaces, namespaces } = useShapes();
   const { snapToBounds } = useViewport();
   const [selectedFolder, setSelectedFolder] = useState<Namespace | null>(null);
 
   useEffect(() => {
-    setActiveNamespace(null);
+    setActiveNamespaces([]);
   }, []);
 
   useEffect(() => {
