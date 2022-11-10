@@ -1,9 +1,9 @@
 import { useGetOneShapeByUuid } from "../../../hooks/use-openapi-hooks";
 
-import { JsonEditor } from "./json-editor";
+import { OldJsonEditor } from "./old-json-editor";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
-import NewJsonEditor from "./new-json-editor";
+import JsonEditor from "./json-editor";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -77,12 +77,13 @@ export const ShapeEditor = () => {
         <BiPencil className="stroke-white fill-white" />
       </button> */}
         <div>
-          {/* <JsonEditor
-          properties={reformattedProperties as any}
-          handleResults={handleSubmit}
-          disableSubmit={updateLoading || oneShapeIsLoading}
-        /> */}
-          <NewJsonEditor
+          {/* <OldJsonEditor
+            properties={reformattedProperties as any}
+            handleResults={handleSubmit}
+            disableSubmit={updateLoading || oneShapeIsLoading}
+          /> */}
+          <JsonEditor
+            uuid={shapeForPropertyEdit?.uuid}
             properties={reformattedProperties as any}
             handleResults={handleSubmit}
           />

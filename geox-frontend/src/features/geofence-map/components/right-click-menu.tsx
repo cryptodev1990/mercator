@@ -53,8 +53,6 @@ export const RightClickMenu = () => {
   };
 
   const handleLeftClick = (event: MouseEvent) => {
-    console.log("handle left click");
-
     const selectedShape = shapeMetadata.find((shape) => isSelected(shape.uuid));
     if (!selectedShape) {
       toast.error("No shape detected");
@@ -72,9 +70,10 @@ export const RightClickMenu = () => {
 
       return () => {
         ref.removeEventListener("contextmenu", listenerFunc, false);
+        ref.removeEventListener("click", handleLeftClick, false);
       };
     }
-  }, [mapRef]);
+  }, [mapRef, selectedUuids]);
 
   if (!xPos || !yPos) {
     return null;
