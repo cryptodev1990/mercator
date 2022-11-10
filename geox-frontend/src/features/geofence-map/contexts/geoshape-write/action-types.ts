@@ -108,4 +108,7 @@ export type Action =
   | {
       type: "SNAPSHOT_END";
       selectedFeatureCollection: any;
+    }
+  | {
+      type: "CLEAR_OPTIMISTIC_SHAPE_UPDATES";
     };

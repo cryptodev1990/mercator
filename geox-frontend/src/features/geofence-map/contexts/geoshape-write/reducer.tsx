@@ -1,4 +1,4 @@
-import { GeoShape } from "../../../../client";
+import { GeoShape, GeoShapeCreate } from "../../../../client";
 import { Action } from "./action-types";
 
 export type UndoLogRecord = {
@@ -14,6 +14,7 @@ export type UndoLogRecord = {
 export interface State {
   shapeUpdateLoading: boolean;
   shapeAddLoading: boolean;
+  optimisticShapeUpdates: GeoShapeCreate[];
   tileCacheKey: number;
   undoLog: UndoLogRecord[];
   redoLog: UndoLogRecord[];
@@ -27,6 +28,7 @@ export const initialState: State = {
   shapeUpdateLoading: false,
   shapeAddLoading: false,
   tileCacheKey: 0,
+  optimisticShapeUpdates: [],
   undoLog: [],
   redoLog: [],
   updatedShapeIds: [],
@@ -39,17 +41,33 @@ export function reducer(state: State, action: Action): State {
   switch (action.type) {
     // Shape metadata actions
     // Add shape actions
-    case "BULK_ADD_SHAPES_LOADING":
-    case "ADD_SHAPE_LOADING":
     case "UPDATE_SHAPE_LOADING":
     case "DELETE_SHAPES_LOADING": {
       const res = {
         ...state,
         shapeUpdateLoading: true,
       };
-      if (action.type === "ADD_SHAPE_LOADING") {
-        res.shapeAddLoading = true;
+      return res;
+    }
+    case "BULK_ADD_SHAPES_LOADING": {
+      const res = {
+        ...state,
+        shapeUpdateLoading: true,
+        shapeAddLoading: true,
+      };
+      return res;
+    }
+    case "ADD_SHAPE_LOADING": {
+      const optimisticShapeUpdates = [action.shape];
+      for (const shape of state.optimisticShapeUpdates) {
+        optimisticShapeUpdates.push(shape);
       }
+      const res = {
+        ...state,
+        shapeUpdateLoading: true,
+        shapeAddLoading: true,
+        optimisticShapeUpdates,
+      };
       return res;
     }
     case "DELETE_SHAPES_SUCCESS":
@@ -83,6 +101,12 @@ export function reducer(state: State, action: Action): State {
         updateError: action.error,
         shapeUpdateLoading: false,
         shapeAddLoading: false,
+      };
+    }
+    case "CLEAR_OPTIMISTIC_SHAPE_UPDATES": {
+      return {
+        ...state,
+        optimisticShapeUpdates: [],
       };
     }
     default:

@@ -16,9 +16,15 @@ export function useTiles() {
   const { idToken } = useIdToken();
 
   const [isHovering, setIsHovering] = useState<string | null>(null);
-  const [updateCount, setUpdateCount] = useState(0);
   const tileArgs = useTileArgs(isHovering, setIsHovering);
-  const { tileCacheKey, visibleNamepaces, updatedShapeIds } = useShapes();
+  const {
+    tileCacheKey,
+    visibleNamepaces,
+    updatedShapeIds,
+    tileUpdateCount,
+    setTileUpdateCount,
+    clearOptimisticShapeUpdates,
+  } = useShapes();
   const { cursorMode } = useCursorMode();
   const { selectedUuids } = useSelectedShapes();
 
@@ -41,7 +47,7 @@ export function useTiles() {
       // @ts-ignore
       onViewportLoad: (headers: Tile2DHeader[]) => {
         // triggers after all tiles in a viewport load
-        setUpdateCount(updateCount + 1);
+        setTileUpdateCount(tileUpdateCount + 1);
       },
       updateTriggers: {
         getFillColor: [selectedUuids, isHovering, cursorMode, updatedShapeIds],
@@ -58,11 +64,12 @@ export function useTiles() {
       // @ts-ignore
       onViewportLoad: (headers: Tile2DHeader[]) => {
         tc.clear();
+        clearOptimisticShapeUpdates();
       },
       // blocks any server request by this layer, it can only read from the cache
       neverFetch: true,
       updateTriggers: {
-        getTileData: [updateCount],
+        getTileData: [tileUpdateCount],
         getFillColor: [selectedUuids, isHovering],
       },
       // @ts-ignore
@@ -163,7 +170,7 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
         // TODO how do I get TypeScript to recognize the type on object here?
         // @ts-ignore
         const { __uuid: uuid } = object.properties;
-        if (!isSelected(uuid)) {
+        if (!isSelected(uuid) && !deletedShapeIds.includes(uuid)) {
           selectOneShapeUuid(uuid);
         }
       }
@@ -183,7 +190,7 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
       }
     },
     pickable: true,
-    maxRequests: 6, // unlimited connections, using HTTP/2
+    maxRequests: 6,
     renderSubLayers: (props: any) => {
       return new GeoJsonLayer({
         ...props,

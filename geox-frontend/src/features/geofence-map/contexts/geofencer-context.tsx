@@ -19,6 +19,8 @@ interface GeofencerContextState {
   mapRef: any;
   selectedFeatureIndexes: number[];
   setSelectedFeatureIndexes: (indexes: number[]) => void;
+  tileUpdateCount: number;
+  setTileUpdateCount: (count: number) => void;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -38,6 +40,8 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   mapRef: null,
   selectedFeatureIndexes: [],
   setSelectedFeatureIndexes: () => {},
+  tileUpdateCount: 0,
+  setTileUpdateCount: () => {},
 });
 GeofencerContext.displayName = "GeofencerContext";
 
@@ -54,6 +58,8 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
           zoom: 11.363205994378514,
         }
   );
+
+  const [tileUpdateCount, setTileUpdateCount] = useState(0);
 
   useEffect(() => {
     // Store viewport in local storage
@@ -117,6 +123,8 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
         selectedFeatureIndexes,
         setSelectedFeatureIndexes: (indexes: number[]) =>
           setSelectedFeatureIndexes(indexes),
+        tileUpdateCount,
+        setTileUpdateCount: (count: number) => setTileUpdateCount(count),
       }}
     >
       {children}

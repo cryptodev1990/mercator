@@ -59,6 +59,8 @@ export interface IGeoShapeWriteContext {
   deletedShapeIds: string[];
   updatedShape: GeoShape | null;
   partialUpdateShape: (shape: GeoShapeUpdate) => void;
+  optimisticShapeUpdates: GeoShapeCreate[];
+  clearOptimisticShapeUpdates: () => void;
 }
 
 export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
@@ -73,6 +75,8 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   updatedShapeIds: [],
   deletedShapeIds: [],
   updatedShape: null,
+  optimisticShapeUpdates: [],
+  clearOptimisticShapeUpdates: () => {},
   partialUpdateShape: async () => {},
 });
 
@@ -144,7 +148,6 @@ export const GeoShapeWriteContextProvider = ({
           continue;
         }
         const diffShape = difference(shape.geojson as any, feature);
-        console.log("diffShape", diffShape);
         shape.geojson = diffShape as any;
       }
     }
@@ -210,6 +213,10 @@ export const GeoShapeWriteContextProvider = ({
     });
   }
 
+  function clearOptimisticShapeUpdates() {
+    dispatch({ type: "CLEAR_OPTIMISTIC_SHAPE_UPDATES" });
+  }
+
   return (
     <GeoShapeWriteContext.Provider
       value={{
@@ -221,10 +228,12 @@ export const GeoShapeWriteContextProvider = ({
         bulkAddShapes,
         bulkAddFromSplit,
         addShapeAndEdit,
+        optimisticShapeUpdates: state.optimisticShapeUpdates,
         updatedShapeIds: state.updatedShapeIds,
         updatedShape: state.updatedShape,
         deletedShapeIds: state.deletedShapeIds,
         partialUpdateShape,
+        clearOptimisticShapeUpdates,
       }}
     >
       {children}
