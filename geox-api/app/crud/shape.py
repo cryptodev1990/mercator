@@ -5,7 +5,7 @@ NOTE: All queries use `shapes` table and no ORM features
 import datetime
 import logging
 from enum import Enum
-from typing import Any, Dict, Generator, List, Optional, Sequence, Union
+from typing import Any, Dict, Generator, List, Optional, Sequence, Set, Union
 
 import jinja2
 import sqlalchemy as sa
@@ -96,15 +96,23 @@ def create_shape(
     return GeoShape.from_orm(res)
 
 
+def _get_name(d: Dict[str, Any]) -> Optional[str]:
+    for k in d:
+        if str(k).lower().strip() == "name" and d[k]:
+            return str(d[k])
+    return None
+
+
 def _parse_shape_args(
     *,
     geojson: Optional[Feature] = None,
     geom: Union[None, Geometry, GeometryCollection] = None,
     properties: Optional[Dict[str, Any]] = None,
     name: Optional[str] = None,
+    keep_none: bool = False,
 ) -> Dict[str, Any]:
     """Combine geojson objects with components."""
-    out: Dict[str, Any] = {}
+    out: Dict[str, Any] = {"name": None, "properties": None, "geom": None}
     # Geom
     geom_new = None
     if geom:
@@ -114,39 +122,39 @@ def _parse_shape_args(
     if geom_new is not None:
         # returning geom as a string makes it easier to include as a param in input/update queries
         out["geom"] = geom_new.json()
-    properties_new: Optional[Dict[str, Any]] = None
-
-    def _get_name(d: Dict[str, Any]) -> Optional[str]:
-        for k in d:
-            if str(k).lower().strip() == "name" and d[k]:
-                return str(d[k])
-        return None
 
     # Name
     name_new = None
-    if name:
+    # Ignore some values that are not names
+    if name and name.lower() not in {"New shape", "New upload"}:
         name_new = name
     elif name_new := _get_name(properties or {}):
         pass
     elif name_new := _get_name(geojson.properties or {}) if geojson else None:
         pass
+    elif name:
+        name_new = name
     if name_new:
         out["name"] = str(name_new)
+
     # This allows {} to remove properties
+    # Properties
+    properties_new: Optional[Dict[str, Any]] = None
     if properties is not None:
         properties_new = properties
     elif geojson is not None and geojson.properties is not None:
         properties_new = {**geojson.properties}
-    # Properties
     if properties_new is not None:
-        delete_keys: List[str] = ["__uuid"]
+        delete_keys: Set[str] = {"__uuid"}
         properties_new = {
             k: v
             for k, v in properties_new.items()
             if k not in delete_keys and str(k).lower().strip() != "name"
         }
         out["properties"] = properties_new
-    return out
+    if keep_none:
+        return out
+    return {k: v for k, v in out.items() if v is not None}
 
 
 def create_many_shapes(
@@ -167,12 +175,15 @@ def create_many_shapes(
         )
         .returning(shapes_tbl.c.uuid)
     )
-    # TODO: remove exception after migration
     default_namespace = namespace_id or get_default_namespace(conn, organization_id).id
     params = [
         {
             **_parse_shape_args(
-                geojson=x.geojson, name=x.name, properties=x.properties, geom=x.geometry
+                geojson=x.geojson,
+                name=x.name,
+                properties=x.properties,
+                geom=x.geometry,
+                keep_none=True,
             ),
             "namespace_id": x.namespace or default_namespace,
         }

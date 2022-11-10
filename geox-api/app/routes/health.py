@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-from app.core.stats import stats
 from app.dependencies import get_connection, verify_subscription, verify_token
 
 router = APIRouter()

@@ -83,7 +83,7 @@ class GeoShapeCreate(BaseModel):
     geometry: Union[None, Geometry, GeometryCollection] = Field(
         None, description="New shape"
     )
-    properties: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    properties: Optional[Dict[str, Any]] = Field(None)
 
     class Config:
         schema_extra = {

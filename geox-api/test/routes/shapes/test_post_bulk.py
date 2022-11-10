@@ -1,10 +1,8 @@
-"""Test PATCH /geofencer/shapes/{shape_id}."""
-from typing import Any, Dict
+"""Test POST /geofencer/shapes/bulk"""
+from typing import Any, Dict, List
 
 import pytest
 from fastapi.testclient import TestClient
-
-from app.crud.shape import shape_exists
 
 from .conftest import ExampleDbAbc
 
@@ -16,20 +14,8 @@ _new_name = "bright-curve"
 _new_props = {"foo": "bar"}
 
 
-@pytest.fixture(
-    params=[
-        "geojson only",
-        "geojson with name",
-        "no name or props",
-        "with namespace",
-        "geometry, properties, name",
-        "geometry, properties with NAME",
-        "geojson.properties with NaMe",
-        "ignore 'New update' name",
-        "ignore 'New shape' name",
-    ]
-)
-def examples(db: ExampleDbAbc, request: Any) -> Dict[str, Any]:
+@pytest.fixture()
+def examples(db: ExampleDbAbc) -> List[Dict[str, Any]]:
     default_namespace_id = str(db["example.com"].default_namespace.id)
     new_namespace_id = str(db["example.com"].namespaces["new-namespace"].id)
 
@@ -150,56 +136,19 @@ def examples(db: ExampleDbAbc, request: Any) -> Dict[str, Any]:
                 "namespace_id": default_namespace_id,
             },
         },
-        "ignore 'New update' name": {
-            "data": {
-                "geojson": {
-                    "type": "Feature",
-                    "geometry": _new_geom,
-                    "properties": {"name": _new_name},
-                },
-                "name": "New upload",
-            },
-            "expected": {
-                "geojson": {
-                    "type": "Feature",
-                    "geometry": _new_geom,
-                    "properties": {"name": _new_name},
-                },
-                "namespace_id": default_namespace_id,
-            },
-        },
-        "ignore 'New shape' name": {
-            "data": {
-                "geojson": {
-                    "type": "Feature",
-                    "geometry": _new_geom,
-                    "properties": {"name": _new_name},
-                },
-                "name": "New shape",
-            },
-            "expected": {
-                "geojson": {
-                    "type": "Feature",
-                    "geometry": _new_geom,
-                    "properties": {"name": _new_name},
-                },
-                "namespace_id": default_namespace_id,
-            },
-        },
     }
-    return EXAMPLES[request.param]
+    return [x["data"] for x in EXAMPLES.values()]
 
 
 # pylint: disable=unused-argument, redefined-outer-name
-def test_post(client: TestClient, db: ExampleDbAbc, examples: Dict[str, Any]) -> None:
-    response = client.post("/geofencer/shapes", json=examples["data"])
+def test_post(
+    client: TestClient, db: ExampleDbAbc, examples: List[Dict[str, Any]]
+) -> None:
+    n_shapes = len(examples)
+    response = client.post("/geofencer/shapes/bulk", json=examples)
     assert response.status_code == 200
     actual = response.json()
-    assert actual["geojson"]["geometry"] == _new_geom
-    assert actual["namespace_id"] == examples["expected"]["namespace_id"]
-    shape_id = actual["uuid"]
-    # check that shape exists on the database
-    assert shape_exists(db.conn, shape_id)
+    assert actual["num_shapes"] == n_shapes
 
 
 # pylint: enable=unused-argument, redefined-outer-name
