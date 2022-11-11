@@ -9,13 +9,19 @@ import { UploadModalView } from "./upload-modal-view";
 import { useUiModals } from "../../../hooks/use-ui-modals";
 
 export const UploadModal = () => {
-  const { tentativeShapes, setTentativeShapes } = useShapes();
+  const { setTentativeShapes } = useShapes();
   const [files, setFiles] = useState<File[]>([]);
   const { modal, closeModal } = useUiModals();
   const [isUploading, setIsUploading] = useState(false);
 
-  const { fetchGeoJson, geojson, loading, error, convertJsonFileToGeojson } =
-    useConvertedGeojson();
+  const {
+    fetchGeoJson,
+    geojson,
+    loading,
+    error,
+    convertJsonFileToGeojson,
+    initialUploadSize,
+  } = useConvertedGeojson();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
@@ -46,21 +52,20 @@ export const UploadModal = () => {
   }, [error]);
 
   useEffect(() => {
-    if (tentativeShapes.length > 0) {
-      closeModal();
+    if (geojson && isUploading) {
+      const prospects = geojson.map((feature) => {
+        return {
+          geojson: feature,
+        };
+      });
+      setTentativeShapes(prospects);
       setIsUploading(false);
+      closeModal();
     }
-  }, [tentativeShapes]);
+  }, [geojson, isUploading]);
 
   function onPublish() {
     setIsUploading(true);
-    const prospects = geojson.map((feature) => {
-      return {
-        geojson: feature,
-        name: feature.properties?.name ?? "New upload",
-      };
-    });
-    setTentativeShapes(prospects);
   }
 
   return (

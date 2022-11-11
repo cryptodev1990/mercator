@@ -55,13 +55,6 @@ export const useConvertedGeojson = () => {
           );
           return;
         }
-        if (transform && transform.nameKey) {
-          for (let i = 0; i < out.length; i++) {
-            if (out[i].properties) {
-              out[i].properties.name = out[i].properties[transform.nameKey];
-            }
-          }
-        }
         setGeojson(out);
         setInitialUploadSize(bytes);
       });
@@ -107,6 +100,7 @@ export const useConvertedGeojson = () => {
     geojson,
     loading,
     fetchGeoJson,
+    initialUploadSize,
     convertJsonFileToGeojson,
   };
 };

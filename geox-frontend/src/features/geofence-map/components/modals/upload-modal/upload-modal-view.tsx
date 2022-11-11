@@ -1,6 +1,7 @@
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UploadIcon } from "../../../../../common/components/icons";
+import Loading from "react-loading";
 
 export function UploadModalView({
   open,
@@ -11,6 +12,7 @@ export function UploadModalView({
   onPublish,
 }: any) {
   const cancelButtonRef = useRef(null);
+  const [localLoading, setLocalLoading] = useState(false);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -71,14 +73,45 @@ export function UploadModalView({
                     </div>
                   </div>
                 </div>
+                {/* checkmark that simplifies shape 
+                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse select-none">
+                  <input
+                    type="checkbox"
+                    id="simplify"
+                    name="simplify"
+                    value="simplify"
+                  />
+                  <span
+                    className="underline decoration-dotted"
+                    data-tip="Simplify an upload for better performance"
+                  >
+                    (?)
+                  </span>
+                  <label htmlFor="simplify">Simplify shapes</label>
+                </div>
+              */}
+
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
                     disabled={!enabled || loading}
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => onPublish()}
+                    onClick={() => {
+                      setLocalLoading(true);
+                      onPublish();
+                      setLocalLoading(false);
+                    }}
                   >
-                    {loading ? "Loading..." : "Upload to staging"}
+                    {localLoading || loading ? (
+                      <Loading
+                        type="spin"
+                        color="#fff"
+                        height={20}
+                        width={20}
+                      />
+                    ) : (
+                      "Upload to staging"
+                    )}
                   </button>
                   <button
                     type="button"
