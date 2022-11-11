@@ -106,10 +106,14 @@ const GeofenceMap = () => {
 
   const handleLeftClick = (event: MouseEvent) => {
     const selectedShape = shapeMetadata.find((shape) => isSelected(shape.uuid));
-    if (!selectedShape) {
-      return;
+    console.log("cursorMode", cursorMode);
+    if (
+      selectedShape &&
+      (cursorMode === EditorMode.ViewMode ||
+        cursorMode === EditorMode.ModifyMode)
+    ) {
+      setShapeForPropertyEdit(selectedShape);
     }
-    setShapeForPropertyEdit(selectedShape);
   };
 
   useEffect(() => {
