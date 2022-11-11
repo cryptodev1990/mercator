@@ -98,25 +98,27 @@ export default function JsonEditor({
           </div>
         );
       })}
-      <div className="flex justify-end mt-2">
-        {" "}
-        <button
-          type="button"
-          className="btn btn-primary btn-xs"
-          onClick={() =>
-            append({
-              key: `New Key ${fields.length}`,
-              value: `New Value ${fields.length}`,
-            })
-          }
-        >
-          <AiOutlinePlus />
-        </button>
-        <input
-          type="submit"
-          value="save"
-          className="btn btn-success btn-xs capitalize"
-        />
+      <div className="grid grid-cols-10 mt-2">
+        <div className="col-span-9 flex justify-end">
+          {" "}
+          <button
+            type="button"
+            className="btn btn-primary btn-xs"
+            onClick={() =>
+              append({
+                key: `New Key ${fields.length}`,
+                value: `New Value ${fields.length}`,
+              })
+            }
+          >
+            <AiOutlinePlus />
+          </button>
+          <input
+            type="submit"
+            value="save"
+            className="btn btn-success btn-xs capitalize"
+          />
+        </div>
       </div>
     </form>
   );
