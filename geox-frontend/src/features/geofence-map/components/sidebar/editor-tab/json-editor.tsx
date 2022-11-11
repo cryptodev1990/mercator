@@ -60,7 +60,6 @@ export default function JsonEditor({
         if (field.key.startsWith("__")) {
           return null;
         }
-        console.log("field", field);
         return (
           <div key={field.id}>
             <section className={"section grid grid-cols-10"} key={field.id}>

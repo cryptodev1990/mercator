@@ -16,14 +16,22 @@ import { getCursorFromCursorMode } from "./utils";
 import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
+import toast from "react-hot-toast";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
   const { cursorMode, setOptions, setCursorMode } = useCursorMode();
-  const { mapRef, clearSelectedFeatureIndexes, deleteShapes, addShape } =
-    useShapes();
+  const {
+    mapRef,
+    clearSelectedFeatureIndexes,
+    deleteShapes,
+    addShape,
+    shapeMetadata,
+    setShapeForPropertyEdit,
+  } = useShapes();
 
-  const { selectedUuids, clearSelectedShapeUuids } = useSelectedShapes();
+  const { selectedUuids, clearSelectedShapeUuids, isSelected } =
+    useSelectedShapes();
 
   const { deckRef } = useContext(DeckContext);
   const { getIsochrones } = useIsochrones();
@@ -95,6 +103,28 @@ const GeofenceMap = () => {
     }
     return null;
   };
+
+  const handleLeftClick = (event: MouseEvent) => {
+    const selectedShape = shapeMetadata.find((shape) => isSelected(shape.uuid));
+    if (!selectedShape) {
+      toast.error("No shape detected");
+      return;
+    }
+    setShapeForPropertyEdit(selectedShape);
+  };
+
+  useEffect(() => {
+    // Make the context menu appear on right click only on the map
+    if (mapRef?.current) {
+      console.log("adding event listener", selectedUuids);
+      let ref = mapRef.current;
+      ref.addEventListener("click", handleLeftClick, false);
+
+      return () => {
+        ref.removeEventListener("click", handleLeftClick, false);
+      };
+    }
+  }, [mapRef, selectedUuids]);
 
   return (
     <div ref={mapRef}>
