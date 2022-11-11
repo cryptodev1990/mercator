@@ -1,5 +1,7 @@
+import logging
 import random
-import re
+import time
+
 from string import ascii_letters, digits
 from typing import Any, Callable
 
@@ -8,8 +10,7 @@ from fastapi import FastAPI, Request
 
 from app.core.config import get_settings
 
-# regex to find any character that are invalid for a metric name
-invalid_metric_chars_regex = re.compile(r"^[0-9a-zA-Z]")
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 worker_id = "".join(
@@ -33,15 +34,24 @@ def attach_stats_middleware(app: FastAPI):
     @app.middleware("http")
     async def endpoint_stats(request: Request, call_next: Callable) -> Any:
         """Collects default metrics for all endpoints"""
+        start_time = time.time()
+        response = await call_next(request)
+        request_duration_s = time.time() - start_time
 
-        # replace all invalid characters in the url path with an underscore
-        endpoint = invalid_metric_chars_regex.sub("_", request.url.path)
-
-        # collect metrics
-        stats.increment(f"{endpoint}.num_requests")
-        with stats.timer(f"{endpoint}.request_duration_s"):
-            response = await call_next(request)
-        stats.increment(
-            f"{endpoint}.response_status_code.{response.status_code // 100}XX"
-        )
+        # endpoint path must be extracted after call_next is called
+        if "root_path" in request.scope and "route" in request.scope:
+            tags = [
+                f"endpoint_path:{request.scope['root_path'] + request.scope['route'].path}"
+            ]
+            stats.timing("endpoints.request_duration_s", request_duration_s, tags=tags)
+            stats.increment("endpoints.num_requests", tags=tags)
+            stats.increment(
+                f"endpoints.response_status_code.{response.status_code // 100}XX",
+                tags=tags,
+            )
+        else:
+            logger.warning(
+                "Unknown request path for endpoint stats",
+                extra={"request_path": request.url.path},
+            )
         return response
