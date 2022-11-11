@@ -1,6 +1,4 @@
 import { useGetOneShapeByUuid } from "../../../hooks/use-openapi-hooks";
-
-import { OldJsonEditor } from "./old-json-editor";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
 import JsonEditor from "./json-editor";
@@ -77,11 +75,6 @@ export const ShapeEditor = () => {
         <BiPencil className="stroke-white fill-white" />
       </button> */}
         <div>
-          {/* <OldJsonEditor
-            properties={reformattedProperties as any}
-            handleResults={handleSubmit}
-            disableSubmit={updateLoading || oneShapeIsLoading}
-          /> */}
           <JsonEditor
             uuid={shapeForPropertyEdit?.uuid}
             properties={reformattedProperties as any}
