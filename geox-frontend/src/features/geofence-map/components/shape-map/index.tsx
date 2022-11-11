@@ -107,7 +107,6 @@ const GeofenceMap = () => {
   const handleLeftClick = (event: MouseEvent) => {
     const selectedShape = shapeMetadata.find((shape) => isSelected(shape.uuid));
     if (!selectedShape) {
-      toast.error("No shape detected");
       return;
     }
     setShapeForPropertyEdit(selectedShape);
