@@ -60,6 +60,7 @@ export default function JsonEditor({
         if (field.key.startsWith("__")) {
           return null;
         }
+        console.log("field", field);
         return (
           <div key={field.id}>
             <section className={"section grid grid-cols-10"} key={field.id}>
@@ -68,9 +69,11 @@ export default function JsonEditor({
                 {...register(`properties.${index}.key` as const, {
                   required: true,
                 })}
-                className={`read-only:bg-slate-900 read-only:text-white col-span-4 read-only:font-bold text-ellipsis bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-                  errors?.properties?.[index]?.value ? "error" : ""
-                }`}
+                className={
+                  `read-only:bg-slate-900 read-only:text-white col-span-4 read-only:font-bold text-ellipsis bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+                    errors?.properties?.[index]?.value ? "error" : ""
+                  }` + (field.key.length > 12 ? "focus:absolute" : "")
+                }
                 disabled={field.key === "name" ? true : false}
               />
               <input
@@ -79,9 +82,11 @@ export default function JsonEditor({
                 {...register(`properties.${index}.value` as const, {
                   required: true,
                 })}
-                className={`text-ellipsis col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500${
-                  errors?.properties?.[index]?.value ? "error" : ""
-                }`}
+                className={
+                  `focus:absolute text-ellipsis col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500${
+                    errors?.properties?.[index]?.value ? "error" : ""
+                  }` + (field.value.length > 12 ? "focus:absolute" : "")
+                }
               />
               {field.key === "name" ? null : (
                 <button
