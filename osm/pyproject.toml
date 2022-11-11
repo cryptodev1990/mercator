@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Jeffrey Arnold <jeffrey@mercator.tech>"]
 readme = "README.md"
-packages = [{include = "osm_search"}]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
