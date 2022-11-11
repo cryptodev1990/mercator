@@ -114,7 +114,6 @@ const GeofenceMap = () => {
   };
 
   useEffect(() => {
-    // Make the context menu appear on right click only on the map
     if (mapRef?.current) {
       let ref = mapRef.current;
       ref.addEventListener("click", handleLeftClick, false);
