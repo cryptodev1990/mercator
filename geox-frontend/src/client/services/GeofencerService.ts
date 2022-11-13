@@ -60,31 +60,37 @@ export class GeofencerService {
     });
   }
 
+
   /**
    * Bulk Create Shapes
    * Create multiple shapes.
    * @param requestBody
    * @param namespace
-   * @returns ShapeCountResponse Successful Response
+   * @param asList
+   * @returns any Successful Response
    * @throws ApiError
    */
   public static bulkCreateShapesGeofencerShapesBulkPost(
-    requestBody: Array<GeoShapeCreate>,
-    namespace?: string
-  ): CancelablePromise<ShapeCountResponse> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/geofencer/shapes/bulk",
-      query: {
-        namespace: namespace,
-      },
-      body: requestBody,
-      mediaType: "application/json",
-      errors: {
-        422: `Validation Error`,
-      },
-    });
+      requestBody: Array<GeoShapeCreate>,
+      namespace?: string,
+      asList = false,
+  ): CancelablePromise<(ShapeCountResponse | Array<GeoShape>)> {
+      return __request(OpenAPI, {
+          method: 'POST',
+          url: '/geofencer/shapes/bulk',
+          query: {
+              'namespace': namespace,
+              'as_list': asList,
+          },
+          body: requestBody,
+          mediaType: 'application/json',
+          errors: {
+              422: `Validation Error`,
+          },
+      });
   }
+
+
 
   /**
    * Bulk Delete Shapes

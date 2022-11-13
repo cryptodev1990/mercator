@@ -248,6 +248,16 @@
             },
             "name": "namespace",
             "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "As List",
+              "type": "boolean",
+              "default": false
+            },
+            "name": "as_list",
+            "in": "query"
           }
         ],
         "requestBody": {
@@ -270,7 +280,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ShapeCountResponse"
+                  "title": "Response Bulk Create Shapes Geofencer Shapes Bulk Post",
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ShapeCountResponse"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/GeoShape"
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -297,7 +318,7 @@
           "geofencer"
         ],
         "summary": "Bulk Delete Shapes",
-        "description": "Create multiple shapes.",
+        "description": "Create multiple shapes.\n\n*Deprecated:* Use `DELETE /geofencer/shapes` instead.",
         "operationId": "bulk_delete_shapes_geofencer_shapes_bulk_delete",
         "requestBody": {
           "content": {
@@ -336,6 +357,7 @@
             }
           }
         },
+        "deprecated": true,
         "security": [
           {
             "HTTPBearer": []
@@ -400,14 +422,14 @@
           {
             "required": false,
             "schema": {
-              "title": "List of shape ids",
+              "title": "List of shape IDs",
               "type": "array",
               "items": {
                 "type": "string",
                 "format": "uuid4"
               }
             },
-            "name": "shape_ids",
+            "name": "id",
             "in": "query"
           },
           {
@@ -507,20 +529,20 @@
           "geofencer"
         ],
         "summary": " Delete Shapes",
-        "description": "Create multiple shapes.",
+        "description": "Delete shapes.\n\nDeletes shapes with IDs in the list `id`.\nIf `id` is not provided, then no shapes are deleted.",
         "operationId": "_delete_shapes_geofencer_shapes_delete",
         "parameters": [
           {
             "required": false,
             "schema": {
-              "title": "Shape Ids",
+              "title": "List of shape IDs to be deleted.",
               "type": "array",
               "items": {
                 "type": "string",
                 "format": "uuid4"
               }
             },
-            "name": "shape_ids",
+            "name": "id",
             "in": "query"
           }
         ],
@@ -698,13 +720,13 @@
           "geofencer"
         ],
         "summary": " Delete Shapes  Shape Id",
-        "description": "Delete a shape.",
+        "description": "Delete the shape `shape_id`.",
         "operationId": "_delete_shapes__shape_id_geofencer_shapes__shape_id__delete",
         "parameters": [
           {
             "required": true,
             "schema": {
-              "title": "Shape Id",
+              "title": "ID of the shape to delete.",
               "type": "string",
               "format": "uuid4"
             },
@@ -1196,7 +1218,7 @@
                 "format": "uuid4"
               }
             },
-            "name": "shape_ids",
+            "name": "id",
             "in": "query"
           },
           {

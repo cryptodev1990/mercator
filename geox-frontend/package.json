@@ -74,7 +74,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "generate-client": "cd ../geox-api && just openapi && yarn run _generate-client",
-    "_generate-client": "openapi --input ../geox-api/client/openapi.json --output ./autogen --client axios --exportCore false --indent 2",
+    "_generate-client": "./node_modules/openapi-typescript-codegen/bin/index.js --input ../geox-api/client/openapi.json --output ./autogen --client axios --exportCore false --indent 2",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

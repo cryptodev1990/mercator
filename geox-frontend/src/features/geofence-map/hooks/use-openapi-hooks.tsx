@@ -15,6 +15,7 @@ import { useState } from "react";
 
 const genericErrorHandler = (error: any) => {
   const status = error?.status;
+  console.error(error);
   switch (status) {
     case 0:
       toast.error("Network error");
@@ -22,15 +23,9 @@ const genericErrorHandler = (error: any) => {
     case 400:
       toast.error("Bad request");
       break;
-    case 401:
-      toast.error("Unauthorized");
-      break;
     case 402:
-      toast.error("Your subscription has expired.")
+      toast.error("Your subscription has expired.");
       break;
-    // case 403:
-    //   toast.error("Forbidden");
-    //   break;
     case 404:
       toast.error("Not found");
       break;
@@ -44,7 +39,6 @@ const genericErrorHandler = (error: any) => {
       toast.error("Service unavailable");
       break;
     default:
-      toast.error("Unknown error");
       break;
   }
 };
@@ -157,7 +151,7 @@ export const useBulkAddShapesMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
-    onSuccess(data: ShapeCountResponse) {
+    onSuccess(data: ShapeCountResponse | GeoShape[]) {
       queryClient.fetchQuery("geofencer");
     },
     onError(error: any) {

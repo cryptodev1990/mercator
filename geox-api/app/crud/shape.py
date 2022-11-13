@@ -172,7 +172,7 @@ def create_many_shapes(
     user_id: int,
     organization_id: UUID4,
     namespace_id: Optional[UUID4] = None,
-) -> Generator[UUID4, None, None]:
+) -> Generator[Union[UUID4, GeoShape], None, None]:
     """Create many new shapes."""
     stmt = (
         insert(shapes_tbl)  # type: ignore
@@ -182,7 +182,7 @@ def create_many_shapes(
             organization_id=organization_id,
             geom=func.ST_GeomFromGeoJSON(func.cast(bindparam("geom"), String)),
         )
-        .returning(shapes_tbl.c.uuid)
+        .returning(*GEOSHAPE_COLS)
     )
     default_namespace = namespace_id or get_default_namespace(conn, organization_id).id
     params = [
@@ -200,7 +200,7 @@ def create_many_shapes(
     ]
     new_shapes = conn.execute(stmt, params)
     for row in new_shapes:
-        yield row.uuid
+        yield GeoShape.parse_obj(dict(row))
 
 
 def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bool:
