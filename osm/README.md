@@ -10,9 +10,8 @@ It is not formalized into a script because it is not worth handling errors yet.
 This assumes that PostgreSQL and PostGIS are installed and running on the host.
 
 ```shell
-createdb osm
 curl -O osm.pbf https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
-just local-db osm osm.pbf
+just db-local osm osm.pbf
 ```
 
 You will need to install [just](https://github.com/casey/just) to use the `just` command.
