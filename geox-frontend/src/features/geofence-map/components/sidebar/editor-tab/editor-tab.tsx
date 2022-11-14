@@ -1,8 +1,7 @@
 import { useGetOneShapeByUuid } from "../../../hooks/use-openapi-hooks";
-
-import { JsonEditor } from "./json-editor";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
+import JsonEditor from "./json-editor";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -66,15 +65,15 @@ export const ShapeEditor = () => {
 
   return (
     <div>
-      <h1 className="px-2 py-1 mx-2 mt-2 bg-red font-semibold">
-        Shape properties
-      </h1>
-      <div>
-        <JsonEditor
-          properties={reformattedProperties as any}
-          handleResults={handleSubmit}
-          disableSubmit={updateLoading || oneShapeIsLoading}
-        />
+      <div className="px-2">
+        <h1 className="py-1 mt-2 bg-red font-semibold">Shape properties</h1>
+        <div>
+          <JsonEditor
+            uuid={shapeForPropertyEdit?.uuid}
+            properties={reformattedProperties as any}
+            handleResults={handleSubmit}
+          />
+        </div>
       </div>
     </div>
   );
