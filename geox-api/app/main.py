@@ -44,6 +44,7 @@ for route in [
     routes.health.router,
     routes.shapes.router,
     routes.shape_metadata.router,
+    routes.status_code.router,
     routes.tasks.router,
     routes.info.router,
     routes.namespaces.router,
