@@ -1,0 +1,6 @@
+geopandas
+shapely
+sqlalchemy
+ipywidgets
+pandas
+psycopg2
