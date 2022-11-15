@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useShapes } from "../../../../hooks/use-shapes";
 import { AddButton } from "./add-button";
 import { NamespaceCard } from "./card";
@@ -8,20 +7,10 @@ export const NamespaceSection = ({ className }: { className: string }) => {
   const {
     namespaces,
     visibleNamepaces,
-    setVisibleNamespaces,
     activeNamespaces,
     setActiveNamespaces,
-    updatedShape,
     shapeMetadata,
   } = useShapes();
-
-  useEffect(() => {
-    if (updatedShape) {
-    } else if (namespaces.length > 0) {
-      setActiveNamespaces([namespaces[0]]);
-      setVisibleNamespaces(namespaces);
-    }
-  }, []);
 
   return (
     <div className={className}>
