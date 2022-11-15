@@ -1,12 +1,13 @@
 """I name this module utils; deal with it."""
 from functools import lru_cache
-from typing import Any, Mapping, Optional, cast, List
+from typing import Any, Mapping, Optional, cast
 
 import jinja2 as j2
-from pydantic import BaseSettings, Field, SecretStr
-from snowflake.sqlalchemy import URL
+from pydantic import BaseSettings, Field, SecretStr # pylint: disable=no-name-in-module
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+
+from snowflake.sqlalchemy import URL
 
 ENV = j2.Environment(
     loader=j2.PackageLoader("mercator_snowflake", package_path="sql"),
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
     snowflake_database: Optional[str]
     snowflake_password: Optional[SecretStr]
     snowflake_schema: Optional[str]
-    snowflake_account: str
+    snowflake_account: str = Field(..., regex="^[A-Z]{7}-[A-Z0-9]{7}$")
     snowflake_warehouse: str
     snowflake_role: str
     snowflake_user: str
@@ -31,11 +32,11 @@ class Settings(BaseSettings):
 
 
 @lru_cache(None)
-def get_settings():
-    return Settings()
+def get_settings() -> Settings:
+    return Settings()  # type: ignore
 
 
-def create_snowflake_engine(settings: Settings):
+def create_snowflake_engine(settings: Settings) -> Engine:
     pkb: Optional[bytes] = None
     # if settings.snowflake_private_key_path:
     #     with open(settings.snowflake_private_key_path, "rb") as key:
@@ -71,21 +72,7 @@ def get_sql(
     name: str,
     data: Optional[Mapping[str, Any]] = None,
 ) -> str:
-    data: Mapping[str, Any] = data or {}  # type: ignore
+    data_: Mapping[str, Any] = data or {}  # type: ignore
     tmpl = ENV.get_template(name)
-    rendered = tmpl.render(**cast(Mapping[str, Any], data))
+    rendered = tmpl.render(**cast(Mapping[str, Any], data_))
     return rendered
-
-def get_all_org_dbs(engine: Engine) -> List[str]:
-    """Return all Snowflake databases in the account used for sharing organization data."""
-    sql = get_sql("get_org_databases.sql.j2")
-    print(sql)
-    with engine.begin() as conn:
-        conn.execute(text("USE ROLE GEOFENCER_ETL_ROLE"))
-        res = conn.execute(text("SHOW DATABASES"))
-        dbs = [
-            row.name
-            for row in res
-            if row.owner == "GEOFENCER_ETL_ROLE" and row.name.startswith("ORG_")
-        ]
-    return dbs

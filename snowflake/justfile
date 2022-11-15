@@ -1,0 +1,16 @@
+migrate-dev TEMPLATE:
+    poetry run python -m mercator_snowflake.migrate --no-include-mercator --no-include-customers --include-dev {{ TEMPLATE }}
+
+migrate-mercator TEMPLATE:
+    poetry run python -m mercator_snowflake.migrate --include-mercator --no-include-customers --no-include-dev {{ TEMPLATE }}
+
+migrate-customers TEMPLATE:
+    poetry run python -m mercator_snowflake.migrate --no-include-mercator --include-customers --no-include-dev {{ TEMPLATE }}
+
+format:
+    isort .
+    black .
+
+lint:
+    mypy mercator_snowflake
+    pylint mercator_snowflake

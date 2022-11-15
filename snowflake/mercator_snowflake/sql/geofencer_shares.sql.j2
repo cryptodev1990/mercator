@@ -9,6 +9,8 @@ Jinja templated Snowflake SQL.
 {%- set db_name = 'org_' ~ org_id_safe %}
 {%- set share_name = db_name  ~ "_share" %}
 {%- set full_schema_name = db_name ~ '.geofencer' %}
+{%- set s3_int = 's3_int_dev' -%}
+{%- set error_int = 'snowpipe_sns_int' -%}
 
 USE ROLE geofencer_etl_role;
 
@@ -31,7 +33,10 @@ CREATE OR REPLACE TABLE {{ shapes_exports_table }} (
     exported_at TIMESTAMP_NTZ(9) COMMENT $$Exported time$$,
     deleted_at TIMESTAMP_NTZ(9) COMMENT $$Deleted at time. If not `NULL`, then this shape has been deleted.$$,
     organization_id TEXT COMMENT $$Organization id$$,
-    export_id TEXT COMMENT $$A unique identifier of an export even comprising the export time and a random string. All shapes with the same export ID were exported at the same time.$$
+    export_id TEXT COMMENT $$A unique identifier of an export even comprising the export time and a random string. All shapes with the same export ID were exported at the same time.$$,
+    namespace_id TEXT COMMENT $$Namespace id$$,
+    namespace_name TEXT COMMENT $$Namespace name$$,
+    namespace_slug TEXT COMMENT $$Namespace slug$$
 );
 
 COMMENT ON TABLE {{ shapes_exports_table }} IS $$All shapes exported from geofencer for organization {{ org_id }}.$$;
@@ -41,7 +46,7 @@ CREATE OR REPLACE STAGE {{ shapes_stage }}
 {#- make sure aws_s3_url does not end with / #}
 URL = '{{ aws_s3_url }}{{ org_id }}/'
 {#- storage integration needs to be defined elsewhere and role has to have usage privileges #}
-STORAGE_INTEGRATION = s3_int
+STORAGE_INTEGRATION = {{ s3_int }}
 FILE_FORMAT=(TYPE=parquet COMPRESSION=snappy BINARY_AS_TEXT=false);
 
 COMMENT ON STAGE {{ shapes_stage}} IS $$Staging location of exported files with geofencer shapes for organization {{ org_id }}$$;
@@ -49,7 +54,7 @@ COMMENT ON STAGE {{ shapes_stage}} IS $$Staging location of exported files with 
 {%- set shapes_pipe = full_schema_name ~ ".shapes_pipe" %}
 CREATE OR REPLACE PIPE {{ shapes_pipe }}
 AUTO_INGEST=TRUE
-ERROR_INTEGRATION=snowpipe_sns_int
+ERROR_INTEGRATION={{ error_int }}
 AS
 COPY INTO {{ shapes_exports_table }}
 (uuid, name, geom, properties, created_at, updated_at, deleted_at, exported_at, organization_id, export_id)
@@ -67,7 +72,10 @@ FROM (
         to_timestamp_ntz($1:deleted_at::INT, 6),
         to_timestamp_ntz($1:exported_at::INT, 6),
         $1:organization_id::TEXT,
-        $1:export_id::TEXT
+        $1:export_id::TEXT,
+        $1:namespace_id::TEXT,
+        $1:namespace_name::TEXT,
+        $1:namespace_slug::TEXT
     FROM @{{ shapes_stage }}
 )
 {#- binary_as_text=false is necessary to read the wkb column without errors
@@ -86,7 +94,10 @@ SELECT
     properties,
     updated_at,
     deleted_at,
-    exported_at
+    exported_at,
+    namespace_id,
+    namespace_name,
+    namespace_slug
 FROM {{ shapes_exports_table }}
 {#- max(export_id) works to get latest exported shapes because export_id begins with partitioned
    export time in reverse time part order (padded with zeros) #}
@@ -104,7 +115,10 @@ SELECT
     properties,
     updated_at,
     deleted_at,
-    exported_at
+    exported_at,
+    namespace_id,
+    namespace_name,
+    namespace_slug
 FROM {{ shapes_exports_table }}
 {#- max(export_id) works to get latest exported shapes because export_id begins with partitioned
    export time in reverse time part order (padded with zeros) #}

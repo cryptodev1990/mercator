@@ -87,23 +87,29 @@ def query_shapes_table(
         query = text(
             """
                 SELECT
-                    uuid :: TEXT AS uuid,
-                    name,
+                    s.uuid :: TEXT AS uuid,
+                    s.name,
                     -- WKB Format in WG84 projection
-                    geom,
+                    s.geom,
                     -- to avoid certain issues writing to parquet it is easier to
                     -- save the object as a string
-                    properties::TEXT AS properties,
+                    s.properties::TEXT AS properties,
                     -- ensure that there is no timezone
-                    created_at::TIMESTAMP AS created_at,
-                    updated_at::TIMESTAMP AS updated_at,
-                    deleted_at::TIMESTAMP AS deleted_at,
+                    s.created_at::TIMESTAMP AS created_at,
+                    s.updated_at::TIMESTAMP AS updated_at,
+                    s.deleted_at::TIMESTAMP AS deleted_at,
                     (now() at time zone 'utc')::TIMESTAMP AS exported_at,
-                    organization_id :: TEXT AS organization_id
-                FROM shapes
-                WHERE 1=1
-                    AND organization_id = :organization_id
-                ORDER BY created_at
+                    s.organization_id :: TEXT AS organization_id,
+                    s.namespace_id :: TEXT AS namespace_id,
+                    n.name :: TEXT AS namespace_name,
+                    n.slug :: TEXT AS namespace_slug
+                FROM shapes AS s
+                INNER JOIN namespaces AS n
+                ON TRUE
+                    AND s.namespace_id = n.id
+                    AND n.organization_id = :organization_id
+                    AND s.organization_id = :organization_id
+                ORDER BY s.uuid
                 """
         )
         df = gpd.read_postgis(

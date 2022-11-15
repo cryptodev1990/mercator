@@ -14,8 +14,55 @@ snowflake-sqlalchemy = "^1.4.1"
 Jinja2 = "^3.1.2"
 python-dotenv = "^0.21.0"
 pydantic = "^1.10.2"
+sqlalchemy2-stubs = "^0.0.2a29"
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+isort = "^5.10.1"
+pylint = "^2.15.5"
+mypy = "^0.991"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+py_version = 39
+skip_gitignore = true
+skip_glob = ["env/**", "alembic/versions/**"]
+profile = "black"
+
+[tool.black]
+line-length = 90
+target-version = ['py39']
+exclude = "env/|alembic/versions|\\.ipynb$|\\.ipynb_checkpoints/"
+
+[tool.mypy]
+python_version = "3.9"
+exclude = '''(?x)
+    ^env/
+    | ^alembic/versions
+'''
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+filterwarnings = [
+    # ignore this warning in botocore
+    # ./mercator/geox-api/env/lib/python3.9/site-packages/botocore/httpsession.py:41: DeprecationWarning: 'urllib3.contrib.pyopenssl' module is deprecated and will be removed in a future release of urllib3 2.x. Read more in this issue: https://github.com/urllib3/urllib3/issues/2680
+    "ignore:'urllib3\\.contrib\\.pyopenssl' module is deprecated:DeprecationWarning"
+]
+
+[tool.pylint.messages_control]
+max-line-length = 90
+disable = [
+    "missing-docstring",
+    "too-many-arguments",
+    "invalid-name",
+    "fixme",
+    "line-too-long",
+    "too-few-public-methods",
+    "too-many-instance-attributes"
+]

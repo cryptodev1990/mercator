@@ -9,8 +9,8 @@ from sqlalchemy.engine import Engine
 
 from app.core.config import get_settings
 from app.crud.organization import (
-    add_subscription,
     add_stripe_customer,
+    add_subscription,
     get_active_organization,
     get_all_org_members,
     get_org_by_subscription_id,
@@ -50,8 +50,7 @@ async def create_checkout_session(
     user_conn: UserConnection = Depends(get_app_user_connection),
 ) -> JSONResponse:
     session = stripe.checkout.Session.create(
-        success_url=checkout_session.success_url +
-        "?session_id={CHECKOUT_SESSION_ID}",
+        success_url=checkout_session.success_url + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=checkout_session.cancel_url,
         client_reference_id=user_conn.user.id,
         mode="subscription",
@@ -65,7 +64,9 @@ class BillingPortalSession(BaseModel):
     return_url: str
 
 
-@router.post("/billing/create-customer-portal-session", dependencies=[Depends(verify_token)])
+@router.post(
+    "/billing/create-customer-portal-session", dependencies=[Depends(verify_token)]
+)
 async def create_customer_portal_session(
     billing_portal_session: BillingPortalSession,
     user_conn: UserConnection = Depends(get_app_user_connection),
@@ -101,8 +102,7 @@ async def webhook_received(
     request_data = await request.body()
 
     if not webhook_secret:
-        raise HTTPException(
-            status_code=400, detail="Webhook secret not configured")
+        raise HTTPException(status_code=400, detail="Webhook secret not configured")
 
     signature = request.headers.get("stripe-signature")
     try:
@@ -127,11 +127,11 @@ async def webhook_received(
             subscription_id = str(data["object"]["subscription"])
             customer_id = str(data["object"]["customer"])
             org = get_active_organization(conn, user_id)
-            add_subscription(conn, organization_id=org.id,
-                             stripe_sub_id=subscription_id)
+            add_subscription(conn, organization_id=org.id, stripe_sub_id=subscription_id)
             if org.is_personal:
                 add_stripe_customer(
-                    conn, organization_id=org.id, stripe_customer_id=customer_id)
+                    conn, organization_id=org.id, stripe_customer_id=customer_id
+                )
     elif event_type == "invoice.paid":
         # This event pairs a subscription ID with a payment time
         with engine.begin() as conn:
