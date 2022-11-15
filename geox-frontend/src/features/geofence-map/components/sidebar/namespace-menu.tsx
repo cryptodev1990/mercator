@@ -5,11 +5,14 @@ import { NamespaceContext } from "./shape-list-tab/namespace-section/namespace-c
 
 const NamespaceMenu = ({
   outerRef,
+  shapeUuid,
 }: {
   outerRef: RefObject<HTMLDivElement>;
+  shapeUuid: string;
 }) => {
+  console.log("shapeUuid", shapeUuid);
   const currentNamespace = useContext(NamespaceContext);
-  const { namespaces } = useShapes();
+  const { namespaces, partialUpdateShape } = useShapes();
   const { xPos, yPos, menu } = useContextMenu(outerRef);
 
   if (menu) {
@@ -28,7 +31,12 @@ const NamespaceMenu = ({
               <li
                 className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white whitespace-nowrap"
                 key={namespace.id}
-                onClick={() => console.log(`${namespace.name} clicked`)}
+                onClick={() =>
+                  partialUpdateShape({
+                    uuid: shapeUuid,
+                    namespace: namespace.id,
+                  })
+                }
               >
                 {namespace.name}
               </li>

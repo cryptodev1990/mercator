@@ -35,7 +35,7 @@ export const DragHandle = ({
             ref={outerRef}
           >
             <DragIndicatorIcon className="text-gray-400 z-0" />
-            <NamespaceMenu outerRef={outerRef} />
+            <NamespaceMenu outerRef={outerRef} shapeUuid={transferData} />
           </div>
         </div>
       </div>
