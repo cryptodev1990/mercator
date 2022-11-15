@@ -122,12 +122,14 @@ def shapes_export(
     return run_shapes_export(user_conn, settings)
 
 
-@router.post("/geofencer/shapes/bulk", response_model=Union[ShapeCountResponse, List[GeoShape]])
+@router.post(
+    "/geofencer/shapes/bulk", response_model=Union[ShapeCountResponse, List[GeoShape]]
+)
 def bulk_create_shapes(
     data: List[GeoShapeCreate],
     user_conn: UserConnection = Depends(get_app_user_connection),
     namespace: Optional[UUID4] = Query(default=None),
-    as_list: Optional[bool] = Query(default=False)
+    as_list: Optional[bool] = Query(default=False),
 ) -> Union[ShapeCountResponse, List[GeoShape]]:
     """Create multiple shapes."""
     # Needs to go before /geofencer/shapes/{shape_id}
