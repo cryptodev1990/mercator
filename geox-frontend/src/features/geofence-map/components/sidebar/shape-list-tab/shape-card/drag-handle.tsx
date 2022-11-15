@@ -1,7 +1,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setDragImage
 import React, { useRef } from "react";
 import { DragIndicatorIcon } from "../../../../../../common/components/icons";
-import Menu from "../../Menu";
+import NamespaceMenu from "../../namespace-menu";
 // drag handle in pure html and css
 export const DragHandle = ({
   transferData,
@@ -35,7 +35,7 @@ export const DragHandle = ({
             ref={outerRef}
           >
             <DragIndicatorIcon className="text-gray-400 z-0" />
-            <Menu outerRef={outerRef} />
+            <NamespaceMenu outerRef={outerRef} />
           </div>
         </div>
       </div>

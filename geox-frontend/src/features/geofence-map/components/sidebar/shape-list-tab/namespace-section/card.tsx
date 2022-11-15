@@ -14,6 +14,7 @@ import simplur from "simplur";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { SearchContext } from "../../../../contexts/search-context";
 import { MAX_DISPLAY_SHAPES, Paginator } from "./paginator";
+import { NamespaceContext } from "./namespace-context";
 
 export const NamespaceCard = ({
   namespace,
@@ -33,6 +34,7 @@ export const NamespaceCard = ({
     updateNamespace,
     partialUpdateShape,
   } = useShapes();
+
   const { selectOneShapeUuid } = useSelectedShapes();
   const [shapeHovered, setShapeHovered] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
@@ -134,13 +136,15 @@ export const NamespaceCard = ({
                 }
               })
               .map((x) => (
-                <ShapeCard
-                  shape={x}
-                  onMouseEnter={() => setShapeHovered(x.uuid)}
-                  onMouseLeave={() => setShapeHovered(null)}
-                  isHovered={shapeHovered === x.uuid}
-                  key={x.uuid}
-                />
+                <NamespaceContext.Provider value={namespace}>
+                  <ShapeCard
+                    shape={x}
+                    onMouseEnter={() => setShapeHovered(x.uuid)}
+                    onMouseLeave={() => setShapeHovered(null)}
+                    isHovered={shapeHovered === x.uuid}
+                    key={x.uuid}
+                  />
+                </NamespaceContext.Provider>
               ))}
           {!searchResults &&
             sectionShapeMetadata.length > MAX_DISPLAY_SHAPES && (
