@@ -14,6 +14,7 @@ import simplur from "simplur";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { SearchContext } from "../../../../contexts/search-context";
 import { MAX_DISPLAY_SHAPES, Paginator } from "./paginator";
+
 export const NamespaceCard = ({
   namespace,
   onClickCaret,
