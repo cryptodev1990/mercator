@@ -1251,7 +1251,12 @@ Branch: ``ajd/cache-madness``
 
 - [X] Expand optimistic updates. Rather than maintain tiling, I'm going to update shapes locally.
   - Currently, there's an error where after a shape is updated it disappears, as if the optimistic update never gets written to my log
-- [ ] Let users cancel their subscriptions
+- [X] Let users cancel their subscriptions
   - Add customer IDs to user org if the orgs are personal on account creation
   - Create cancellation portal sessions using this ID
-- [ ] Let users pull their invoices / bills
+- [X] Let users pull their invoices / bills
+- [X] Demo notebook for search
+
+## 11-15-22
+
+- [ ] Weird snapping in update: Fix by making addPosition not send a backend update
