@@ -3,6 +3,7 @@ import {
   GeoShapeCreate,
   MultiPolygon,
   GeoShapeMetadata,
+  Polygon,
 } from "../../../../client";
 import { Feature, unkinkPolygon, kinks, union } from "@turf/turf";
 
@@ -13,6 +14,22 @@ import { EditorMode } from "../../cursor-modes";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useBulkDeleteShapesMutation } from "../use-openapi-hooks";
 
+function injectJitterToPolygon(polygon: MultiPolygon | Polygon): MultiPolygon {
+  const jitter = 0.0000000001;
+  console.log("injecting jitter");
+  console.log(polygon);
+  return {
+    ...polygon,
+    coordinates: polygon.coordinates.map((ring) =>
+      // @ts-ignore
+      ring.map(([lon, lat]: number[]) => [
+        lon + jitter * Math.random(),
+        lat + jitter * Math.random(),
+      ])
+    ),
+  };
+}
+
 export function useEditFunction() {
   const {
     shapeMetadata,
@@ -21,13 +38,15 @@ export function useEditFunction() {
     clearSelectedFeatureIndexes,
     bulkAddFromSplit,
     addShapeAndEdit,
+    setTileUpdateCount,
   } = useShapes();
 
   const { mutate: deleteShapesRaw } = useBulkDeleteShapesMutation();
 
   const { clearSelectedShapeUuids, numSelected, selectedUuids } =
     useSelectedShapes();
-  const { setCursorMode } = useCursorMode();
+  const { cursorMode, setCursorMode } = useCursorMode();
+  const { clearOptimisticShapeUpdates } = useShapes();
   function onEdit({
     updatedData,
     editType,
@@ -90,14 +109,16 @@ export function useEditFunction() {
       ];
 
       bulkAddFromSplit(payload, {
-        onSuccess: ({ num_shapes: numShapes }) => {
+        onSuccess: () => {
           // Remove previous shape -- note that we don't use the version
           // of this function from the useShapes hook because we're not interested
           // in logging the result of the delete to the undo history
           deleteShapesRaw([uuid], {
             onSuccess: () => {
-              toast.success(`Created ${numShapes} new shapes`);
+              // @ts-ignore
+              setTileUpdateCount((x) => x + 1);
               setCursorMode(EditorMode.ViewMode);
+              clearOptimisticShapeUpdates();
               clearSelectedFeatureIndexes();
               clearSelectedShapeUuids();
             },
@@ -121,6 +142,15 @@ export function useEditFunction() {
     // Feature: Add a shape
     const { featureIndexes } = editContext;
     let mostRecentShape: Feature = updatedData.features[featureIndexes[0]];
+
+    if (cursorMode === EditorMode.LassoDrawMode) {
+      // Patches a bug in turf.js where it can't handle a duplicate vertex in unkinkPolygon
+      // @ts-ignore
+      mostRecentShape.geometry = injectJitterToPolygon(
+        // @ts-ignore
+        mostRecentShape.geometry
+      );
+    }
 
     // Feature: edit kinked shapes
     if (kinks(mostRecentShape as any).features.length > 0) {

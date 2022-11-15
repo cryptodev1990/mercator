@@ -32,8 +32,6 @@ function normalizeGeojson(
   }
 }
 
-const MB_20 = 20 * 1024 * 1024;
-
 export const useConvertedGeojson = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

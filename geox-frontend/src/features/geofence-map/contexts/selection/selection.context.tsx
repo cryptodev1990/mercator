@@ -56,7 +56,10 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({ type: "RESET_SELECTION" });
   };
 
-  const isSelected = (shapeOrUuid: GeoShapeMetadata | string): boolean => {
+  const isSelected = (
+    shapeOrUuid: GeoShapeMetadata | string | undefined
+  ): boolean => {
+    if (!shapeOrUuid) return false;
     if (typeof shapeOrUuid === "string") {
       return state.uuids.includes(shapeOrUuid);
     }

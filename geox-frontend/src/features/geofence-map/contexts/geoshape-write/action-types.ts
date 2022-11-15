@@ -16,7 +16,7 @@ export type Action =
     }
   | {
       type: "FETCH_SHAPE_METADATA_ERROR";
-      error: Error;
+      error: any;
     }
   | {
       type: "SET_ACTIVE_NAMESPACES";
@@ -35,7 +35,7 @@ export type Action =
     }
   | {
       type: "FETCH_NUM_SHAPES_ERROR";
-      error: Error;
+      error: any;
     }
   | {
       type: "ADD_SHAPE_LOADING";
@@ -48,23 +48,22 @@ export type Action =
     }
   | {
       type: "ADD_SHAPE_ERROR";
-      error: Error;
+      error: any;
     }
   | {
       type: "DELETE_SHAPES_LOADING";
-      uuids: string[];
+      deletedShapeIds: string[];
     }
   | {
       type: "DELETE_SHAPES_SUCCESS";
-      uuid: string;
-      updatedShapeIds: string[];
     }
   | {
       type: "DELETE_SHAPES_ERROR";
-      error: Error;
+      error: any;
     }
   | {
       type: "UPDATE_SHAPE_LOADING";
+      shapes: GeoShape[];
     }
   | {
       type: "UPDATE_SHAPE_SUCCESS";
@@ -73,18 +72,20 @@ export type Action =
     }
   | {
       type: "UPDATE_SHAPE_ERROR";
-      error: Error;
+      error: any;
     }
   | {
       type: "BULK_ADD_SHAPES_LOADING";
+      updatedShapes: GeoShapeCreate[];
     }
   | {
       type: "BULK_ADD_SHAPES_SUCCESS";
       updatedShapeIds: string[];
+      updatedShapes: GeoShape[];
     }
   | {
       type: "BULK_ADD_SHAPES_ERROR";
-      error: Error;
+      error: any;
     }
   | {
       type: "OP_LOG_ADD";

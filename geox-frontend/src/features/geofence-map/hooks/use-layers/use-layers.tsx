@@ -14,8 +14,7 @@ import { useSelectedShapes } from "../use-selected-shapes";
 import { useImageLayer } from "./use-image-layer";
 
 export const useLayers = () => {
-  const { tentativeShapes, setSelectedFeatureIndexes, optimisticShapeUpdates } =
-    useShapes();
+  const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
   const { selectedFeatureCollection } = useSelectedShapes();
 
@@ -35,28 +34,9 @@ export const useLayers = () => {
           EditorMode.EditMode,
         ].includes(cursorMode) &&
         editLayer,
-
-      optimisticShapeUpdates.length > 0 &&
-        new GeoJsonLayer({
-          id: "optimistic-shapes",
-          // @ts-ignore
-          data: geoShapesToFeatureCollection(optimisticShapeUpdates),
-          stroked: true,
-          filled: true,
-          extruded: true,
-          lineWidthScale: 20,
-          lineWidthMinPixels: 2,
-          getFillColor: [0, 50, 255, 255],
-          getLineColor: [0, 0, 0, 160],
-          getRadius: 100,
-          getLineWidth: 1,
-          getElevation: 30,
-          pickable: true,
-        }),
       false && imageLayer, // traceable image layer
-      // @ts-ignore
-      tiles ? tiles[1] : null,
       tiles ? tiles[0] : null,
+      tiles ? tiles[1] : null,
       // Renders the selected feature
       selectedFeatureCollection &&
         cursorMode === EditorMode.ViewMode &&

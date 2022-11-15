@@ -34,7 +34,7 @@ export interface IGeoShapeMetadataContext {
   numShapesIsLoading: boolean;
   numShapesError: Error | null;
   setActiveNamespaces: (namespaces: Namespace[]) => void;
-  setVisibleNamespaces: any;
+  setVisibleNamespaces: (namespaces: Namespace[]) => void;
   // namespace writes
   addNamespace: (namespace: NamespaceCreate) => void;
   removeNamespace: (id: Namespace["id"]) => void;

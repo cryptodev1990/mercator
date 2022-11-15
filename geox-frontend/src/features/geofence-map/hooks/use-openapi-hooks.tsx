@@ -5,6 +5,7 @@ import {
   CeleryTaskResult,
   GeofencerService,
   GeoShape,
+  GeoShapeCreate,
   ShapeCountResponse,
   NamespaceResponse,
   NamespacesService,
@@ -107,7 +108,7 @@ export const useGetOneShapeByUuid = (uuid: string | null) => {
       staleTime: 0,
       cacheTime: 0,
       onError(error: any) {
-        toast.error(`Shapes failed to fetch (${error})`);
+        console.error(error);
       },
     }
   );
@@ -137,27 +138,35 @@ export const useBulkDeleteShapesMutation = () => {
     GeofencerService.bulkDeleteShapesGeofencerShapesBulkDelete,
     {
       onSuccess(data: ShapeCountResponse) {
-        toast.success(simplur`Deleted ${data.num_shapes} shape[|s]`);
         queryClient.fetchQuery("geofencer");
       },
       onError(error) {
-        toast.error(`Shapes failed to delete (${error})`);
+        console.error(`Shapes failed to delete (${error})`);
       },
     }
   );
 };
 
-export const useBulkAddShapesMutation = () => {
+export const useBulkAddShapesMutation = (asList = false) => {
   const queryClient = useQueryClient();
 
-  return useMutation(GeofencerService.bulkCreateShapesGeofencerShapesBulkPost, {
-    onSuccess(data: ShapeCountResponse | GeoShape[]) {
-      queryClient.fetchQuery("geofencer");
+  return useMutation(
+    (requestBody: GeoShapeCreate[]) => {
+      return GeofencerService.bulkCreateShapesGeofencerShapesBulkPost(
+        requestBody, // requestBody
+        undefined, // TODO: add a namespace
+        asList // as list
+      );
     },
-    onError(error: any) {
-      toast.error(`Shapes failed to add (${error?.detail})`);
-    },
-  });
+    {
+      onSuccess(data: ShapeCountResponse | GeoShape[]) {
+        queryClient.fetchQuery("geofencer");
+      },
+      onError(error: any) {
+        console.error(`Shapes failed to add (${error?.detail})`);
+      },
+    }
+  );
 };
 
 export const useNumShapesQuery = () => {
@@ -193,7 +202,7 @@ export const useGetAllShapes = (limit: number, offset: number) => {
       cacheTime: 0,
       staleTime: 0,
       onError(error: any) {
-        toast.error(`Shapes !failed to fetch (${error.detail ?? error})`);
+        console.error(`Shapes !failed to fetch (${error.detail ?? error})`);
       },
     }
   );

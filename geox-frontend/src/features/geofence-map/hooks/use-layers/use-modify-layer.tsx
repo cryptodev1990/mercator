@@ -96,7 +96,6 @@ export function useModifyLayer() {
       }
       // Move the points
       const shapeInEdit = event.layer.state.selectedFeatures[0];
-      console.log("onDragEnd", shapeInEdit);
       updateShape({
         geojson: shapeInEdit,
         uuid: shapeInEdit.properties.__uuid,

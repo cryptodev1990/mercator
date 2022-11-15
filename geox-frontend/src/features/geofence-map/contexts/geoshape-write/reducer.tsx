@@ -1,6 +1,36 @@
 import { GeoShape, GeoShapeCreate } from "../../../../client";
 import { Action } from "./action-types";
 
+// get a type for an object that implements created_at and updated_at
+export type OptionallyTimestamped = {
+  uuid?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+// deduplicate a list if OptionallyTimestamped objects based on a key
+export function deduplicateShapes<T extends OptionallyTimestamped>(
+  list: GeoShape[]
+): GeoShape[] {
+  const seen: any = {};
+  for (const item of list) {
+    if (!item.uuid) {
+      continue;
+    }
+    const uuid = item.uuid;
+    // If we've seen the item, prefer the latest version of it
+    if (seen[uuid] && item.updated_at) {
+      if (seen[uuid].updated_at < item?.updated_at) {
+        seen[uuid] = item;
+      }
+      continue;
+    }
+    // If we haven't seen the item, add it to the list
+    seen[uuid] = item;
+  }
+  return Object.values(seen);
+}
+
 export type UndoLogRecord = {
   op:
     | "ADD_SHAPE"
@@ -14,38 +44,57 @@ export type UndoLogRecord = {
 export interface State {
   shapeUpdateLoading: boolean;
   shapeAddLoading: boolean;
-  optimisticShapeUpdates: GeoShapeCreate[];
-  tileCacheKey: number;
   undoLog: UndoLogRecord[];
   redoLog: UndoLogRecord[];
   updatedShapeIds: string[];
   updatedShape: GeoShape | null;
   updateError: Error | null;
   deletedShapeIds: string[];
+  optimisticShapeUpdates: GeoShape[] | GeoShapeCreate[];
 }
 
 export const initialState: State = {
   shapeUpdateLoading: false,
   shapeAddLoading: false,
-  tileCacheKey: 0,
-  optimisticShapeUpdates: [],
   undoLog: [],
   redoLog: [],
   updatedShapeIds: [],
   updatedShape: null,
   updateError: null,
   deletedShapeIds: [],
+  optimisticShapeUpdates: [],
 };
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     // Shape metadata actions
     // Add shape actions
-    case "UPDATE_SHAPE_LOADING":
+    case "UPDATE_SHAPE_LOADING": {
+      const osu = [
+        ...new Set([...state.optimisticShapeUpdates, ...action.shapes]),
+      ];
+      return {
+        ...state,
+        shapeUpdateLoading: true,
+        updateError: null,
+        updatedShapeIds: [
+          ...new Set([
+            ...state.updatedShapeIds,
+            ...action.shapes.map((s) => s.uuid),
+          ]),
+        ],
+        optimisticShapeUpdates: osu,
+      };
+    }
     case "DELETE_SHAPES_LOADING": {
+      const osu = (state.optimisticShapeUpdates as GeoShape[]).filter(
+        (s: GeoShape) => !action.deletedShapeIds.includes(s.uuid)
+      );
       const res = {
         ...state,
         shapeUpdateLoading: true,
+        deletedShapeIds: [...state.deletedShapeIds, ...action.deletedShapeIds],
+        optimisticShapeUpdates: osu,
       };
       return res;
     }
@@ -54,41 +103,58 @@ export function reducer(state: State, action: Action): State {
         ...state,
         shapeUpdateLoading: true,
         shapeAddLoading: true,
+        optimisticShapeUpdates: [
+          ...state.optimisticShapeUpdates,
+          ...action.updatedShapes,
+        ],
       };
       return res;
     }
     case "ADD_SHAPE_LOADING": {
-      const optimisticShapeUpdates = [action.shape];
-      for (const shape of state.optimisticShapeUpdates) {
-        optimisticShapeUpdates.push(shape);
-      }
+      const osu = [...new Set([...state.optimisticShapeUpdates, action.shape])];
       const res = {
         ...state,
         shapeUpdateLoading: true,
         shapeAddLoading: true,
-        optimisticShapeUpdates,
+        optimisticShapeUpdates: osu,
       };
       return res;
     }
-    case "DELETE_SHAPES_SUCCESS":
-    case "BULK_ADD_SHAPES_SUCCESS": {
+    case "DELETE_SHAPES_SUCCESS": {
       return {
         ...state,
         shapeUpdateLoading: false,
-        tileCacheKey: state.tileCacheKey + 1,
-        updatedShapeIds: action.updatedShapeIds || [],
-        deletedShapeIds:
-          action.type === "DELETE_SHAPES_SUCCESS" ? action.updatedShapeIds : [],
       };
     }
-    case "ADD_SHAPE_SUCCESS":
-    case "UPDATE_SHAPE_SUCCESS": {
+    case "BULK_ADD_SHAPES_SUCCESS": {
+      const updatedShapeIds = [
+        ...new Set([...state.updatedShapeIds, ...action.updatedShapeIds]),
+      ];
       return {
         ...state,
         shapeUpdateLoading: false,
         shapeAddLoading: false,
-        tileCacheKey: state.tileCacheKey + 1,
-        updatedShapeIds: action.updatedShapeIds || [],
+        updatedShapeIds,
+      };
+    }
+    case "ADD_SHAPE_SUCCESS":
+    case "UPDATE_SHAPE_SUCCESS": {
+      // TODO there are duplicates here, I'm not sure why
+      // all these shapes arrive from the server, so they should be GeoShapes
+      const osu = [
+        ...state.optimisticShapeUpdates,
+        action.updatedShape,
+      ] as GeoShape[];
+      const osuDeduped = deduplicateShapes(osu);
+      console.log("osu", osu);
+      console.log("osu", osuDeduped);
+      // Sync with server updates
+
+      return {
+        ...state,
+        shapeUpdateLoading: false,
+        shapeAddLoading: false,
+        optimisticShapeUpdates: osuDeduped,
         updatedShape: action?.updatedShape ?? null,
       };
     }
@@ -107,6 +173,10 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         optimisticShapeUpdates: [],
+        deletedShapeIds: [],
+        updatedShapeIds: [],
+        shapeUpdateLoading: false,
+        shapeAddLoading: false,
       };
     }
     default:

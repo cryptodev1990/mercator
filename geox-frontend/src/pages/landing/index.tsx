@@ -38,7 +38,7 @@ const LandingPage = (): JSX.Element | null => {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/dashboard");
+    if (isAuthenticated) navigate("/geofencer");
   }, [isAuthenticated, navigate]);
 
   if (isLoading) return null;

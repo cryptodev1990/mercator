@@ -16,7 +16,6 @@ import { getCursorFromCursorMode } from "./utils";
 import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
-import toast from "react-hot-toast";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -28,12 +27,17 @@ const GeofenceMap = () => {
     addShape,
     shapeMetadata,
     setShapeForPropertyEdit,
+    deletedShapeIdSet,
   } = useShapes();
 
-  const { selectedUuids, clearSelectedShapeUuids, isSelected } =
-    useSelectedShapes();
+  const {
+    selectedUuids,
+    clearSelectedShapeUuids,
+    isSelected,
+    selectOneShapeUuid,
+  } = useSelectedShapes();
 
-  const { deckRef } = useContext(DeckContext);
+  const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
   const { getIsochrones } = useIsochrones();
   const { isochroneParams } = useContext(UIContext);
 
@@ -95,6 +99,9 @@ const GeofenceMap = () => {
     if (!info || !info.object || !info.object.properties) {
       return null;
     }
+    if (deletedShapeIdSet.has(info.object.properties.__uuid)) {
+      return null;
+    }
     if (cursorMode === EditorMode.ViewMode) {
       return {
         text: `${info.object.properties.name || "Shape"}`,
@@ -135,12 +142,10 @@ const GeofenceMap = () => {
         onViewStateChange={({ viewState, oldViewState }) =>
           setViewport(viewState)
         }
-        // @ts-ignore
-        getCursor={(e) => getCursorFromCursorMode(e, cursorMode)}
-        onClick={(e) => {
+        onClick={({ object, x, y, coordinate }: any) => {
           if (cursorMode === EditorMode.DrawIsochroneMode) {
             getIsochrones(
-              e.coordinate as number[],
+              coordinate as number[],
               isochroneParams.timeInMinutes,
               isochroneParams.travelMode || "car"
             ).then((isochrones) => {
@@ -149,8 +154,52 @@ const GeofenceMap = () => {
                 geojson: isochrones,
               });
             });
+            return;
+          }
+
+          if (window.location.hash === "#click") {
+            console.log("object", object);
+          }
+
+          if (!object || !object.properties?.__uuid) {
+            return;
+          }
+          const uuid = object.properties.__uuid;
+          if (deletedShapeIdSet.has(uuid)) {
+            return;
+          }
+          if (cursorMode === EditorMode.SplitMode) {
+            return;
+          }
+          if (!isSelected(uuid)) {
+            selectOneShapeUuid(uuid);
           }
         }}
+        onHover={({ object, x, y }: any) => {
+          // handle hover across two tile layers
+          if (!object || !object.properties?.__uuid) {
+            if (hoveredUuid) {
+              setHoveredUuid(null);
+            }
+            return;
+          }
+          // console.log("hovered", object.properties);
+          const uuid = object.properties.__uuid;
+          if (deletedShapeIdSet.has(uuid)) {
+            return [0, 0, 0, 0];
+          }
+          if (cursorMode === EditorMode.ViewMode) {
+            if (!isSelected(uuid)) {
+              selectOneShapeUuid(uuid);
+            }
+          }
+          if (uuid === hoveredUuid || cursorMode === EditorMode.SplitMode) {
+            return;
+          }
+          setHoveredUuid(uuid);
+        }}
+        // @ts-ignore
+        getCursor={(e) => getCursorFromCursorMode(e, cursorMode)}
         controller={{
           // @ts-ignore
           doubleClickZoom: false,

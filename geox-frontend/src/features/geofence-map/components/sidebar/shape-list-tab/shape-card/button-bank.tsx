@@ -31,6 +31,8 @@ const SaveButton = ({
     setTentativeShapes,
     bulkAddShapes,
     setVisibleNamespaces,
+    clearOptimisticShapeUpdates,
+    setTileUpdateCount,
   } = useShapes();
   useShapes();
   const { snapToBounds } = useViewport();
@@ -58,9 +60,13 @@ const SaveButton = ({
               onSuccess: () => {
                 snapToBounds({ category: "tentative" });
                 setTentativeShapes([]);
+                // @ts-ignore
                 setVisibleNamespaces([selectedFolder]);
                 clearSelectedShapeUuids();
                 setLocked(false);
+                clearOptimisticShapeUpdates();
+                // @ts-ignore
+                setTileUpdateCount((t) => t + 1);
               },
               onError: (e) => {
                 console.error(e);

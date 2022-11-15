@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { Dispatch, useEffect, useState } from "react";
+import { GeoShape, ShapeCountResponse } from "../../../../client";
 import {
   useAddShapeMutation,
   useBulkAddShapesMutation,
   useBulkDeleteShapesMutation,
   useUpdateShapeMutation,
 } from "../../hooks/use-openapi-hooks";
+import { Action } from "./action-types";
 
-export const useApi = (dispatch: any) => {
+export const useApi = (dispatch: Dispatch<Action>) => {
   const {
     mutate: addShapeApi,
     data: addShapeResponse,
@@ -14,6 +16,8 @@ export const useApi = (dispatch: any) => {
     error: addShapeError,
     isSuccess: addShapeIsSuccess,
   } = useAddShapeMutation();
+
+  const [preferList, setPreferList] = useState(false);
 
   useEffect(() => {
     if (addShapeIsLoading === false && addShapeError !== null) {
@@ -36,13 +40,19 @@ export const useApi = (dispatch: any) => {
   } = useBulkDeleteShapesMutation();
 
   useEffect(() => {
-    if (deleteShapesError !== null) {
-      dispatch({ type: "DELETE_SHAPES_ERROR", error: deleteShapesError });
-    } else if (deleteShapesIsSuccess) {
+    if (deleteShapesIsLoading === false && deletedUuids !== undefined) {
+      dispatch({
+        type: "DELETE_SHAPES_LOADING",
+        deletedShapeIds: deletedUuids,
+      });
+    }
+    if (deleteShapesIsLoading === false && deleteShapesIsSuccess) {
       dispatch({
         type: "DELETE_SHAPES_SUCCESS",
-        updatedShapeIds: deletedUuids || [],
       });
+    }
+    if (deleteShapesError !== null) {
+      dispatch({ type: "DELETE_SHAPES_ERROR", error: deleteShapesError });
     }
   }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
 
@@ -55,16 +65,14 @@ export const useApi = (dispatch: any) => {
   } = useUpdateShapeMutation();
 
   useEffect(() => {
-    if (updateShapeIsLoading) {
-      dispatch({ type: "UPDATE_SHAPE_LOADING" });
-    } else if (updateShapeIsLoading === false && updateShapeError !== null) {
-      dispatch({ type: "UPDATE_SHAPE_ERROR", error: updateShapeError });
-    } else if (updateShapeIsSuccess) {
+    if (updateShapeIsSuccess) {
       dispatch({
         type: "UPDATE_SHAPE_SUCCESS",
         updatedShapeIds: [updateShapeResponse.uuid],
         updatedShape: updateShapeResponse,
       });
+    } else if (updateShapeIsLoading === false && updateShapeError !== null) {
+      dispatch({ type: "UPDATE_SHAPE_ERROR", error: updateShapeError });
     }
   }, [updateShapeIsLoading, updateShapeError, updateShapeIsSuccess]);
 
@@ -73,23 +81,44 @@ export const useApi = (dispatch: any) => {
     isLoading: bulkAddShapesIsLoading,
     error: bulkAddShapesError,
     isSuccess: bulkAddShapesIsSuccess,
-  } = useBulkAddShapesMutation();
+    variables: bulkAddShapesVars,
+    data: bulkAddShapesResponse,
+  } = useBulkAddShapesMutation(preferList);
 
   useEffect(() => {
     if (bulkAddShapesIsLoading) {
-      dispatch({ type: "BULK_ADD_SHAPES_LOADING" });
+      dispatch({
+        type: "BULK_ADD_SHAPES_LOADING",
+        updatedShapes: bulkAddShapesVars ?? [],
+      });
     } else if (
       bulkAddShapesIsLoading === false &&
       bulkAddShapesError !== null
     ) {
       dispatch({ type: "BULK_ADD_SHAPES_ERROR", error: bulkAddShapesError });
     } else if (bulkAddShapesIsSuccess) {
-      dispatch({ type: "BULK_ADD_SHAPES_SUCCESS" });
+      if ((bulkAddShapesResponse as ShapeCountResponse).num_shapes) {
+        console.warn("New additions were not reflected in optimistic updates");
+        dispatch({
+          type: "BULK_ADD_SHAPES_SUCCESS",
+          updatedShapeIds: [],
+          updatedShapes: [],
+        });
+      } else if ((bulkAddShapesResponse as GeoShape[]).length > 0) {
+        dispatch({
+          type: "BULK_ADD_SHAPES_SUCCESS",
+          updatedShapeIds: (bulkAddShapesResponse as GeoShape[]).map(
+            (shape) => shape.uuid
+          ),
+          updatedShapes: bulkAddShapesResponse as GeoShape[],
+        });
+      }
     }
   }, [bulkAddShapesIsLoading, bulkAddShapesError, bulkAddShapesIsSuccess]);
 
   return {
     bulkAddShapesApi,
+    setPreferList,
     addShapeApi,
     deleteShapesApi,
     updateShapeApi,

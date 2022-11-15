@@ -5,6 +5,8 @@ import { GeofencerNavbar } from "../navbar";
 import { ListDetailsIcon } from "../../../../common/components/icons";
 import { NotebookIcon } from "../../../../common/components/icons";
 import { useShapes } from "../../hooks/use-shapes";
+import { useCursorMode } from "../../hooks/use-cursor-mode";
+import { EditorMode } from "../../cursor-modes";
 
 export function Tabs({
   children,
@@ -17,6 +19,7 @@ export function Tabs({
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { shapeForPropertyEdit, setShapeForPropertyEdit } = useShapes();
+  const { cursorMode } = useCursorMode();
 
   useEffect(() => {
     setSelectedIndex(active);
@@ -27,6 +30,13 @@ export function Tabs({
       setShapeForPropertyEdit(null);
     }
   }, [selectedIndex]);
+
+  useEffect(() => {
+    if (cursorMode === EditorMode.ViewMode) {
+      setShapeForPropertyEdit(null);
+      setSelectedIndex(0);
+    }
+  }, [cursorMode]);
 
   const activeColorCss = (selected: boolean) =>
     selected ? "stroke-white" : "stroke-gray-300";

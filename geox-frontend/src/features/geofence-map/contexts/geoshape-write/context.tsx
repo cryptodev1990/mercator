@@ -1,5 +1,12 @@
 import { difference } from "@turf/turf";
-import { createContext, Dispatch, useContext, useReducer } from "react";
+import {
+  createContext,
+  Dispatch,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from "react";
 import { UseMutateFunction, useQueryClient } from "react-query";
 import {
   GeofencerService,
@@ -18,7 +25,6 @@ import { reducer, initialState, State, UndoLogRecord } from "./reducer";
 
 export interface IGeoShapeWriteContext {
   // Refreshes the shape tiles
-  tileCacheKey: number;
   // API call - bulk delete
   deleteShapes: UseMutateFunction<
     ShapeCountResponse,
@@ -48,7 +54,7 @@ export interface IGeoShapeWriteContext {
     unknown
   >;
   bulkAddFromSplit: UseMutateFunction<
-    ShapeCountResponse,
+    GeoShapeCreate[],
     unknown,
     GeoShapeCreate[],
     unknown
@@ -61,10 +67,11 @@ export interface IGeoShapeWriteContext {
   partialUpdateShape: (shape: GeoShapeUpdate) => void;
   optimisticShapeUpdates: GeoShapeCreate[];
   clearOptimisticShapeUpdates: () => void;
+  deletedShapeIdSet: Set<string>;
+  updatedShapeIdSet: Set<string>;
 }
 
 export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
-  tileCacheKey: 0,
   deleteShapes: async () => {},
   updateShape: async () => {},
   addShape: async () => {},
@@ -78,6 +85,8 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   optimisticShapeUpdates: [],
   clearOptimisticShapeUpdates: () => {},
   partialUpdateShape: async () => {},
+  deletedShapeIdSet: new Set(),
+  updatedShapeIdSet: new Set(),
 });
 
 GeoShapeWriteContext.displayName = "GeoShapeWriteContext";
@@ -93,7 +102,7 @@ export const GeoShapeWriteContextProvider = ({
   );
   const api = useApi(dispatch);
   const { options } = useCursorMode();
-  const { deckRef } = useContext(DeckContext);
+  const { deckRef, setHoveredUuid } = useContext(DeckContext);
 
   function opLog(op: UndoLogRecord["op"], payload: any) {
     dispatch({
@@ -105,19 +114,35 @@ export const GeoShapeWriteContextProvider = ({
 
   function bulkAddShapes(shapes: GeoShapeCreate[], ...args: any[]) {
     opLog("BULK_ADD_SHAPES", shapes);
+    api.setPreferList(false);
     return api.bulkAddShapesApi(shapes, ...args);
   }
+
+  useEffect(() => {
+    setHoveredUuid(null);
+  }, [state.deletedShapeIds]);
 
   function bulkAddFromSplit(
     shapes: GeoShapeCreate[],
     { onSuccess, onError }: any
   ) {
     opLog("BULK_ADD_SHAPE_SPLIT", shapes);
+    api.setPreferList(true);
     return api.bulkAddShapesApi(shapes, {
       onSuccess,
       onError,
     });
   }
+
+  const deletedShapeIdSet = useMemo(() => {
+    console.log("deletedShapeIds", state.deletedShapeIds);
+    return new Set(state.deletedShapeIds);
+  }, [state.deletedShapeIds]);
+
+  const updatedShapeIdSet = useMemo(() => {
+    console.log("updatedShapeIds", state.updatedShapeIds);
+    return new Set(state.updatedShapeIds);
+  }, [state.updatedShapeIds]);
 
   function removeOverlapFrom(shape: GeoShapeCreate): GeoShapeCreate {
     const shouldRemoveOverlap =
@@ -147,7 +172,23 @@ export const GeoShapeWriteContextProvider = ({
         ) {
           continue;
         }
+        // ignore the feature if it's in our delete list
+        if (
+          deletedShapeIdSet.has(feature?.properties?.__uuid) ||
+          updatedShapeIdSet.has(feature?.properties?.__uuid)
+        ) {
+          continue;
+        }
         const diffShape = difference(shape.geojson as any, feature);
+        shape.geojson = diffShape as any;
+      }
+      // remove optimistic shapes
+      for (let i = 0; i < state.optimisticShapeUpdates.length; i++) {
+        const optimisticShape = state.optimisticShapeUpdates[i];
+        const diffShape = difference(
+          shape.geojson as any,
+          optimisticShape.geojson as any
+        );
         shape.geojson = diffShape as any;
       }
     }
@@ -183,12 +224,12 @@ export const GeoShapeWriteContextProvider = ({
 
   function deleteShapes(shapeIds: string[], ...args: any[]) {
     opLog("DELETE_SHAPES", shapeIds);
-    dispatch({ type: "DELETE_SHAPES_LOADING", uuids: shapeIds });
     return api.deleteShapesApi(shapeIds, ...args);
   }
 
   function updateShape(update: GeoShapeUpdate, params: any) {
     opLog("UPDATE_SHAPE", update);
+    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update as GeoShape] });
     return api.updateShapeApi(update, params);
   }
 
@@ -198,7 +239,8 @@ export const GeoShapeWriteContextProvider = ({
       throw new Error("update must have a uuid");
     }
     opLog("UPDATE_SHAPE", update);
-    dispatch({ type: "UPDATE_SHAPE_LOADING" });
+    // @ts-ignore
+    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update] });
 
     GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatch(
       update.uuid,
@@ -221,19 +263,20 @@ export const GeoShapeWriteContextProvider = ({
     <GeoShapeWriteContext.Provider
       value={{
         updateLoading: state.shapeAddLoading || state.shapeUpdateLoading,
-        tileCacheKey: state.tileCacheKey,
         addShape,
         deleteShapes,
         updateShape,
         bulkAddShapes,
         bulkAddFromSplit,
         addShapeAndEdit,
+        partialUpdateShape,
         optimisticShapeUpdates: state.optimisticShapeUpdates,
         updatedShapeIds: state.updatedShapeIds,
         updatedShape: state.updatedShape,
         deletedShapeIds: state.deletedShapeIds,
-        partialUpdateShape,
         clearOptimisticShapeUpdates,
+        deletedShapeIdSet,
+        updatedShapeIdSet,
       }}
     >
       {children}

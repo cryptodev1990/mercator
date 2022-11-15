@@ -1,36 +1,47 @@
-import { GeoJsonLayer } from "@deck.gl/layers";
 import { useIdToken } from "../use-id-token";
 import { useShapes } from "../use-shapes";
+import { useCallback, useContext, useEffect } from "react";
+import { MVTLayer } from "@deck.gl/geo-layers";
+import { GeoJsonLayer } from "@deck.gl/layers";
+import { geoShapesToFeatureCollection } from "../../utils";
+import { DeckContext } from "../../contexts/deck-context";
 import { useSelectedShapes } from "../use-selected-shapes";
-import { useCallback, useEffect, useState } from "react";
-import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
-import { CxMVTLayer, TileCache } from "../../../../common/cx-mvt-layer";
-import Tile2DHeader from "@deck.gl/geo-layers/tile-layer/tile-2d-header";
+import { EditorMode } from "../../cursor-modes";
 
-import GL from "@luma.gl/constants";
-
-const tc = new TileCache();
+const MAX_OPTIMISTIC_FEATURES = 100;
 
 export function useTiles() {
   const { idToken } = useIdToken();
+  const { hoveredUuid } = useContext(DeckContext);
 
-  const [isHovering, setIsHovering] = useState<string | null>(null);
-  const tileArgs = useTileArgs(isHovering, setIsHovering);
+  const tileArgs = useTileArgs();
   const {
-    tileCacheKey,
     visibleNamepaces,
-    updatedShapeIds,
+    deletedShapeIdSet,
+    updatedShapeIdSet,
+    optimisticShapeUpdates,
+    clearOptimisticShapeUpdates,
     tileUpdateCount,
     setTileUpdateCount,
-    clearOptimisticShapeUpdates,
   } = useShapes();
+
   const { cursorMode } = useCursorMode();
-  const { selectedUuids } = useSelectedShapes();
+
+  const { isSelected, selectedUuids } = useSelectedShapes();
 
   useEffect(() => {
-    tc.clearForFeatures(updatedShapeIds);
-  }, [updatedShapeIds]);
+    if (visibleNamepaces.length > 0) {
+      clearOptimisticShapeUpdates();
+    }
+  }, [visibleNamepaces]);
+
+  useEffect(() => {
+    if (optimisticShapeUpdates.length > MAX_OPTIMISTIC_FEATURES) {
+      clearOptimisticShapeUpdates();
+      setTileUpdateCount(tileUpdateCount + 1);
+    }
+  }, [optimisticShapeUpdates]);
 
   if (idToken === null) {
     return null;
@@ -39,56 +50,101 @@ export function useTiles() {
     return null;
   }
 
+  const commonArgs = {
+    lineWidthMinPixels: 2,
+    pickable: true,
+    extruded: false,
+  };
   return [
-    new CxMVTLayer({
+    // @ts-ignore
+    new GeoJsonLayer({
+      id: "optimistic-layer",
+      // @ts-ignore
+      data: geoShapesToFeatureCollection(optimisticShapeUpdates),
+      updateTriggers: {
+        getLineColor: [
+          deletedShapeIdSet.size,
+          updatedShapeIdSet.size,
+          selectedUuids,
+        ],
+        getFillColor: [
+          deletedShapeIdSet.size,
+          updatedShapeIdSet.size,
+          hoveredUuid,
+          selectedUuids,
+        ],
+      },
+      getLineColor: (d: any) => {
+        const uuid = d?.properties?.__uuid;
+        if (deletedShapeIdSet.has(uuid)) {
+          return [0, 0, 0, 0];
+        }
+        if (cursorMode === EditorMode.ModifyMode && isSelected(uuid)) {
+          return [0, 0, 0, 0];
+        }
+        if (isSelected(uuid)) return [0, 0, 255, 50];
+        if (hoveredUuid === uuid) return [255, 125, 0, 150];
+        return [0, 0, 0, 150];
+      },
+      getFillColor: (d: any) => {
+        // light blue in rgba
+        const uuid = d?.properties?.__uuid;
+        if (deletedShapeIdSet.has(uuid)) {
+          return [0, 0, 0, 0];
+        }
+        if (cursorMode === EditorMode.ModifyMode && isSelected(uuid)) {
+          return [0, 0, 0, 0];
+        }
+        if (isSelected(uuid)) return [0, 0, 255, 50];
+        if (hoveredUuid === uuid) return [255, 125, 0, 150];
+        return [173, 216, 230, 255];
+      },
+      ...commonArgs,
+    }),
+    new MVTLayer({
       id: "gf-mvt",
       // @ts-ignore
-      cache: tc,
-      // @ts-ignore
-      onViewportLoad: (headers: Tile2DHeader[]) => {
-        // triggers after all tiles in a viewport load
-        setTileUpdateCount(tileUpdateCount + 1);
+      getLineColor: (d: any) => {
+        const uuid = d?.properties?.__uuid;
+        if (deletedShapeIdSet.has(uuid) || updatedShapeIdSet.has(uuid)) {
+          return [0, 0, 0, 0];
+        }
+        if (isSelected(uuid)) return [0, 0, 255, 50];
+        if (hoveredUuid === uuid) return [255, 125, 0, 150];
+        return [0, 0, 0, 150];
+      },
+      getFillColor: (d: any) => {
+        const uuid = d?.properties?.__uuid;
+        if (deletedShapeIdSet.has(uuid) || updatedShapeIdSet.has(uuid)) {
+          return [0, 0, 0, 0];
+        }
+        if (isSelected(uuid)) return [0, 0, 255, 50];
+        if (hoveredUuid === uuid) return [255, 125, 0, 150];
+        return [173, 216, 230, 255];
       },
       updateTriggers: {
-        getFillColor: [selectedUuids, isHovering, cursorMode, updatedShapeIds],
-        getLineColor: [selectedUuids, isHovering, cursorMode, updatedShapeIds],
-        getTileData: [tileCacheKey, visibleNamepaces, cursorMode],
-      },
-      // @ts-ignore
-      ...tileArgs,
-    }),
-    new CxMVTLayer({
-      id: "bg-mvt",
-      // @ts-ignore
-      cache: tc,
-      // @ts-ignore
-      onViewportLoad: (headers: Tile2DHeader[]) => {
-        tc.clear();
-        clearOptimisticShapeUpdates();
-      },
-      // blocks any server request by this layer, it can only read from the cache
-      neverFetch: true,
-      updateTriggers: {
+        getLineColor: [
+          deletedShapeIdSet.size,
+          updatedShapeIdSet.size,
+          hoveredUuid,
+          selectedUuids,
+        ],
+        getFillColor: [
+          deletedShapeIdSet.size,
+          updatedShapeIdSet.size,
+          selectedUuids,
+        ],
         getTileData: [tileUpdateCount],
-        getFillColor: [selectedUuids, isHovering],
       },
-      // @ts-ignore
       ...tileArgs,
+      ...commonArgs,
     }),
   ];
 }
 
-const useTileArgs = (isHovering: any, setIsHovering: any) => {
+const useTileArgs = () => {
   const { idToken } = useIdToken();
-  const { visibleNamepaces, numShapes, deletedShapeIds } = useShapes();
-
-  const { isSelected, selectOneShapeUuid } = useSelectedShapes();
-
-  const { cursorMode } = useCursorMode();
-
-  useEffect(() => {
-    setIsHovering(null);
-  }, [cursorMode]);
+  const { visibleNamepaces, numShapes } = useShapes();
 
   const getTileUrl = useCallback(() => {
     if (visibleNamepaces.length === 0) {
@@ -107,10 +163,11 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
       )}`
     );
   }, [visibleNamepaces, numShapes]);
+
   return {
     // @ts-ignore
-    lineWidthMinPixels: 2,
     data: getTileUrl(),
+    maxRequests: 6,
     loadOptions: {
       fetch: {
         method: "GET",
@@ -119,82 +176,6 @@ const useTileArgs = (isHovering: any, setIsHovering: any) => {
           Authorization: `Bearer ${idToken}`,
         },
       },
-    },
-    opacity: 0.2,
-    parameters: {
-      // don't blend two layers
-      blend: true,
-      blendFunc: [
-        GL.SRC_ALPHA,
-        GL.SRC_ALPHA,
-        GL.ONE_MINUS_CONSTANT_ALPHA,
-        GL.DST_COLOR,
-      ],
-    },
-    getLineColor: (d: any) => {
-      if (isSelected(d.properties.__uuid)) {
-        // hidden
-        return [250, 128, 114, 0];
-      }
-      if (deletedShapeIds.includes(d.properties.__uuid)) {
-        return [250, 128, 114, 0];
-      }
-      return [0, 0, 0, 150];
-    },
-    getFillColor: (d: any) => {
-      if (deletedShapeIds.includes(d.properties.__uuid)) {
-        return [250, 128, 114, 0];
-      }
-      if (isSelected(d.properties.__uuid)) {
-        // hidden
-        return [250, 128, 114, 0];
-      }
-      if (isHovering === d.properties.__uuid) {
-        // light blue in rgba
-        return [173, 216, 230];
-      }
-      return [140, 170, 180, cursorMode === EditorMode.ViewMode ? 255 : 0];
-    },
-    extruded: false,
-    onHover: ({ object, x, y }: any) => {
-      if (
-        // @ts-ignore
-        object?.properties?.__uuid &&
-        EditorMode.ModifyMode === cursorMode
-      ) {
-        // @ts-ignore
-        setIsHovering(object?.properties?.__uuid);
-      }
-      // @ts-ignore
-      if (object?.properties?.__uuid && cursorMode === EditorMode.ViewMode) {
-        // TODO how do I get TypeScript to recognize the type on object here?
-        // @ts-ignore
-        const { __uuid: uuid } = object.properties;
-        if (!isSelected(uuid) && !deletedShapeIds.includes(uuid)) {
-          selectOneShapeUuid(uuid);
-        }
-      }
-    },
-    onClick: ({ object, x, y }: any) => {
-      if (cursorMode === EditorMode.SplitMode) {
-        return;
-      }
-      // @ts-ignore
-      if (object?.properties?.__uuid) {
-        // TODO how do I get TypeScript to recognize the type on object here?
-        // @ts-ignore
-        const { __uuid: uuid } = object.properties;
-        if (!isSelected(uuid)) {
-          selectOneShapeUuid(uuid);
-        }
-      }
-    },
-    pickable: true,
-    maxRequests: 6,
-    renderSubLayers: (props: any) => {
-      return new GeoJsonLayer({
-        ...props,
-      });
     },
   };
 };

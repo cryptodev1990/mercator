@@ -11,13 +11,15 @@ export const NamespaceSection = ({ className }: { className: string }) => {
     setVisibleNamespaces,
     activeNamespaces,
     setActiveNamespaces,
+    updatedShape,
     shapeMetadata,
   } = useShapes();
 
   useEffect(() => {
-    if (namespaces.length > 0) {
+    if (updatedShape) {
+    } else if (namespaces.length > 0) {
       setActiveNamespaces([namespaces[0]]);
-      setVisibleNamespaces([namespaces[0]]);
+      setVisibleNamespaces(namespaces);
     }
   }, []);
 
