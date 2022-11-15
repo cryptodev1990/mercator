@@ -57,7 +57,7 @@ export default function JsonEditor({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {fields.map((field, index) => {
-        if (field.key.startsWith("__")) {
+        if (field.key?.startsWith("__")) {
           return null;
         }
         return (
