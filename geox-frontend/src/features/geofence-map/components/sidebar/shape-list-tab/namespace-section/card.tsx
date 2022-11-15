@@ -135,8 +135,8 @@ export const NamespaceCard = ({
                   );
                 }
               })
-              .map((x) => (
-                <NamespaceContext.Provider value={namespace}>
+              .map((x, i) => (
+                <NamespaceContext.Provider value={namespace} key={i}>
                   <ShapeCard
                     shape={x}
                     onMouseEnter={() => setShapeHovered(x.uuid)}

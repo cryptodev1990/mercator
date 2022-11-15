@@ -10,7 +10,6 @@ const NamespaceMenu = ({
   outerRef: RefObject<HTMLDivElement>;
   shapeUuid: string;
 }) => {
-  console.log("shapeUuid", shapeUuid);
   const currentNamespace = useContext(NamespaceContext);
   const { namespaces, partialUpdateShape } = useShapes();
   const { xPos, yPos, menu } = useContextMenu(outerRef);
