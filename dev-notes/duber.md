@@ -1249,8 +1249,9 @@ Branch: ``ajd/cache-madness``
 
 ## 11-14-22
 
-- [ ] Expand optimistic updates. Rather than maintain tiling, I'm going to update shapes locally.
+- [X] Expand optimistic updates. Rather than maintain tiling, I'm going to update shapes locally.
   - Currently, there's an error where after a shape is updated it disappears, as if the optimistic update never gets written to my log
 - [ ] Let users cancel their subscriptions
   - Add customer IDs to user org if the orgs are personal on account creation
   - Create cancellation portal sessions using this ID
+- [ ] Let users pull their invoices / bills

@@ -39,6 +39,7 @@ organizations = Table(
         String,
         comment="Snowflake Account ID. Used for data export. See https://docs.snowflake.com/en/user-guide/admin-account-identifier.html.",
     ),
+    Column("stripe_customer_id", String, nullable=True),
     Column("stripe_subscription_id", String, nullable=True),
     Column("stripe_subscription_created_at", DateTime, nullable=True),
     Column("stripe_paid_at", DateTime, nullable=True),

@@ -1,5 +1,5 @@
 import { Navbar } from "../../common/components/navbar";
-import { AccountSupportCard } from "./components/account-support-card";
+import AccountBillingCard from "./components/account-billing-card";
 import { AccountUserCard } from "./components/account-user-card";
 
 const AccountPage = (): JSX.Element => (
@@ -12,7 +12,7 @@ const AccountPage = (): JSX.Element => (
     <section className="max-w-4xl m-auto pt-9 flex flex-col space-y-5">
       <h2 className="text-white font-bold text-2xl">Account</h2>
       <AccountUserCard />
-      <AccountSupportCard />
+      <AccountBillingCard />
     </section>
   </main>
 );

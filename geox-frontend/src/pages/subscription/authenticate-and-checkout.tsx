@@ -1,42 +1,18 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { btnClasses } from ".";
+import { useStripe } from "../../hooks/use-stripe";
 
 const FRONTEND_CHECKOUT_URL =
   process.env.REACT_APP_FRONTEND_URL + "/subscribe/checkout";
-const BACKEND_STRIPE_URL =
-  process.env.REACT_APP_BACKEND_URL + "/billing/create-checkout-session";
 
 export const AuthenticateAndCheckoutPage = () => {
   const { isAuthenticated, loginWithRedirect, isLoading } = useAuth0();
-  const { getAccessTokenSilently } = useAuth0();
+  const { createCheckoutSession } = useStripe();
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
       return;
-    }
-    async function accessToken() {
-      return await getAccessTokenSilently({
-        audience: process.env.REACT_APP_AUTH0_API_AUDIENCE,
-        ignoreCache: false,
-        detailedResponse: true,
-      });
-    }
-    async function createCheckoutSession() {
-      const { id_token } = await accessToken();
-      const response = await window.fetch(BACKEND_STRIPE_URL, {
-        headers: {
-          Authorization: `Bearer ${id_token}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          price_id: process.env.REACT_APP_STRIPE_PRICE_ID,
-          success_url: process.env.REACT_APP_FRONTEND_URL + "/dashboard",
-          cancel_url: process.env.REACT_APP_FRONTEND_URL + "/subscribe",
-        }),
-      });
-      window.location.href = await response.json().then((data) => data.url);
     }
     createCheckoutSession();
   }, [isAuthenticated]);
