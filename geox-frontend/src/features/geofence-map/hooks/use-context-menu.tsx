@@ -1,8 +1,8 @@
 import { useEffect, useCallback, useState, RefObject } from "react";
 
 const useContextMenu = (outerRef: RefObject<HTMLDivElement>) => {
-  const [xPos, setXPos] = useState<string>("0px");
-  const [yPos, setYPos] = useState<string>("0px");
+  const [xPos, setXPos] = useState<number>(0);
+  const [yPos, setYPos] = useState<number>(0);
   const [menu, showMenu] = useState<Boolean>(false);
 
   const handleContextMenu = useCallback(
@@ -13,8 +13,8 @@ const useContextMenu = (outerRef: RefObject<HTMLDivElement>) => {
         outerRef.current &&
         outerRef.current.contains(event.target as Node)
       ) {
-        setXPos(`${event.pageX}px`);
-        setYPos(`${event.pageY}px`);
+        setXPos(event.pageX);
+        setYPos(event.pageY);
         showMenu(true);
       } else {
         showMenu(false);

@@ -16,11 +16,11 @@ const NamespaceMenu = ({
 
   if (menu) {
     return (
-      <div className="z-1000 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-        <ul
-          className="py-1 text-sm text-gray-700 dark:text-gray-200"
-          style={{ top: yPos, left: xPos }}
-        >
+      <div
+        className="absolute w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700"
+        style={{ top: yPos - 15, left: xPos - 15 }}
+      >
+        <ul className="py-1 text-sm text-gray-700 dark:text-gray-200 ">
           {namespaces
             .filter(
               (namespace) =>

@@ -6,11 +6,11 @@ import NamespaceMenu from "../../namespace-menu";
 export const DragHandle = ({
   transferData,
   dragImage,
-  dataTip,
-}: {
+}: // dataTip,
+{
   transferData: string;
   dragImage: any;
-  dataTip?: string;
+  // dataTip?: string;
 }) => {
   const outerRef = useRef<HTMLDivElement>(null);
 
@@ -24,21 +24,14 @@ export const DragHandle = ({
   }
 
   return (
-    <div data-tip={dataTip}>
-      {/* Hide drag indicator behind a transparent element */}
-      <div className="w-4 h-4 relative">
-        <div className="w-4 h-4 absolute">
-          <div
-            className="w-4 h-4 cursor-grab"
-            onDragStart={dragStartHandler}
-            draggable={true}
-            ref={outerRef}
-          >
-            <DragIndicatorIcon className="text-gray-400 z-0" />
-            <NamespaceMenu outerRef={outerRef} shapeUuid={transferData} />
-          </div>
-        </div>
-      </div>
+    <div
+      className="w-4 h-4 cursor-grab"
+      onDragStart={dragStartHandler}
+      draggable={true}
+      ref={outerRef}
+    >
+      <DragIndicatorIcon className="text-gray-400" />
+      <NamespaceMenu outerRef={outerRef} shapeUuid={transferData} />
     </div>
   );
 };

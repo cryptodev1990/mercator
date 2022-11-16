@@ -63,7 +63,7 @@ export const ShapeCard = ({
         <DragHandle
           transferData={shape.uuid}
           dragImage={SHAPE_CARD_IMAGE}
-          dataTip={`Drag into ${shape.name} another folder`}
+          // dataTip={`Drag into ${shape.name} another folder`}
         />
         <EditableLabel
           value={shape?.name || "New shape"}
@@ -92,7 +92,7 @@ export const ShapeCard = ({
             }
           }}
           className="text-1xl font-sans tracking-tight text-white truncate"
-        ></EditableLabel>
+        />
         <div
           className={`transition flex flex-row justify-start space-x-1 ${selectionOpacity} ml-auto`}
         >
