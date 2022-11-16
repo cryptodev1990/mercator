@@ -81,6 +81,7 @@ const GeofenceMap = () => {
         });
         clearSelectedFeatureIndexes();
         clearSelectedShapeUuids();
+        setShapeForPropertyEdit(null);
       }
     }
 
@@ -193,11 +194,6 @@ const GeofenceMap = () => {
           const uuid = object.properties.__uuid;
           if (deletedShapeIdSet.has(uuid)) {
             return [0, 0, 0, 0];
-          }
-          if (cursorMode === EditorMode.ViewMode) {
-            if (!isSelected(uuid)) {
-              selectOneShapeUuid(uuid);
-            }
           }
           if (uuid === hoveredUuid || cursorMode === EditorMode.SplitMode) {
             return;

@@ -5,7 +5,7 @@ import { useShapes } from "../../hooks/use-shapes";
 export const Footer = () => {
   const { shapeMetadataIsLoading, numShapes, namespaces } = useShapes();
   return (
-    <footer className="flex flex-col mt-auto sticky bottom-0 bg-slate-800 z-50">
+    <footer className="flex flex-col mt-auto bg-slate-800 z-50">
       <p className="text-xs m-1">
         {shapeMetadataIsLoading && (
           <Loading className="spin" height={20} width={20} />

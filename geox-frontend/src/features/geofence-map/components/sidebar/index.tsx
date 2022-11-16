@@ -1,9 +1,22 @@
-import { Tabs } from "./tabs";
 import { ShapeEditor } from "./editor-tab/editor-tab";
 import { useShapes } from "../../hooks/use-shapes";
 import Loading from "react-loading";
 import { ShapeBarPaginator } from "./shape-list-tab/shape-list-tab";
 import { SidebarDrawer } from "./hideable-drawer";
+import { GeofencerNavbar } from "../navbar";
+import { Footer } from "./footer";
+
+const BackToPaginatorButton = () => {
+  const { setShapeForPropertyEdit } = useShapes();
+  return (
+    <button
+      className="text-white rounded hover:text-red-400 bg-opacity-0 border-none capitalize text-sm"
+      onClick={() => setShapeForPropertyEdit(null)}
+    >
+      {"<< Back"}
+    </button>
+  );
+};
 
 const GeofencerSidebar = () => {
   const { shapeForPropertyEdit, shapeMetadataIsLoading } = useShapes();
@@ -20,19 +33,23 @@ const GeofencerSidebar = () => {
 
   return (
     <SidebarDrawer>
-      <Tabs
-        children={[<ShapeBarPaginator />, <ShapeEditor />].map((x, i) => (
-          <div
-            className="h-full flex flex-col items-stretch justify-between"
-            id={`tab-${i}`}
-            key={i}
-          >
-            {x}
+      <header className="bg-slate-800">
+        <GeofencerNavbar />
+      </header>
+      {!shapeForPropertyEdit && <ShapeBarPaginator />}
+      <div>
+        {shapeForPropertyEdit && (
+          <div className="float-left p-2">
+            <div className="pl-3 pb-0 m-0">
+              <BackToPaginatorButton />
+            </div>
+            <ShapeEditor />
           </div>
-        ))}
-        active={!shapeForPropertyEdit ? 0 : 1}
-        tabnames={["Shapes", "Metadata Editor"]}
-      />
+        )}
+      </div>
+      <div className="absolute bottom-0 w-full">
+        {!shapeForPropertyEdit && <Footer />}
+      </div>
     </SidebarDrawer>
   );
 };

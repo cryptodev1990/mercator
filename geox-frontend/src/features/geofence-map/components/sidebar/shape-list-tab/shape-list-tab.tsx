@@ -9,12 +9,23 @@ import { useUiModals } from "../../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../../types";
 import { useDbSync } from "../../../hooks/use-db-sync";
 import { NamespaceSection } from "./namespace-section";
-import { Footer } from "../footer";
 import { TentativeButtonBank } from "./shape-card/button-bank";
+import { useEffect } from "react";
 
 const EmptyMessage = () => {
+  // fade in after 500 ms
+
+  useEffect(() => {
+    setTimeout(() => {
+      document.getElementById("empty-message")?.classList.remove("opacity-0");
+    }, 500);
+  }, []);
+
   return (
-    <div className="flex flex-col justify-center h-full p-3">
+    <div
+      id="empty-message"
+      className="flex flex-col justify-center h-full p-3 opacity-0"
+    >
       <p className="text-white text-left">
         No shapes have been added to the map yet.
       </p>
@@ -114,7 +125,6 @@ export const ShapeBarPaginator = () => {
           </p>
         </div>
       )}
-      <Footer />
     </div>
   );
 };

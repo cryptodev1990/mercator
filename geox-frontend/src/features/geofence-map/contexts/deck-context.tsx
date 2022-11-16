@@ -1,4 +1,4 @@
-import { createContext, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 
 interface DeckContextInterface {
   deckRef: React.RefObject<any>;
