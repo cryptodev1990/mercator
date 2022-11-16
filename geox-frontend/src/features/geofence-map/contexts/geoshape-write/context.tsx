@@ -158,7 +158,7 @@ export const GeoShapeWriteContextProvider = ({
         .getLayers()
         .find((x: any) => x.id === "gf-mvt");
       // TODO this produces way more features than it needs to, what gives?
-      const currentFeatures = mvtLayer.getRenderedFeatures();
+      const currentFeatures = mvtLayer?.getRenderedFeatures();
       if (!currentFeatures) {
         return shape;
       }
