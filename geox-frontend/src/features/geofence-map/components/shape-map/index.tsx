@@ -28,6 +28,7 @@ const GeofenceMap = () => {
     shapeMetadata,
     setShapeForPropertyEdit,
     deletedShapeIdSet,
+    visibleNamespaces,
   } = useShapes();
 
   const {
@@ -165,6 +166,11 @@ const GeofenceMap = () => {
             return;
           }
           const uuid = object.properties.__uuid;
+          const namespaceId = object.properties.__namespace_id;
+          if (!visibleNamespaces.find((x) => x.id === namespaceId)) {
+            return;
+          }
+
           if (deletedShapeIdSet.has(uuid)) {
             return;
           }

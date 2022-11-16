@@ -6,7 +6,7 @@ import { ShapeSearchBar } from "./shape-search-bar";
 export const NamespaceSection = ({ className }: { className: string }) => {
   const {
     namespaces,
-    visibleNamepaces,
+    visibleNamespaces,
     activeNamespaces,
     setActiveNamespaces,
     shapeMetadata,
@@ -16,7 +16,7 @@ export const NamespaceSection = ({ className }: { className: string }) => {
     <div className={className}>
       {shapeMetadata.length > 0 && <ShapeSearchBar />}
       {namespaces.map((namespace, i) => {
-        const isVisible = visibleNamepaces
+        const isVisible = visibleNamespaces
           .map((x) => x.id)
           .includes(namespace?.id);
         const isActive = activeNamespaces

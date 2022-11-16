@@ -69,6 +69,7 @@ export function useModifyLayer() {
           uuid: updatedData.features[editContext.featureIndexes[0]].properties
             .__uuid,
         });
+        return;
       }
     },
     onClick: (o: any, e: any) => {

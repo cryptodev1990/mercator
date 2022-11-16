@@ -27,7 +27,7 @@ export const NamespaceCard = ({
 }) => {
   const {
     shapeMetadata,
-    visibleNamepaces,
+    visibleNamespaces,
     setVisibleNamespaces,
     updateNamespace,
     partialUpdateShape,
@@ -103,10 +103,10 @@ export const NamespaceCard = ({
             onClick={() => {
               if (isVisible) {
                 setVisibleNamespaces(
-                  visibleNamepaces.filter((x) => x.id !== namespace.id)
+                  visibleNamespaces.filter((x) => x.id !== namespace.id)
                 );
               } else {
-                setVisibleNamespaces([...visibleNamepaces, namespace]);
+                setVisibleNamespaces([...visibleNamespaces, namespace]);
               }
             }}
           >

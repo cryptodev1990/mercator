@@ -1,4 +1,10 @@
-import { createContext, Dispatch, useEffect, useReducer } from "react";
+import {
+  createContext,
+  Dispatch,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { useQueryClient } from "react-query";
 import {
   GeoShapeMetadata,
@@ -9,10 +15,7 @@ import {
   NamespaceUpdate,
 } from "../../../../client";
 import { aggressiveLog } from "../../../../common/aggressive-log";
-import {
-  useGetAllShapesMetadata,
-  useNumShapesQuery,
-} from "../../hooks/use-openapi-hooks";
+import { useGetAllShapesMetadata } from "../../hooks/use-openapi-hooks";
 import { Action } from "./action-types";
 import { geoshapeReducer, initialState, State } from "./reducer";
 import {
@@ -28,11 +31,9 @@ export interface IGeoShapeMetadataContext {
   // namespaces
   namespaces: Namespace[];
   activeNamespaces: Namespace[];
-  visibleNamepaces: Namespace[];
+  visibleNamespaces: Namespace[];
   // API call - num shapes
   numShapes: number | null;
-  numShapesIsLoading: boolean;
-  numShapesError: Error | null;
   setActiveNamespaces: (namespaces: Namespace[]) => void;
   setVisibleNamespaces: (namespaces: Namespace[]) => void;
   // namespace writes
@@ -52,11 +53,9 @@ export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
   namespaces: [],
   activeNamespaces: [],
   setActiveNamespaces: () => {},
-  visibleNamepaces: [],
+  visibleNamespaces: [],
   setVisibleNamespaces: async () => {},
   numShapes: null,
-  numShapesIsLoading: false,
-  numShapesError: null,
   // namespace writes
   addNamespace: async () => {},
   removeNamespace: async () => {},
@@ -72,32 +71,8 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     initialState
   );
   const qc = useQueryClient();
-
-  const {
-    data: numShapesPayload,
-    isLoading: numShapesIsLoading,
-    error: numShapesError,
-    isSuccess: numShapesIsSuccess,
-  } = useNumShapesQuery();
-
-  useEffect(() => {
-    if (numShapesError !== null) {
-      dispatch({
-        type: "FETCH_NUM_SHAPES_ERROR",
-        error: numShapesError as any,
-      });
-    } else if (numShapesIsSuccess) {
-      dispatch({
-        type: "FETCH_NUM_SHAPES_SUCCESS",
-        numShapes: numShapesPayload?.num_shapes || 0,
-      });
-    }
-  }, [
-    numShapesPayload,
-    numShapesIsLoading,
-    numShapesError,
-    numShapesIsSuccess,
-  ]);
+  // run operations only on the first successful fetch
+  const [initial, setInitial] = useState(true);
 
   const {
     data: remoteShapeMetadata,
@@ -128,6 +103,19 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     shapeMetadataError,
     shapeMetadataIsSuccess,
   ]);
+
+  // on the initial load of the data, set the active namespaces to the default namespaces
+  useEffect(() => {
+    if (state.namespaces.length > 0 && initial) {
+      setActiveNamespaces([
+        state.namespaces.find((x) => x.is_default) ?? state.namespaces[0],
+      ]);
+      setVisibleNamespaces([
+        state.namespaces.find((x) => x.is_default) ?? state.namespaces[0],
+      ]);
+      setInitial(false);
+    }
+  }, [state.namespaces]);
 
   function setActiveNamespaces(namespaces: Namespace[]) {
     dispatch({
@@ -226,12 +214,10 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
         shapeMetadataError: state.shapeMetadataError,
         namespaces: state.namespaces,
         activeNamespaces: state.activeNamespaces,
-        visibleNamepaces: state.visibleNamepaces,
+        visibleNamespaces: state.visibleNamespaces,
         setActiveNamespaces,
         setVisibleNamespaces,
-        numShapes: state.numShapes,
-        numShapesIsLoading: state.numShapesIsLoading,
-        numShapesError: state.numShapesError,
+        numShapes: state.shapeMetadata.length,
         addNamespace,
         removeNamespace,
         updateNamespace,

@@ -17,7 +17,7 @@ export function useTiles() {
 
   const tileArgs = useTileArgs();
   const {
-    visibleNamepaces,
+    visibleNamespaces,
     deletedShapeIdSet,
     updatedShapeIdSet,
     optimisticShapeUpdates,
@@ -31,10 +31,10 @@ export function useTiles() {
   const { isSelected, selectedUuids } = useSelectedShapes();
 
   useEffect(() => {
-    if (visibleNamepaces.length > 0) {
+    if (visibleNamespaces) {
       clearOptimisticShapeUpdates();
     }
-  }, [visibleNamepaces]);
+  }, [visibleNamespaces]);
 
   useEffect(() => {
     if (optimisticShapeUpdates.length > MAX_OPTIMISTIC_FEATURES) {
@@ -46,7 +46,7 @@ export function useTiles() {
   if (idToken === null) {
     return null;
   }
-  if (visibleNamepaces.length === 0) {
+  if (visibleNamespaces.length === 0) {
     return null;
   }
 
@@ -144,16 +144,16 @@ export function useTiles() {
 
 const useTileArgs = () => {
   const { idToken } = useIdToken();
-  const { visibleNamepaces, numShapes } = useShapes();
+  const { visibleNamespaces, numShapes } = useShapes();
 
   const getTileUrl = useCallback(() => {
-    if (visibleNamepaces.length === 0) {
+    if (visibleNamespaces.length === 0) {
       return (
         process.env.REACT_APP_BACKEND_URL +
         "/backsplash/generate_shape_tile/{z}/{x}/{y}"
       );
     }
-    const namespacesAsParams = visibleNamepaces.map(
+    const namespacesAsParams = visibleNamespaces.map(
       (x) => `namespace_ids=${x.id}`
     );
     return (
@@ -162,7 +162,7 @@ const useTileArgs = () => {
         "&"
       )}`
     );
-  }, [visibleNamepaces, numShapes]);
+  }, [visibleNamespaces, numShapes]);
 
   return {
     // @ts-ignore

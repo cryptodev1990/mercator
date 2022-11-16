@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import simplur from "simplur";
 import {
   CeleryTaskResponse,
   CeleryTaskResult,
@@ -61,7 +60,6 @@ export const useAddShapeMutation = () => {
 
 export const useGetAllShapesMetadata = () => {
   const { isTokenSet } = useTokenInOpenApi();
-  const queryClient = useQueryClient();
   return useQuery<NamespaceResponse[]>(
     ["geofencer"],
     () => {
@@ -69,9 +67,6 @@ export const useGetAllShapesMetadata = () => {
     },
 
     {
-      onSuccess(data) {
-        queryClient.fetchQuery("numShapes");
-      },
       enabled: isTokenSet,
       onError: genericErrorHandler,
     }
@@ -165,23 +160,6 @@ export const useBulkAddShapesMutation = (asList = false) => {
       onError(error: any) {
         console.error(`Shapes failed to add (${error?.detail})`);
       },
-    }
-  );
-};
-
-export const useNumShapesQuery = () => {
-  return useQuery<ShapeCountResponse>(
-    ["numShapes"],
-    () => {
-      return GeofencerService.getShapeCountGeofencerShapesOpCountGet();
-    },
-    {
-      staleTime: 0,
-      cacheTime: 0,
-      retryOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      onError: genericErrorHandler,
     }
   );
 };
