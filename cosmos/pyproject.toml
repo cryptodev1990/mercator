@@ -44,6 +44,9 @@ geopandas = "^0.12.1"
 ipython = "^8.6.0"
 ipykernel = "^6.17.1"
 geopy = "^2.3.0"
+spacy = "^3.4.3"
+claucy = {git = "https://github.com/mmxgn/spacy-clausie.git"}
+arpeggio = "^2.0.0"
 
 
 [tool.poetry.group.notebooks.dependencies]
