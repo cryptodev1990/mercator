@@ -6,7 +6,7 @@ import { SidebarDrawer } from "./hideable-drawer";
 import { GeofencerNavbar } from "../navbar";
 import { Footer } from "./footer";
 
-const BackToPaginatorButton = () => {
+const SidebarNavigation = () => {
   const { shapeForPropertyEdit, setShapeForPropertyEdit } = useShapes();
   return (
     <nav className="flex" aria-label="Breadcrumb">
@@ -72,7 +72,7 @@ const GeofencerSidebar = () => {
           {shapeForPropertyEdit && (
             <div className="float-left p-2">
               <div className="pl-3 pb-0 m-0">
-                <BackToPaginatorButton />
+                <SidebarNavigation />
               </div>
               <ShapeEditor />
             </div>
