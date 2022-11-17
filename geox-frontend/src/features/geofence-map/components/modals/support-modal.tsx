@@ -147,7 +147,7 @@ export const SupportModal = () => {
       title="Report a bug or request a feature"
     >
       <div>
-        <p>
+        <p className="text-slate-600">
           You can also email{" "}
           <a href="mailto:support@mercator.tech" className="link link-primary">
             support@mercator.tech

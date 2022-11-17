@@ -33,21 +33,23 @@ const GeofencerSidebar = () => {
 
   return (
     <SidebarDrawer>
-      <header className="bg-slate-800">
-        <GeofencerNavbar />
-      </header>
-      {!shapeForPropertyEdit && <ShapeBarPaginator />}
-      <div>
-        {shapeForPropertyEdit && (
-          <div className="float-left p-2">
-            <div className="pl-3 pb-0 m-0">
-              <BackToPaginatorButton />
+      <div className="relative">
+        <header className="bg-slate-800 sticky top-0 z-50">
+          <GeofencerNavbar />
+        </header>
+        {!shapeForPropertyEdit && <ShapeBarPaginator />}
+        <div>
+          {shapeForPropertyEdit && (
+            <div className="float-left p-2">
+              <div className="pl-3 pb-0 m-0">
+                <BackToPaginatorButton />
+              </div>
+              <ShapeEditor />
             </div>
-            <ShapeEditor />
-          </div>
-        )}
+          )}
+        </div>
       </div>
-      <div className="absolute bottom-0 w-full">
+      <div className="sticky bottom-0 left-0 w-full z-50">
         {!shapeForPropertyEdit && <Footer />}
       </div>
     </SidebarDrawer>
