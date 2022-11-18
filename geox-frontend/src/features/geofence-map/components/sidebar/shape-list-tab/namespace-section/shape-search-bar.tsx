@@ -44,17 +44,17 @@ export const ShapeSearchBar = () => {
     if (!fuseRef.current) {
       return;
     }
-    if (debouncedSearchTerm) {
-      const results = fuseRef.current.search(debouncedSearchTerm);
-      if (results.length > 0) {
-        // set new activeNamespaces
-        let namespaceIds = new Set(results.map((x) => x.item.namespace_id));
-        const newActives = namespaces.filter((namespace) =>
-          namespaceIds.has(namespace.id)
-        );
-        setActiveNamespaces(newActives);
-        setSearchResults(results.map((x) => x.item.uuid));
-      }
+    const results = debouncedSearchTerm
+      ? fuseRef.current.search(debouncedSearchTerm)
+      : shapeMetadata.map((x) => ({ item: x }));
+    if (results.length > 0) {
+      // set new activeNamespaces
+      let namespaceIds = new Set(results.map((x) => x.item.namespace_id));
+      const newActives = namespaces.filter((namespace) =>
+        namespaceIds.has(namespace.id)
+      );
+      setActiveNamespaces(newActives);
+      setSearchResults(results.map((x) => x.item.uuid));
     }
   }, [debouncedSearchTerm]);
 
