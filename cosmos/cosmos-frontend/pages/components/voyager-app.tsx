@@ -1,10 +1,8 @@
 import Image from "next/image";
 import { useContext, useEffect } from "react";
-import {
-  SearchContext,
-  SearchContextProvider,
-} from "../features/search/context";
-import { Header } from "./header";
+import { SearchContext } from "../features/search/context";
+import SearchContextProvider from "../features/search/context";
+import Header from "./header";
 import SearchBar from "./search-bar/search-bar";
 import SearchSuggestions from "./search-suggestions";
 

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { VoyagerApp } from "./components/voyager-app";
+import VoyagerApp from "./components/voyager-app";
 
 export default function Home() {
   return (

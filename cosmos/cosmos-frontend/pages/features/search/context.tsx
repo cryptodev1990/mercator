@@ -89,27 +89,6 @@ const PREPOSITION_LIST = [
   { name: "nearby" },
 ];
 
-type Node = {
-  name: string;
-  children: Node[];
-};
-
-type NounClassNode = {
-  name: string;
-  children: NounClassNode[];
-  prepositions: string[];
-};
-
-type PrepositionNode = {
-  name: string;
-  children: NounClassNode[];
-};
-
-type ConjunctionNode = {
-  name: string;
-  children: PrepositionNode[];
-};
-
 const SearchContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [searchText, setSearchText] = useState("");
   const [phase, setPhase] = useState(0);
