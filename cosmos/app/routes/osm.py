@@ -174,7 +174,7 @@ async def _search(
                 jsonb_agg(
                     jsonb_build_object(
                         'type', 'Feature',
-                        'geometry', ST_AsGeoJSON(geom),
+                        'geometry', ST_AsGeoJSON(geom) :: JSONB,
                         'properties', jsonb_build_object(
                             'osm', jsonb_build_object(
                                 'tags', tags,
