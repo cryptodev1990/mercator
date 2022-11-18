@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION _geojson_feature_collection_sfunc(prev JSONB, g GEOMETRY, properties JSONB DEFAULT '{}'::JSONB)
+CREATE OR REPLACE FUNCTION _geojson_feature_collection_agg_sfunc(prev JSONB, g GEOMETRY, properties JSONB DEFAULT '{}'::JSONB, id TEXT DEFAULT NULL)
 RETURNS JSONB
 CALLED ON NULL INPUT
 STABLE
@@ -19,7 +19,7 @@ BEGIN
     ymin := least(cast(prev #> '{bbox,1}' as NUMERIC), ST_YMin(g));
     xmax := greatest(cast(prev #> '{bbox,2}' as NUMERIC), ST_XMax(g));
     ymax := greatest(cast(prev #> '{bbox,3}' as NUMERIC), ST_YMax(g));
-    feature := to_geojson_feature(g, properties);
+    feature := to_geojson_feature(g, properties=>properties, id=>id);
     RETURN jsonb_build_object(
         'type', 'FeatureCollection',
         'features', coalesce(prev->'features', jsonb_build_array()) || feature,
@@ -28,7 +28,7 @@ BEGIN
 END
 $$;
 
-CREATE OR REPLACE FUNCTION _geojson_feature_collection_sfunc(prev JSONB, g GEOMETRY)
+CREATE OR REPLACE FUNCTION _geojson_feature_collection_agg_sfunc(prev JSONB, g GEOMETRY)
 RETURNS JSONB
 CALLED ON NULL INPUT
 STABLE
@@ -38,7 +38,7 @@ $$
 SELECT _geojson_feature_collection_sfunc(prev, g, '{}'::JSONB);
 $$;
 
-CREATE OR REPLACE FUNCTION _geojson_feature_collection_combine(a JSONB, b JSONB)
+CREATE OR REPLACE FUNCTION _geojson_feature_collection_agg_combine(a JSONB, b JSONB)
 RETURNS JSONB
 CALLED ON NULL INPUT
 STABLE
@@ -63,16 +63,18 @@ SELECT
     END;
 $$;
 
-CREATE OR REPLACE AGGREGATE to_geojson_feature_collection(g GEOMETRY, properties JSONB) (
-    SFUNC = _geojson_feature_collection_sfunc,
+CREATE OR REPLACE AGGREGATE to_geojson_feature_collection_agg(g GEOMETRY, properties JSONB, id TEXT) (
+    SFUNC = _geojson_feature_collection_agg_sfunc,
     STYPE = JSONB,
-    COMBINEFUNC = _geojson_feature_collection_combine,
+    COMBINEFUNC = _geojson_feature_collection_agg_combine,
     INITCOND = '{"type": "FeatureCollection", "features": []}'
 );
+-- Accepts a set of GEOMETRY values and properties and returns a GeoJSON FeatureCollection.
 
-CREATE OR REPLACE AGGREGATE to_geojson_feature_collection(g GEOMETRY) (
-    SFUNC = _geojson_feature_collection_sfunc,
+CREATE OR REPLACE AGGREGATE to_geojson_feature_collection_agg(g GEOMETRY) (
+    SFUNC = _geojson_feature_collection_agg_sfunc,
     STYPE = JSONB,
-    COMBINEFUNC = _geojson_feature_collection_combine,
+    COMBINEFUNC = _geojson_feature_collection_agg_combine,
     INITCOND = '{"type": "FeatureCollection", "features": []}'
 );
+-- Accepts a set of GEOMETRY values and returns a GeoJSON FeatureCollection.

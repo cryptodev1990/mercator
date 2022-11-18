@@ -67,21 +67,19 @@ class AppDatabase(BaseModel):
 class Settings(BaseSettings):
     """App settings."""
 
-    version: str = Field(__VERSION__, description="App version number", env="APP_VERSION")
+    version: str = Field(__VERSION__, description="App version number")
 
     db: AppDatabase = AppDatabase()  # type: ignore
     backend_cors_origins: Tuple[str, ...] = Field(default=("*",))
 
     env: AppEnvEnum = Field(..., description="App environment")
-    log_level: LogLevel = Field(
-        LogLevel.INFO, description="Python logging module log level"
-    )
+    log_level: LogLevel = Field(LogLevel.INFO, description="Python logging module log level")
 
     class Config:  # noqa
         """Pydantic config."""
 
         # Prefix for environment variables
-        prefix = "app_"
+        env_prefix = "app_"
         env_file = ".env"
         # environment variables for fields are case insensitive
         case_sensitive = False

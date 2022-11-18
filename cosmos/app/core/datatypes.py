@@ -1,7 +1,7 @@
 # pylint: disable=too-few-public-methods
 """Custom Pydantic Data Types."""
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence, Tuple
 
 # pylint: disable=no-name-in-module
 from pydantic import BaseModel as PydanticBaseModel
@@ -102,3 +102,7 @@ class ViewportBounds(BaseModel):
         return cls(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
 
     # pylint: enable=no-self-argument
+
+
+BBoxTuple = Tuple[Longitude, Latitude, Longitude, Latitude]
+"""Bounding box as a tuple of floats."""

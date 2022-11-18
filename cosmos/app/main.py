@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.db import engine
 from app.dependencies import get_conn
 from app.routes.osm import router as osm_router
+from app.routes.voyager import router as voyager_router
 from app.schemas import HealthResponse, HealthStatus
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ app = FastAPI(
 )
 
 app.include_router(osm_router, prefix="/osm", tags=["osm"])
+app.include_router(voyager_router, tags=["voyager"])
 
 
 async def db_health_check(conn: AsyncConnection) -> None:

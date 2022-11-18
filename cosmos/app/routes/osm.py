@@ -1,14 +1,14 @@
 """Open Street Maps (OSM) routes."""
 import logging
 import re
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from app.core.datatypes import Latitude, Longitude
+from app.core.datatypes import BBoxTuple
 from app.dependencies import get_conn
 from app.schemas import BaseModel
 
@@ -22,9 +22,6 @@ class OsmQueryParse(BaseModel):
 
     intent: str
     args: Dict[str, Any]
-
-
-BBox = Tuple[Longitude, Latitude, Longitude, Latitude]
 
 
 class OsmSearchResponse(BaseModel):
@@ -76,7 +73,8 @@ QUERY_PAT = re.compile(r"^(?:get )?(?P<subject>.*)\s+(?P<predicate>in)\s+(?P<obj
 class QueryParseError(Exception):
     """Exception for parsing errors."""
 
-    def __init__(self, query: str):
+    def __init__(self, query: str) -> None:
+        super().__init__()
         self.query = query
 
     def __str__(self) -> str:
@@ -121,9 +119,9 @@ def parse_query(query: str) -> Optional[OsmQueryParse]:
 )
 async def _search(
     query: str = Query(..., description="Query text string"),
-    bbox: BBox = Query(
+    bbox: BBoxTuple = Query(
         [-180, -90, 180, 90],
-        description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat", # pylint: disable=line-too-long
+        description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
     ),
     limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
     conn: AsyncConnection = Depends(get_conn),

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "osm-search"
+name = "cosmos"
 version = "0.1.0"
-description = ""
+description = "Text query and search OSM."
 authors = ["Jeffrey Arnold <jeffrey@mercator.tech>"]
 readme = "README.md"
 packages = [{include = "app"}]
@@ -47,6 +47,7 @@ geopy = "^2.3.0"
 spacy = "^3.4.3"
 claucy = {git = "https://github.com/mmxgn/spacy-clausie.git"}
 arpeggio = "^2.0.0"
+wn = "^0.9.3"
 
 
 [tool.poetry.group.notebooks.dependencies]
@@ -58,13 +59,13 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint."messages control"]
-disable = ["too-few-public-methods", "too-many-arguments"]
+disable = ["too-few-public-methods", "too-many-arguments", "fixme"]
 enable = []
 
 [tool.pylint]
 ignore-long-lines = "^(\\s*(# ).*|.*<https?://.*)$"
-max-line-length = 90
-good-names = ["m"]
+max-line-length = 100
+good-names = ["m", "i"]
 
 
 [tool.pytest.ini_options]
@@ -77,12 +78,12 @@ skip_glob = ["env/**", "alembic/versions/**"]
 profile = "black"
 
 [tool.black]
-line-length = 90
+line-length = 100
 target-version = ['py310']
 exclude = "env/|alembic/versions|\\.ipynb$|\\.ipynb_checkpoints/"
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 exclude = '''(?x)
     ^env/
     | ^alembic/versions
@@ -98,4 +99,4 @@ exclude = ["**/node_modules",
     "**/__pycache__",
     "**/.ipynb_checkpoints"
 ]
-pythonVersion = "3.9"
+pythonVersion = "3.10"

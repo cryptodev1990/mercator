@@ -74,9 +74,7 @@ def create_query(
             func.ST_Intersects(osm_table.c.geom, _viewport_to_sql_bbox(bbox))
         )
     if isinstance(relation, InSpRelation):
-        sel_ground = sel_figure.where(
-            func.ST_GeometryType(osm_table.c.geom) == "ST_Point"
-        )
+        sel_ground = sel_figure.where(func.ST_GeometryType(osm_table.c.geom) == "ST_Point")
     cte_figure = sel_figure.cte("figure")
 
     sel_ground = (
@@ -89,26 +87,20 @@ def create_query(
             func.ST_Intersects(osm_table.c.geom, _viewport_to_sql_bbox(bbox))
         )
     if isinstance(relation, InSpRelation):
-        sel_ground = sel_ground.where(
-            func.ST_GeometryType(osm_table.c.geom) == "ST_Polygon"
-        )
+        sel_ground = sel_ground.where(func.ST_GeometryType(osm_table.c.geom) == "ST_Polygon")
 
     cte_ground = sel_ground.cte("ground")
 
     shape_cte = (
         select([cte_figure.c.geom, cte_figure.c.tags])
-        .select_from(
-            cte_figure.join(cte_ground, relation(cte_figure.c.geom, cte_ground.c.geom))
-        )
+        .select_from(cte_figure.join(cte_ground, relation(cte_figure.c.geom, cte_ground.c.geom)))
         .limit(limit)  # type: ignore
         .offset(offset)
     ).cte("shapes")
 
     agg_cte = select(
         [
-            func.jsonb_agg(_to_geojson(shape_cte.c.geom, shape_cte.c.tags)).label(
-                "features"
-            ),
+            func.jsonb_agg(_to_geojson(shape_cte.c.geom, shape_cte.c.tags)).label("features"),
             func.ST_Extent(shape_cte.c.geom).label("bbox"),
         ]
     ).cte("agg")
