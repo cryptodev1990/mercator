@@ -2,6 +2,7 @@ import Fuse from "fuse.js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { CgSearch } from "react-icons/cg";
 import { GeoShapeMetadata } from "../../../../../../client";
+import { useDebounce } from "../../../../../../hooks/use-debounce";
 import { SearchContext } from "../../../../contexts/search-context";
 import { useShapes } from "../../../../hooks/use-shapes";
 
@@ -11,6 +12,7 @@ export const ShapeSearchBar = () => {
   const { shapeMetadata, setActiveNamespaces, namespaces } = useShapes();
   const [searchTerm, setSearchTerm] = useState("");
   const { setSearchResults } = useContext(SearchContext);
+  const debouncedSearchTerm: string = useDebounce(searchTerm, 500);
 
   useEffect(() => {
     // filter to unique property keys
@@ -31,28 +33,30 @@ export const ShapeSearchBar = () => {
   }, [shapeMetadata]);
 
   useEffect(() => {
-    if (searchTerm === "" && namespaces.length > 0) {
-      const defaultNs = namespaces?.find((x) => x.is_default);
-      if (defaultNs) {
-        setActiveNamespaces([defaultNs]);
-      }
-      setSearchResults(null);
-      return;
-    }
+    // if (searchTerm === "" && namespaces.length > 0) {
+    //   const defaultNs = namespaces?.find((x) => x.is_default);
+    //   if (defaultNs) {
+    //     setActiveNamespaces([defaultNs]);
+    //   }
+    //   setSearchResults(null);
+    //   return;
+    // }
     if (!fuseRef.current) {
       return;
     }
-    const results = fuseRef.current.search(searchTerm);
-    if (results.length > 0) {
-      // set new activeNamespaces
-      let namespaceIds = new Set(results.map((x) => x.item.namespace_id));
-      const newActives = namespaces.filter((namespace) =>
-        namespaceIds.has(namespace.id)
-      );
-      setActiveNamespaces(newActives);
-      setSearchResults(results.map((x) => x.item.uuid));
+    if (debouncedSearchTerm) {
+      const results = fuseRef.current.search(debouncedSearchTerm);
+      if (results.length > 0) {
+        // set new activeNamespaces
+        let namespaceIds = new Set(results.map((x) => x.item.namespace_id));
+        const newActives = namespaces.filter((namespace) =>
+          namespaceIds.has(namespace.id)
+        );
+        setActiveNamespaces(newActives);
+        setSearchResults(results.map((x) => x.item.uuid));
+      }
     }
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   return (
     <div className="w-full flex flex-row justify-start align-baseline pl-1 pr-2 py-3">
