@@ -1,5 +1,5 @@
 import Image from "next/image";
-export const Header = () => {
+const Header = () => {
   return (
     <div className="my-5 relative h-[100px]">
       <div>
@@ -19,3 +19,5 @@ export const Header = () => {
     </div>
   );
 };
+
+export default Header;

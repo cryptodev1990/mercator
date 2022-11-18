@@ -29,7 +29,7 @@ const Tag = ({
   </div>
 );
 
-export const SearchSuggestions = () => {
+const SearchSuggestions = () => {
   const tags = SUGGESTIONS.map((suggestion, i) => (
     <Tag key={i} text={suggestion} onClick={(text) => console.log(text)} />
   ));
@@ -44,3 +44,5 @@ export const SearchSuggestions = () => {
     </div>
   );
 };
+
+export default SearchSuggestions;

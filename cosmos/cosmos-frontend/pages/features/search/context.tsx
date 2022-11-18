@@ -110,11 +110,7 @@ type ConjunctionNode = {
   children: PrepositionNode[];
 };
 
-export const SearchContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const SearchContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [searchText, setSearchText] = useState("");
   const [phase, setPhase] = useState(0);
   const [result, setResult] = useState<ParticleCandidate[]>([]);
@@ -188,3 +184,5 @@ export const SearchContextProvider = ({
     </SearchContext.Provider>
   );
 };
+
+export default SearchContextProvider;

@@ -5,8 +5,8 @@ import {
   SearchContextProvider,
 } from "../features/search/context";
 import { Header } from "./header";
-import { SearchBar } from "./search-bar/search-bar";
-import { SearchSuggestions } from "./search-suggestions";
+import SearchBar from "./search-bar/search-bar";
+import SearchSuggestions from "./search-suggestions";
 
 const ContextProviderNest = ({
   contextProviders,
@@ -59,27 +59,35 @@ const MainView = () => {
   );
 };
 
-export const VoyagerApp = () => {
+const VoyagerApp = () => {
   // first context provider is the outermost
   const providers = [SearchContextProvider];
   return (
     <ContextProviderNest contextProviders={providers}>
       <MainView />
-      <footer className="fixed bottom-0 m-10">
-        <span className="p-1">Powered by</span>
-        <span className="p-1">
-          <a href="https://mercator.tech">Mercator</a>
-        </span>
-        <span className="p-1">•</span>
-        <span className="p-1">
-          <a href="https://openstreetmap.org">OpenStreetMap</a>
-        </span>
-        <span className="p-1">•</span>
-        <span className="p-1">
-          <a href="https://vis.gl">Vis.gl</a>
-        </span>
-        <br />
-      </footer>
+      <Footer />
     </ContextProviderNest>
   );
 };
+
+const Footer = () => {
+  return (
+    <footer className="fixed bottom-0 p-10 bg-[#121212]">
+      <span className="p-1">Powered by</span>
+      <span className="p-1">
+        <a href="https://mercator.tech">Mercator</a>
+      </span>
+      <span className="p-1">•</span>
+      <span className="p-1">
+        <a href="https://openstreetmap.org">OpenStreetMap</a>
+      </span>
+      <span className="p-1">•</span>
+      <span className="p-1">
+        <a href="https://vis.gl">Vis.gl</a>
+      </span>
+      <br />
+    </footer>
+  );
+};
+
+export default VoyagerApp;

@@ -129,7 +129,7 @@ const QueryPreview = () => {
   );
 };
 
-export const SearchBar = () => {
+const SearchBar = () => {
   const focusRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -173,3 +173,5 @@ export const SearchBar = () => {
     </div>
   );
 };
+
+export default SearchBar;
