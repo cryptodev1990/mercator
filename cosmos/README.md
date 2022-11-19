@@ -28,18 +28,13 @@ With the default settings, that database runs as: `postgres@localhost:5238/postg
 
 ## Configuration
 
-Settings for `.env`:
-
-```shell
-ENV=DEV
-DB__DATABASE=
-DB__USER=
-DB__PASSWORD=
-DB__PORT=
-DB__HOST=
-```
+See `.env.template` for examples of the environment variables.
 
 See `app.core.config.Settings` for the env variables used to configure the app.
+
+- all env variables are prefixed by `APP_`
+- env variables are case-insensitive
+
 
 ## Run
 

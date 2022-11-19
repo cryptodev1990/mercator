@@ -28,3 +28,6 @@ db-local db input_file *args:
 	psql {{ db }} -c "CREATE EXTENSION postgis;"
 	osm2pgsql -d {{ db }} -O flex -S ./osm-docker/style.lua {{ args }} {{ input_file }}
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/30_post-import.sql
+	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/41_cardinal_direction.sql
+	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/42_create_function_to_geojson_feature.sql
+	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/43_create_function_to_geojson_feature_collection.sql
