@@ -1,7 +1,7 @@
 """Open Street Maps (OSM) routes."""
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
@@ -30,6 +30,13 @@ class OsmSearchResponse(BaseModel):
     query: str
     parse: Optional[OsmQueryParse]
     results: Dict[str, Any]
+
+
+class OsmRawQueryResponse(BaseModel):
+    """Response for raw SQL executed against OSM."""
+
+    query: str
+    results: List[Dict[str, Any]]
 
 
 # # pylint: disable=unused-argument
@@ -211,3 +218,22 @@ async def _search(
     res = await conn.execute(stmt, params)
     results = res.scalar()
     return OsmSearchResponse(query=query, parse=parse, results=results)
+
+
+
+@router.get(
+    "/raw_query/",
+    response_model=OsmRawQueryResponse,
+    responses={"400": {"description": "Unable to query OSM."}},
+)
+async def _query_osm(
+    query: str = Query(..., description="Query text string"),
+    conn: AsyncConnection = Depends(get_conn),
+) -> Any:
+    """Query OSM.
+    This executes raw SQL against the local or hosted OSM postgres instance.
+    If the query client user has write access, you may have a very bad time.
+    """   
+    res = await conn.execute(text(query))
+    results = [dict(row._mapping) for row in res.fetchall()]
+    return OsmRawQueryResponse(query=query, results=results)
