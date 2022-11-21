@@ -1,4 +1,4 @@
-import { GeoShapeCreate , GeoShape } from "../../client";
+import { GeoShapeCreate, GeoShape } from "../../client";
 
 export function geoShapesToFeatureCollection(
   shapes: GeoShape[] | GeoShapeCreate[]
@@ -11,15 +11,20 @@ export function geoShapesToFeatureCollection(
     type: "FeatureCollection",
     features: isNullOrUndefined
       ? []
-      : shapes.map(({ geojson }: GeoShape | GeoShapeCreate) => {
-          return {
-            type: "Feature",
-            geometry: geojson!.geometry,
-            properties: {
-              ...geojson!.properties,
-            },
-          };
-        }),
+      : [...shapes]
+          // TODO: this is temporary fix, debug underlying problem that causing it
+          .filter(
+            (shape: GeoShape | GeoShapeCreate) => shape.geojson !== undefined
+          )
+          .map(({ geojson }: GeoShape | GeoShapeCreate) => {
+            return {
+              type: "Feature",
+              geometry: geojson!.geometry,
+              properties: {
+                ...geojson!.properties,
+              },
+            };
+          }),
   };
 }
 
