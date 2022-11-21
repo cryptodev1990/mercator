@@ -31,14 +31,15 @@ export const ShapeSearchBar = () => {
   }, [shapeMetadata]);
 
   useEffect(() => {
-    if (searchTerm === "" && namespaces.length > 0) {
-      const defaultNs = namespaces?.find((x) => x.is_default);
-      if (defaultNs) {
-        setActiveNamespaces([defaultNs]);
-      }
-      setSearchResults(null);
-      return;
-    }
+    // if (searchTerm === "" && namespaces.length > 0) {
+    //   console.log("I am here");
+    //   const defaultNs = namespaces?.find((x) => x.is_default);
+    //   if (defaultNs) {
+    //     setActiveNamespaces([defaultNs]);
+    //   }
+    //   setSearchResults(null);
+    //   return;
+    // }
     if (!fuseRef.current) {
       return;
     }
