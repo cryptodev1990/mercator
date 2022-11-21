@@ -11,20 +11,15 @@ export function geoShapesToFeatureCollection(
     type: "FeatureCollection",
     features: isNullOrUndefined
       ? []
-      : [...shapes]
-          // TODO: this is temporary fix, debug underlying problem that causing it
-          .filter(
-            (shape: GeoShape | GeoShapeCreate) => shape.geojson !== undefined
-          )
-          .map(({ geojson }: GeoShape | GeoShapeCreate) => {
-            return {
-              type: "Feature",
-              geometry: geojson!.geometry,
-              properties: {
-                ...geojson!.properties,
-              },
-            };
-          }),
+      : shapes.map(({ geojson }: GeoShape | GeoShapeCreate) => {
+          return {
+            type: "Feature",
+            geometry: geojson!.geometry,
+            properties: {
+              ...geojson!.properties,
+            },
+          };
+        }),
   };
 }
 

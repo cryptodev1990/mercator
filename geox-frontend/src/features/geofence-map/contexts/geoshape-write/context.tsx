@@ -135,12 +135,10 @@ export const GeoShapeWriteContextProvider = ({
   }
 
   const deletedShapeIdSet = useMemo(() => {
-    console.log("deletedShapeIds", state.deletedShapeIds);
     return new Set(state.deletedShapeIds);
   }, [state.deletedShapeIds]);
 
   const updatedShapeIdSet = useMemo(() => {
-    console.log("updatedShapeIds", state.updatedShapeIds);
     return new Set(state.updatedShapeIds);
   }, [state.updatedShapeIds]);
 
@@ -240,7 +238,7 @@ export const GeoShapeWriteContextProvider = ({
     }
     opLog("UPDATE_SHAPE", update);
     // @ts-ignore
-    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update] });
+    dispatch({ type: "UPDATE_PARTIAL_SHAPE_LOADING", shapes: [update] });
 
     GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatch(
       update.uuid,
