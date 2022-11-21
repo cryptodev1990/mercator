@@ -220,6 +220,91 @@ async def _search(
     return OsmSearchResponse(query=query, parse=parse, results=results)
 
 
+@router.get(
+    "/v1/",
+    response_model=OsmSearchResponse,
+    responses={"400": {"description": "Unable to parse query."}},
+)
+async def _search(
+    query: str = Query(..., description="Query text string"),
+    bbox: BBoxTuple = Query(
+        [-180, -90, 180, 90],
+        description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
+    ),
+    limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
+    conn: AsyncConnection = Depends(get_conn),
+) -> Any:
+    """Query OSM.
+
+    The query must be in the form of: "Get <amenity> in <place>",
+    where `<amenity>` is the amenity to search for and `<place>` is a
+    geographic area, e.g. a city or a country.
+
+    For example:
+
+    - "Get coffee shops in San Francisco"
+    - "Coffee shops in Oakland"
+
+    """
+    # Split query into parts separated by in
+    parse = parse_query(query)
+    if parse is None:
+        raise HTTPException(status_code=400, detail="Unable to parse query.")
+
+    # the current query is specialized
+    stmt = text(
+        """
+        WITH refs AS (
+            SELECT
+                CASE
+                WHEN 'category' = 'boundary' THEN ST_BuildArea(geom)
+                ELSE geom
+                END AS geom
+            FROM osm
+            WHERE
+                category IN ('boundary', 'polygon')
+                AND ST_BuildArea(geom) IS NOT NULL
+                AND fts @@ websearch_to_tsquery(:obj_text)
+                AND ST_Intersects(geom, ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, 4326))
+        )
+        , matches AS (
+            SELECT
+                osm.geom,
+                jsonb_build_object(
+                    'osm', jsonb_build_object(
+                        'tags', osm.tags,
+                        'id', osm.osm_id,
+                        'category', osm.category,
+                        'type', osm.osm_type
+                    )
+                ) AS properties,
+                osm.osm_id AS id
+            FROM osm
+            INNER JOIN refs AS r
+                ON ST_CoveredBy(osm.geom, r.geom)
+                AND fts @@ websearch_to_tsquery(:subj_text)
+                AND ST_Intersects(osm.geom, ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, 4326))
+            LIMIT :limit
+        )
+        SELECT
+            to_geojson_feature_collection_agg(
+                geom,
+                properties,
+                id :: TEXT
+            ) AS feature_collection
+        FROM matches
+        """
+    )
+    params = {
+        "subj_text": parse.args["subject"]["text"],
+        "obj_text": parse.args["object"]["text"],
+        "limit": limit,
+        **dict(zip(("xmin", "ymin", "xmax", "ymax"), bbox)),
+    }
+    res = await conn.execute(stmt, params)
+    results = res.scalar()
+    return OsmSearchResponse(query=query, parse=parse, results=results)
+
 
 @router.get(
     "/raw_query/",
@@ -233,7 +318,7 @@ async def _query_osm(
     """Query OSM.
     This executes raw SQL against the local or hosted OSM postgres instance.
     If the query client user has write access, you may have a very bad time.
-    """   
+    """
     res = await conn.execute(text(query))
     results = [dict(row._mapping) for row in res.fetchall()]
     return OsmRawQueryResponse(query=query, results=results)
