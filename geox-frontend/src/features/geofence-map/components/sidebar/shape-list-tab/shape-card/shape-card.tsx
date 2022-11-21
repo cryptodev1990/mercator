@@ -60,7 +60,11 @@ export const ShapeCard = ({
       className={`h-13 p-3 max-w-sm snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
     >
       <div className="flex flex-row justify-left items-center">
-        <DragHandle transferData={shape.uuid} dragImage={SHAPE_CARD_IMAGE} />
+        <DragHandle
+          transferData={shape.uuid}
+          dragImage={SHAPE_CARD_IMAGE}
+          // dataTip={`Drag into ${shape.name} another folder`}
+        />
         <EditableLabel
           value={shape?.name || "New shape"}
           disabled={selectedDataIsLoading}
@@ -88,7 +92,7 @@ export const ShapeCard = ({
             }
           }}
           className="text-1xl font-sans tracking-tight text-white truncate"
-        ></EditableLabel>
+        />
         <div
           className={`transition flex flex-row justify-start space-x-1 ${selectionOpacity} ml-auto`}
         >
