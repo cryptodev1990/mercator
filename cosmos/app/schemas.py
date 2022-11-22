@@ -1,9 +1,14 @@
 """FastAPI response schemes."""
 from enum import Enum
-from typing import Annotated, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
-from pydantic import BaseModel, NonNegativeFloat # pylint: disable=no-name-in-module
-from pydantic import Field
+
+from geojson_pydantic import FeatureCollection
+
+from pydantic import (  # pylint: disable=no-name-in-module
+    BaseModel,
+    Field,
+)
 
 from app.core.datatypes import BBoxTuple
 
@@ -32,8 +37,7 @@ class Location(BaseModel):
 
     """
 
-    class_name: Optional[str] = None
-    id_: Optional[int] = None
+    query: Optional[str] = None
     bbox: Optional[BBoxTuple] = None
 
 
@@ -43,72 +47,26 @@ class SpRel(BaseModel):
     location: Optional[Location]
 
 
-class SpRelIn(SpRel):
+class SpRelContains(SpRel):
     """The spatial relationship A is covered by B."""
 
-    type: Literal["in"]
+    type: Literal["contains"] = "contains"
 
 
-class SpRelCrosses(SpRel):
-    """The spatial relationship A crosses B."""
+class SpRelCoveredBy(SpRel):
+    """The spatial relationship A is covered by B."""
 
-    type: Literal["crosses"]
-
-
-class SpRelBorders(SpRel):
-    """The spatial relationship A touches B."""
-
-    type: Literal["borders"]
+    type: Literal["covered_by"] = "covered_by"
 
 
-class CardinalDirections(str, Enum):
-    """Cardinal directioons."""
+class SpRelDisjoint(SpRel):
+    """The spatial relationship A is covered by B."""
 
-    NORTH = "north"
-    SOUTH = "south"
-    EAST = "east"
-    WEST = "west"
-
-
-class SpRelDirection(SpRel):
-    """Spatial relationships for cardinal directions.
-
-    For example: A is west of B.
-
-    """
-
-    type: Literal["direction"]
-    direction: CardinalDirections
-
-
-class SpRelDistance(SpRel):
-    """Spatial relationships with distances."""
-
-    type: Literal["distance"]
-    relation: Literal[">", "<"] = Field("<")
-    value: NonNegativeFloat = Field(..., description="Distance in meters")
-
-
-class Modalities(str, Enum):
-    """Modalalities used to calculate isochrones."""
-
-    WALKING = "walking"
-    DRIVING = "driving"
-    CYCLING = "cycling"
-
-
-class SpRelTime(SpRel):
-    """Spatial relationship for the time to travel between two geometries."""
-    type: Literal["time"]
-    relation: Literal[">", "<"]
-    value: NonNegativeFloat = Field(..., description="Time in seconds.")
-    modality: Modalities = Field()
+    type: Literal["disjoint"] = "disjoint"
 
 
 SpatialRelation = Annotated[
-    Union[
-        SpRelIn, SpRelDistance, SpRelCrosses, SpRelBorders, SpRelDistance, SpRelTime, SpRelDirection
-    ],
+    Union[SpRelContains, SpRelDisjoint, SpRelCoveredBy],
     Field(discriminator="type"),
 ]
 """Union of all spatial relations.
@@ -116,10 +74,21 @@ SpatialRelation = Annotated[
 The discriminator field is used to determine the type of the spatial relation.
 """
 
+OsmQueryParse = Dict[str, Any]
+"""Represents information about the parsed query."""
 
-class LocationQuery(Location):
-    """Location query parameters."""
 
-    relations: List[SpatialRelation] = Field(default_factory=list)
-    # TODO: allow locations in relations to be fully recursive and
-    # have their own spatial relations
+class OsmSearchResponse(BaseModel):
+    """Response for OSM search."""
+
+    query: str
+    label: Optional[str] = None
+    parse: Optional[OsmQueryParse] = None
+    results: FeatureCollection = Field(default_factory=lambda: FeatureCollection.parse_obj({}))
+
+
+class OsmRawQueryResponse(BaseModel):
+    """Response for raw SQL executed against OSM."""
+
+    query: str
+    results: List[Dict[str, Any]]

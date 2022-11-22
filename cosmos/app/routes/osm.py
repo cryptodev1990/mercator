@@ -1,130 +1,32 @@
 """Open Street Maps (OSM) routes."""
 import logging
-import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
+from geojson_pydantic import FeatureCollection
 
 from app.core.datatypes import BBoxTuple
+from app.crud.osm_search import sprel_query_stmt
 from app.dependencies import get_conn
-from app.schemas import BaseModel
+from app.schemas import Location, SpRelCoveredBy, SpRelDisjoint
+from app.parsers.regex import parse
+
+from app.schemas import OsmSearchResponse, OsmRawQueryResponse
 
 router = APIRouter(prefix="/search")
 
 logger = logging.getLogger(__name__)
 
 
-class OsmQueryParse(BaseModel):
-    """Parse query."""
-
-    intent: str
-    args: Dict[str, Any]
-
-
-class OsmSearchResponse(BaseModel):
-    """Response for OSM search."""
-
-    query: str
-    parse: Optional[OsmQueryParse]
-    results: Dict[str, Any]
-
-
-class OsmRawQueryResponse(BaseModel):
-    """Response for raw SQL executed against OSM."""
-
-    query: str
-    results: List[Dict[str, Any]]
-
-
-# # pylint: disable=unused-argument
-# @router.get("/search", response_model=OsmSearchResponse)
-# async def get_shapes_from_osm(
-#     query: str = Query(...),
-#     bbox: Optional[BBox] = Query(None),
-#     limit: NonNegativeInt = Query(20),
-#     top_n_figure: NonNegativeInt = Query(10),
-#     top_n_ground: NonNegativeInt = Query(10),
-#     conn: AsyncConnection = Depends(get_conn),
-# ) -> OsmSearchResponse:
-#     """Get shapes from OSM by amenity."""
-#     parsed = parse_query(query=query)
-#     bbox_obj = ViewportBounds.from_list(bbox) if bbox else None
-#     res = await run_spatial_relation(
-#         conn,
-#         figure=parsed["figure"],
-#         ground=parsed["ground"],
-#         relation=parsed["relation"],
-#         bbox=bbox_obj,
-#         top_n_figure=top_n_figure,
-#         top_n_ground=top_n_ground,
-#         limit=limit,
-#     )
-#     return OsmSearchResponse.parse_obj(
-#         {
-#             "query": query,
-#             "parsed": {
-#                 "figure": parsed["figure"],
-#                 "relation": parsed["relation"],
-#                 "ground": parsed["ground"],
-#             },
-#             "results": res,
-#         }
-#     )
-
-QUERY_PAT = re.compile(r"^(?:get )?(?P<subject>.*)\s+(?P<predicate>in)\s+(?P<object>.*)$")
-
-
-class QueryParseError(Exception):
-    """Exception for parsing errors."""
-
-    def __init__(self, query: str) -> None:
-        super().__init__()
-        self.query = query
-
-    def __str__(self) -> str:
-        return f"Unable to parse: {self.query}"
-
-
-def parse_query(query: str) -> Optional[OsmQueryParse]:
-    """Parse query."""
-    m = QUERY_PAT.search(query)
-    if not m:
-        raise QueryParseError(query)
-
-    return OsmQueryParse.parse_obj(
-        {
-            "intent": "spatial_relation",
-            "args": {
-                "subject": {
-                    "text": m.group("subject"),
-                    "start": m.start("subject"),
-                    "end": m.end("subject"),
-                },
-                "predicate": {
-                    "relation": "IN",
-                    "text": m.group("predicate"),
-                    "start": m.start("predicate"),
-                    "end": m.end("predicate"),
-                },
-                "object": {
-                    "text": m.group("object"),
-                    "start": m.start("object"),
-                    "end": m.end("object"),
-                },
-            },
-        }
-    )
-
-
 @router.get(
-    "/v0/",
+    "v0",
     response_model=OsmSearchResponse,
     responses={"400": {"description": "Unable to parse query."}},
 )
-async def _search(
+async def _osm_search_v1(
     query: str = Query(..., description="Query text string"),
     bbox: BBoxTuple = Query(
         [-180, -90, 180, 90],
@@ -132,178 +34,58 @@ async def _search(
     ),
     limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
     conn: AsyncConnection = Depends(get_conn),
-) -> Any:
+) -> OsmSearchResponse:
     """Query OSM.
 
-    The query must be in the form of: "Get <amenity> in <place>",
-    where `<amenity>` is the amenity to search for and `<place>` is a
-    geographic area, e.g. a city or a country.
+    The query must be in the form of:
+
+    - "<location>"
+    - "Get <location> in <location>"
+    - "Get <location> not <location>"
+
+    where `<location>` are matching entities from a full-text query on OSM.
 
     For example:
 
     - "Get coffee shops in San Francisco"
     - "Coffee shops in Oakland"
+    - "Coffee shops"
+    - "Coffee shops not in Oakland"
 
     """
     # Split query into parts separated by in
-    parse = parse_query(query)
-    if parse is None:
+    parsed_query = parse(query)
+    if parsed_query is None:
         raise HTTPException(status_code=400, detail="Unable to parse query.")
 
-    # the current query is specialized
-    stmt = text(
-        """
-        WITH objs AS (
-            SELECT
-                ST_BuildArea(geom) AS geom
-            FROM osm
-            WHERE TRUE
-                AND category = 'boundary'
-                AND fts @@ websearch_to_tsquery(:obj_text)
-            ORDER BY ST_Area(ST_Transform(ST_BuildArea(geom), 3857)) DESC
-            LIMIT 5
-        )
-        , matches AS (
-            SELECT
-                osm.geom,
-                osm.tags,
-                osm.osm_id,
-                osm.osm_type
-            FROM osm
-            INNER JOIN objs AS o
-                ON ST_Contains(o.geom, osm.geom)
-                AND osm.category = 'point'
-                AND fts @@ websearch_to_tsquery(:subj_text)
-            LIMIT :limit
-        )
-        , agg AS (
-            SELECT
-                jsonb_agg(
-                    jsonb_build_object(
-                        'type', 'Feature',
-                        'geometry', ST_AsGeoJSON(geom) :: JSONB,
-                        'properties', jsonb_build_object(
-                            'osm', jsonb_build_object(
-                                'tags', tags,
-                                'type', osm_type,
-                                'id', osm_id
-                            )
-                        ),
-                        'id', osm_id,
-                        'bbox', jsonb_build_array(
-                            ST_XMin(geom), ST_YMin(geom), ST_XMax(geom), ST_YMax(geom)
-                        )
-                    )
-                ) AS features,
-                ST_Extent(geom) AS bbox
-            FROM matches
-        )
-        SELECT
-            jsonb_build_object(
-                'type', 'FeatureCollection',
-                'features', coalesce(features, jsonb_build_array()),
-                'bbox', jsonb_build_array(
-                    ST_XMin(bbox), ST_YMin(bbox), ST_XMax(bbox), ST_YMax(bbox)
-                )
-            ) AS feature_collection
-        FROM agg
-        """
-    )
-    params = {
-        "subj_text": parse.args["subject"]["text"],
-        "obj_text": parse.args["object"]["text"],
-        "limit": limit,
-        **dict(zip(("xmin", "ymin", "xmax", "ymax"), bbox)),
-    }
-    res = await conn.execute(stmt, params)
-    results = res.scalar()
-    return OsmSearchResponse(query=query, parse=parse, results=results)
+    params = {"location": parsed_query["args"]["subject"]["text"]}
+    if parsed_query.get("intent") == "covered_by":
+        obj_query = parsed_query["args"]["object"]["text"]
+        params["relations"] = [
+            SpRelCoveredBy(location=Location(query=obj_query, bbox=bbox))
+        ]
+    elif parsed_query.get("intent") == "disjoint":
+        obj_query = parsed_query["args"]["object"]["text"]
+        params["relations"] = [
+            SpRelDisjoint(location=Location(query=obj_query, bbox=bbox))
+        ]
 
-
-@router.get(
-    "/v1/",
-    response_model=OsmSearchResponse,
-    responses={"400": {"description": "Unable to parse query."}},
-)
-async def _search(
-    query: str = Query(..., description="Query text string"),
-    bbox: BBoxTuple = Query(
-        [-180, -90, 180, 90],
-        description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
-    ),
-    limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
-    conn: AsyncConnection = Depends(get_conn),
-) -> Any:
-    """Query OSM.
-
-    The query must be in the form of: "Get <amenity> in <place>",
-    where `<amenity>` is the amenity to search for and `<place>` is a
-    geographic area, e.g. a city or a country.
-
-    For example:
-
-    - "Get coffee shops in San Francisco"
-    - "Coffee shops in Oakland"
-
-    """
-    # Split query into parts separated by in
-    parse = parse_query(query)
-    if parse is None:
-        raise HTTPException(status_code=400, detail="Unable to parse query.")
+    label_args = [parsed_query["args"]["subject"]["text"]]
+    if parsed_query.get("intent") in {"contains", "disjoint"}:
+        label_args.append(parsed_query["args"]["predicate"]["text"])
+        label_args.append(parsed_query["args"]["object"]["text"])
+    label = " ".join(label_args)
 
     # the current query is specialized
-    stmt = text(
-        """
-        WITH refs AS (
-            SELECT
-                CASE
-                WHEN 'category' = 'boundary' THEN ST_BuildArea(geom)
-                ELSE geom
-                END AS geom
-            FROM osm
-            WHERE
-                category IN ('boundary', 'polygon')
-                AND ST_BuildArea(geom) IS NOT NULL
-                AND fts @@ websearch_to_tsquery(:obj_text)
-                AND ST_Intersects(geom, ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, 4326))
-        )
-        , matches AS (
-            SELECT
-                osm.geom,
-                jsonb_build_object(
-                    'osm', jsonb_build_object(
-                        'tags', osm.tags,
-                        'id', osm.osm_id,
-                        'category', osm.category,
-                        'type', osm.osm_type
-                    )
-                ) AS properties,
-                osm.osm_id AS id
-            FROM osm
-            INNER JOIN refs AS r
-                ON ST_CoveredBy(osm.geom, r.geom)
-                AND fts @@ websearch_to_tsquery(:subj_text)
-                AND ST_Intersects(osm.geom, ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, 4326))
-            LIMIT :limit
-        )
-        SELECT
-            to_geojson_feature_collection_agg(
-                geom,
-                properties,
-                id :: TEXT
-            ) AS feature_collection
-        FROM matches
-        """
+    # res = await conn.execute(stmt, params)
+    sql = sprel_query_stmt(**params, bbox=bbox, limit=limit)
+    results = await conn.execute(sql)
+    return OsmSearchResponse(
+        query=query,
+        label=label,
+        parse=parsed_query,
+        results=FeatureCollection(features=[row.feature for row in results]) # type: ignore
     )
-    params = {
-        "subj_text": parse.args["subject"]["text"],
-        "obj_text": parse.args["object"]["text"],
-        "limit": limit,
-        **dict(zip(("xmin", "ymin", "xmax", "ymax"), bbox)),
-    }
-    res = await conn.execute(stmt, params)
-    results = res.scalar()
-    return OsmSearchResponse(query=query, parse=parse, results=results)
 
 
 @router.get(
@@ -320,5 +102,5 @@ async def _query_osm(
     If the query client user has write access, you may have a very bad time.
     """
     res = await conn.execute(text(query))
-    results = [dict(row._mapping) for row in res.fetchall()]
+    results = [dict(row._mapping) for row in res.fetchall()] # pylint: disable=protected-access
     return OsmRawQueryResponse(query=query, results=results)

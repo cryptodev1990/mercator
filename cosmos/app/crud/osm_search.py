@@ -1,15 +1,24 @@
 """OSM search functions."""
 import logging
 from enum import Enum
-from typing import Any, AsyncGenerator, Dict, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, Union
 
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, Query
+from geojson_pydantic import FeatureCollection
+from geojson_pydantic.geometries import Geometry
+from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
+from sqlalchemy import String, and_
+from sqlalchemy import case as sql_case
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncConnection
-from sqlalchemy.sql import Select
+from sqlalchemy.sql import ColumnElement, Join, Select, cast
+from sqlalchemy.sql.expression import CTE
 
-from app.core.datatypes import ViewportBounds
-from app.db import osm as osm_table
-from app.parser import InSpRelation, SpatialRelation, func, parse_query
+from app.core.datatypes import BBoxTuple, ViewportBounds
+from app.data.feature_classes import FeatureClass, feature_classes
+from app.db import osm as osm_tbl
+from app.dependencies import get_conn
+from app.schemas import SpatialRelation
 
 logger = logging.getLogger(__name__)
 
@@ -19,130 +28,115 @@ class MapProjection(int, Enum):
     WEB_MERCATOR = 3857
 
 
-from sqlalchemy.sql import ColumnElement
-
-
-def _viewport_to_sql_bbox(
-    bbox: ViewportBounds, proj: MapProjection = MapProjection.WGS84
+def _in_bbox(
+    col: ColumnElement,
+    bbox: Union[Tuple[float, float, float, float], ViewportBounds],
+    srid: int = MapProjection.WGS84,
 ) -> ColumnElement:
-    """Return a SQL bbox."""
-    return func.ST_MakeEnvelope(bbox.min_x, bbox.min_y, bbox.max_x, bbox.max_y, proj)
+    """Return where clause for bounding box."""
+    if isinstance(bbox, ViewportBounds):
+        envelope = func.ST_MakeEnvelope(bbox.min_x, bbox.min_y, bbox.max_x, bbox.max_y, int(srid))
+    envelope = func.ST_MakeEnvelope(*bbox, int(srid))
+    return func.ST_Intersects(col, envelope)
 
 
-def _sql_bbox_array(c: ColumnElement) -> ColumnElement:
-    """Return a SQL bbox."""
-    return func.jsonb_build_array(
-        func.ST_XMin(c),
-        func.ST_YMin(c),
-        func.ST_XMax(c),
-        func.ST_YMax(c),
-    )
-
-
-def _to_geojson(geom: ColumnElement, tags: ColumnElement) -> ColumnElement:
-    return func.jsonb_build_object(
-        "type",
-        "Feature",
-        "geometry",
-        func.St_AsGeoJSON(geom),
-        "properties",
-        func.jsonb_build_object("osm_tags", tags),
-        "bbox",
-        _sql_bbox_array(geom),
-    )
-
-
-def create_query(
+# Returns an osm location or locations
+def get_osm_location(
     *,
-    figure: str,
-    ground: str,
-    relation: SpatialRelation,
-    limit: Optional[int] = 20,
-    top_n_figure: Optional[int] = 10,
-    top_n_ground: Optional[int] = 10,
-    bbox: Optional[ViewportBounds] = None,
-    offset: Optional[int] = 0,
-) -> Select:
-
-    sel_figure = (
-        select([osm_table.c.tags, osm_table.c.geom])
-        .where(osm_table.c.fts.op("@@")(func.websearch_to_tsquery(figure)))
-        .limit(top_n_figure)
-    )
-    if bbox:
-        sel_figure = sel_figure.where(  # type: ignore
-            func.ST_Intersects(osm_table.c.geom, _viewport_to_sql_bbox(bbox))
-        )
-    if isinstance(relation, InSpRelation):
-        sel_ground = sel_figure.where(func.ST_GeometryType(osm_table.c.geom) == "ST_Point")
-    cte_figure = sel_figure.cte("figure")
-
-    sel_ground = (
-        select([osm_table.c.geom])
-        .where(osm_table.c.fts.op("@@")(func.websearch_to_tsquery(ground)))
-        .limit(top_n_ground)
-    )
-    if bbox:
-        sel_ground = sel_ground.where(  # type: ignore
-            func.ST_Intersects(osm_table.c.geom, _viewport_to_sql_bbox(bbox))
-        )
-    if isinstance(relation, InSpRelation):
-        sel_ground = sel_ground.where(func.ST_GeometryType(osm_table.c.geom) == "ST_Polygon")
-
-    cte_ground = sel_ground.cte("ground")
-
-    shape_cte = (
-        select([cte_figure.c.geom, cte_figure.c.tags])
-        .select_from(cte_figure.join(cte_ground, relation(cte_figure.c.geom, cte_ground.c.geom)))
-        .limit(limit)  # type: ignore
-        .offset(offset)
-    ).cte("shapes")
-
-    agg_cte = select(
-        [
-            func.jsonb_agg(_to_geojson(shape_cte.c.geom, shape_cte.c.tags)).label("features"),
-            func.ST_Extent(shape_cte.c.geom).label("bbox"),
+    query: Optional[str] = None,
+    bbox: Optional[BBoxTuple] = None,
+    limit: Optional[int] = None,
+    cols: Optional[List[ColumnElement[Any]]] = None,
+) -> select:
+    if cols is None:
+        cols = [
+            osm_tbl.c.osm_id,
+            osm_tbl.c.osm_type,
+            osm_tbl.c.category,
+            osm_tbl.c.tags,
+            sql_case(
+                (
+                    osm_tbl.c.category == "boundary"
+                    and func.ST_MakeArea(osm_tbl.c.geom).is_not(None),
+                    func.St_BuildArea(osm_tbl.c.geom),
+                ),
+                else_=osm_tbl.c.geom,
+            ).label("geom"),
         ]
-    ).cte("agg")
-
-    stmt = select(
-        [
-            func.jsonb_build_object(
-                "type",
-                "FeatureCollection",
-                "features",
-                agg_cte.c.features,
-                "bbox",
-                agg_cte.c.bbox,
-            ).label("features")
-        ]
-    )
+    stmt = select(cols).select_from(osm_tbl).limit(limit)  # type: ignore
+    if bbox:
+        stmt = stmt.where(_in_bbox(osm_tbl.c.geom, bbox))  # type: ignore
+    if query:
+        stmt = stmt.where(osm_tbl.c.fts.op("@@")(func.websearch_to_tsquery(query)))
     return stmt
 
 
-async def run_spatial_relation(
-    conn: AsyncConnection,
+def sprel_query_stmt(
     *,
-    figure: str,
-    ground: str,
-    relation: SpatialRelation,
-    limit: Optional[int] = 20,
-    top_n_figure: Optional[int] = 10,
-    top_n_ground: Optional[int] = 10,
-    bbox: Optional[ViewportBounds] = None,
-    offset: Optional[int] = 0,
-) -> Dict[str, Any]:
-    """Fetch results for an ORM search."""
-    stmt = create_query(
-        figure=figure,
-        ground=ground,
-        relation=relation,
-        limit=limit,
-        top_n_figure=top_n_figure,
-        top_n_ground=top_n_ground,
-        bbox=bbox,
-        offset=offset,
+    location: Optional[str] = None,
+    bbox: Optional[BBoxTuple] = None,
+    relations: Optional[List[SpatialRelation]] = None,
+    limit: Optional[int] = 10,
+) -> Select:
+    base: Select = get_osm_location(query=location, bbox=bbox)
+
+    rel_ctes = []
+    # # for each relation, create a CTE
+    for i, rel in enumerate(relations or []):
+        rel_stmt = get_osm_location(
+            query=(rel.location.query if rel.location else None),
+            bbox=(rel.location.bbox if rel.location else None) or bbox,
+        )
+        if rel.type == "covered_by":
+            rel_stmt = rel_stmt.where(
+                or_(
+                    func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
+                    osm_tbl.c.category == "boundary",
+                )
+            )
+        elif rel.type == "disjoint":
+            rel_stmt = rel_stmt.where(
+                func.ST_GeometryType(osm_tbl.c.geom).in_(
+                    ["ST_Polygon", "ST_MultiPolygon", "ST_Line", "ST_MultiLine"]
+                )
+            )
+        rel_ctes.append((rel, rel_stmt.cte(f"rel_{i}")))
+
+    # # Make base a CTE after it has been modified
+    base_cte = base.cte("base")
+    # # Now start a join clause
+    join_clause: Union[Join, CTE] = base_cte
+    # # Now merge with the rel CTEs
+    for i, (rel, cte) in enumerate(rel_ctes):
+        if rel.type == "covered_by":
+            join_clause = join_clause.join(cte, func.ST_CoveredBy(base_cte.c.geom, cte.c.geom))
+        elif rel.type == "disjoint":
+            join_clause = join_clause.join(cte, func.ST_Disjoint(base_cte.c.geom, cte.c.geom))
+        else:
+            raise NotImplementedError(f"Relation type {rel.type} not implemented")
+
+    # final query
+    stmt = (
+        select(
+            func.to_geojson_feature(
+                base_cte.c.geom,
+                func.jsonb_build_object(
+                    "osm",
+                    func.jsonb_build_object(
+                        "tags",
+                        base_cte.c.tags,
+                        "type",
+                        base_cte.c.osm_type,
+                        "id",
+                        base_cte.c.osm_id,
+                        "category",
+                        base_cte.c.category,
+                    ),
+                ),
+                cast(base_cte.c.osm_id, String()),
+            ).label("feature")
+        )
+        .select_from(join_clause)
+        .limit(limit)
     )
-    logger.error(stmt)
-    results = await conn.execute(stmt)
-    return results.fetchall()  # .first()
+    return stmt

@@ -8,6 +8,7 @@ from pydantic.main import BaseModel  # pylint: disable=no-name-in-module
 
 class FeatureClass(BaseModel):
     """Tag and value associated with an OSM feature class."""
+
     key: str
     value: str
     plural: bool
