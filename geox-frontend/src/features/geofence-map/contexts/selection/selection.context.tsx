@@ -9,8 +9,7 @@ import { selectionReducer, initialState } from "./selection.reducer";
 export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
-  addSelectedShapeUuid: (uuid: string) => void;
-  selectOneShapeUuid: (uuid: string) => void;
+  setSelectedShapeUuid: (uuid: string) => void;
   removeSelectedShapeUuid: (uuid: string) => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
@@ -21,8 +20,7 @@ export interface SelectionContextI {
 export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
   isSelected: () => false,
-  addSelectedShapeUuid: () => {},
-  selectOneShapeUuid: () => {},
+  setSelectedShapeUuid: () => {},
   removeSelectedShapeUuid: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
@@ -39,11 +37,7 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
   const { data: selectedShapeData, isLoading: selectedDataIsLoading } =
     useGetOneShapeByUuid(state.uuids[0] ?? null);
 
-  const addSelectedShapeUuid = (uuid: string) => {
-    dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
-  };
-
-  const selectOneShapeUuid = (uuid: string) => {
+  const setSelectedShapeUuid = (uuid: string) => {
     dispatch({ type: "RESET_SELECTION" });
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
   };
@@ -83,8 +77,7 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
         selectedUuids: state.uuids,
         numSelected: state.numSelected,
         isSelected,
-        addSelectedShapeUuid,
-        selectOneShapeUuid,
+        setSelectedShapeUuid,
         removeSelectedShapeUuid,
         clearSelectedShapeUuids,
         // @ts-ignore

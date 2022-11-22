@@ -34,7 +34,7 @@ const GeofenceMap = () => {
     selectedUuids,
     clearSelectedShapeUuids,
     isSelected,
-    selectOneShapeUuid,
+    setSelectedShapeUuid,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
@@ -173,7 +173,7 @@ const GeofenceMap = () => {
             return;
           }
           if (!isSelected(uuid)) {
-            selectOneShapeUuid(uuid);
+            setSelectedShapeUuid(uuid);
           }
         }}
         onHover={({ object, x, y }: any) => {

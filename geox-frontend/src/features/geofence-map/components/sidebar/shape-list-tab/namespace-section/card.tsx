@@ -33,7 +33,7 @@ export const NamespaceCard = ({
     updateNamespace,
     partialUpdateShape,
   } = useShapes();
-  const { selectOneShapeUuid, clearSelectedShapeUuids } = useSelectedShapes();
+  const { setSelectedShapeUuid, clearSelectedShapeUuids } = useSelectedShapes();
   const [shapeHovered, setShapeHovered] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
   const { searchResults } = useContext(SearchContext);
@@ -52,7 +52,7 @@ export const NamespaceCard = ({
   useEffect(() => {
     // select a shape if hovered
     if (shapeHovered) {
-      selectOneShapeUuid(shapeHovered);
+      setSelectedShapeUuid(shapeHovered);
     } else {
       clearSelectedShapeUuids();
     }
