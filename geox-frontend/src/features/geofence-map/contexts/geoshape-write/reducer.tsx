@@ -70,7 +70,7 @@ export function reducer(state: State, action: Action): State {
     // Shape metadata actions
     // Add shape actions
 
-    case "UPDATE_PARTIAL_SHAPE_LOADING": {
+    case "UPDATE_PARTIAL_SHAPE": {
       return {
         ...state,
         shapeUpdateLoading: true,

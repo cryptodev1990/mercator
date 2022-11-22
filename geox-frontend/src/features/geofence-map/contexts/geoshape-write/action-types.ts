@@ -66,7 +66,7 @@ export type Action =
       shapes: GeoShape[];
     }
   | {
-      type: "UPDATE_PARTIAL_SHAPE_LOADING";
+      type: "UPDATE_PARTIAL_SHAPE";
       shapes: GeoShape[];
     }
   | {

@@ -238,7 +238,7 @@ export const GeoShapeWriteContextProvider = ({
     }
     opLog("UPDATE_SHAPE", update);
     // @ts-ignore
-    dispatch({ type: "UPDATE_PARTIAL_SHAPE_LOADING", shapes: [update] });
+    dispatch({ type: "UPDATE_PARTIAL_SHAPE", shapes: [update] });
 
     GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatch(
       update.uuid,
