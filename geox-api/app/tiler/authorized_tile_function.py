@@ -4,6 +4,8 @@ import morecantile
 from buildpg import Func, asyncpg, clauses, render
 from timvt import layer
 
+from app.core.stats import time_db_query
+
 
 class AuthorizedTileFunction(layer.Function):
     """Custom Function Layer: SQL function takes xyz input and an organization ID"""
