@@ -30,9 +30,12 @@ logger = logging.getLogger(__name__)
     responses={"400": {"description": "Unable to parse query."}},
 )
 async def _get_query(
-    query: str = Query(..., description="Query text string."),
+    query: str = Query(
+        ..., example="Coffee shops in San Francisco", description="Query text string."
+    ),
     bbox: BBox = Query(
         (-180, -90, 180, 90),
+        example=[-124.5, 32.6, -114.2, 42.1],
         description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
     ),
     limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
@@ -100,7 +103,11 @@ async def _get_query(
     responses={"400": {"description": "Unable to run SQL query."}},
 )
 async def _get_raw_query(
-    query: str = Query(..., description="Query text string"),
+    query: str = Query(
+        ...,
+        example="SELECT * FROM osm WHERE tags->>'name' = 'San Francisco' and category = 'boundary'",
+        description="Query text string",
+    ),
     conn: AsyncConnection = Depends(get_conn),
 ) -> Any:
     """Query OSM.

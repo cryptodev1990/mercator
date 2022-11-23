@@ -66,7 +66,7 @@ class MapProjection(int, Enum):
 
 
 class Position(NamedTuple):
-    """Position in a spatial coordinate system."""
+    """Latitude and longitude coordinates."""
 
     lng: Longitude
     lat: Latitude
