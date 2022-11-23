@@ -4,8 +4,6 @@ from enum import Enum
 from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, Union
 
 from fastapi import APIRouter, Depends, Query
-from geojson_pydantic import FeatureCollection
-from geojson_pydantic.geometries import Geometry
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
 from sqlalchemy import String, and_
 from sqlalchemy import case as sql_case
@@ -14,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy.sql import ColumnElement, Join, Select, cast
 from sqlalchemy.sql.expression import CTE
 
-from app.core.datatypes import BBoxTuple, ViewportBounds
+from app.core.datatypes import BBox, FeatureCollection, MapProjection
 from app.data.feature_classes import FeatureClass, feature_classes
 from app.db import osm as osm_tbl
 from app.dependencies import get_conn
@@ -23,19 +21,12 @@ from app.schemas import SpatialRelation
 logger = logging.getLogger(__name__)
 
 
-class MapProjection(int, Enum):
-    WGS84 = 4326
-    WEB_MERCATOR = 3857
-
-
 def _in_bbox(
     col: ColumnElement,
-    bbox: Union[Tuple[float, float, float, float], ViewportBounds],
+    bbox: BBox,
     srid: int = MapProjection.WGS84,
 ) -> ColumnElement:
-    """Return where clause for bounding box."""
-    if isinstance(bbox, ViewportBounds):
-        envelope = func.ST_MakeEnvelope(bbox.min_x, bbox.min_y, bbox.max_x, bbox.max_y, int(srid))
+    """Return a column element to check whether a geometry is in a bounding box specified by an array."""
     envelope = func.ST_MakeEnvelope(*bbox, int(srid))
     return func.ST_Intersects(col, envelope)
 
@@ -44,7 +35,7 @@ def _in_bbox(
 def get_osm_location(
     *,
     query: Optional[str] = None,
-    bbox: Optional[BBoxTuple] = None,
+    bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
     cols: Optional[List[ColumnElement[Any]]] = None,
 ) -> select:
@@ -74,7 +65,7 @@ def get_osm_location(
 def sprel_query_stmt(
     *,
     location: Optional[str] = None,
-    bbox: Optional[BBoxTuple] = None,
+    bbox: Optional[BBox] = None,
     relations: Optional[List[SpatialRelation]] = None,
     limit: Optional[int] = 10,
 ) -> Select:

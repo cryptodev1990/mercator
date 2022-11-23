@@ -1,0 +1,840 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Mercator OSM API",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/osm/query": {
+      "get": {
+        "tags": [
+          "osm"
+        ],
+        "summary": " Get Query",
+        "description": "Query OSM.\n\nThis endpoint accepts a natural\n\nIt currently supports:\n\n- \"*spatial feature*\", which searches OSM for a spatial feature using full-text search.\n- \"*features_1* in *features_2*\", which constrains results  which constrains results to\n    the search results in *features_1* that are contained in any of the search results\n    of *feature_2*.\n- \"*features_1* not in *features_2*\" which constrains results to features matches by the\n    search in *features_1* that are not contained in *feature_2*.\n\nExamples:\n\n- coffee shops in San Francisco\n- Coffee shops in Oakland\n- Coffee shops\n- Coffee shops not in Oakland",
+        "operationId": "osm_query_get",
+        "parameters": [
+          {
+            "description": "Query text string.",
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string",
+              "description": "Query text string."
+            },
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "description": "Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",
+            "required": false,
+            "schema": {
+              "title": "Bbox",
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array",
+              "items": [
+                {
+                  "title": "Min X",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "title": "Min Y",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                },
+                {
+                  "title": "Max X",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "title": "Max Y",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                }
+              ],
+              "description": "Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",
+              "default": [
+                -180,
+                -90,
+                180,
+                90
+              ]
+            },
+            "name": "bbox",
+            "in": "query"
+          },
+          {
+            "description": "Maximum number of results to return",
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "minimum": 0.0,
+              "type": "integer",
+              "description": "Maximum number of results to return",
+              "default": 20
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OsmSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unable to parse query."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/osm/raw-query": {
+      "get": {
+        "tags": [
+          "osm"
+        ],
+        "summary": " Get Raw Query",
+        "description": "Query OSM.\nThis executes raw SQL against the local or hosted OSM postgres instance.\nIf the query client user has write access, you may have a very bad time.",
+        "operationId": "osm_raw_query_get",
+        "parameters": [
+          {
+            "description": "Query text string",
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string",
+              "description": "Query text string"
+            },
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OsmRawQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unable to run SQL query."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/osm/sql": {
+      "get": {
+        "tags": [
+          "osm"
+        ],
+        "summary": " Get Raw Query",
+        "description": "Query OSM.\nThis executes raw SQL against the local or hosted OSM postgres instance.\nIf the query client user has write access, you may have a very bad time.",
+        "operationId": "osm_sql_get",
+        "parameters": [
+          {
+            "description": "Query text string",
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string",
+              "description": "Query text string"
+            },
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OsmRawQueryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unable to run SQL query."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Home",
+        "description": "Home page.",
+        "operationId": "get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "description": "API health check.",
+        "operationId": "health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/db": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Db Health",
+        "description": "App database health check.",
+        "operationId": "health_db_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BBox": {
+        "title": "BBox",
+        "required": [
+          "min_x",
+          "min_y",
+          "max_x",
+          "max_y"
+        ],
+        "type": "object",
+        "properties": {
+          "min_x": {
+            "title": "Min X",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "type": "number"
+          },
+          "min_y": {
+            "title": "Min Y",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "type": "number"
+          },
+          "max_x": {
+            "title": "Max X",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "type": "number"
+          },
+          "max_y": {
+            "title": "Max Y",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "type": "number"
+          }
+        }
+      },
+      "Feature": {
+        "title": "Feature",
+        "required": [
+          "geometry"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "Feature"
+            ],
+            "type": "string",
+            "default": "Feature",
+            "const": "Feature"
+          },
+          "id": {
+            "title": "Id",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "properties": {
+            "title": "Properties",
+            "type": "object"
+          },
+          "geometry": {
+            "title": "Geometry",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPoint"
+              },
+              {
+                "$ref": "#/components/schemas/LineString"
+              },
+              {
+                "$ref": "#/components/schemas/MultiLineString"
+              },
+              {
+                "$ref": "#/components/schemas/Polygon"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPolygon"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "Point": "#/components/schemas/Point",
+                "MultiPoint": "#/components/schemas/MultiPoint",
+                "LineString": "#/components/schemas/LineString",
+                "MultiLineString": "#/components/schemas/MultiLineString",
+                "Polygon": "#/components/schemas/Polygon",
+                "MultiPolygon": "#/components/schemas/MultiPolygon"
+              }
+            }
+          },
+          "bbox": {
+            "title": "Bbox",
+            "maxItems": 4,
+            "minItems": 4,
+            "type": "array",
+            "items": [
+              {
+                "title": "Min X",
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "title": "Min Y",
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "title": "Max X",
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "title": "Max Y",
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "description": "Feature class."
+      },
+      "FeatureCollection": {
+        "title": "FeatureCollection",
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "FeatureCollection"
+            ],
+            "type": "string",
+            "default": "FeatureCollection",
+            "const": "FeatureCollection"
+          },
+          "features": {
+            "title": "Features",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            }
+          },
+          "bbox": {
+            "title": "Bbox",
+            "maxItems": 4,
+            "minItems": 4,
+            "type": "array",
+            "items": [
+              {
+                "title": "Min X",
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "title": "Min Y",
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "title": "Max X",
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "title": "Max Y",
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "description": "GeoJSON FeatureCollection class."
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "LineString": {
+        "title": "LineString",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "LineString"
+            ],
+            "type": "string",
+            "default": "LineString",
+            "const": "LineString"
+          },
+          "coordinates": {
+            "title": "Coordinates",
+            "type": "array",
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array",
+              "items": [
+                {
+                  "title": "Lng",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "title": "Lat",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                }
+              ]
+            }
+          }
+        },
+        "description": "GeoJSON LineString."
+      },
+      "MultiLineString": {
+        "title": "MultiLineString",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "MultiLineString"
+            ],
+            "type": "string",
+            "default": "MultiLineString",
+            "const": "MultiLineString"
+          },
+          "coordinates": {
+            "title": "Coordinates",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+                "items": [
+                  {
+                    "title": "Lng",
+                    "maximum": 180.0,
+                    "minimum": -180.0,
+                    "type": "number"
+                  },
+                  {
+                    "title": "Lat",
+                    "maximum": 90.0,
+                    "minimum": -90.0,
+                    "type": "number"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "description": "GeoJSON MultiLineString."
+      },
+      "MultiPoint": {
+        "title": "MultiPoint",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "MultiPoint"
+            ],
+            "type": "string",
+            "default": "MultiPoint",
+            "const": "MultiPoint"
+          },
+          "coordinates": {
+            "title": "Coordinates",
+            "type": "array",
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array",
+              "items": [
+                {
+                  "title": "Lng",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "title": "Lat",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                }
+              ]
+            }
+          }
+        },
+        "description": "GeoJSON MultiPoint."
+      },
+      "MultiPolygon": {
+        "title": "MultiPolygon",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "MultiPolygon"
+            ],
+            "type": "string",
+            "default": "MultiPolygon",
+            "const": "MultiPolygon"
+          },
+          "coordinates": {
+            "title": "Coordinates",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array",
+                  "items": [
+                    {
+                      "title": "Lng",
+                      "maximum": 180.0,
+                      "minimum": -180.0,
+                      "type": "number"
+                    },
+                    {
+                      "title": "Lat",
+                      "maximum": 90.0,
+                      "minimum": -90.0,
+                      "type": "number"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "GeoJSON MultiPoint."
+      },
+      "OsmRawQueryResponse": {
+        "title": "OsmRawQueryResponse",
+        "required": [
+          "query",
+          "results"
+        ],
+        "type": "object",
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "results": {
+            "title": "Results",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "description": "Response for raw SQL executed against OSM."
+      },
+      "OsmSearchResponse": {
+        "title": "OsmSearchResponse",
+        "required": [
+          "query"
+        ],
+        "type": "object",
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "parse": {
+            "title": "Parse",
+            "type": "object"
+          },
+          "results": {
+            "$ref": "#/components/schemas/FeatureCollection"
+          }
+        },
+        "description": "Response for OSM search."
+      },
+      "Point": {
+        "title": "Point",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "Point"
+            ],
+            "type": "string",
+            "default": "Point",
+            "const": "Point"
+          },
+          "coordinates": {
+            "title": "Coordinates",
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+            "items": [
+              {
+                "title": "Lng",
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "title": "Lat",
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "description": "GeoJSON Point."
+      },
+      "Polygon": {
+        "title": "Polygon",
+        "required": [
+          "coordinates"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "enum": [
+              "Polygon"
+            ],
+            "type": "string",
+            "default": "Polygon",
+            "const": "Polygon"
+          },
+          "coordinates": {
+            "title": "Coordinates",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+                "items": [
+                  {
+                    "title": "Lng",
+                    "maximum": 180.0,
+                    "minimum": -180.0,
+                    "type": "number"
+                  },
+                  {
+                    "title": "Lat",
+                    "maximum": 90.0,
+                    "minimum": -90.0,
+                    "type": "number"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "description": "GeoJSON Polygon."
+      },
+      "Position": {
+        "title": "Position",
+        "required": [
+          "lng",
+          "lat"
+        ],
+        "type": "object",
+        "properties": {
+          "lng": {
+            "title": "Lng",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "type": "number"
+          },
+          "lat": {
+            "title": "Lat",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "type": "number"
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

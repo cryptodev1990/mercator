@@ -1,7 +1,9 @@
 """Fastapi main"""
 import logging
+import re
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.routing import APIRoute
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection  # type: ignore
 from starlette.middleware import Middleware
@@ -82,3 +84,37 @@ async def db_health(conn: AsyncConnection = Depends(get_conn)) -> HealthResponse
         return HealthResponse(message=HealthStatus.OK)
     except Exception:
         raise HTTPException(status_code=500, detail=HealthStatus.ERROR) from None
+
+
+def _generate_operation_id(route: APIRoute) -> str:
+    # operation_id = route.name + route.path_format
+    operation_id = route.path_format
+    operation_id = re.sub(r"\W", "_", operation_id)
+    assert route.methods
+    operation_id = operation_id + "_" + list(route.methods)[0].lower()
+    # leading / generates a leading _ value.
+    operation_id = re.sub("_$", "", re.sub("^_+", "", operation_id))
+    return operation_id
+
+
+def _use_route_names_as_operation_ids(application: FastAPI) -> None:
+    """
+    Simplify operation IDs so that generated API clients have simpler function
+    names.
+
+    Should be called only after all routes have been added.
+
+    This is to create client service names that are shorter and more readable.
+    """
+    # See https://fastapi.tiangolo.com/advanced/path-operation-advanced-configuration/?h=operation#using-the-path-operation-function-name-as-the-operationid
+    route_operation_ids = set()
+    for route in application.routes:  # type: ignore
+        if isinstance(route, APIRoute):
+            operation_id = _generate_operation_id(route)
+            if operation_id in route_operation_ids:
+                raise ValueError(f"Duplicate operation ID: {operation_id}")
+            route_operation_ids.add(operation_id)
+            route.operation_id = operation_id
+
+
+_use_route_names_as_operation_ids(app)

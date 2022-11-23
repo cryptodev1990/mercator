@@ -79,7 +79,7 @@ class Settings(BaseSettings):
         """Pydantic config."""
 
         # Prefix for environment variables
-        env_prefix = "app_"
+        env_prefix = "APP_"
         env_file = ".env"
         # environment variables for fields are case insensitive
         case_sensitive = False
@@ -95,4 +95,4 @@ def get_settings() -> Settings:
     """Return the app settings object."""
     # This allows specifying the source of environment variables via an env file
     # See https://pydantic-docs.helpmanual.io/usage/settings/#dotenv-env-support
-    return Settings(_env_file=".env")  # type: ignore
+    return Settings()  # type: ignore

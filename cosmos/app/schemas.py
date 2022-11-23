@@ -2,15 +2,9 @@
 from enum import Enum
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
+from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
 
-from geojson_pydantic import FeatureCollection
-
-from pydantic import (  # pylint: disable=no-name-in-module
-    BaseModel,
-    Field,
-)
-
-from app.core.datatypes import BBoxTuple
+from app.core.datatypes import BBox, FeatureCollection
 
 
 class Schema(BaseModel):
@@ -38,7 +32,7 @@ class Location(BaseModel):
     """
 
     query: Optional[str] = None
-    bbox: Optional[BBoxTuple] = None
+    bbox: Optional[BBox] = None
 
 
 class SpRel(BaseModel):

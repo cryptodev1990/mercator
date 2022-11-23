@@ -1,5 +1,6 @@
 """Exceptions used for parse errors."""
 
+
 class QueryParseError(Exception):
     """Exception for parsing errors."""
 

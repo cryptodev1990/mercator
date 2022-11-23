@@ -1,11 +1,11 @@
 # pylint: disable=too-few-public-methods
 """Custom Pydantic Data Types."""
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Sequence, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, NamedTuple, Optional, Union
 
 # pylint: disable=no-name-in-module
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import ConstrainedFloat, Field, constr, root_validator
+from pydantic import ConstrainedFloat, Field
 
 # pylint: enable=no-name-in-module
 
@@ -41,20 +41,6 @@ class LogLevel(str, Enum):
 
 
 if TYPE_CHECKING:
-    GitCommitHash = str
-else:
-    GitCommitHash = constr(
-        min_length=40,
-        max_length=40,
-        regex="^[0-9a-fA-F]{40}$",
-        strict=True,
-        to_lower=True,
-        strip_whitespace=True,
-    )
-    """Pydantic type to validate git hashes."""
-
-
-if TYPE_CHECKING:
     Latitude = float
     Longitude = float
 else:
@@ -72,37 +58,95 @@ else:
         le = 180
 
 
-class ViewportBounds(BaseModel):
+class MapProjection(int, Enum):
+    """Map projection codes."""
+
+    WGS84 = 4326
+    WEB_MERCATOR = 3857
+
+
+class Position(NamedTuple):
+    """Position in a spatial coordinate system."""
+
+    lng: Longitude
+    lat: Latitude
+
+
+PointCoord = Position
+LineStringCoord = List[PointCoord]
+MultiPointCoord = List[PointCoord]
+PolygonCoord = List[LineStringCoord]
+MultiLineStringCoord = List[LineStringCoord]
+MultiPolygonCoord = List[PolygonCoord]
+
+
+class BBox(NamedTuple):
     """Bounding box."""
 
-    min_x: Longitude = Field(..., description="Minimum X coordinate")
-    min_y: Latitude = Field(..., description="Minimum Y coordinate")
-    max_x: Longitude = Field(..., description="Maximum X coordinate")
-    max_y: Latitude = Field(..., description="Maximum Y coordinate")
-
-    # validate that the minimums are less than the maximums
-    # pylint: disable=no-self-argument
-    @root_validator()
-    def _validate_min_max(cls, value: Any) -> Any:
-        if value["min_x"] > value["max_x"]:
-            raise ValueError("min_x must be less than max_x")
-        if value["min_y"] > value["max_y"]:
-            raise ValueError("min_y must be less than max_y")
-        return value
-
-    # pylint: enable=no-self-argument
-
-    # pylint: disable=no-self-argument
-    @classmethod
-    def from_list(cls, coordinates: Sequence[float]) -> "ViewportBounds":
-        """Create a viewport from a list of coordinates."""
-        if len(coordinates) != 4:
-            raise ValueError("Four coordinates must be provided.")
-        min_x, min_y, max_x, max_y = coordinates
-        return cls(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
-
-    # pylint: enable=no-self-argument
+    min_x: Longitude = Field(-180)
+    min_y: Latitude = Field(-90)
+    max_x: Longitude = Field(180)
+    max_y: Latitude = Field(90)
 
 
-BBoxTuple = Tuple[Longitude, Latitude, Longitude, Latitude]
-"""Bounding box as a tuple of floats."""
+class Point(BaseModel):
+    """GeoJSON Point."""
+
+    type: Literal["Point"] = Field("Point", const=True)
+    coordinates: PointCoord = Field(...)
+
+
+class MultiPoint(BaseModel):
+    """GeoJSON MultiPoint."""
+
+    type: Literal["MultiPoint"] = Field("MultiPoint", const=True)
+    coordinates: MultiPointCoord = Field(...)
+
+
+class LineString(BaseModel):
+    """GeoJSON LineString."""
+
+    type: Literal["LineString"] = Field("LineString", const=True)
+    coordinates: LineStringCoord = Field(...)
+
+
+class MultiLineString(BaseModel):
+    """GeoJSON MultiLineString."""
+
+    type: Literal["MultiLineString"] = Field("MultiLineString", const=True)
+    coordinates: MultiLineStringCoord = Field(...)
+
+
+class Polygon(BaseModel):
+    """GeoJSON Polygon."""
+
+    type: Literal["Polygon"] = Field("Polygon", const=True)
+    coordinates: PolygonCoord = Field(...)
+
+
+class MultiPolygon(BaseModel):
+    """GeoJSON MultiPoint."""
+
+    type: Literal["MultiPolygon"] = Field("MultiPolygon", const=True)
+    coordinates: MultiPolygonCoord = Field(...)
+
+
+Geometry = Union[Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon]
+
+
+class Feature(BaseModel):
+    """Feature class."""
+
+    type: Literal["Feature"] = Field("Feature", const=True)
+    id: Union[None, str, int] = Field(None)
+    properties: Optional[Dict[str, Any]] = Field(None)
+    geometry: Geometry = Field(..., discriminator="type")
+    bbox: Optional[BBox] = Field(None)
+
+
+class FeatureCollection(BaseModel):
+    """GeoJSON FeatureCollection class."""
+
+    type: Literal["FeatureCollection"] = Field("FeatureCollection", const=True)
+    features: List[Feature] = Field(default_factory=list)
+    bbox: Optional[BBox] = Field(None)
