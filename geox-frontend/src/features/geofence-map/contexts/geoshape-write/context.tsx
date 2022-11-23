@@ -135,7 +135,6 @@ export const GeoShapeWriteContextProvider = ({
   }
 
   const deletedShapeIdSet = useMemo(() => {
-    console.log("deletedShapeIds", state.deletedShapeIds);
     return new Set(state.deletedShapeIds);
   }, [state.deletedShapeIds]);
 

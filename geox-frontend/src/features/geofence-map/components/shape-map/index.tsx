@@ -32,9 +32,11 @@ const GeofenceMap = () => {
 
   const {
     selectedUuids,
+    multiSelectedUuids,
     clearSelectedShapeUuids,
     isSelected,
     setSelectedShapeUuid,
+    setMultiSelectedShapeUuids,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
@@ -48,15 +50,24 @@ const GeofenceMap = () => {
         return;
       }
       if (event.key === "Backspace") {
-        if (selectedUuids) {
-          for (const uuid of selectedUuids) {
-            deleteShapes([uuid], {
-              onSuccess: () => {
-                clearSelectedShapeUuids();
-                setCursorMode(EditorMode.ViewMode);
-              },
-            });
-          }
+        console.log("multiSelectedUuids", multiSelectedUuids);
+        // if (selectedUuids) {
+        //   for (const uuid of selectedUuids) {
+        //     deleteShapes([uuid], {
+        //       onSuccess: () => {
+        //         clearSelectedShapeUuids();
+        //         setCursorMode(EditorMode.ViewMode);
+        //       },
+        //     });
+        //   }
+        // }
+        if (multiSelectedUuids) {
+          deleteShapes(multiSelectedUuids, {
+            onSuccess: () => {
+              clearSelectedShapeUuids();
+              setCursorMode(EditorMode.ViewMode);
+            },
+          });
         }
       }
     };
@@ -92,7 +103,7 @@ const GeofenceMap = () => {
       document.removeEventListener("keydown", escFunction);
       document.removeEventListener("keydown", undoHandler);
     };
-  }, [selectedUuids, deleteShapes]);
+  }, [multiSelectedUuids, selectedUuids, deleteShapes]);
 
   const { layers } = useLayers();
 
@@ -143,7 +154,7 @@ const GeofenceMap = () => {
         onViewStateChange={({ viewState, oldViewState }) =>
           setViewport(viewState)
         }
-        onClick={({ object, x, y, coordinate }: any) => {
+        onClick={({ object, x, y, coordinate }: any, e: any) => {
           if (cursorMode === EditorMode.DrawIsochroneMode) {
             getIsochrones(
               coordinate as number[],
@@ -172,6 +183,12 @@ const GeofenceMap = () => {
           if (cursorMode === EditorMode.SplitMode) {
             return;
           }
+
+          if (e.changedPointers[0].metaKey) {
+            setMultiSelectedShapeUuids(uuid);
+            return;
+          }
+
           if (!isSelected(uuid)) {
             setSelectedShapeUuid(uuid);
           }

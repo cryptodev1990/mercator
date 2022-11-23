@@ -146,8 +146,6 @@ export function reducer(state: State, action: Action): State {
         action.updatedShape,
       ] as GeoShape[];
       const osuDeduped = deduplicateShapes(osu);
-      console.log("osu", osu);
-      console.log("osu", osuDeduped);
       // Sync with server updates
 
       return {

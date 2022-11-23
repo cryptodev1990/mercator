@@ -8,8 +8,10 @@ import { selectionReducer, initialState } from "./selection.reducer";
 
 export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
-  isSelected: (shape: GeoShapeMetadata | string) => boolean;
   setSelectedShapeUuid: (uuid: string) => void;
+  multiSelectedUuids: GeoShapeMetadata["uuid"][];
+  setMultiSelectedShapeUuids: (uuids: string) => void;
+  isSelected: (shape: GeoShapeMetadata | string) => boolean;
   removeSelectedShapeUuid: (uuid: string) => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
@@ -19,8 +21,10 @@ export interface SelectionContextI {
 
 export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
-  isSelected: () => false,
   setSelectedShapeUuid: () => {},
+  multiSelectedUuids: [],
+  setMultiSelectedShapeUuids: () => {},
+  isSelected: () => false,
   removeSelectedShapeUuid: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
@@ -40,6 +44,13 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
   const setSelectedShapeUuid = (uuid: string) => {
     dispatch({ type: "RESET_SELECTION" });
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
+  };
+
+  const setMultiSelectedShapeUuids = (uuid: string) => {
+    dispatch({
+      type: "ADD_MULTI_SELECTED_SHAPE_UUIDS",
+      multiSelectedUuids: [uuid],
+    });
   };
 
   const removeSelectedShapeUuid = (uuid: string) => {
@@ -75,9 +86,11 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     <SelectionContext.Provider
       value={{
         selectedUuids: state.uuids,
+        multiSelectedUuids: state.multiSelectedUuids,
         numSelected: state.numSelected,
         isSelected,
         setSelectedShapeUuid,
+        setMultiSelectedShapeUuids,
         removeSelectedShapeUuid,
         clearSelectedShapeUuids,
         // @ts-ignore
