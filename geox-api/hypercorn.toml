@@ -2,5 +2,6 @@ dogstatsd_tags = "geox_app_web_server"
 include_server_header = false
 accesslog = "-"
 errorlog = "-"
-worker_class = "uvloop"
 loglevel = "INFO"
+max_app_queue_size = 200
+backlog = 10240

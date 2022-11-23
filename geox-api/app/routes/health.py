@@ -8,11 +8,20 @@ from sqlalchemy.engine import Connection
 
 from app.dependencies import get_connection, verify_subscription, verify_token
 
+import time
+
 router = APIRouter()
 
 
 @router.get("/health", tags=["health"])
 async def health() -> Dict[str, str]:
+    return {"message": "OK"}
+
+
+@router.get("/health_time", tags=["health"])
+async def time_health() -> Dict[str, str]:
+    """Delays for 0.1 seconds to simulate a slow response. Used for debugging the ASGI server."""
+    time.sleep(0.1)
     return {"message": "OK"}
 
 
