@@ -1,6 +1,8 @@
 import logging
 import random
 import time
+
+from contextlib import contextmanager
 from string import ascii_letters, digits
 from typing import Any, Callable
 
@@ -54,3 +56,11 @@ def attach_stats_middleware(app: FastAPI):
                 extra={"request_path": request.url.path},
             )
         return response
+
+
+@contextmanager
+def time_db_query(query_name: str):
+    tags = [f"query_name:{query_name}"]
+    stats.increment(f"db.num_queries", tags=tags)
+    with stats.timer("db.query_execution_duration_s", tags=tags):
+        yield

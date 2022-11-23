@@ -28,6 +28,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.sql import ColumnElement, Select, bindparam
 
 from app.core.datatypes import MapProjection
+from app.core.stats import time_db_query
 from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBounds
@@ -101,7 +102,8 @@ def create_shape(
         **_parse_shape_args(geojson=geojson, name=name, properties=properties, geom=geom),
     }
     values["properties"] = values.get("properties") or {}
-    res = conn.execute(stmt, values).first()
+    with time_db_query("create_shape"):
+        res = conn.execute(stmt, values).first()
     return GeoShape.from_orm(res)
 
 
@@ -198,7 +200,8 @@ def create_many_shapes(
         }
         for x in data
     ]
-    new_shapes = conn.execute(stmt, params)
+    with time_db_query("create_many_shapes"):
+        new_shapes = conn.execute(stmt, params)
     for row in new_shapes:
         yield GeoShape.parse_obj(dict(row))
 
@@ -207,7 +210,8 @@ def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bo
     stmt = select(shapes_tbl.c.uuid).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
-    return bool(conn.execute(stmt).scalar())
+    with time_db_query("shape_exists"):
+        return bool(conn.execute(stmt).scalar())
 
 
 def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoShape:
@@ -215,7 +219,8 @@ def get_shape(conn: Connection, shape_id: UUID4, include_deleted=False) -> GeoSh
     stmt = select(GEOSHAPE_COLS).where(shapes_tbl.c.uuid == shape_id)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(shapes_tbl.c.deleted_at.is_(None))
-    res = conn.execute(stmt).first()
+    with time_db_query("get_shape"):
+        res = conn.execute(stmt).first()
     if res is None:
         raise ShapeDoesNotExist(shape_id)
     return GeoShape.parse_obj(dict(res))
@@ -288,7 +293,8 @@ def select_shapes(
         shape_id=shape_id,
         columns=GEOSHAPE_COLS,
     )
-    res = conn.execute(stmt)
+    with time_db_query("select_shapes"):
+        res = conn.execute(stmt)
     for row in res:
         yield GeoShape.parse_obj(dict(row))
 
@@ -316,7 +322,8 @@ def select_shape_metadata(
         shape_id=shape_id,
         columns=METADATA_COLS,
     )
-    res = conn.execute(stmt)
+    with time_db_query("select_shape_metadata"):
+        res = conn.execute(stmt)
     for row in res:
         yield GeoShapeMetadata.parse_obj(dict(row))
 
@@ -346,9 +353,10 @@ def get_shape_metadata_matching_search(
         OFFSET :offset
     """
     )
-    res = conn.execute(
-        stmt, {"query_text": search_query, "limit": limit, "offset": offset}
-    ).fetchall()
+    with time_db_query("get_shape_metadata_matching_search"):
+        res = conn.execute(
+            stmt, {"query_text": search_query, "limit": limit, "offset": offset}
+        ).fetchall()
     return [GeoShapeMetadata.parse_obj(dict(g)) for g in list(res)]
 
 
@@ -391,7 +399,8 @@ def update_shape(
         .values(**values)
         .returning(*GEOSHAPE_COLS)
     )
-    res = conn.execute(stmt, params).first()
+    with time_db_query("update_shape"):
+        res = conn.execute(stmt, params).first()
     if res is None:
         raise ShapeDoesNotExist(id_)
     return GeoShape.from_orm(res)
@@ -407,7 +416,8 @@ def delete_shape(conn: Connection, id_: UUID4, *, user_id: int) -> None:
         "deleted_by_user_id": user_id,
     }
     stmt = update(shapes_tbl).where(shapes_tbl.c.uuid == id_)
-    res = conn.execute(stmt, values)
+    with time_db_query("delete_shape"):
+        res = conn.execute(stmt, values)
     if not res.rowcount:
         raise ShapeDoesNotExist(id_)
 
@@ -468,7 +478,8 @@ def delete_many_shapes(
         stmt = stmt.where(and_(True, *filters))
     else:
         stmt = stmt.where(or_(False, *filters))
-    res = conn.execute(stmt, values)
+    with time_db_query("delete_many_shapes"):
+        res = conn.execute(stmt, values)
     return [row.uuid for row in res]
 
 
@@ -479,7 +490,8 @@ def get_shape_count(conn: Connection) -> int:
         .where(shapes_tbl.c.organization_id == sa.func.app_user_org())
         .where(shapes_tbl.c.deleted_at.is_(None))
     )
-    res = conn.execute(stmt).scalar()
+    with time_db_query("get_shape_count"):
+        res = conn.execute(stmt).scalar()
     return res
 
 
@@ -497,7 +509,8 @@ def get_shapes_containing_point(
       AND organization_id = public.app_user_org()
     """
     )
-    res = conn.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
+    with time_db_query("get_shapes_containing_point"):
+        res = conn.execute(stmt, {"lat": lat, "lng": lng}).fetchall()
     return [row.geojson for row in res]
 
 
@@ -528,5 +541,6 @@ def get_shapes_related_to_geom(
     """
         ).render(operation=operation.title())
     )
-    res = conn.execute(stmt, {"geom": geom.json()})
+    with time_db_query("get_shapes_related_to_geom"):
+        res = conn.execute(stmt, {"geom": geom.json()})
     return [row.geojson for row in res]

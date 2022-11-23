@@ -21,7 +21,8 @@ class AuthorizedTileFunction(layer.Function):
         async with pool.acquire() as conn:
             transaction = conn.transaction()
             await transaction.start()
-            await conn.execute(self.sql)
+            with time_db_query("get_tile_sql"):
+                await conn.execute(self.sql)
 
             sql_query = clauses.Select(
                 Func(
@@ -43,7 +44,8 @@ class AuthorizedTileFunction(layer.Function):
             )
 
             # execute the query
-            content = await conn.fetchval(q, *p)
+            with time_db_query("get_tile_fetchval"):
+                content = await conn.fetchval(q, *p)
 
             # rollback
             await transaction.rollback()

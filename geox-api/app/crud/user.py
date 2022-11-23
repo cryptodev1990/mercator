@@ -8,6 +8,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.exc import IntegrityError
 
 from app.core.config import Settings, get_settings
+from app.core.stats import time_db_query
 from app.db.metadata import users as users_tbl
 from app.schemas import User
 
@@ -69,7 +70,8 @@ def get_user(conn: Connection, user_id: int) -> User:
     WHERE id = :user_id
     """
     )
-    user = conn.execute(stmt, {"user_id": user_id}).first()
+    with time_db_query("get_user"):
+        user = conn.execute(stmt, {"user_id": user_id}).first()
     if user is None:
         raise NoUserWithIdException(user_id)
     return User.from_orm(user)
@@ -90,7 +92,8 @@ def get_user_by_sub_id(conn: Connection, sub_id: str) -> User:
     WHERE sub_id = :sub_id
     """
     )
-    user = conn.execute(stmt, {"sub_id": sub_id}).first()
+    with time_db_query("get_user_by_sub_id"):
+        user = conn.execute(stmt, {"sub_id": sub_id}).first()
     if user is None:
         raise NoUserWithSubIdException(sub_id)
     return User.from_orm(user)
@@ -112,7 +115,8 @@ def get_user_by_email(conn: Connection, email: str) -> User:
     WHERE email = :email
     """
     )
-    user = conn.execute(stmt, {"email": email}).first()
+    with time_db_query("get_user_by_email"):
+        user = conn.execute(stmt, {"email": email}).first()
     if user is None:
         raise NoUserWithEmailException(email)
     return User.from_orm(user)
@@ -135,22 +139,23 @@ def create_user(
 ) -> User:
     stmt = insert(users_tbl).returning(users_tbl)
     try:
-        res = conn.execute(
-            stmt,
-            {
-                "email": email,
-                "sub_id": sub_id,
-                "name": name,
-                "nickname": nickname,
-                "family_name": family_name,
-                "updated_at": updated_at,
-                "iss": iss,
-                "email_verified": email_verified,
-                "locale": locale,
-                "picture": picture,
-                "is_active": is_active,
-            },
-        ).first()
+        with time_db_query("create_user"):
+            res = conn.execute(
+                stmt,
+                {
+                    "email": email,
+                    "sub_id": sub_id,
+                    "name": name,
+                    "nickname": nickname,
+                    "family_name": family_name,
+                    "updated_at": updated_at,
+                    "iss": iss,
+                    "email_verified": email_verified,
+                    "locale": locale,
+                    "picture": picture,
+                    "is_active": is_active,
+                },
+            ).first()
     except IntegrityError:
         raise UserExistsError() from None
     return User.from_orm(res)
@@ -200,7 +205,8 @@ def create_or_update_user_from_bearer_data(
         "iss",
     )
     params = {c: values.get(c) for c in cols}
-    new_user = conn.execute(ins_stmt, params).first()
+    with time_db_query("create_or_update_user_from_bearer_data"):
+        new_user = conn.execute(ins_stmt, params).first()
     # try again if race condition
     if not new_user:
         new_user = get_user_by_sub_id(conn, values["sub_id"])

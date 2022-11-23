@@ -16,6 +16,7 @@ from sqlalchemy.engine import Connection, Engine
 
 from app.core.config import Settings, get_settings
 from app.core.security import VerifyToken, token_auth_scheme
+from app.core.stats import time_db_query
 from app.crud.organization import get_active_organization
 from app.crud.user import create_or_update_user_from_bearer_data
 from app.db.app_user import set_app_user_id, set_app_user_org
@@ -197,7 +198,8 @@ def set_app_user_settings(conn: Connection, user_id: int, org_id: UUID4):
     - Set `app.user_org` setting to the ``org_id``
 
     """
-    conn.execute(text("SET LOCAL ROLE app_user"))
+    with time_db_query("set_app_user_settings"):
+        conn.execute(text("SET LOCAL ROLE app_user"))
     set_app_user_id(conn, user_id, local=True)
     set_app_user_org(conn, org_id, local=True)
 

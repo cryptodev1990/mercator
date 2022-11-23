@@ -27,6 +27,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import IntegrityError
 
+from app.core.stats import time_db_query
 from app.db.metadata import namespaces as namespaces_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import Namespace
@@ -100,7 +101,8 @@ def _add_user_org_to_params(conn: Connection, params: Dict[str, Any]) -> Dict[st
         app_user_and_org_stmt = text(
             "SELECT app_user_id() AS user_id, app_user_org() as organization_id"
         )
-        app_user_and_org = conn.execute(app_user_and_org_stmt).first()
+        with time_db_query("get_app_user_and_org"):
+            app_user_and_org = conn.execute(app_user_and_org_stmt).first()
         params["user_id"] = user_id or app_user_and_org.user_id
         params["organization_id"] = org_id or app_user_and_org.organization_id
     return params
@@ -130,7 +132,9 @@ def select_namespaces(
         stmt = stmt.where(n.c.name == name)
     if slug is not None:
         stmt = stmt.where(n.c.slug == slug)
-    for row in conn.execute(stmt):
+    with time_db_query("select_namespaces"):
+        rows = conn.execute(stmt)
+    for row in rows:
         yield Namespace.from_orm(row)
 
 
@@ -139,7 +143,8 @@ def namespace_exists(conn, id_: UUID4, include_deleted: bool = False) -> bool:
     stmt = select(namespaces_tbl.c.id).where(namespaces_tbl.c.id == id_)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(namespaces_tbl.c.deleted_at.is_(None))
-    res = conn.execute(stmt).first()
+    with time_db_query("namespace_exists"):
+        res = conn.execute(stmt).first()
     return bool(res)
 
 
@@ -148,7 +153,8 @@ def get_namespace(conn, id_: UUID4, include_deleted: bool = False) -> Namespace:
     stmt = select(namespaces_tbl).where(namespaces_tbl.c.id == id_)  # type: ignore
     if not include_deleted:
         stmt = stmt.where(namespaces_tbl.c.deleted_at.is_(None))
-    res = conn.execute(stmt).first()
+    with time_db_query("get_namespace"):
+        res = conn.execute(stmt).first()
     if res is None:
         raise NamespaceWithThisIdDoesNotExistError(id_)
     return Namespace.from_orm(res)
@@ -162,7 +168,8 @@ def get_namespace_by_slug(
     stmt = select(namespaces_tbl).where(namespaces_tbl.c.slug == slug)  # type: ignore
     if organization_id is not None:
         stmt = stmt.where(namespaces_tbl.c.organization_id == organization_id)
-    res = conn.execute(stmt).first()
+    with time_db_query("get_namespace_by_slug"):
+        res = conn.execute(stmt).first()
     if res is None:
         raise NamespaceWithThisSlugDoesNotExistError(slug)
     return Namespace.from_orm(res)
@@ -179,7 +186,8 @@ def get_default_namespace(conn, organization_id: UUID4) -> Namespace:
     """
     )
     values = {"organization_id": organization_id}
-    res = conn.execute(stmt, values).first()
+    with time_db_query("get_default_namespace"):
+        res = conn.execute(stmt, values).first()
     if not res:
         raise DefaultNamespaceDoesNotExistError(organization_id)
     return Namespace.from_orm(res)
@@ -210,7 +218,8 @@ def create_namespace(
     # the entire connection is already wrapped in a transaction
     nested_trans = conn.begin_nested()
     try:
-        res = conn.execute(stmt, params).first()
+        with time_db_query("create_namespace"):
+            res = conn.execute(stmt, params).first()
     except IntegrityError:
         nested_trans.rollback()
         try:
@@ -266,7 +275,8 @@ def update_namespace(
     )
     nested_trans = conn.begin_nested()
     try:
-        res = conn.execute(stmt, values).first()
+        with time_db_query("update_namespace"):
+            res = conn.execute(stmt, values).first()
     except IntegrityError as exc:
         # If the user didn't try to change the name ... then this error shouldn't have happend
         # and we have a bigger problem that we need to log
@@ -308,7 +318,8 @@ def delete_namespace(conn: Connection, id_: UUID4) -> List[UUID4]:
         )  # cannot delete a namespace that already was deleted
         .returning(namespaces_tbl.c.id)
     )
-    res = conn.execute(del_namespace_stmt, params).first()
+    with time_db_query("delete_namespace"):
+        res = conn.execute(del_namespace_stmt, params).first()
     # If nothing is returned then no rows were updated, which means that no namespace
     # has that ID
     if res is None:
@@ -320,7 +331,7 @@ def delete_namespace(conn: Connection, id_: UUID4) -> List[UUID4]:
         .where(shapes_tbl.c.deleted_at.is_(None))
         .returning(shapes_tbl.c.uuid)
     )
-    shapes_deleted = [
-        row.uuid for row in conn.execute(del_shapes_stmt, params).fetchall()
-    ]
+    with time_db_query("delete_namespace_shapes"):
+        rows = conn.execute(del_shapes_stmt, params).fetchall()
+    shapes_deleted = [row.uuid for row in rows]
     return shapes_deleted

@@ -5,6 +5,7 @@ from pydantic import UUID4  # pylint: disable=no-name-in-module
 from sqlalchemy import insert, select, text
 from sqlalchemy.engine import Connection
 
+from app.core.stats import time_db_query
 from app.db.metadata import organization_members as org_mbr_tbl
 from app.db.metadata import organizations as org_tbl
 from app.schemas import Organization, User
@@ -61,13 +62,15 @@ class StripeSubscriptionDoesNotExistError(Exception):
 
 def create_organization(conn: Connection, *, name: str) -> Organization:
     stmt = insert(org_tbl).returning(org_tbl)
-    res = conn.execute(stmt, {"name": name}).first()
+    with time_db_query("create_organization"):
+        res = conn.execute(stmt, {"name": name}).first()
     return Organization.from_orm(res)
 
 
 def organization_exists(conn: Connection, organization_id: UUID4) -> bool:
     stmt = text("SELECT 1 FROM organizations WHERE id = :id")
-    res = conn.execute(stmt, {"id": organization_id}).scalar()
+    with time_db_query("organization_exists"):
+        res = conn.execute(stmt, {"id": organization_id}).scalar()
     return bool(res)
 
 
@@ -81,7 +84,8 @@ def get_organization(conn: Connection, organization_id: UUID4) -> Organization:
 
     """
     stmt = select(org_tbl).where(org_tbl.c.id == organization_id)  # type: ignore
-    res = conn.execute(stmt, {"id": organization_id}).first()
+    with time_db_query("get_organization"):
+        res = conn.execute(stmt, {"id": organization_id}).first()
     if res is None:
         raise OrganizationDoesNotExistError(organization_id)
     return Organization.from_orm(res)
@@ -89,9 +93,10 @@ def get_organization(conn: Connection, organization_id: UUID4) -> Organization:
 
 def add_user_to_org(conn: Connection, *, user_id: int, organization_id: UUID4) -> None:
     stmt = insert(org_mbr_tbl).returning(org_mbr_tbl.c.id)
-    res = conn.execute(
-        stmt, {"organization_id": organization_id, "user_id": user_id}
-    ).first()
+    with time_db_query("add_user_to_org"):
+        res = conn.execute(
+            stmt, {"organization_id": organization_id, "user_id": user_id}
+        ).first()
     return res.id
 
 
@@ -99,7 +104,8 @@ def is_user_in_org(conn: Connection, *, user_id: int, organization_id: UUID4) ->
     stmt = text(
         "SELECT id FROM organization_members WHERE user_id = :user_id AND organization_id = :organization_id"
     )
-    res = conn.execute(stmt, {"organization_id": organization_id, "user_id": user_id})
+    with time_db_query("is_user_in_org"):
+        res = conn.execute(stmt, {"organization_id": organization_id, "user_id": user_id})
     return bool(res is not None)
 
 
@@ -116,7 +122,8 @@ def get_personal_org(conn: Connection, user_id: int) -> Organization:
             AND om.deleted_at IS NULL
         """
     )
-    res = conn.execute(stmt, {"user_id": user_id}).first()
+    with time_db_query("get_personal_org"):
+        res = conn.execute(stmt, {"user_id": user_id}).first()
     if res is None:
         raise UserHasNoPersonalOrganizationError(user_id)
     return Organization.from_orm(res)
@@ -147,7 +154,8 @@ def set_active_organization(
             AND deleted_at IS NULL
         """
     )
-    conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
+    with time_db_query("set_active_organization"):
+        conn.execute(stmt, {"user_id": user_id, "organization_id": organization_id})
 
 
 def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
@@ -167,10 +175,12 @@ def get_active_org_id(conn: Connection, user_id: int) -> UUID4:
             AND active
         """
     )
-    res = conn.execute(stmt, {"user_id": user_id}).first()
+    with time_db_query("get_active_org_id_first"):
+        res = conn.execute(stmt, {"user_id": user_id}).first()
     # Return str intead of UUID because UUID can't natively be cached in redis
     # Also this function is consistent with the return type of check_cache() if converted to str
-    res = conn.execute(stmt, {"user_id": user_id}).scalar()
+    with time_db_query("get_active_org_id_scalar"):
+        res = conn.execute(stmt, {"user_id": user_id}).scalar()
     if res is None:
         raise UserHasNoActiveOrganizationError(user_id)
     return res
@@ -196,7 +206,8 @@ def get_active_organization(conn: Connection, user_id: int) -> Organization:
             AND om.active
         """
     )
-    res = conn.execute(stmt, {"user_id": user_id}).first()
+    with time_db_query("get_active_organization"):
+        res = conn.execute(stmt, {"user_id": user_id}).first()
     if res is None:
         raise UserHasNoActiveOrganizationError(user_id)
     return Organization.from_orm(res)
@@ -224,9 +235,10 @@ def add_subscription(
         RETURNING *
         """
     )
-    res = conn.execute(
-        stmt, {"stripe_sub_id": stripe_sub_id, "organization_id": organization_id}
-    ).first()
+    with time_db_query("add_subscription"):
+        res = conn.execute(
+            stmt, {"stripe_sub_id": stripe_sub_id, "organization_id": organization_id}
+        ).first()
     return Organization.from_orm(res)
 
 
@@ -252,10 +264,14 @@ def add_stripe_customer(
         RETURNING *
         """
     )
-    res = conn.execute(
-        stmt,
-        {"stripe_customer_id": stripe_customer_id, "organization_id": organization_id},
-    ).first()
+    with time_db_query("add_stripe_customer"):
+        res = conn.execute(
+            stmt,
+            {
+                "stripe_customer_id": stripe_customer_id,
+                "organization_id": organization_id,
+            },
+        ).first()
     return Organization.from_orm(res)
 
 
@@ -280,7 +296,8 @@ def update_payment_time(conn: Connection, *, stripe_sub_id: str) -> Organization
         RETURNING *
         """
     )
-    res = conn.execute(stmt, {"stripe_sub_id": stripe_sub_id}).first()
+    with time_db_query("update_payment_time"):
+        res = conn.execute(stmt, {"stripe_sub_id": stripe_sub_id}).first()
     return Organization.from_orm(res)
 
 
@@ -297,7 +314,8 @@ def get_all_org_members(conn: Connection, organization_id: UUID4) -> List[User]:
           AND om.deleted_at IS NULL
         """
     )
-    res = conn.execute(stmt, {"organization_id": organization_id}).fetchall()
+    with time_db_query("get_all_org_members"):
+        res = conn.execute(stmt, {"organization_id": organization_id}).fetchall()
     return [User.from_orm(user) for user in res]
 
 
@@ -313,9 +331,11 @@ def create_org_member(
         """
     )
 
-    conn.execute(
-        stmt, {"organization_id": organization_id, "user_id": user_id, "active": active}
-    )
+    with time_db_query("create_org_member"):
+        conn.execute(
+            stmt,
+            {"organization_id": organization_id, "user_id": user_id, "active": active},
+        )
 
     return True
 
@@ -336,9 +356,10 @@ def check_if_org_member(
         """
     )
 
-    res = conn.execute(
-        stmt, {"organization_id": organization_id, "user_id": user_id}
-    ).first()
+    with time_db_query("check_if_org_member"):
+        res = conn.execute(
+            stmt, {"organization_id": organization_id, "user_id": user_id}
+        ).first()
 
     return res is not None
 
@@ -352,7 +373,8 @@ def get_org_by_subscription_id(conn: Connection, stripe_sub_id: str) -> Organiza
         WHERE stripe_subscription_id= :stripe_sub_id
         """
     )
-    res = conn.execute(stmt, {"stripe_sub_id": stripe_sub_id}).first()
+    with time_db_query("get_org_by_subscription_id"):
+        res = conn.execute(stmt, {"stripe_sub_id": stripe_sub_id}).first()
     if res is None:
         raise StripeSubscriptionDoesNotExistError(stripe_sub_id)
     return Organization.from_orm(res)
@@ -369,9 +391,10 @@ def update_stripe_whitelist_status(
         RETURNING *
         """
     )
-    res = conn.execute(
-        stmt, {"should_add": should_add, "organization_id": organization_id}
-    ).first()
+    with time_db_query("update_stripe_whitelist_status"):
+        res = conn.execute(
+            stmt, {"should_add": should_add, "organization_id": organization_id}
+        ).first()
     if res is None:
         raise OrganizationDoesNotExistError(organization_id)
     return Organization.from_orm(res)
@@ -389,7 +412,10 @@ def update_stripe_subscription_status(
         RETURNING *
         """
     )
-    res = conn.execute(stmt, {"status": status, "stripe_sub_id": stripe_sub_id}).first()
+    with time_db_query("update_stripe_subscription_status"):
+        res = conn.execute(
+            stmt, {"status": status, "stripe_sub_id": stripe_sub_id}
+        ).first()
     if res is None:
         raise StripeSubscriptionDoesNotExistError(stripe_sub_id)
     return Organization.from_orm(res)
