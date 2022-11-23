@@ -1,6 +1,6 @@
 # fly.toml file generated for mercator-fly-log-shipper on 2022-09-15T20:56:25-05:00
 
-app = "mercator-staging-fly-log-shipper"
+app = "mercator-fly-log-shipper"
 
 [env]
   ORG = "mercator"

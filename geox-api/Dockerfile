@@ -45,7 +45,8 @@ WORKDIR /webapp
 COPY ./app /webapp/app
 COPY ./cli /webapp/cli
 COPY ./alembic /webapp/alembic
-COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/
+#COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./hypercorn.toml ./justfile /webapp/
 
 
 # ARG have to be after FROM to be read
