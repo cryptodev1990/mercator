@@ -68,6 +68,7 @@ export const useGetAllShapesMetadata = () => {
 
     {
       enabled: isTokenSet,
+      refetchOnWindowFocus: true,
       onError: genericErrorHandler,
     }
   );

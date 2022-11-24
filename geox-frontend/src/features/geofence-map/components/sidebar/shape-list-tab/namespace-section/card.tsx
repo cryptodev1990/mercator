@@ -14,7 +14,6 @@ import simplur from "simplur";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { SearchContext } from "../../../../contexts/search-context";
 import { MAX_DISPLAY_SHAPES, Paginator } from "./paginator";
-import { NamespaceContext } from "./namespace-context";
 
 export const NamespaceCard = ({
   namespace,
@@ -127,7 +126,7 @@ export const NamespaceCard = ({
           {sectionShapeMetadata.length > 0 &&
             sectionShapeMetadata
               .filter((x, i) => {
-                if (searchResults) {
+                if (searchResults && searchResults.size > 0) {
                   return searchResults.has(x.uuid);
                 } else {
                   return (
@@ -137,17 +136,15 @@ export const NamespaceCard = ({
                 }
               })
               .map((x, i) => (
-                <NamespaceContext.Provider value={namespace} key={i}>
-                  <ShapeCard
-                    shape={x}
-                    onMouseEnter={() => setShapeHovered(x.uuid)}
-                    onMouseLeave={() => setShapeHovered(null)}
-                    isHovered={shapeHovered === x.uuid}
-                    key={x.uuid}
-                  />
-                </NamespaceContext.Provider>
+                <ShapeCard
+                  shape={x}
+                  onMouseEnter={() => setShapeHovered(x.uuid)}
+                  onMouseLeave={() => setShapeHovered(null)}
+                  isHovered={shapeHovered === x.uuid}
+                  key={x.uuid}
+                />
               ))}
-          {!searchResults &&
+          {(!searchResults || searchResults.size === 0) &&
             sectionShapeMetadata.length > MAX_DISPLAY_SHAPES && (
               <Paginator
                 maxShapes={sectionShapeMetadata.length}

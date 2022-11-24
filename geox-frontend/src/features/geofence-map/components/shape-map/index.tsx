@@ -28,7 +28,6 @@ const GeofenceMap = () => {
     shapeMetadata,
     setShapeForPropertyEdit,
     deletedShapeIdSet,
-    visibleNamespaces,
   } = useShapes();
 
   const {

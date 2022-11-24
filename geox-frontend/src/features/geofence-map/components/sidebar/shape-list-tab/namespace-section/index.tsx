@@ -1,5 +1,4 @@
 import { useShapes } from "../../../../hooks/use-shapes";
-import { AddButton } from "./add-button";
 import { NamespaceCard } from "./card";
 import { ShapeSearchBar } from "./shape-search-bar";
 
@@ -41,7 +40,6 @@ export const NamespaceSection = ({ className }: { className: string }) => {
           />
         );
       })}
-      <AddButton />
     </div>
   );
 };

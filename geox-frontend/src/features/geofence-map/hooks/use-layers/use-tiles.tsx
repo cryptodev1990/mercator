@@ -31,12 +31,6 @@ export function useTiles() {
   const { isSelected, selectedUuids } = useSelectedShapes();
 
   useEffect(() => {
-    if (visibleNamespaces) {
-      clearOptimisticShapeUpdates();
-    }
-  }, [visibleNamespaces]);
-
-  useEffect(() => {
     if (optimisticShapeUpdates.length > MAX_OPTIMISTIC_FEATURES) {
       clearOptimisticShapeUpdates();
       setTileUpdateCount(tileUpdateCount + 1);

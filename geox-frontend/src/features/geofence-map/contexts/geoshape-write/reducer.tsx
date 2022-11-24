@@ -156,6 +156,9 @@ export function reducer(state: State, action: Action): State {
         shapeAddLoading: false,
         optimisticShapeUpdates: osuDeduped,
         updatedShape: action?.updatedShape ?? null,
+        updatedShapeIds: [
+          ...new Set([...state.updatedShapeIds, ...action.updatedShapeIds]),
+        ],
       };
     }
     case "BULK_ADD_SHAPES_ERROR":

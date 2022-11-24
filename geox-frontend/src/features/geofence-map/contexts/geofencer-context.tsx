@@ -2,6 +2,7 @@ import { createContext, useEffect, useRef, useState } from "react";
 import { ViewState } from "react-map-gl";
 import { Feature, GeoShapeCreate } from "../../../client";
 import { GeoShapeMetadata } from "../../../client/models/GeoShapeMetadata";
+import { debounceFn } from "../../../common/utils";
 import { EditorMode } from "../cursor-modes";
 import { GlobalEditorOptions } from "../types";
 
@@ -45,40 +46,51 @@ export const GeofencerContext = createContext<GeofencerContextState>({
 });
 GeofencerContext.displayName = "GeofencerContext";
 
-export const GeofencerContextContainer = ({ children }: { children: any }) => {
-  const storedViewport = localStorage.getItem("viewport");
-  const [viewport, setViewport] = useState<ViewState>(
-    storedViewport
-      ? JSON.parse(storedViewport)
-      : {
-          latitude: 37.762673511727435,
-          longitude: -122.40111919656555,
-          bearing: 0,
-          pitch: 0,
-          zoom: 11.363205994378514,
-        }
-  );
-
-  const [tileUpdateCount, setTileUpdateCount] = useState(0);
-
-  useEffect(() => {
-    // Store viewport in local storage
-    if (
-      !Number.isFinite(viewport.latitude) ||
-      !Number.isFinite(viewport.longitude) ||
-      !Number.isFinite(viewport.zoom)
-    ) {
-      return;
-    }
+const viewportToLocalStorage = debounceFn(
+  ({ latitude, longitude, zoom }: any) => {
     localStorage.setItem(
       "viewport",
       JSON.stringify({
-        latitude: viewport.latitude,
-        longitude: viewport.longitude,
-        zoom: viewport.zoom,
+        latitude,
+        longitude,
+        zoom,
       })
     );
+  },
+  500
+);
+
+const DEFAULT_VIEWPORT = {
+  latitude: 37.762673511727435,
+  longitude: -122.40111919656555,
+  bearing: 0,
+  pitch: 0,
+  zoom: 11.363205994378514,
+};
+
+export const GeofencerContextContainer = ({ children }: { children: any }) => {
+  const [viewport, setViewport] = useState<ViewState>(DEFAULT_VIEWPORT);
+
+  // set the viewport from local storage if it exists
+  useEffect(() => {
+    if (viewport === DEFAULT_VIEWPORT) {
+      try {
+        const viewportFromLocalStorage = localStorage.getItem("viewport");
+        if (viewportFromLocalStorage) {
+          setViewport(JSON.parse(viewportFromLocalStorage));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }, [viewport]);
+
+  // save the viewport to local storage
+  useEffect(() => {
+    viewportToLocalStorage(viewport);
+  }, [viewport]);
+
+  const [tileUpdateCount, setTileUpdateCount] = useState(0);
 
   const [options, setOptions] = useState<GlobalEditorOptions>({
     denyOverlap: true,

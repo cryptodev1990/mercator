@@ -16,8 +16,6 @@ import { useBulkDeleteShapesMutation } from "../use-openapi-hooks";
 
 function injectJitterToPolygon(polygon: MultiPolygon | Polygon): MultiPolygon {
   const jitter = 0.0000000001;
-  console.log("injecting jitter");
-  console.log(polygon);
   return {
     ...polygon,
     coordinates: polygon.coordinates.map((ring) =>

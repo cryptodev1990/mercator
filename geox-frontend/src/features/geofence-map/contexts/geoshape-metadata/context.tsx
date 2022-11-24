@@ -1,3 +1,4 @@
+import { namespaces } from "d3-selection";
 import {
   createContext,
   Dispatch,
@@ -72,7 +73,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
   );
   const qc = useQueryClient();
   // run operations only on the first successful fetch
-  const [initial, setInitial] = useState(true);
 
   const {
     data: remoteShapeMetadata,
@@ -80,6 +80,48 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     error: shapeMetadataError,
     isSuccess: shapeMetadataIsSuccess,
   } = useGetAllShapesMetadata();
+
+  // on the initial load of the data, set the active namespaces to the default namespaces
+
+  useEffect(() => {
+    const lastVisibleNamespaces = localStorage.getItem("lastVisibleNamespaces");
+    if (lastVisibleNamespaces?.length) {
+      const lastVisibleNamespacesParsed = JSON.parse(lastVisibleNamespaces);
+      // verify current namespaces and new namespaces are not the same
+      if (
+        lastVisibleNamespacesParsed
+          .map((n: Namespace) => n.id)
+          .sort()
+          .join(",") !==
+        state.namespaces
+          .map((n: Namespace) => n.id)
+          .sort()
+          .join(",")
+      ) {
+        dispatch({
+          type: "SET_VISIBLE_NAMESPACES",
+          namespaces: lastVisibleNamespacesParsed,
+        });
+      }
+    } else {
+      const justUseDefault = state.namespaces.find((ns) => ns.is_default);
+      dispatch({
+        type: "SET_VISIBLE_NAMESPACES",
+        // @ts-ignore
+        namespaces: justUseDefault ? [justUseDefault] : [],
+      });
+    }
+  }, [state.namespaces]);
+
+  useEffect(() => {
+    if (!state.visibleNamespaces || state.visibleNamespaces.length === 0) {
+      return;
+    }
+    localStorage.setItem(
+      "lastVisibleNamespaces",
+      JSON.stringify(state.visibleNamespaces)
+    );
+  }, [state.visibleNamespaces]);
 
   useEffect(() => {
     if (shapeMetadataError !== null) {
@@ -103,19 +145,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     shapeMetadataError,
     shapeMetadataIsSuccess,
   ]);
-
-  // on the initial load of the data, set the active namespaces to the default namespaces
-  useEffect(() => {
-    if (state.namespaces.length > 0 && initial) {
-      setActiveNamespaces([
-        state.namespaces.find((x) => x.is_default) ?? state.namespaces[0],
-      ]);
-      setVisibleNamespaces([
-        state.namespaces.find((x) => x.is_default) ?? state.namespaces[0],
-      ]);
-      setInitial(false);
-    }
-  }, [state.namespaces]);
 
   function setActiveNamespaces(namespaces: Namespace[]) {
     dispatch({

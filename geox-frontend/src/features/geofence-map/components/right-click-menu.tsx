@@ -87,9 +87,6 @@ export const RightClickMenu = () => {
         setShapeForPropertyEdit(selectedShape);
         closeMenu();
         return;
-      case "Draw travel distance":
-        setCursorMode(EditorMode.DrawIsochroneMode);
-        return;
       case "Copy as GeoJSON":
         if (selectedFeatureCollection) {
           navigator.clipboard.writeText(
@@ -127,7 +124,6 @@ export const RightClickMenu = () => {
   if (numSelected === 0) {
     options = [
       "Draw",
-      "Draw travel distance",
       editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
     ];
   } else if (numSelected === 1) {

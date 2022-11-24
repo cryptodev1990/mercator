@@ -67,24 +67,6 @@ export const ToolButtonBank = () => {
       active: cursorMode === EditorMode.LassoDrawMode,
       key: "mode-polygon-lasso",
     },
-    // {
-    //   name: "Translate",
-    //   icon: <BsArrowsMove />,
-    //   onClick: () => setCursorMode(EditorMode.TranslateMode),
-    //   dataTip: "Coming soon",
-    //   disabled: true,
-    //   active: cursorMode === EditorMode.TranslateMode,
-    //   mode: "mode-translate"
-    // },
-    // {
-    //   name: "Polygon from Route",
-    //   icon: <MdOutlineDraw />,
-    //   onClick: () => setCursorMode(EditorMode.DrawPolygonFromRouteMode),
-    //   dataTip: "Coming soon",
-    //   disabled: true,
-    //   active: cursorMode === EditorMode.DrawPolygonFromRouteMode,
-    //   mode: "mode-polygon-from-route"
-    // },
     {
       name: "Alter",
       icon: <EditMarkupIcon />,

@@ -17,6 +17,24 @@ import { DeletePrompt } from "./delete-prompt";
 import { TopRightCornerBank } from "./top-right-corner-bank";
 import { SearchContextProvider } from "../contexts/search-context";
 
+window.location.hash === "#performance" &&
+  (() => {
+    (function () {
+      var script = document.createElement("script");
+      script.onload = function () {
+        // @ts-ignore
+        var stats = new Stats();
+        document.body.appendChild(stats.dom);
+        requestAnimationFrame(function loop() {
+          stats.update();
+          requestAnimationFrame(loop);
+        });
+      };
+      script.src = "//mrdoob.github.io/stats.js/build/stats.min.js";
+      document.head.appendChild(script);
+    })();
+  })();
+
 const ContextProviderNest = ({
   contextProviders,
   children,

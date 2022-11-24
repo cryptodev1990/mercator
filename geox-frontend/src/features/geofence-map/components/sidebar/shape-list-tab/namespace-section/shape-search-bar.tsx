@@ -1,5 +1,6 @@
 import Fuse from "fuse.js";
 import { useContext, useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { CgSearch } from "react-icons/cg";
 import { GeoShapeMetadata } from "../../../../../../client";
 import { useDebounce } from "../../../../../../hooks/use-debounce";
@@ -10,9 +11,9 @@ export const ShapeSearchBar = () => {
   // persist fuse instance
   const fuseRef = useRef<Fuse<GeoShapeMetadata>>(null);
   const { shapeMetadata, setActiveNamespaces, namespaces } = useShapes();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const { setSearchResults } = useContext(SearchContext);
-  const debouncedSearchTerm: string = useDebounce(searchTerm, 500);
+  const debouncedSearchTerm: string = useDebounce(searchTerm, 200);
 
   useEffect(() => {
     // filter to unique property keys
@@ -33,7 +34,7 @@ export const ShapeSearchBar = () => {
   }, [shapeMetadata]);
 
   useEffect(() => {
-    if (!fuseRef.current) {
+    if (!fuseRef.current || !debouncedSearchTerm) {
       return;
     }
     const results = debouncedSearchTerm
@@ -47,6 +48,10 @@ export const ShapeSearchBar = () => {
       );
       setActiveNamespaces(newActives);
       setSearchResults(results.map((x) => x.item.uuid));
+    } else {
+      toast.remove();
+      toast("No results found", { icon: "🔍" });
+      setSearchResults([]);
     }
   }, [debouncedSearchTerm]);
 
@@ -60,8 +65,13 @@ export const ShapeSearchBar = () => {
         `}
         type="text"
         placeholder="Search shapes"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        value={searchTerm || ""}
+        onChange={(e) => {
+          if (e.target.value === "") {
+            setSearchResults([]);
+          }
+          setSearchTerm(e.target.value);
+        }}
       ></input>
     </div>
   );

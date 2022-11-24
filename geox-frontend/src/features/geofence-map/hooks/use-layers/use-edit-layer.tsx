@@ -3,7 +3,6 @@ import {
   DrawPolygonMode,
   SplitPolygonMode,
   DrawPolygonByDraggingMode,
-  // ModifyMode,
 } from "@nebula.gl/edit-modes";
 
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";

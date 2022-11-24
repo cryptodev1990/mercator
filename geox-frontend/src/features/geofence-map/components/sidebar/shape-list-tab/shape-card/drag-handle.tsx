@@ -1,22 +1,21 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setDragImage
 import React, { useRef } from "react";
+import { GeoShape, GeoShapeMetadata } from "../../../../../../client";
 import { DragIndicatorIcon } from "../../../../../../common/components/icons";
 import NamespaceMenu from "../../namespace-menu";
 // drag handle in pure html and css
 export const DragHandle = ({
-  transferData,
+  shape,
   dragImage,
-}: // dataTip,
-{
-  transferData: string;
+}: {
+  shape: GeoShapeMetadata;
   dragImage: any;
-  // dataTip?: string;
 }) => {
   const outerRef = useRef<HTMLDivElement>(null);
 
   function dragStartHandler(ev: any) {
     // Set the drag's format and data. Use the event target's id for the data
-    ev.dataTransfer.setData("text/plain", transferData);
+    ev.dataTransfer.setData("text/plain", shape.uuid);
     const img = new Image();
     // base64 encoded shape card
     img.src = dragImage;
@@ -30,8 +29,8 @@ export const DragHandle = ({
       draggable={true}
       ref={outerRef}
     >
-      <DragIndicatorIcon className="text-gray-400" />
-      <NamespaceMenu outerRef={outerRef} shapeUuid={transferData} />
+      <DragIndicatorIcon className="transform text-gray-400 hover:text-red-300 hover:translate-y-[-1px]" />
+      <NamespaceMenu outerRef={outerRef} shape={shape} />
     </div>
   );
 };

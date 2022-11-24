@@ -59,3 +59,14 @@ export function tilesForGeoJson(geojson: Feature, zoom: number): string[] {
   const tl = tileList.map((t) => `${t.x}-${t.y}-${t.z}`);
   return tl;
 }
+
+export function debounceFn(cb: any, delay = 250) {
+  let timeout: any;
+
+  return (...args: any) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      cb(...args);
+    }, delay);
+  };
+}

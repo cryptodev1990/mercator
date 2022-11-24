@@ -4,14 +4,12 @@ import Dropdown from "../../../common/components/dropdown";
 import { CancelIcon } from "../../../common/components/icons";
 import { EditorMode } from "../cursor-modes";
 import { useCursorMode } from "../hooks/use-cursor-mode";
-import { useSelectedShapes } from "../hooks/use-selected-shapes";
 import { DocsButton } from "./docs-iframe";
 import { ToolButtonBank } from "./tool-button-bank/tool-button-bank";
 
 const GuideBar = () => {
   const [hide, setHide] = useState(true);
   const { cursorMode } = useCursorMode();
-  const { numSelected } = useSelectedShapes();
   const ref = useRef<HTMLButtonElement>(null);
 
   // Keep track of state in localStorage

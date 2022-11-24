@@ -61,7 +61,7 @@ export const ShapeCard = ({
     >
       <div className="flex flex-row justify-left items-center">
         <DragHandle
-          transferData={shape.uuid}
+          shape={shape}
           dragImage={SHAPE_CARD_IMAGE}
           // dataTip={`Drag into ${shape.name} another folder`}
         />
@@ -82,7 +82,6 @@ export const ShapeCard = ({
             geojson.properties.name = newName;
 
             if (newName !== shape.name) {
-              console.log("hey");
               updateShape({
                 ...shape,
                 // @ts-ignore
@@ -102,7 +101,6 @@ export const ShapeCard = ({
               <button
                 className="cx-btn-square hover:bg-red-400 hover:border-red-400 box-border"
                 disabled={updateLoading}
-                data-tip="Delete this shape"
                 onClick={(e: any) => {
                   if (!shape.uuid) toast.error("Delete shape failed");
                   else {
