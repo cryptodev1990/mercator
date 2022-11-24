@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "generate-client": "(cd .. && just create-openapi-schema) && yarn run _generate-client",
-    "_generate-client": "openapi --input ../openapi.json --output ./autogen --client axios --exportCore true --indent 2"
+    "lint": "next lint"
   },
   "dependencies": {
     "@deck.gl/core": "^8.8.20",
@@ -20,7 +18,6 @@
     "eslint-config-next": "13.0.3",
     "fuse.js": "^6.6.2",
     "next": "13.0.3",
-    "openapi-typescript-codegen": "^0.23.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "4.9.3"
