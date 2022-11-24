@@ -9,7 +9,7 @@ import { useSelectedShapes } from "../use-selected-shapes";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 
-const MAX_OPTIMISTIC_FEATURES = 100;
+const MAX_OPTIMISTIC_FEATURES = 30;
 
 export function useTiles() {
   const { idToken } = useIdToken();

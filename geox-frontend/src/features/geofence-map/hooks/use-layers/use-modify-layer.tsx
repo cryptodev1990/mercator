@@ -88,20 +88,6 @@ export function useModifyLayer() {
         setSelectedFeatureIndexes([o.index]);
       }
     },
-    onDragEnd: (event: any, info: any) => {
-      // web call here
-      if (!event.object.properties.guideType) {
-        // Viewport drags should not affect moving points
-        // This variable is only absent if we are moving points
-        return;
-      }
-      // Move the points
-      const shapeInEdit = event.layer.state.selectedFeatures[0];
-      updateShape({
-        geojson: shapeInEdit,
-        uuid: shapeInEdit.properties.__uuid,
-      });
-    },
     _subLayerProps: {
       guides: {
         stroked: true,

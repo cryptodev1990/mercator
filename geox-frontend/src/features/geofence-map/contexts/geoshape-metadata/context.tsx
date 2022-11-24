@@ -88,16 +88,18 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     if (lastVisibleNamespaces?.length) {
       const lastVisibleNamespacesParsed = JSON.parse(lastVisibleNamespaces);
       // verify current namespaces and new namespaces are not the same
-      if (
+      const matched =
         lastVisibleNamespacesParsed
           .map((n: Namespace) => n.id)
           .sort()
-          .join(",") !==
-        state.namespaces
+          .join(",") ===
+        state.visibleNamespaces
           .map((n: Namespace) => n.id)
           .sort()
-          .join(",")
-      ) {
+          .join(",");
+
+      if (!matched) {
+        console.log("setting visible namespaces");
         dispatch({
           type: "SET_VISIBLE_NAMESPACES",
           namespaces: lastVisibleNamespacesParsed,
