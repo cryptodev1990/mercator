@@ -39,15 +39,16 @@ app = FastAPI(
 )
 
 for route in [
-    routes.osm.router,
     routes.billing.router,
+    routes.comms.router,
     routes.health.router,
+    routes.info.router,
+    routes.namespaces.router,
+    routes.osm.router,
     routes.shapes.router,
     routes.shape_metadata.router,
     routes.status_code.router,
     routes.tasks.router,
-    routes.info.router,
-    routes.namespaces.router,
 ]:
     app.include_router(route)
 
