@@ -1260,3 +1260,8 @@ Branch: ``ajd/cache-madness``
 ## 11-15-22
 
 - [ ] Weird snapping in update: Fix by making addPosition not send a backend update
+
+## 11-22-22
+
+- [ ] Voyager: Add redux
+  - Actions: set search text, clear search text, add geo layer, clear geo layers

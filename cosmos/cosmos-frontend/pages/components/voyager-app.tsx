@@ -1,31 +1,47 @@
 import Image from "next/image";
-import { useContext, useEffect } from "react";
-import { SearchContext } from "../features/search/context";
-import SearchContextProvider from "../features/search/context";
 import Header from "./header";
 import SearchBar from "./search-bar/search-bar";
 import SearchSuggestions from "./search-suggestions";
+import { ToastProvider } from "react-toast-notifications";
+import GeoMap from "../features/geomap/geomap";
+import {
+  Provider as ReduxProvider,
+  useDispatch,
+  useSelector,
+} from "react-redux";
+import { store } from "./store";
+import { searchSlice, selectSearchState } from "./state/search-slice";
+import LayerCardBar from "./layer-card-bar";
+
+type ContextType = {
+  component: any;
+  props?: any;
+};
 
 const ContextProviderNest = ({
   contextProviders,
   children,
 }: {
-  contextProviders: any[];
+  contextProviders: ContextType[];
   children: React.ReactNode;
 }) => {
   for (let i = contextProviders.length - 1; i >= 0; i--) {
     const ContextProvider = contextProviders[i];
-    children = <ContextProvider>{children}</ContextProvider>;
+    children = (
+      <ContextProvider.component {...ContextProvider.props}>
+        {children}
+      </ContextProvider.component>
+    );
   }
   return <>{children}</>;
 };
 
 const MainView = () => {
-  const { queryPreview, searchText } = useContext(SearchContext);
+  const { inputText, searchResults } = useSelector(selectSearchState);
 
-  if (queryPreview || searchText) {
+  if (searchResults.length > 0) {
     return (
-      <main className="">
+      <main className="flex flex-row">
         <header className="relative m-10 select-none">
           <h1 className="absolute text-md">Voyager</h1>
           <Image
@@ -38,9 +54,31 @@ const MainView = () => {
         <section className="z-10 m-10">
           <SearchBar />
         </section>
+        <GeoMap />
+        <LayerCardBar />
       </main>
     );
   }
+
+  if (inputText && inputText.length > 0) {
+    return (
+      <main className="">
+        <header className="relative m-10 select-none">
+          <h1 className="absolute text-md">Voyager</h1>
+          <Image
+            src="/small-star.svg"
+            alt="Star"
+            width={100}
+            height={100}
+          ></Image>
+        </header>
+        <section className="z-10 m-10 flex flex-col">
+          <SearchBar />
+        </section>
+      </main>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main>
@@ -59,7 +97,18 @@ const MainView = () => {
 
 const VoyagerApp = () => {
   // first context provider is the outermost
-  const providers = [SearchContextProvider];
+  const providers = [
+    {
+      component: ToastProvider,
+    },
+    {
+      component: ReduxProvider,
+      props: {
+        store,
+      },
+    },
+  ];
+
   return (
     <ContextProviderNest contextProviders={providers}>
       <MainView />
@@ -70,7 +119,7 @@ const VoyagerApp = () => {
 
 const Footer = () => {
   return (
-    <footer className="fixed bottom-0 p-10 bg-[#121212]">
+    <footer className="fixed bottom-0 p-3 text-sm bg-[#121212] w-full text-center">
       <span className="p-1">Powered by</span>
       <span className="p-1">
         <a href="https://mercator.tech">Mercator</a>
