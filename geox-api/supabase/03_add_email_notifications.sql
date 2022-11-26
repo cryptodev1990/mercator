@@ -46,11 +46,11 @@ CREATE OR REPLACE FUNCTION send_support_ticket_received()
   AS $_$
     DECLARE contact_id INTEGER;
     BEGIN
-    SELECT supabase_functions.send_to(
-      NEW.email,
-      '[Mercator] Feature request / bug report confirmation',
-      'Hey ' || NEW.email || ',<br /><br />Thanks for the feedback -- Your issue is being reviewed. If there is a need for follow-up, expect a response in this thread.<br /><br />Best,<br />Mercator'
-    ) INTO contact_id;
+    -- SELECT supabase_functions.send_to(
+    --   NEW.email,
+    --   '[Mercator] Feature request / bug report confirmation',
+    --   'Hey ' || NEW.email || ',<br /><br />Thanks for the feedback -- Your issue is being reviewed. If there is a need for follow-up, expect a response in this thread.<br /><br />Best,<br />Mercator'
+    -- ) INTO contact_id;
     SELECT supabase_functions.send_to(
       'founders@mercator.tech',
       '[automated] Feature request / bug report from ' || NEW.email,
