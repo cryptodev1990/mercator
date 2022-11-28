@@ -21,7 +21,7 @@ type Action =
     }
   | {
       type: "ADD_MULTI_SELECTED_SHAPE_UUIDS";
-      multiSelectedUuids: GeoShapeMetadata["uuid"][];
+      multiSelectedUuid: GeoShapeMetadata["uuid"];
     }
   | {
       type: "REMOVE_SELECTED_SHAPE_UUIDS";
@@ -38,16 +38,18 @@ export function selectionReducer(state: State, action: Action): State {
       return generateFinalState(state, [...state.uuids, ...action.uuids]);
     }
     case "ADD_MULTI_SELECTED_SHAPE_UUIDS": {
-      console.log("add multiselect shape", [
-        ...state.multiSelectedUuids,
-        ...action.multiSelectedUuids,
-      ]);
+      // if state.multiSelectedUuids includes action.multiSelectedUuids, remove it
+      // otherwise add it
+      const multiSelectedUuids = state.multiSelectedUuids.includes(
+        action.multiSelectedUuid
+      )
+        ? state.multiSelectedUuids.filter(
+            (uuid) => uuid !== action.multiSelectedUuid
+          )
+        : [...state.multiSelectedUuids, action.multiSelectedUuid];
       return {
         ...state,
-        multiSelectedUuids: [
-          ...state.multiSelectedUuids,
-          ...action.multiSelectedUuids,
-        ],
+        multiSelectedUuids,
       };
     }
     case "REMOVE_SELECTED_SHAPE_UUIDS": {

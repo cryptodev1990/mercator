@@ -57,7 +57,7 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
   const setMultiSelectedShapeUuids = (uuid: string) => {
     dispatch({
       type: "ADD_MULTI_SELECTED_SHAPE_UUIDS",
-      multiSelectedUuids: [uuid],
+      multiSelectedUuid: uuid,
     });
   };
 
@@ -95,7 +95,6 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
   const multiSelectedFeatureCollection = geoShapesToFeatureCollection(
     multiselectedShapeData ? multiselectedShapeData : []
   );
-  console.log("multi", multiselectedShapeData);
   // remove selection if the visible shapes change
   const { visibleNamespaces, activeNamespaces } = useContext(
     GeoShapeMetadataContext

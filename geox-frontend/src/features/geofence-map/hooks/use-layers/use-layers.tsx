@@ -65,7 +65,7 @@ export const useLayers = () => {
       multiSelectedFeatureCollection &&
         cursorMode === EditorMode.ViewMode &&
         new GeoJsonLayer({
-          id: "geojson-view",
+          id: "multi-select-geojson-view",
           pickable: true,
           // @ts-ignore
           getFillColor: [0, 0, 255, 100],
