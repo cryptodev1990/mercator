@@ -20,7 +20,11 @@ type Action =
       uuids: GeoShapeMetadata["uuid"][];
     }
   | {
-      type: "ADD_MULTI_SELECTED_SHAPE_UUIDS";
+      type: "ADD_SHAPE_TO_MULTISELECT";
+      multiSelectedUuid: GeoShapeMetadata["uuid"];
+    }
+  | {
+      type: "REMOVE_SHAPE_FROM_MULTISELECT";
       multiSelectedUuid: GeoShapeMetadata["uuid"];
     }
   | {
@@ -37,16 +41,19 @@ export function selectionReducer(state: State, action: Action): State {
     case "ADD_SELECTED_SHAPE_UUIDS": {
       return generateFinalState(state, [...state.uuids, ...action.uuids]);
     }
-    case "ADD_MULTI_SELECTED_SHAPE_UUIDS": {
-      // if state.multiSelectedUuids includes action.multiSelectedUuids, remove it
-      // otherwise add it
-      const multiSelectedUuids = state.multiSelectedUuids.includes(
-        action.multiSelectedUuid
-      )
-        ? state.multiSelectedUuids.filter(
-            (uuid) => uuid !== action.multiSelectedUuid
-          )
-        : [...state.multiSelectedUuids, action.multiSelectedUuid];
+    case "ADD_SHAPE_TO_MULTISELECT": {
+      return {
+        ...state,
+        multiSelectedUuids: [
+          ...state.multiSelectedUuids,
+          action.multiSelectedUuid,
+        ],
+      };
+    }
+    case "REMOVE_SHAPE_FROM_MULTISELECT": {
+      const multiSelectedUuids = state.multiSelectedUuids.filter(
+        (uuid) => uuid !== action.multiSelectedUuid
+      );
       return {
         ...state,
         multiSelectedUuids,
@@ -65,7 +72,6 @@ export function selectionReducer(state: State, action: Action): State {
       };
     }
     case "RESET_SELECTION": {
-      console.log("I am resetting");
       return initialState;
     }
     default:

@@ -36,8 +36,9 @@ const GeofenceMap = () => {
     clearSelectedShapeUuids,
     isSelected,
     setSelectedShapeUuid,
-    setMultiSelectedShapeUuids,
+    addShapeToMultiSelect,
     clearMultiSelectedShapeUuids,
+    removeShapeFromMultiSelect,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
@@ -52,16 +53,16 @@ const GeofenceMap = () => {
       }
       if (event.key === "Backspace") {
         console.log("multiSelectedUuids", multiSelectedUuids);
-        // if (selectedUuids) {
-        //   for (const uuid of selectedUuids) {
-        //     deleteShapes([uuid], {
-        //       onSuccess: () => {
-        //         clearSelectedShapeUuids();
-        //         setCursorMode(EditorMode.ViewMode);
-        //       },
-        //     });
-        //   }
-        // }
+        if (selectedUuids) {
+          for (const uuid of selectedUuids) {
+            deleteShapes([uuid], {
+              onSuccess: () => {
+                clearSelectedShapeUuids();
+                setCursorMode(EditorMode.ViewMode);
+              },
+            });
+          }
+        }
         if (multiSelectedUuids) {
           deleteShapes(multiSelectedUuids, {
             onSuccess: () => {
@@ -186,11 +187,14 @@ const GeofenceMap = () => {
           }
 
           if (e.changedPointers[0].metaKey) {
-            setMultiSelectedShapeUuids(uuid);
-            return;
+            if (multiSelectedUuids.includes(uuid)) {
+              removeShapeFromMultiSelect(uuid);
+            } else {
+              addShapeToMultiSelect(uuid);
+            }
           }
 
-          if (!isSelected(uuid)) {
+          if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
             setSelectedShapeUuid(uuid);
           }
         }}

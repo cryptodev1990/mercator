@@ -14,9 +14,10 @@ export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
   setSelectedShapeUuid: (uuid: string) => void;
   multiSelectedUuids: GeoShapeMetadata["uuid"][];
-  setMultiSelectedShapeUuids: (uuids: string) => void;
+  addShapeToMultiSelect: (uuids: string) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
   removeSelectedShapeUuid: (uuid: string) => void;
+  removeShapeFromMultiSelect: (uuid: string) => void;
   clearMultiSelectedShapeUuids: () => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
@@ -29,9 +30,10 @@ export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
   setSelectedShapeUuid: () => {},
   multiSelectedUuids: [],
-  setMultiSelectedShapeUuids: () => {},
+  addShapeToMultiSelect: () => {},
   isSelected: () => false,
   removeSelectedShapeUuid: () => {},
+  removeShapeFromMultiSelect: () => {},
   clearMultiSelectedShapeUuids: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
@@ -54,9 +56,16 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
   };
 
-  const setMultiSelectedShapeUuids = (uuid: string) => {
+  const addShapeToMultiSelect = (uuid: string) => {
     dispatch({
-      type: "ADD_MULTI_SELECTED_SHAPE_UUIDS",
+      type: "ADD_SHAPE_TO_MULTISELECT",
+      multiSelectedUuid: uuid,
+    });
+  };
+
+  const removeShapeFromMultiSelect = (uuid: string) => {
+    dispatch({
+      type: "REMOVE_SHAPE_FROM_MULTISELECT",
       multiSelectedUuid: uuid,
     });
   };
@@ -111,7 +120,8 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
         numSelected: state.numSelected,
         isSelected,
         setSelectedShapeUuid,
-        setMultiSelectedShapeUuids,
+        addShapeToMultiSelect,
+        removeShapeFromMultiSelect,
         removeSelectedShapeUuid,
         clearMultiSelectedShapeUuids,
         clearSelectedShapeUuids,
