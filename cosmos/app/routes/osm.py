@@ -1,6 +1,6 @@
 """Open Street Maps (OSM) routes."""
 import logging
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
@@ -10,11 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from app.core.datatypes import BBox, FeatureCollection
 from app.crud.osm_search import sprel_query_stmt
 from app.dependencies import get_conn
-from app.parsers.regex import parse
+from app.parsers.exceptions import QueryParseError
+from app.parsers.rules import parse
 from app.schemas import (
-    Location,
     OsmRawQueryResponse,
     OsmSearchResponse,
+    Place,
     SpRelCoveredBy,
     SpRelDisjoint,
 )
@@ -62,31 +63,61 @@ async def _get_query(
     - Coffee shops not in Oakland
 
     """
-    parsed_query = parse(query)
-    if parsed_query is None:
-        raise HTTPException(status_code=400, detail="Unable to parse query.")
+    # try:
+    #     parsed_query = parse(query)
+    # except QueryParseError:
+    #     raise HTTPException(status_code=422, detail="Unable to parse query.") from None
 
-    # semantic analysis of the parse tree to convert it into a SQL query
-    params = {"location": parsed_query["args"]["subject"]["text"]}
-    if parsed_query.get("intent") == "covered_by":
-        obj_query = parsed_query["args"]["object"]["text"]
-        params["relations"] = [SpRelCoveredBy(location=Location(query=obj_query, bbox=bbox))]
-    elif parsed_query.get("intent") == "disjoint":
-        obj_query = parsed_query["args"]["object"]["text"]
-        params["relations"] = [SpRelDisjoint(location=Location(query=obj_query, bbox=bbox))]
+    # # semantic analysis of the parse tree to convert it into a SQL query
+    # params: Dict[str, Any] = {"query": parsed_query.slots["SUBJECT"].text}
+    # if parsed_query.intent == Intents.IN:
+    #     obj_query = parsed_query.slots.get("OBJECT")
+    #     if obj_query is None:
+    #         raise HTTPException(
+    #             status_code=422, detail="Unable to parse query: found X in Y intent with no object."
+    #         )
+    #     params["relations"] = [
+    #         SpRelCoveredBy(
+    #             object=Place(
+    #                 text=obj_query.text,
+    #                 is_named=obj_query.type == "NAMED_SPATIAL_ENTITY",
+    #                 bbox=bbox,
+    #             )
+    #         )
+    #     ]
+    # elif parsed_query.intent == "NOT_IN":
+    #     obj_query = parsed_query.slots["OBJECT"]
+    #     if obj_query is None:
+    #         raise HTTPException(
+    #             status_code=422, detail="Unable to parse query: found X in Y intent with no object."
+    #         )
+    #     params["relations"] = [
+    #         SpRelDisjoint(
+    #             object=Place(
+    #                 text=obj_query.text,
+    #                 is_named=obj_query.type == "NAMED_SPATIAL_ENTITY",
+    #                 bbox=bbox,
+    #             )
+    #         )
+    #     ]
 
-    label_args = [parsed_query["args"]["subject"]["text"]]
-    if parsed_query.get("intent") in {"contains", "disjoint"}:
-        label_args.append(parsed_query["args"]["predicate"]["text"])
-        label_args.append(parsed_query["args"]["object"]["text"])
-    label = " ".join(label_args)
-    sql = sprel_query_stmt(**params, bbox=bbox, limit=limit)
+    # label_args = [parsed_query.slots["SUBJECT"].text]
+    # if parsed_query.intent == "IN":
+    #     label_args.extend(["in", parsed_query.slots["OBJECT"].text])
+    # if parsed_query.intent == "NOT_IN":
+    #     label_args.extend(["not in", parsed_query.slots["OBJECT"].text])
+    # label = " ".join(label_args)
+    # sql = sprel_query_stmt(**params, bbox=bbox, limit=limit)
 
-    results = await conn.execute(sql)
+    # results = await conn.execute(sql)
+
+    results: List[Any] = []
+    label = query
+
     return OsmSearchResponse(
         query=query,
         label=label,
-        parse=parsed_query,
+        parse={},  # parsed_query.dict(),
         results=FeatureCollection(features=[row.feature for row in results]),  # type: ignore
     )
 

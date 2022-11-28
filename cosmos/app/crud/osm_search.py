@@ -1,21 +1,15 @@
 """OSM search functions."""
 import logging
-from enum import Enum
-from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Union
 
-from fastapi import APIRouter, Depends, Query
-from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
-from sqlalchemy import String, and_
+from sqlalchemy import String
 from sqlalchemy import case as sql_case
 from sqlalchemy import func, or_, select
-from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy.sql import ColumnElement, Join, Select, cast
-from sqlalchemy.sql.expression import CTE
+from sqlalchemy.sql.selectable import CTE
 
-from app.core.datatypes import BBox, FeatureCollection, MapProjection
-from app.data.feature_classes import FeatureClass, feature_classes
+from app.core.datatypes import BBox, MapProjection
 from app.db import osm as osm_tbl
-from app.dependencies import get_conn
 from app.schemas import SpatialRelation
 
 logger = logging.getLogger(__name__)
@@ -26,19 +20,20 @@ def _in_bbox(
     bbox: BBox,
     srid: int = MapProjection.WGS84,
 ) -> ColumnElement:
-    """Return a column element to check whether a geometry is in a bounding box specified by an array."""
+    """Return SQL expression check whether a geom is inside a bounding box."""
     envelope = func.ST_MakeEnvelope(*bbox, int(srid))
     return func.ST_Intersects(col, envelope)
 
 
-# Returns an osm location or locations
-def get_osm_location(
+# Returns osm features
+def search_osm(
     *,
     query: Optional[str] = None,
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
     cols: Optional[List[ColumnElement[Any]]] = None,
-) -> select:
+) -> Select:
+    """Generate a select statement for the OSM database."""
     if cols is None:
         cols = [
             osm_tbl.c.osm_id,
@@ -64,19 +59,23 @@ def get_osm_location(
 
 def sprel_query_stmt(
     *,
-    location: Optional[str] = None,
+    query: Optional[str] = None,
+    is_named: bool = False,
     bbox: Optional[BBox] = None,
     relations: Optional[List[SpatialRelation]] = None,
     limit: Optional[int] = 10,
 ) -> Select:
-    base: Select = get_osm_location(query=location, bbox=bbox)
-
+    """Return a SQL statement for a spatial relation query."""
+    base = search_osm(query=query, bbox=bbox)
+    # if is_named:
+    #     base = base.limit(1)
     rel_ctes = []
     # # for each relation, create a CTE
     for i, rel in enumerate(relations or []):
-        rel_stmt = get_osm_location(
-            query=(rel.location.query if rel.location else None),
-            bbox=(rel.location.bbox if rel.location else None) or bbox,
+        rel_stmt = search_osm(
+            query=(rel.object.text if rel.object else None),
+            bbox=(rel.object.bbox if rel.object else None) or bbox,
+            # limit=(1 if rel.object.is_named else None),
         )
         if rel.type == "covered_by":
             rel_stmt = rel_stmt.where(

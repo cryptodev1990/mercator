@@ -1,0 +1,195 @@
+- text: San Francisco shops
+  intent: SIMPLE
+  slots:
+  - San Francisco shops
+- text: Shops in San Francisco
+  intent: IN
+  slots:
+  - Shops
+  - San Francisco
+- text: Find shops in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Find shops located in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Give me shops in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Give me shops located in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Search for shops in San Francisco
+  intent: IN
+  slots:
+  - Search
+  - San Francisco
+- text: Search for shops located in San Francisco
+  intent: IN
+  slots:
+  - Search
+  - San Francisco
+- text: What shops are located in San Francisco
+  intent: IN
+  slots:
+  - What shops
+  - San Francisco
+- text: What shops are in San Francisco
+  intent: IN
+  slots:
+  - What shops
+  - San Francisco
+- text: Where are shops in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Which shops are in San Francisco
+  intent: IN
+  slots:
+  - Which shops
+  - San Francisco
+- text: Which shops are located in San Francisco
+  intent: IN
+  slots:
+  - Which shops
+  - San Francisco
+- text: Locate shops in San Francisco
+  intent: IN
+  slots:
+  - Locate shops
+  - San Francisco
+- text: Please find shops in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Select shops in San Francisco
+  intent: IN
+  slots:
+  - Select shops
+  - San Francisco
+- text: Select for shops in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Search in San Francisco for shops
+  intent: IN
+  slots:
+  - Search
+  - San Francisco
+- text: Where are the shops in San Francisco
+  intent: IN
+  slots:
+  - the shops
+  - San Francisco
+- text: Where are shops in San Francisco
+  intent: IN
+  slots:
+  - shops
+  - San Francisco
+- text: Where is a shop in San Francisco
+  intent: IN
+  slots:
+  - a shop
+  - San Francisco
+- text: Which pubs are located in Oakland?
+  intent: IN
+  slots:
+  - Which pubs
+  - Oakland
+- text: Not in 5 miles of Oakland
+  intent: SIMPLE
+  slots:
+  - 5 miles
+- text: shops within 2 hours and 10 minutes of Oakland
+  intent: IN
+  slots:
+  - shops
+  - 2 hours and 10 minutes of Oakland
+- text: The best restaurants that have quiet seating
+  intent: SIMPLE
+  slots:
+  - The best restaurants
+- text: Shops not in San Francisco
+  intent: NOT_IN
+  slots:
+  - Shops
+  - San Francisco
+- text: Shops outside of San Francisco
+  intent: SIMPLE
+  slots:
+  - Shops
+- text: Shops not inside of San Francisco
+  intent: SIMPLE
+  slots:
+  - Shops
+- text: Shops that are not inside of San Francisco
+  intent: SIMPLE
+  slots:
+  - Shops
+- text: Shops not located in San Francisco
+  intent: NOT_IN
+  slots:
+  - Shops
+  - San Francisco
+- text: Shops not included in San Francisco
+  intent: IN
+  slots:
+  - Shops
+  - San Francisco
+- text: Shops that are not included in San Francisco
+  intent: IN
+  slots:
+  - Shops
+  - San Francisco
+- text: Shops that are outside of San Francisco
+  intent: NOT_IN
+  slots:
+  - Shops
+  - San Francisco
+- text: Give me the best restaurants in Oakland!
+  intent: IN
+  slots:
+  - the best restaurants
+  - Oakland
+- text: Find the tallest mountain in Idaho.San Francisco Chinese restaurants
+  intent: IN
+  slots:
+  - the tallest mountain
+  - Idaho
+- text: Chinese restaurants
+  intent: SIMPLE
+  slots:
+  - Chinese restaurants
+- text: San Francisco restaurants
+  intent: SIMPLE
+  slots:
+  - San Francisco restaurants
+- text: Chinese San Francisco restaurants
+  intent: SIMPLE
+  slots:
+  - Chinese San Francisco restaurants
+- text: San Francisco Chinese restaurants
+  intent: SIMPLE
+  slots:
+  - San Francisco Chinese restaurants
+- text: Chinese restaurants in San Francisco
+  intent: IN
+  slots:
+  - Chinese restaurants
+  - San Francisco
+- text: Irish pubs in San Francisco
+  intent: IN
+  slots:
+  - Irish pubs
+  - San Francisco

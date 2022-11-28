@@ -27,5 +27,5 @@ async def get_conn(
     """Yield a connection with an open transaction."""
     # engine.begin() yields a connection and also opens a transaction.
     # the context manager will close the connection and transaction
-    async with engine.begin() as conn:
+    async with engine.begin() as conn:  # type: ignore
         yield conn

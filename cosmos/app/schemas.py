@@ -24,21 +24,22 @@ class HealthResponse(BaseModel):
     message: HealthStatus
 
 
-class Location(BaseModel):
-    """A location in a location query.
+class Place(BaseModel):
+    """A place in a place query.
 
-    The full location query also can include spatial relations.
+    The full place query also can include spatial relations.
 
     """
 
-    query: Optional[str] = None
+    text: Optional[str] = None
+    is_named: bool = False
     bbox: Optional[BBox] = None
 
 
 class SpRel(BaseModel):
     """A spatial relationship between geometries."""
 
-    location: Optional[Location]
+    object: Place
 
 
 class SpRelContains(SpRel):
@@ -194,6 +195,7 @@ class OsmRawQueryResponse(BaseModel):
 
     class Config:
         """Pydantic config options."""
+
         # pylint: disable=line-too-long
         schema_extra = {
             "example": {
@@ -415,7 +417,7 @@ class OsmRawQueryResponse(BaseModel):
                             "official_name:cmn-Hant": "舊金山市郡",
                             "official_name:zh-Hant-HK": "三藩市市縣",
                             "official_name:zh-Hant-TW": "舊金山市郡",
-                        }
+                        },
                     }
                 ],
             }
