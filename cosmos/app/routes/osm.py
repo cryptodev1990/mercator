@@ -1,6 +1,6 @@
 """Open Street Maps (OSM) routes."""
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
@@ -8,17 +8,11 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from app.core.datatypes import BBox, FeatureCollection
-from app.crud.osm_search import sprel_query_stmt
+from app.crud.osm_search import to_sql
 from app.dependencies import get_conn
 from app.parsers.exceptions import QueryParseError
 from app.parsers.rules import parse
-from app.schemas import (
-    OsmRawQueryResponse,
-    OsmSearchResponse,
-    Place,
-    SpRelCoveredBy,
-    SpRelDisjoint,
-)
+from app.schemas import OsmRawQueryResponse, OsmSearchResponse
 
 router = APIRouter(prefix="")
 
@@ -63,61 +57,18 @@ async def _get_query(
     - Coffee shops not in Oakland
 
     """
-    # try:
-    #     parsed_query = parse(query)
-    # except QueryParseError:
-    #     raise HTTPException(status_code=422, detail="Unable to parse query.") from None
+    try:
+        parsed_query = parse(query)
+    except QueryParseError:
+        raise HTTPException(status_code=422, detail="Unable to parse query.") from None
 
-    # # semantic analysis of the parse tree to convert it into a SQL query
-    # params: Dict[str, Any] = {"query": parsed_query.slots["SUBJECT"].text}
-    # if parsed_query.intent == Intents.IN:
-    #     obj_query = parsed_query.slots.get("OBJECT")
-    #     if obj_query is None:
-    #         raise HTTPException(
-    #             status_code=422, detail="Unable to parse query: found X in Y intent with no object."
-    #         )
-    #     params["relations"] = [
-    #         SpRelCoveredBy(
-    #             object=Place(
-    #                 text=obj_query.text,
-    #                 is_named=obj_query.type == "NAMED_SPATIAL_ENTITY",
-    #                 bbox=bbox,
-    #             )
-    #         )
-    #     ]
-    # elif parsed_query.intent == "NOT_IN":
-    #     obj_query = parsed_query.slots["OBJECT"]
-    #     if obj_query is None:
-    #         raise HTTPException(
-    #             status_code=422, detail="Unable to parse query: found X in Y intent with no object."
-    #         )
-    #     params["relations"] = [
-    #         SpRelDisjoint(
-    #             object=Place(
-    #                 text=obj_query.text,
-    #                 is_named=obj_query.type == "NAMED_SPATIAL_ENTITY",
-    #                 bbox=bbox,
-    #             )
-    #         )
-    #     ]
-
-    # label_args = [parsed_query.slots["SUBJECT"].text]
-    # if parsed_query.intent == "IN":
-    #     label_args.extend(["in", parsed_query.slots["OBJECT"].text])
-    # if parsed_query.intent == "NOT_IN":
-    #     label_args.extend(["not in", parsed_query.slots["OBJECT"].text])
-    # label = " ".join(label_args)
-    # sql = sprel_query_stmt(**params, bbox=bbox, limit=limit)
-
-    # results = await conn.execute(sql)
-
-    results: List[Any] = []
-    label = query
+    sql = to_sql(parsed_query, bbox=bbox, limit=limit)
+    results = await conn.execute(sql)
 
     return OsmSearchResponse(
         query=query,
-        label=label,
-        parse={},  # parsed_query.dict(),
+        label=str(parsed_query),
+        parse=parsed_query,
         results=FeatureCollection(features=[row.feature for row in results]),  # type: ignore
     )
 

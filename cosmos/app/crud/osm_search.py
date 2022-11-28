@@ -1,16 +1,28 @@
 """OSM search functions."""
 import logging
+from functools import singledispatch
 from typing import Any, List, Optional, Union
 
-from sqlalchemy import String
+from geoalchemy2 import Geography, Geometry
+from sqlalchemy import String, and_
 from sqlalchemy import case as sql_case
-from sqlalchemy import func, or_, select
-from sqlalchemy.sql import ColumnElement, Join, Select, cast
-from sqlalchemy.sql.selectable import CTE
+from sqlalchemy import cast, func, or_, select
+from sqlalchemy.sql import ColumnElement, Select
 
 from app.core.datatypes import BBox, MapProjection
 from app.db import osm as osm_tbl
-from app.schemas import SpatialRelation
+from app.parsers.rules import (
+    Buffer,
+    NamedPlace,
+    ParsedQuery,
+    Place,
+    SpRelCoveredBy,
+    SpRelDisjoint,
+    SpRelNear,
+    SpRelNotNear,
+    SpRelWithinDistOf,
+    SpRelOutsideDistOf
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +42,7 @@ def search_osm(
     *,
     query: Optional[str] = None,
     bbox: Optional[BBox] = None,
+    osm_id: Optional[str] = None,
     limit: Optional[int] = None,
     cols: Optional[List[ColumnElement[Any]]] = None,
 ) -> Select:
@@ -52,81 +65,140 @@ def search_osm(
     stmt = select(cols).select_from(osm_tbl).limit(limit)  # type: ignore
     if bbox:
         stmt = stmt.where(_in_bbox(osm_tbl.c.geom, bbox))  # type: ignore
+    if osm_id:
+        stmt = stmt.where(cast(osm_tbl.c.osm_id, String()) == osm_id) # type: ignore
     if query:
         stmt = stmt.where(osm_tbl.c.fts.op("@@")(func.websearch_to_tsquery(query)))
     return stmt
 
 
-def sprel_query_stmt(
-    *,
-    query: Optional[str] = None,
-    is_named: bool = False,
-    bbox: Optional[BBox] = None,
-    relations: Optional[List[SpatialRelation]] = None,
-    limit: Optional[int] = 10,
-) -> Select:
-    """Return a SQL statement for a spatial relation query."""
-    base = search_osm(query=query, bbox=bbox)
-    # if is_named:
-    #     base = base.limit(1)
-    rel_ctes = []
-    # # for each relation, create a CTE
-    for i, rel in enumerate(relations or []):
-        rel_stmt = search_osm(
-            query=(rel.object.text if rel.object else None),
-            bbox=(rel.object.bbox if rel.object else None) or bbox,
-            # limit=(1 if rel.object.is_named else None),
+@singledispatch
+def to_sql(arg: Any, **kwargs: Any) -> Any:
+    """Convert a parsed query to a SQL statement."""
+    raise NotImplementedError(f"Cannot convert {arg} to SQL")
+
+
+@to_sql.register
+def _(arg: Place, bbox: Optional[BBox] = None) -> Select:
+    query = " ".join(arg.value)
+    return search_osm(query=query, bbox=bbox)
+
+
+@to_sql.register
+def _(arg: NamedPlace, bbox: Optional[BBox] = None) -> Select:
+    query = " ".join(arg.value)
+    # hard code the case of San Francisco since we use it so much in early demos
+    if query.lower() == "san francisco":
+        return search_osm(osm_id="111968")
+    return search_osm(query=query, bbox=bbox)
+
+
+@to_sql.register
+def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None) -> Select:
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    obj = (
+        to_sql(arg.object, bbox=bbox).where(
+            or_(
+                func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
+                osm_tbl.c.category == "boundary",
+            )
         )
-        if rel.type == "covered_by":
-            rel_stmt = rel_stmt.where(
-                or_(
-                    func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
-                    osm_tbl.c.category == "boundary",
-                )
-            )
-        elif rel.type == "disjoint":
-            rel_stmt = rel_stmt.where(
-                func.ST_GeometryType(osm_tbl.c.geom).in_(
-                    ["ST_Polygon", "ST_MultiPolygon", "ST_Line", "ST_MultiLine"]
-                )
-            )
-        rel_ctes.append((rel, rel_stmt.cte(f"rel_{i}")))
+    ).cte()
+    join_clause = select(subj).join(obj, func.ST_CoveredBy(subj.c.geom, obj.c.geom))
+    return join_clause
 
-    # # Make base a CTE after it has been modified
-    base_cte = base.cte("base")
-    # # Now start a join clause
-    join_clause: Union[Join, CTE] = base_cte
-    # # Now merge with the rel CTEs
-    for i, (rel, cte) in enumerate(rel_ctes):
-        if rel.type == "covered_by":
-            join_clause = join_clause.join(cte, func.ST_CoveredBy(base_cte.c.geom, cte.c.geom))
-        elif rel.type == "disjoint":
-            join_clause = join_clause.join(cte, func.ST_Disjoint(base_cte.c.geom, cte.c.geom))
-        else:
-            raise NotImplementedError(f"Relation type {rel.type} not implemented")
+@to_sql.register
+def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None) -> Select:
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    obj = (
+        to_sql(arg.object, bbox=bbox)
+        .where(
+            or_(
+                func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
+                osm_tbl.c.category == "boundary",
+            )
+        )
+        .cte()
+    )
 
-    # final query
+    join_clause = select(subj).join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
+    return join_clause
+
+
+@to_sql.register(SpRelOutsideDistOf)
+@to_sql.register(SpRelNotNear)
+def _(arg: Union[SpRelOutsideDistOf, SpRelNotNear], bbox: Optional[BBox] = None) -> Select:
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    obj = to_sql(arg.object, bbox=bbox).cte()
+    join_clause = select(subj).join(
+        obj,
+        and_(
+            func.ST_Disjoint(subj.c.geom, obj.c.geom),
+            func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+            > arg.distance,
+        ),
+    )
+    return join_clause
+
+
+@to_sql.register(SpRelWithinDistOf)
+@to_sql.register(SpRelNear)
+def _(arg: Union[SpRelNear, SpRelWithinDistOf], bbox: Optional[BBox] = None) -> Select:
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    obj = to_sql(arg.object, bbox=bbox).cte()
+    join_clause = select(subj).join(
+        obj,
+        and_(
+            func.ST_Disjoint(subj.c.geom, obj.c.geom),
+            func.ST_DWithin(
+                cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()), arg.distance
+            ),
+        ),
+    )
+    return join_clause
+
+
+@to_sql.register
+def _(arg: Buffer, bbox: Optional[BBox] = None) -> Select:
+    obj = to_sql(arg.object, bbox=bbox).cte()
+    return select(
+        [
+            obj.c.tags,
+            obj.c.osm_type,
+            obj.c.osm_id,
+            obj.c.category,
+            cast(
+                func.ST_Buffer(cast(obj.c.geom, Geography()), arg.distance),
+                Geometry(srid=MapProjection.WGS84),
+            ).label("geom"),
+        ]
+    )
+
+
+@to_sql.register
+def _(arg: ParsedQuery, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
+    base = to_sql(arg.value, bbox=bbox).cte()
     stmt = (
         select(
             func.to_geojson_feature(
-                base_cte.c.geom,
+                base.c.geom,
                 func.jsonb_build_object(
                     "osm",
                     func.jsonb_build_object(
                         "tags",
-                        base_cte.c.tags,
+                        base.c.tags,
                         "type",
-                        base_cte.c.osm_type,
+                        base.c.osm_type,
                         "id",
-                        base_cte.c.osm_id,
+                        base.c.osm_id,
                         "category",
-                        base_cte.c.category,
+                        base.c.category,
                     ),
                 ),
-                cast(base_cte.c.osm_id, String()),
+                cast(base.c.osm_id, String()),
             ).label("feature")
         )
-        .select_from(join_clause)
+        .select_from(base)
         .limit(limit)
     )
     return stmt

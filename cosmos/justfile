@@ -9,8 +9,8 @@ git_commit_hash := `git rev-parse HEAD`
 default:
 	@just --list
 
-test:
-	poetry run pytest --cov=app test
+test +ARGS='--cov=app test':
+	poetry run pytest {{ ARGS }}
 
 run:
 	poetry run ./start.sh

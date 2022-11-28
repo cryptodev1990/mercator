@@ -2,7 +2,7 @@
 import logging
 from datetime import timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import spacy
 from pint import Quantity, UnitRegistry
@@ -25,14 +25,13 @@ def _quantity_to_dict(quantity: Quantity) -> dict[str, Any]:
     return {"magnitude": quantity.magnitude, "units": str(quantity.units)}
 
 
-class LocalModel(BaseModel):
+class _LocalModel(BaseModel):
     """Local pydantic model for this module."""
 
     class Config:
         """Pydantic config."""
 
         arbitrary_types_allowed = True
-
         custom_encoders = {Quantity: _quantity_to_dict}
 
 
@@ -48,117 +47,205 @@ class TravelMethod(str, Enum):
 # pylint: enable=invalid-name
 
 
-class Place(LocalModel):
+class Place(_LocalModel):
     """Represents a place."""
 
-    type: str = Field("place", const=True)
-    value: Union[str, List[str]]
+    # NOTE: the Literal[...] = Field(...) is redundant, but it seems to be needed to get
+    # Field(..., discriminator=...) to work.
+    type: Literal["place"] = Field("place", const=True)
+    value: List[str]
+
+    def __str__(self) -> str:
+        return " ".join(self.value)
 
 
-class ZipCode(LocalModel):
-    """Represents a Zip-code."""
-
-    type: str = Field("zip_code", const=True)
-    value: str
-
-
-class NamedPlace(LocalModel):
+class NamedPlace(_LocalModel):
     """Named place."""
 
-    type: str = Field("named_place", const=True)
-    value: Union[str, List[str]]
+    type: Literal["named_place"] = Field("named_place", const=True)
+    value: List[str]
+
+    def __str__(self) -> str:
+        return " ".join(self.value)
 
 
-class _SpatialRelationship(LocalModel):
-    subject: Union[Place, NamedPlace, ZipCode]
-    object: Union[Place, NamedPlace, ZipCode]
+class _SpatialRelationship(_LocalModel):
+    subject: Union[Place, NamedPlace]
+    object: Union[Place, NamedPlace]
 
 
 class SpRelCoveredBy(_SpatialRelationship):
     """Spatial relationship of X is covered by Y."""
 
-    type: str = Field("covered_by", const=True)
+    type: Literal["covered_by"] = Field("covered_by", const=True)
+
+    def __str__(self) -> str:
+        return " ".join([str(self.subject), "IN", str(self.object)])
 
 
 class SpRelDisjoint(_SpatialRelationship):
     """Spatial relationship of X disjoint Y."""
 
-    type: str = Field("disjoint", const=True)
+    type: Literal["disjoint"] = Field("disjoint", const=True)
+
+    def __str__(self) -> str:
+        return " ".join([str(self.subject), "NOT IN", str(self.object)])
 
 
 class SpRelWithinDistOf(_SpatialRelationship):
     """Spatial relationship of X within D distance of Y."""
 
-    type: str = Field("within_dist_of", const=True)
-    distance: List[Quantity]
+    type: Literal["within_dist_of"] = Field("within_dist_of", const=True)
+    distance: float = Field(..., ge=0, description="Distance in meters")
+
+    def __str__(self) -> str:
+        return " ".join(
+            [
+                str(self.subject),
+                "LESS THAN",
+                str(Quantity(self.distance, "meters")),
+                "FROM",
+                str(self.object),
+            ]
+        )
 
 
 class SpRelOutsideDistOf(_SpatialRelationship):
     """Spatial relationship of X more than D distance of Y."""
 
-    type: str = Field("outside_dist_of", const=True)
-    distance: List[Quantity]
+    type: Literal["outside_dist_of"] = Field("outside_dist_of", const=True)
+    distance: float = Field(..., ge=0, description="Distance in meters")
+
+    def __str__(self) -> str:
+        return " ".join(
+            [
+                str(self.subject),
+                "MORE THAN",
+                str(Quantity(self.distance, "meters")),
+                "FROM",
+                str(self.object),
+            ]
+        )
 
 
-NEAR_DISTANCE = Quantity(1, ureg.mile)
+NEAR_DISTANCE = 1609.344
 """Constant used to determine the distance between two objects that is near."""
 
 
 class SpRelNear(_SpatialRelationship):
     """Spatial relationship of X near Y."""
 
-    type: str = Field("near", const=True)
-    distance: List[Quantity] = Field(NEAR_DISTANCE)
+    type: Literal["near"] = Field("near", const=True)
+    distance: float = Field(NEAR_DISTANCE, ge=0, description="Distance in meters")
+
+    def __str__(self) -> str:
+        return " ".join([str(self.subject), "NEAR", str(self.object)])
 
 
 class SpRelNotNear(_SpatialRelationship):
     """Spatial relationship of X not near Y."""
 
-    type: str = Field("not_near", const=True)
-    distance: List[Quantity] = Field(NEAR_DISTANCE)
+    type: Literal["not_near"] = Field("not_near", const=True)
+    distance: float = Field(NEAR_DISTANCE, ge=0, description="Distance in meters")
+
+    def __str__(self) -> str:
+        return " ".join([str(self.subject), "NOT NEAR", str(self.object)])
 
 
 class SpRelWithinTimeOf(_SpatialRelationship):
     """Spatial relationship of X within D time of Y."""
 
-    type: str = Field("within_time_of", const=True)
+    type: Literal["within_time_of"] = Field("within_time_of", const=True)
     duration: timedelta
     method: TravelMethod = TravelMethod.drive
+
+    def __str__(self) -> str:
+        return " ".join(
+            [str(self.subject), "LESS THAN", str(self.duration), "FROM", str(self.object)]
+        )
 
 
 class SpRelOutsideTimeOf(_SpatialRelationship):
     """Spatial relationship of X greater than D time from Y."""
 
-    type: str = Field("within_time_of", const=True)
+    type: Literal["outside_time_of"] = Field("outside_time_of", const=True)
     duration: timedelta
     method: TravelMethod = TravelMethod.drive
 
+    def __str__(self) -> str:
+        return " ".join(
+            [str(self.subject), "MORE THAN", str(self.duration), "FROM", str(self.object)]
+        )
 
-class Buffer(LocalModel):
+
+class Buffer(_LocalModel):
     """Buffer around object."""
 
-    type: str = Field("buffer", const=True)
-    object: Union[Place, NamedPlace, ZipCode]
-    distance: List[Quantity]
+    type: Literal["buffer"] = Field("buffer", const=True)
+    object: Union[Place, NamedPlace]
+    distance: float = Field(..., ge=0, description="Distance in meters")
+
+    def __str__(self) -> str:
+        return " ".join(
+            ["BUFFER OF", str(Quantity(self.distance, "meters")), "AROUND", str(self.object)]
+        )
 
 
-class Isochrone(LocalModel):
+class Isochrone(_LocalModel):
     """Isochrone around an object."""
 
-    type: str = Field("isochrone", const=True)
-    object: Union[Place, NamedPlace, ZipCode]
+    type: Literal["isochrone"] = Field("isochrone", const=True)
+    object: Union[Place, NamedPlace]
     duration: timedelta
     method: TravelMethod = TravelMethod.drive
 
+    def __str__(self) -> str:
+        return " ".join(["ISOCHRONE OF", str(self.duration), "AROUND", str(self.object)])
 
-class Route(LocalModel):
+
+class Route(_LocalModel):
     """Route between two places."""
 
-    type: str = Field("route", const=True)
-    start: Union[NamedPlace, ZipCode]
-    end: Union[NamedPlace, ZipCode]
+    type: Literal["route"] = Field("route", const=True)
+    start: NamedPlace
+    end: NamedPlace
     along: Union[Place, NamedPlace, None] = None
     method: TravelMethod = TravelMethod.drive
+
+    def __str__(self) -> str:
+        words = []
+        if self.along:
+            words = [str(self.along), "ALONG"]
+        words += ["ROUTE FROM", str(self.start), "TO", str(self.end)]
+        return " ".join(words)
+
+
+QueryIntents = Union[
+    Route,
+    Isochrone,
+    Buffer,
+    SpRelCoveredBy,
+    SpRelDisjoint,
+    SpRelWithinDistOf,
+    SpRelOutsideDistOf,
+    SpRelNear,
+    SpRelNotNear,
+    SpRelWithinTimeOf,
+    SpRelOutsideTimeOf,
+    Place,
+    NamedPlace,
+]
+
+
+class ParsedQuery(_LocalModel):
+    """Route between two places."""
+
+    value: QueryIntents = Field(..., description="Query intent", discriminator="type")
+    text: str
+    tokens: List[str]
+
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 NOUN_POS = {"NOUN", "PROPN"}
@@ -241,12 +328,6 @@ duration_patterns = [
     [{"TEXT": {"REGEX": "^[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?$"}}],
 ]
 
-# zip_code_patterns = [
-#     [{"TEXT": {"REGEX": r"^[0-9]{5}$"}, "POS": "NUM", "ENT_TYPE": {"IN": {"CARDINAL", "LANGUAGE"}}}],
-#     [{"TEXT": {"REGEX": r"^[0-9]{5}$"}, "POS": "NUM"},
-#      {"POS": "SYM", "TEXT": "-"},
-#      {"TEXT": {"REGEX": r"^[0-9]{4}$"}, "POS": "NUM"}],
-# ]
 
 entity_ruler = nlp.add_pipe(
     "entity_ruler", after="ner", config={"overwrite_ents": True, "validate": True}
@@ -254,8 +335,9 @@ entity_ruler = nlp.add_pipe(
 entity_ruler.add_patterns(  # type: ignore
     [{"label": "DURATION", "pattern": pattern} for pattern in duration_patterns]
 )
+# pylint: disable=line-too-long
 entity_ruler.add_patterns([{"label": "DISTANCE", "pattern": pattern} for pattern in dist_patterns])  # type: ignore
-# entity_ruler.add_patterns([{"label": "GPE", "pattern": pattern} for pattern in zip_code_patterns])
+# pylint: enable=line-too-long
 
 nlp.add_pipe("merge_entities", after="entity_ruler")
 
@@ -454,14 +536,18 @@ def _get_prep_args(span: Span) -> dict[str, NamedPlace | Place]:
             subj = _get_noun_chunk(ancestor)
             break
     if subj is None:
-        raise ValueError("No subject found")
+        raise QueryParseError("No subject found")
     obj = None
     for child in root.subtree:
         if child not in span and child.pos_ in NOUN_POS:
             obj = _get_noun_chunk(child)
     if obj is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     return {"subject": placemaker(subj), "object": placemaker(obj)}
+
+
+def _sum_dist_in_m(quantities: List[Quantity]) -> float:
+    return float(sum(q.to("meter").magnitude for q in quantities))
 
 
 def _get_within_dist_args(span: Span) -> Dict[str, Any]:
@@ -472,23 +558,23 @@ def _get_within_dist_args(span: Span) -> Dict[str, Any]:
             subj = _get_noun_chunk(ancestor)
             break
     if subj is None:
-        raise ValueError("No subject found")
+        raise QueryParseError("No subject found")
     dist = None
     for tok in span:
         if tok.ent_type_ == "DISTANCE":
             dist = tok
     if dist is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     obj = None
     for tok in span.subtree:
         if tok not in span and tok.pos_ in NOUN_POS:
             obj = _get_noun_chunk(tok)
     if obj is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     return {
         "subject": placemaker(subj),
         "object": placemaker(obj),
-        "distance": parse_distance(str(dist)),
+        "distance": _sum_dist_in_m(parse_distance(str(dist))),
     }
 
 
@@ -500,19 +586,19 @@ def _get_within_time_args(span: Span) -> Dict[str, Any]:
             subj = _get_noun_chunk(ancestor)
             break
     if subj is None:
-        raise ValueError("No subject found")
+        raise QueryParseError("No subject found")
     duration = None
     for tok in span:
         if tok.ent_type_ == "DURATION":
             duration = tok
     if duration is None:
-        raise ValueError("No duation found")
+        raise QueryParseError("No duation found")
     obj = None
     for tok in span.subtree:
         if tok not in span and tok.pos_ in NOUN_POS:
             obj = _get_noun_chunk(tok)
     if obj is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     return {
         "subject": placemaker(subj),
         "object": placemaker(obj),
@@ -530,10 +616,10 @@ def _get_buffer_dist_args(span: Span) -> Dict[str, Any]:
         if tok.ent_type_ == "DISTANCE":
             dist = tok
     if obj is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     if dist is None:
-        raise ValueError("No distance found")
-    return {"object": placemaker(obj), "distance": parse_distance(str(dist))}
+        raise QueryParseError("No distance found")
+    return {"object": placemaker(obj), "distance": _sum_dist_in_m(parse_distance(str(dist)))}
 
 
 def _get_buffer_time_args(span: Span) -> Dict[str, Any]:
@@ -546,9 +632,9 @@ def _get_buffer_time_args(span: Span) -> Dict[str, Any]:
         if tok.ent_type_ == "DURATION":
             duration = tok
     if obj is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     if duration is None:
-        raise ValueError("No object found")
+        raise QueryParseError("No object found")
     return {"object": placemaker(obj), "duration": parse_time(str(duration))}
 
 
@@ -599,7 +685,7 @@ def parse_default(span: Span) -> SpRelCoveredBy | NamedPlace | Place | None:
                 return SpRelCoveredBy.parse_obj(
                     {
                         "subject": Place.parse_obj({"value": subj}),
-                        "object": NamedPlace.parse_obj({"value": str(in_obj)}),
+                        "object": NamedPlace.parse_obj({"value": [str(in_obj)]}),
                     }
                 )
         return placemaker(noun_chunk)
@@ -607,13 +693,13 @@ def parse_default(span: Span) -> SpRelCoveredBy | NamedPlace | Place | None:
 
 
 # pylint: disable=too-many-branches,too-many-locals
-def parse(text: str) -> Dict[str, Any]:
+def parse(text: str) -> ParsedQuery:
     """Parse a text string into structured arguments that can be converted into SQL."""
     doc = nlp(text)
     sent = _first_sentence(doc)
     # retrieve spans
     doc.spans["cosmos"] = filter_spans(sorted(doc.spans["cosmos"], key=lambda x: (x.start, -x.end)))
-    value: Optional[LocalModel] = None
+    value: Optional[_LocalModel] = None
     for span in doc.spans["cosmos"]:
         label = doc.vocab.strings[span.label]
         if label == "IN":
@@ -624,25 +710,27 @@ def parse(text: str) -> Dict[str, Any]:
             value = SpRelNear.parse_obj(_get_prep_args(span))
         elif label == "NOT_NEAR":
             value = SpRelNotNear.parse_obj(_get_prep_args(span))
-        elif label in ["WITHIN_DIST_OF"]:
+        elif label == "WITHIN_DIST_OF":
             value = SpRelWithinDistOf.parse_obj(_get_within_dist_args(span))
-        elif label in ["OUTSIDE_DIST_OF"]:
+        elif label == "OUTSIDE_DIST_OF":
             value = SpRelOutsideDistOf.parse_obj(_get_within_dist_args(span))
-        elif label in ["WITHIN_TIME_OF"]:
+        elif label == "WITHIN_TIME_OF":
             value = SpRelWithinTimeOf.parse_obj(_get_within_time_args(span))
-        elif label in ["OUTSIDE_TIME_OF"]:
+        elif label == "OUTSIDE_TIME_OF":
             value = SpRelOutsideTimeOf.parse_obj(_get_within_time_args(span))
-        elif label in ["BUFFER"]:
+        elif label == "BUFFER":
             value = Buffer.parse_obj(_get_buffer_dist_args(span))
-        elif label in ["ISOCHRONE"]:
+        elif label == "ISOCHRONE":
             value = Isochrone.parse_obj(_get_buffer_time_args(span))
-        elif label in ["ROUTE"]:
+        elif label == "ROUTE":
             value = Route.parse_obj(_get_route_args(span))
         else:
-            raise ValueError(f"Unknown label {label}")
+            raise QueryParseError(f"Unknown label {label}")
     if value is None:
         value = parse_default(sent)
-    return {"words": [str(tok) for tok in sent], "text": str(doc), "value": value}
+    return ParsedQuery.parse_obj(
+        {"tokens": [str(tok) for tok in sent], "text": str(doc), "value": value}
+    )
 
 
 # pylint: enable=too-many-branches,too-many-locals

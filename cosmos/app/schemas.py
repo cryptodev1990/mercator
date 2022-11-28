@@ -1,10 +1,11 @@
 """FastAPI response schemes."""
 from enum import Enum
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
 
-from app.core.datatypes import BBox, FeatureCollection
+from app.core.datatypes import FeatureCollection
+from app.parsers.rules import ParsedQuery
 
 
 class Schema(BaseModel):
@@ -24,52 +25,7 @@ class HealthResponse(BaseModel):
     message: HealthStatus
 
 
-class Place(BaseModel):
-    """A place in a place query.
-
-    The full place query also can include spatial relations.
-
-    """
-
-    text: Optional[str] = None
-    is_named: bool = False
-    bbox: Optional[BBox] = None
-
-
-class SpRel(BaseModel):
-    """A spatial relationship between geometries."""
-
-    object: Place
-
-
-class SpRelContains(SpRel):
-    """The spatial relationship A is covered by B."""
-
-    type: Literal["contains"] = "contains"
-
-
-class SpRelCoveredBy(SpRel):
-    """The spatial relationship A is covered by B."""
-
-    type: Literal["covered_by"] = "covered_by"
-
-
-class SpRelDisjoint(SpRel):
-    """The spatial relationship A is covered by B."""
-
-    type: Literal["disjoint"] = "disjoint"
-
-
-SpatialRelation = Annotated[
-    Union[SpRelContains, SpRelDisjoint, SpRelCoveredBy],
-    Field(discriminator="type"),
-]
-"""Union of all spatial relations.
-
-The discriminator field is used to determine the type of the spatial relation.
-"""
-
-OsmQueryParse = Dict[str, Any]
+OsmQueryParse = ParsedQuery
 """Represents information about the parsed query.
 
 The format of this dictionary is subject to change.
@@ -93,98 +49,6 @@ class OsmSearchResponse(BaseModel):
     results: FeatureCollection = Field(
         ..., description="Feature collection of spatial features matching the query."
     )
-
-    class Config:
-        """Pydantic config options."""
-
-        schema_extra = {
-            "example": [
-                {
-                    "query": "Coffee shops in San Francisco",
-                    "label": "Coffee shops in San Francisco",
-                    "parse": {
-                        "intent": "covered_by",
-                        "args": {
-                            "subject": {"text": "Coffee shops", "start": 0, "end": 12},
-                            "predicate": {"text": "in", "start": 13, "end": 15},
-                            "object": {"text": "San Francisco", "start": 16, "end": 29},
-                        },
-                        "model": "regex-0.0.2",
-                    },
-                    "results": {
-                        "type": "FeatureCollection",
-                        "features": [
-                            {
-                                "type": "Feature",
-                                "id": "331477411",
-                                "properties": {
-                                    "osm": {
-                                        "id": 331477411,
-                                        "tags": {
-                                            "name": "Starbucks",
-                                            "brand": "Starbucks",
-                                            "amenity": "cafe",
-                                            "cuisine": "coffee_shop",
-                                            "building": "yes",
-                                            "takeaway": "yes",
-                                            "official_name": "Starbucks Coffee",
-                                            "brand:wikidata": "Q37158",
-                                            "brand:wikipedia": "en:Starbucks",
-                                        },
-                                        "type": "W",
-                                        "category": "polygon",
-                                    }
-                                },
-                                "geometry": {
-                                    "type": "Polygon",
-                                    "coordinates": [
-                                        [
-                                            [-121.8453238, 37.6985964],
-                                            [-121.8453111, 37.6984312],
-                                            [-121.8452404, 37.6984346],
-                                            [-121.8452065, 37.6984668],
-                                            [-121.8452133, 37.69854],
-                                            [-121.8452025, 37.6985409],
-                                            [-121.8452057, 37.6986019],
-                                            [-121.8453238, 37.6985964],
-                                        ]
-                                    ],
-                                },
-                                "bbox": [-121.8453238, 37.6984312, -121.8452025, 37.6986019],
-                            },
-                            {
-                                "type": "Feature",
-                                "id": "5061128432",
-                                "properties": {
-                                    "osm": {
-                                        "id": 5061128432,
-                                        "tags": {
-                                            "name": "Andytown Coffee Roasters",
-                                            "amenity": "cafe",
-                                            "cuisine": "coffee_shop",
-                                            "addr:city": "San Francisco",
-                                            "addr:state": "CA",
-                                            "addr:street": "Taraval Street",
-                                            "addr:postcode": "94116",
-                                            "opening_hours": "Mo-Th 08:00-15:00; Fr-Su 08:00-17:00",
-                                            "outdoor_seating": "yes",
-                                            "addr:housenumber": "3629",
-                                        },
-                                        "type": "N",
-                                        "category": "point",
-                                    }
-                                },
-                                "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [-122.5051837, 37.7416331],
-                                },
-                                "bbox": [-122.5051837, 37.7416331, -122.5051837, 37.7416331],
-                            },
-                        ],
-                    },
-                }
-            ]
-        }
 
 
 class OsmRawQueryResponse(BaseModel):
