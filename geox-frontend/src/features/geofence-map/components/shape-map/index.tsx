@@ -157,6 +157,10 @@ const GeofenceMap = () => {
           setViewport(viewState)
         }
         onClick={({ object, x, y, coordinate }: any, e: any) => {
+          if (window.location.hash === "#click") {
+            console.log("object", object);
+          }
+
           if (cursorMode === EditorMode.DrawIsochroneMode) {
             getIsochrones(
               coordinate as number[],
@@ -171,10 +175,6 @@ const GeofenceMap = () => {
             return;
           }
 
-          if (window.location.hash === "#click") {
-            console.log("object", object);
-          }
-
           if (!object || !object.properties?.__uuid) {
             return;
           }
@@ -185,13 +185,18 @@ const GeofenceMap = () => {
           if (cursorMode === EditorMode.SplitMode) {
             return;
           }
+          if (
+            e.changedPointers[0].metaKey &&
+            multiSelectedUuids.includes(uuid)
+          ) {
+            removeShapeFromMultiSelect(uuid);
+          }
 
-          if (e.changedPointers[0].metaKey) {
-            if (multiSelectedUuids.includes(uuid)) {
-              removeShapeFromMultiSelect(uuid);
-            } else {
-              addShapeToMultiSelect(uuid);
-            }
+          if (
+            e.changedPointers[0].metaKey &&
+            !multiSelectedUuids.includes(uuid)
+          ) {
+            addShapeToMultiSelect(uuid);
           }
 
           if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
