@@ -11,7 +11,7 @@ import {
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const genericErrorHandler = (error: any) => {
   const status = error?.status;
@@ -89,6 +89,28 @@ export const useGetNamespaces = () => {
       },
     }
   );
+};
+
+export const useGetShapesByUuids = (uuids: string[]) => {
+  const [selectedShapes, setSelectedShapes] = useState<GeoShape[]>([]);
+  useEffect(() => {
+    console.log("uuids", uuids);
+    if (!uuids.length) setSelectedShapes([]);
+    else {
+      const multiselectedShapes = GeofencerService.getShapesGeofencerShapesGet(
+        undefined, // namespace
+        undefined, // user
+        undefined, // offset
+        undefined, // limit
+        uuids
+      ).then((multiSelectedShapes) => {
+        console.log("multiSelectedShapes", multiSelectedShapes);
+        setSelectedShapes(multiSelectedShapes);
+      });
+    }
+  }, [JSON.stringify(uuids)]);
+
+  return selectedShapes;
 };
 
 export const useGetOneShapeByUuid = (uuid: string | null) => {

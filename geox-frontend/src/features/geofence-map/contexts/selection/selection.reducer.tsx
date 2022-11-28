@@ -27,6 +27,9 @@ type Action =
       type: "REMOVE_SELECTED_SHAPE_UUIDS";
       uuids: GeoShapeMetadata["uuid"][];
     }
+  | {
+      type: "CLEAR_MULTI_SELECTED_SHAPE_UUIDS";
+    }
   | { type: "RESET_SELECTION" };
 
 export function selectionReducer(state: State, action: Action): State {
@@ -52,6 +55,12 @@ export function selectionReducer(state: State, action: Action): State {
         state,
         state.uuids.filter((uuid) => !action.uuids.includes(uuid))
       );
+    }
+    case "CLEAR_MULTI_SELECTED_SHAPE_UUIDS": {
+      return {
+        ...state,
+        multiSelectedUuids: [],
+      };
     }
     case "RESET_SELECTION": {
       console.log("I am resetting");

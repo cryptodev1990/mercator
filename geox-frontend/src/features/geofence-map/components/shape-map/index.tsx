@@ -37,6 +37,7 @@ const GeofenceMap = () => {
     isSelected,
     setSelectedShapeUuid,
     setMultiSelectedShapeUuids,
+    clearMultiSelectedShapeUuids,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);

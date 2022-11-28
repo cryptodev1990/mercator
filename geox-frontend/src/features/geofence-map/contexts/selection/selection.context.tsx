@@ -1,7 +1,11 @@
 import { FeatureCollection } from "@turf/helpers";
 import { createContext, useContext, useEffect, useReducer } from "react";
+import { GeoShape, GeoShapeCreate } from "../../../../client";
 import { GeoShapeMetadata } from "../../../../client/models/GeoShapeMetadata";
-import { useGetOneShapeByUuid } from "../../hooks/use-openapi-hooks";
+import {
+  useGetOneShapeByUuid,
+  useGetShapesByUuids,
+} from "../../hooks/use-openapi-hooks";
 import { geoShapesToFeatureCollection } from "../../utils";
 import { GeoShapeMetadataContext } from "../geoshape-metadata/context";
 import { selectionReducer, initialState } from "./selection.reducer";
@@ -13,8 +17,10 @@ export interface SelectionContextI {
   setMultiSelectedShapeUuids: (uuids: string) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
   removeSelectedShapeUuid: (uuid: string) => void;
+  clearMultiSelectedShapeUuids: () => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
+  multiSelectedFeatureCollection: any | null;
   selectedDataIsLoading: boolean;
   numSelected: number;
 }
@@ -26,8 +32,10 @@ export const SelectionContext = createContext<SelectionContextI>({
   setMultiSelectedShapeUuids: () => {},
   isSelected: () => false,
   removeSelectedShapeUuid: () => {},
+  clearMultiSelectedShapeUuids: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
+  multiSelectedFeatureCollection: null,
   selectedDataIsLoading: false,
   numSelected: 0,
 });
@@ -57,6 +65,12 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({ type: "REMOVE_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
   };
 
+  const clearMultiSelectedShapeUuids = () => {
+    dispatch({
+      type: "CLEAR_MULTI_SELECTED_SHAPE_UUIDS",
+    });
+  };
+
   const clearSelectedShapeUuids = () => {
     dispatch({ type: "RESET_SELECTION" });
   };
@@ -74,6 +88,14 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     selectedShapeData ? [selectedShapeData] : []
   );
 
+  const multiselectedShapeData = useGetShapesByUuids(
+    state.multiSelectedUuids ?? null
+  );
+
+  const multiSelectedFeatureCollection = geoShapesToFeatureCollection(
+    multiselectedShapeData ? multiselectedShapeData : []
+  );
+  console.log("multi", multiselectedShapeData);
   // remove selection if the visible shapes change
   const { visibleNamespaces, activeNamespaces } = useContext(
     GeoShapeMetadataContext
@@ -92,9 +114,11 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
         setSelectedShapeUuid,
         setMultiSelectedShapeUuids,
         removeSelectedShapeUuid,
+        clearMultiSelectedShapeUuids,
         clearSelectedShapeUuids,
         // @ts-ignore
         selectedFeatureCollection,
+        multiSelectedFeatureCollection,
         selectedDataIsLoading,
       }}
     >

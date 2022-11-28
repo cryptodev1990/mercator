@@ -16,7 +16,8 @@ import { useImageLayer } from "./use-image-layer";
 export const useLayers = () => {
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
-  const { selectedFeatureCollection } = useSelectedShapes();
+  const { selectedFeatureCollection, multiSelectedFeatureCollection } =
+    useSelectedShapes();
 
   const tiles = useTiles();
   const editLayer = useEditLayer();
@@ -60,6 +61,21 @@ export const useLayers = () => {
           filled: true,
           // @ts-ignore
           data: selectedFeatureCollection,
+        }),
+      multiSelectedFeatureCollection &&
+        cursorMode === EditorMode.ViewMode &&
+        new GeoJsonLayer({
+          id: "geojson-view",
+          pickable: true,
+          // @ts-ignore
+          getFillColor: [0, 0, 255, 100],
+          getLineColor: [128, 128, 128, 255],
+          lineWidthMinPixels: 1,
+          onClick: (info: any) => {},
+          stroked: true,
+          filled: true,
+          // @ts-ignore
+          data: multiSelectedFeatureCollection,
         }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
