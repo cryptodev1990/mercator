@@ -16,6 +16,7 @@ import { DocsIframe } from "./docs-iframe";
 import { DeletePrompt } from "./delete-prompt";
 import { TopRightCornerBank } from "./top-right-corner-bank";
 import { SearchContextProvider } from "../contexts/search-context";
+import { SubscriptionRequiredPopup } from "./subscription-required-popup";
 
 window.location.hash === "#performance" &&
   (() => {
@@ -70,6 +71,7 @@ const GeofencerApp = () => {
       <RightClickMenu />
       <DeletePrompt />
       <GlobalModal />
+      <SubscriptionRequiredPopup />
       <div className="text-slate-50 h-screen w-screen relative flex flex-col overflow-hidden border ">
         <div className="flex-auto w-screen relative border m-0 p-0">
           <div className="flex fixed top-0 right-0 z-10 m-2 h-0">

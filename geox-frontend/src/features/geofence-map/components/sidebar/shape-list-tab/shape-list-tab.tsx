@@ -10,46 +10,9 @@ import { UIModalEnum } from "../../../types";
 import { useDbSync } from "../../../hooks/use-db-sync";
 import { NamespaceSection } from "./namespace-section";
 import { TentativeButtonBank } from "./shape-card/button-bank";
-import { useEffect } from "react";
-
-const EmptyMessage = () => {
-  // fade in after 500 ms
-
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("empty-message")?.classList.remove("opacity-0");
-    }, 500);
-  }, []);
-
-  return (
-    <div
-      id="empty-message"
-      className="flex flex-col justify-center h-full p-3 opacity-0"
-    >
-      <p className="text-white text-left">
-        No shapes have been added to the map yet.
-      </p>
-      <br />
-      <p className="text-white text-left">
-        Click the{" "}
-        <span className="inline-flex">
-          <AddToQueueIcon />
-        </span>{" "}
-        button to add shapes.
-      </p>
-    </div>
-  );
-};
 
 export const ShapeBarPaginator = () => {
-  const {
-    shapeMetadata,
-    tentativeShapes,
-    numShapes,
-    namespaces,
-    shapeMetadataIsLoading,
-    shapeMetadataError,
-  } = useShapes();
+  const { tentativeShapes, numShapes, namespaces } = useShapes();
   const { openModal } = useUiModals();
   const { isLoading: isPolling } = useDbSync();
 
@@ -109,21 +72,6 @@ export const ShapeBarPaginator = () => {
           h-full p-1 bg-gradient-to-b from-slate-600 to-slate-700
       "
         />
-      )}
-      {!shapeMetadataIsLoading &&
-        shapeMetadata.length === 0 &&
-        namespaces.length === 0 &&
-        shapeMetadataError === null && <EmptyMessage />}
-      {shapeMetadataError && (
-        <div className="flex flex-col justify-center h-full p-3">
-          <p className="text-white text-left">
-            There was an error loading shapes.
-          </p>
-          <br />
-          <p className="text-white text-left">
-            Please refresh the page and try again.
-          </p>
-        </div>
       )}
     </div>
   );

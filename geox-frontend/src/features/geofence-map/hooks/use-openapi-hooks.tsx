@@ -24,7 +24,7 @@ const genericErrorHandler = (error: any) => {
       toast.error("Bad request");
       break;
     case 402:
-      toast.error("Your subscription has expired.");
+      console.error("Your subscription has expired.");
       break;
     case 404:
       toast.error("Not found");

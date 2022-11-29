@@ -11,7 +11,7 @@ export const btnClasses = `
    hover:bg-blue-500 hover:text-white
    bottom-0 left-0 mt-auto mb-0 text-center`;
 
-const ProductDisplayGroup = () => {
+export const ProductDisplayGroup = () => {
   return (
     <div className="flex sm:flex-row flex-col justify-center text-blue-100">
       <ProductDisplay enableCheckout>
@@ -33,7 +33,7 @@ const ProductDisplayGroup = () => {
         <h3 className="font-bold text-xl text-black">Enterprise plan</h3>
         <p>Custom pricing</p>
         <br />
-        <p>
+        <p className="select-none">
           Request custom features, receive 24/7 support in via a Slack shared
           channel private to your organization, and leverage our team's
           geospatial expertise.
@@ -66,7 +66,7 @@ const ProductDisplay = ({ children, enableCheckout }: any) => {
           id="checkout-and-portal-button"
           onClick={() => (window.location.href = "/subscribe/checkout")}
         >
-          Start my trial
+          Subscribe
         </button>
       )}
     </section>

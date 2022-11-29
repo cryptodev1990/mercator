@@ -38,7 +38,7 @@ export const AccountUserCard = (): JSX.Element => {
         { key: "OAuth Provider", value: authProvider },
         {
           key: "Subscription status",
-          value: status === 200 ? "Valid" : "Expired",
+          value: status === 200 ? "Valid" : "Inactive",
         },
       ].map((item) => {
         return (
