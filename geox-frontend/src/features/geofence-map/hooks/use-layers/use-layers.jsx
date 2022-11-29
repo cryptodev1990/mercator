@@ -1,9 +1,7 @@
+import React from "react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { EditorMode } from "../../cursor-modes";
-import {
-  featureToFeatureCollection,
-  geoShapesToFeatureCollection,
-} from "../../utils";
+import { featureToFeatureCollection } from "../../utils";
 import { useCursorMode } from "../use-cursor-mode";
 import { useShapes } from "../use-shapes";
 
@@ -12,12 +10,17 @@ import { useModifyLayer } from "./use-modify-layer";
 import { useEditLayer } from "./use-edit-layer";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useImageLayer } from "./use-image-layer";
+import { SelectionLayer } from "@nebula.gl/layers";
 
 export const useLayers = () => {
+  const [selected, setSelected] = React.useState([]);
+
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
-  const { selectedFeatureCollection, multiSelectedFeatureCollection } =
+  const { selectedFeatureCollection, multiSelectedShapes } =
     useSelectedShapes();
+
+  console.log("multiSelectedShapes", multiSelectedShapes);
 
   const tiles = useTiles();
   const editLayer = useEditLayer();
@@ -48,7 +51,7 @@ export const useLayers = () => {
           getFillColor: [0, 0, 255, 100],
           getLineColor: [128, 128, 128, 255],
           lineWidthMinPixels: 1,
-          onClick: (info: any) => {
+          onClick: (info) => {
             const { object } = info;
             if (object) {
               setCursorMode(EditorMode.ModifyMode);
@@ -62,7 +65,7 @@ export const useLayers = () => {
           // @ts-ignore
           data: selectedFeatureCollection,
         }),
-      multiSelectedFeatureCollection &&
+      multiSelectedShapes &&
         cursorMode === EditorMode.ViewMode &&
         new GeoJsonLayer({
           id: "multi-select-geojson-view",
@@ -71,11 +74,11 @@ export const useLayers = () => {
           getFillColor: [0, 0, 255, 100],
           getLineColor: [128, 128, 128, 255],
           lineWidthMinPixels: 1,
-          onClick: (info: any) => {},
+          onClick: (info) => {},
           stroked: true,
           filled: true,
           // @ts-ignore
-          data: multiSelectedFeatureCollection,
+          data: multiSelectedShapes,
         }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
@@ -94,6 +97,37 @@ export const useLayers = () => {
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
+      selected &&
+        new GeoJsonLayer({
+          id: "multi-select-geojson-view",
+          pickable: true,
+          // @ts-ignore
+          getFillColor: [0, 0, 255, 100],
+          getLineColor: [128, 128, 128, 255],
+          lineWidthMinPixels: 1,
+          onClick: (info) => {},
+          stroked: true,
+          filled: true,
+          // @ts-ignore
+          data: selected,
+        }),
+      // new SelectionLayer({
+      //   id: "selection",
+      //   selectionType: "polygon",
+      //   onSelect: ({ pickingInfos }) => {
+      //     console.log("pickingInfos", pickingInfos);
+      //     const newObjs = [];
+      //     for (const obj of pickingInfos) {
+      //       newObjs.push(obj.object);
+      //     }
+      //     setSelected(newObjs);
+      //   },
+      //   layerIds: ["gf-mvt"],
+      //   getTentativeFillColor: () => [255, 0, 255, 100],
+      //   getTentativeLineColor: () => [0, 0, 255, 255],
+      //   getTentativeLineDashArray: () => [0, 0],
+      //   lineWidthMinPixels: 3,
+      // }),
     ],
   };
 };

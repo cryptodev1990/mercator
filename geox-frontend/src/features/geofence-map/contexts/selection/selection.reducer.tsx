@@ -1,15 +1,18 @@
+import { Feature, FeatureCollection } from "@turf/helpers";
 import { GeoShapeMetadata } from "../../../../client";
 
 export interface State {
   uuids: GeoShapeMetadata["uuid"][];
-  multiSelectedUuids: GeoShapeMetadata["uuid"][];
+  multiSelectedShapesUuids: GeoShapeMetadata["uuid"][];
+  multiSelectedShapes: Feature[];
   numSelected: number;
   isEmpty: boolean;
 }
 
 export const initialState = {
   uuids: [],
-  multiSelectedUuids: [],
+  multiSelectedShapesUuids: [],
+  multiSelectedShapes: [],
   numSelected: 0,
   isEmpty: false,
 };
@@ -20,8 +23,8 @@ type Action =
       uuids: GeoShapeMetadata["uuid"][];
     }
   | {
-      type: "ADD_SHAPE_TO_MULTISELECT";
-      multiSelectedUuid: GeoShapeMetadata["uuid"];
+      type: "ADD_SHAPE_TO_MULTISELECTED_SHAPES";
+      multiSelectedShape: Feature;
     }
   | {
       type: "REMOVE_SHAPE_FROM_MULTISELECT";
@@ -41,22 +44,35 @@ export function selectionReducer(state: State, action: Action): State {
     case "ADD_SELECTED_SHAPE_UUIDS": {
       return generateFinalState(state, [...state.uuids, ...action.uuids]);
     }
-    case "ADD_SHAPE_TO_MULTISELECT": {
+
+    case "ADD_SHAPE_TO_MULTISELECTED_SHAPES": {
       return {
         ...state,
-        multiSelectedUuids: [
-          ...state.multiSelectedUuids,
-          action.multiSelectedUuid,
+        multiSelectedShapesUuids: [
+          ...state.multiSelectedShapes,
+          ...(action.multiSelectedShape.properties
+            ? [action.multiSelectedShape.properties.__uuid]
+            : []),
+        ],
+        multiSelectedShapes: [
+          ...state.multiSelectedShapes,
+          action.multiSelectedShape,
         ],
       };
     }
     case "REMOVE_SHAPE_FROM_MULTISELECT": {
-      const multiSelectedUuids = state.multiSelectedUuids.filter(
+      const multiSelectedShapesUuids = state.multiSelectedShapesUuids.filter(
         (uuid) => uuid !== action.multiSelectedUuid
+      );
+      const multiSelectedShapes = state.multiSelectedShapes.filter(
+        (shape: Feature) =>
+          shape.properties &&
+          shape.properties.__uuid !== action.multiSelectedUuid
       );
       return {
         ...state,
-        multiSelectedUuids,
+        multiSelectedShapesUuids,
+        multiSelectedShapes,
       };
     }
     case "REMOVE_SELECTED_SHAPE_UUIDS": {
@@ -68,7 +84,7 @@ export function selectionReducer(state: State, action: Action): State {
     case "CLEAR_MULTI_SELECTED_SHAPE_UUIDS": {
       return {
         ...state,
-        multiSelectedUuids: [],
+        multiSelectedShapesUuids: [],
       };
     }
     case "RESET_SELECTION": {

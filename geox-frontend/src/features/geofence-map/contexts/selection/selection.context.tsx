@@ -1,11 +1,7 @@
-import { FeatureCollection } from "@turf/helpers";
+import { Feature, FeatureCollection } from "@turf/helpers";
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { GeoShape, GeoShapeCreate } from "../../../../client";
 import { GeoShapeMetadata } from "../../../../client/models/GeoShapeMetadata";
-import {
-  useGetOneShapeByUuid,
-  useGetShapesByUuids,
-} from "../../hooks/use-openapi-hooks";
+import { useGetOneShapeByUuid } from "../../hooks/use-openapi-hooks";
 import { geoShapesToFeatureCollection } from "../../utils";
 import { GeoShapeMetadataContext } from "../geoshape-metadata/context";
 import { selectionReducer, initialState } from "./selection.reducer";
@@ -13,15 +9,15 @@ import { selectionReducer, initialState } from "./selection.reducer";
 export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
   setSelectedShapeUuid: (uuid: string) => void;
-  multiSelectedUuids: GeoShapeMetadata["uuid"][];
-  addShapeToMultiSelect: (uuids: string) => void;
+  multiSelectedShapesUuids: GeoShapeMetadata["uuid"][];
+  multiSelectedShapes: Feature[];
+  addShapeToMultiSelectedShapes: (shape: Feature) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
   removeSelectedShapeUuid: (uuid: string) => void;
   removeShapeFromMultiSelect: (uuid: string) => void;
   clearMultiSelectedShapeUuids: () => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
-  multiSelectedFeatureCollection: any | null;
   selectedDataIsLoading: boolean;
   numSelected: number;
 }
@@ -29,15 +25,15 @@ export interface SelectionContextI {
 export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
   setSelectedShapeUuid: () => {},
-  multiSelectedUuids: [],
-  addShapeToMultiSelect: () => {},
+  multiSelectedShapesUuids: [],
+  multiSelectedShapes: [],
+  addShapeToMultiSelectedShapes: () => {},
   isSelected: () => false,
   removeSelectedShapeUuid: () => {},
   removeShapeFromMultiSelect: () => {},
   clearMultiSelectedShapeUuids: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
-  multiSelectedFeatureCollection: null,
   selectedDataIsLoading: false,
   numSelected: 0,
 });
@@ -56,10 +52,10 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
   };
 
-  const addShapeToMultiSelect = (uuid: string) => {
+  const addShapeToMultiSelectedShapes = (shape: Feature) => {
     dispatch({
-      type: "ADD_SHAPE_TO_MULTISELECT",
-      multiSelectedUuid: uuid,
+      type: "ADD_SHAPE_TO_MULTISELECTED_SHAPES",
+      multiSelectedShape: shape,
     });
   };
 
@@ -97,13 +93,6 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     selectedShapeData ? [selectedShapeData] : []
   );
 
-  const multiselectedShapeData = useGetShapesByUuids(
-    state.multiSelectedUuids ?? null
-  );
-
-  const multiSelectedFeatureCollection = geoShapesToFeatureCollection(
-    multiselectedShapeData ? multiselectedShapeData : []
-  );
   // remove selection if the visible shapes change
   const { visibleNamespaces, activeNamespaces } = useContext(
     GeoShapeMetadataContext
@@ -116,18 +105,18 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     <SelectionContext.Provider
       value={{
         selectedUuids: state.uuids,
-        multiSelectedUuids: state.multiSelectedUuids,
+        multiSelectedShapesUuids: state.multiSelectedShapesUuids,
+        multiSelectedShapes: state.multiSelectedShapes,
         numSelected: state.numSelected,
         isSelected,
         setSelectedShapeUuid,
-        addShapeToMultiSelect,
         removeShapeFromMultiSelect,
         removeSelectedShapeUuid,
         clearMultiSelectedShapeUuids,
         clearSelectedShapeUuids,
+        addShapeToMultiSelectedShapes,
         // @ts-ignore
         selectedFeatureCollection,
-        multiSelectedFeatureCollection,
         selectedDataIsLoading,
       }}
     >

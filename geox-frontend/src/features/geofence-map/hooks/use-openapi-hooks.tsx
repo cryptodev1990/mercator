@@ -91,28 +91,6 @@ export const useGetNamespaces = () => {
   );
 };
 
-export const useGetShapesByUuids = (uuids: string[]) => {
-  const [selectedShapes, setSelectedShapes] = useState<GeoShape[]>([]);
-  useEffect(() => {
-    console.log("uuids", uuids);
-    if (!uuids.length) setSelectedShapes([]);
-    else {
-      const multiselectedShapes = GeofencerService.getShapesGeofencerShapesGet(
-        undefined, // namespace
-        undefined, // user
-        undefined, // offset
-        undefined, // limit
-        uuids
-      ).then((multiSelectedShapes) => {
-        console.log("multiSelectedShapes", multiSelectedShapes);
-        setSelectedShapes(multiSelectedShapes);
-      });
-    }
-  }, [JSON.stringify(uuids)]);
-
-  return selectedShapes;
-};
-
 export const useGetOneShapeByUuid = (uuid: string | null) => {
   return useQuery<GeoShape | null>(
     ["shape", uuid],

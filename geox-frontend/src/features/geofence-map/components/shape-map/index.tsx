@@ -6,7 +6,7 @@ import StaticMap from "react-map-gl";
 import { useCursorMode } from "../../hooks/use-cursor-mode";
 
 import { EditorMode } from "../../cursor-modes";
-import { useLayers } from "../../hooks/use-layers/use-layers";
+import { useLayers } from "../../hooks/use-layers/use-layers.jsx";
 import { useViewport } from "../../hooks/use-viewport";
 import { useShapes } from "../../hooks/use-shapes";
 import { useContext, useEffect } from "react";
@@ -32,12 +32,12 @@ const GeofenceMap = () => {
 
   const {
     selectedUuids,
-    multiSelectedUuids,
+    multiSelectedShapesUuids,
+    multiSelectedShapes,
     clearSelectedShapeUuids,
     isSelected,
     setSelectedShapeUuid,
-    addShapeToMultiSelect,
-    clearMultiSelectedShapeUuids,
+    addShapeToMultiSelectedShapes,
     removeShapeFromMultiSelect,
   } = useSelectedShapes();
 
@@ -52,7 +52,6 @@ const GeofenceMap = () => {
         return;
       }
       if (event.key === "Backspace") {
-        console.log("multiSelectedUuids", multiSelectedUuids);
         if (selectedUuids) {
           for (const uuid of selectedUuids) {
             deleteShapes([uuid], {
@@ -63,8 +62,8 @@ const GeofenceMap = () => {
             });
           }
         }
-        if (multiSelectedUuids) {
-          deleteShapes(multiSelectedUuids, {
+        if (multiSelectedShapesUuids) {
+          deleteShapes(multiSelectedShapesUuids, {
             onSuccess: () => {
               clearSelectedShapeUuids();
               setCursorMode(EditorMode.ViewMode);
@@ -105,7 +104,7 @@ const GeofenceMap = () => {
       document.removeEventListener("keydown", escFunction);
       document.removeEventListener("keydown", undoHandler);
     };
-  }, [multiSelectedUuids, selectedUuids, deleteShapes]);
+  }, [multiSelectedShapesUuids, selectedUuids, deleteShapes]);
 
   const { layers } = useLayers();
 
@@ -187,16 +186,16 @@ const GeofenceMap = () => {
           }
           if (
             e.changedPointers[0].metaKey &&
-            multiSelectedUuids.includes(uuid)
+            multiSelectedShapesUuids.includes(uuid)
           ) {
             removeShapeFromMultiSelect(uuid);
           }
 
           if (
             e.changedPointers[0].metaKey &&
-            !multiSelectedUuids.includes(uuid)
+            !multiSelectedShapesUuids.includes(uuid)
           ) {
-            addShapeToMultiSelect(uuid);
+            addShapeToMultiSelectedShapes(object);
           }
 
           if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
