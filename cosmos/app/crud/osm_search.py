@@ -4,7 +4,7 @@ from functools import singledispatch
 from typing import Any, List, Optional, Union
 
 from geoalchemy2 import Geography, Geometry
-from sqlalchemy import String, and_
+from sqlalchemy import String, Table, and_
 from sqlalchemy import case as sql_case
 from sqlalchemy import cast, func, or_, select
 from sqlalchemy.sql import ColumnElement, Select
@@ -20,8 +20,8 @@ from app.parsers.rules import (
     SpRelDisjoint,
     SpRelNear,
     SpRelNotNear,
+    SpRelOutsideDistOf,
     SpRelWithinDistOf,
-    SpRelOutsideDistOf
 )
 
 logger = logging.getLogger(__name__)
@@ -37,38 +37,38 @@ def _in_bbox(
     return func.ST_Intersects(col, envelope)
 
 
-# Returns osm features
-def search_osm(
+def _geom_col(tbl: Table) -> ColumnElement:
+    return sql_case(
+        (
+            tbl.c.category == "boundary" and func.ST_MakeArea(tbl.c.geom).is_not(None),
+            func.St_BuildArea(tbl.c.geom),
+        ),
+        else_=tbl.c.geom,
+    )
+
+
+def _select_osm(
     *,
-    query: Optional[str] = None,
     bbox: Optional[BBox] = None,
-    osm_id: Optional[str] = None,
     limit: Optional[int] = None,
+    include_geom: bool = True,
     cols: Optional[List[ColumnElement[Any]]] = None,
 ) -> Select:
-    """Generate a select statement for the OSM database."""
+    """Reusable select statement for the OSM database."""
     if cols is None:
         cols = [
             osm_tbl.c.osm_id,
             osm_tbl.c.osm_type,
             osm_tbl.c.category,
             osm_tbl.c.tags,
-            sql_case(
-                (
-                    osm_tbl.c.category == "boundary"
-                    and func.ST_MakeArea(osm_tbl.c.geom).is_not(None),
-                    func.St_BuildArea(osm_tbl.c.geom),
-                ),
-                else_=osm_tbl.c.geom,
-            ).label("geom"),
         ]
-    stmt = select(cols).select_from(osm_tbl).limit(limit)  # type: ignore
+    if include_geom:
+        cols.append(_geom_col(osm_tbl).label("geom"))
+    stmt = select(cols).select_from(osm_tbl)  # type: ignore
     if bbox:
         stmt = stmt.where(_in_bbox(osm_tbl.c.geom, bbox))  # type: ignore
-    if osm_id:
-        stmt = stmt.where(cast(osm_tbl.c.osm_id, String()) == osm_id) # type: ignore
-    if query:
-        stmt = stmt.where(osm_tbl.c.fts.op("@@")(func.websearch_to_tsquery(query)))
+    if limit:
+        stmt = stmt.limit(limit)
     return stmt
 
 
@@ -79,22 +79,47 @@ def to_sql(arg: Any, **kwargs: Any) -> Any:
 
 
 @to_sql.register
-def _(arg: Place, bbox: Optional[BBox] = None) -> Select:
+def _(arg: Place, bbox: Optional[BBox] = None, **kwargs: Any) -> Select: # pylint: disable=unused-argument
+    """SQL query for Place.
+
+    Returns results that match a full text search of the properties.
+
+    """
     query = " ".join(arg.value)
-    return search_osm(query=query, bbox=bbox)
+    stmt = _select_osm(bbox=bbox).where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
+    return stmt
+
+
+def named_place_lookup_db(
+    query: str,
+    bbox: Optional[BBox] = None,
+    limit: int = 1,
+    cols: Optional[List[ColumnElement]] = None,
+) -> Select:
+    """Search OSM for a place.
+
+    Uses FTS to search for a place name, and returns the OSM ID of the first
+    results sorted by `ts_rank_cd`.
+
+    """
+    stmt = (
+        _select_osm(bbox=bbox, cols=cols)
+        .where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
+        .order_by(func.ts_rank_cd(osm_tbl.c.fts, func.plainto_tsquery(query), 1).desc())
+        .limit(limit)
+    )
+    return stmt
 
 
 @to_sql.register
-def _(arg: NamedPlace, bbox: Optional[BBox] = None) -> Select:
+def _(arg: NamedPlace, bbox: Optional[BBox] = None, **kwargs: Any) -> Select:  # pylint: disable=unused-argument
     query = " ".join(arg.value)
     # hard code the case of San Francisco since we use it so much in early demos
-    if query.lower() == "san francisco":
-        return search_osm(osm_id="111968")
-    return search_osm(query=query, bbox=bbox)
+    return named_place_lookup_db(query=query, bbox=bbox)
 
 
 @to_sql.register
-def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None) -> Select:
+def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
         to_sql(arg.object, bbox=bbox).where(
@@ -104,11 +129,20 @@ def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None) -> Select:
             )
         )
     ).cte()
-    join_clause = select(subj).join(obj, func.ST_CoveredBy(subj.c.geom, obj.c.geom))
-    return join_clause
+    stmt = select(subj).join(obj, func.ST_CoveredBy(subj.c.geom, obj.c.geom))
+    # Order by distance to the center of the object it is in
+    stmt = stmt.order_by(
+        func.ST_Distance(
+            cast(subj.c.geom, Geography()), cast(func.ST_Centroid(obj.c.geom), Geography())
+        )
+    )
+    if limit:
+        stmt = stmt.limit(limit)
+    return stmt
+
 
 @to_sql.register
-def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None) -> Select:
+def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
         to_sql(arg.object, bbox=bbox)
@@ -120,33 +154,26 @@ def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None) -> Select:
         )
         .cte()
     )
-
-    join_clause = select(subj).join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
-    return join_clause
-
-
-@to_sql.register(SpRelOutsideDistOf)
-@to_sql.register(SpRelNotNear)
-def _(arg: Union[SpRelOutsideDistOf, SpRelNotNear], bbox: Optional[BBox] = None) -> Select:
-    subj = to_sql(arg.subject, bbox=bbox).cte()
-    obj = to_sql(arg.object, bbox=bbox).cte()
-    join_clause = select(subj).join(
-        obj,
-        and_(
-            func.ST_Disjoint(subj.c.geom, obj.c.geom),
-            func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
-            > arg.distance,
-        ),
+    stmt = select(subj).join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
+    # Order by distance to the object it is outside of, e.g. the closest objects that aren't inside that object
+    stmt = stmt.order_by(
+        func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
     )
-    return join_clause
+    if limit:
+        stmt = stmt.limit(limit)
+    return stmt
 
 
 @to_sql.register(SpRelWithinDistOf)
 @to_sql.register(SpRelNear)
-def _(arg: Union[SpRelNear, SpRelWithinDistOf], bbox: Optional[BBox] = None) -> Select:
+def _(
+    arg: Union[SpRelNear, SpRelWithinDistOf],
+    bbox: Optional[BBox] = None,
+    limit: Optional[int] = None,
+) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = to_sql(arg.object, bbox=bbox).cte()
-    join_clause = select(subj).join(
+    stmt = select(subj).join(
         obj,
         and_(
             func.ST_Disjoint(subj.c.geom, obj.c.geom),
@@ -155,12 +182,43 @@ def _(arg: Union[SpRelNear, SpRelWithinDistOf], bbox: Optional[BBox] = None) -> 
             ),
         ),
     )
-    return join_clause
+    if limit:
+        stmt = stmt.limit(limit)
+    stmt = stmt.order_by(
+        func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+    )
+    return stmt
+
+
+@to_sql.register(SpRelOutsideDistOf)
+@to_sql.register(SpRelNotNear)
+def _(
+    arg: Union[SpRelOutsideDistOf, SpRelNotNear],
+    bbox: Optional[BBox] = None,
+    limit: Optional[int] = None,
+) -> Select:
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    obj = to_sql(arg.object, bbox=bbox).cte()
+    stmt = select(subj).join(
+        obj,
+        and_(
+            func.ST_Disjoint(subj.c.geom, obj.c.geom),
+            func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+            > arg.distance,
+        ),
+    )
+    # Order by the objects closest to the object it is not near
+    stmt = stmt.order_by(
+        func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+    )
+    if limit:
+        stmt = stmt.limit(limit)
+    return stmt
 
 
 @to_sql.register
-def _(arg: Buffer, bbox: Optional[BBox] = None) -> Select:
-    obj = to_sql(arg.object, bbox=bbox).cte()
+def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
+    obj = to_sql(arg.object, bbox=bbox, limit=limit).cte()
     return select(
         [
             obj.c.tags,
@@ -172,33 +230,29 @@ def _(arg: Buffer, bbox: Optional[BBox] = None) -> Select:
                 Geometry(srid=MapProjection.WGS84),
             ).label("geom"),
         ]
-    )
+    ).limit(limit)
 
 
 @to_sql.register
 def _(arg: ParsedQuery, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
-    base = to_sql(arg.value, bbox=bbox).cte()
-    stmt = (
-        select(
-            func.to_geojson_feature(
-                base.c.geom,
+    base = to_sql(arg.value, bbox=bbox, limit=limit).cte()
+    stmt = select(
+        func.to_geojson_feature_collection_agg(
+            base.c.geom,
+            func.jsonb_build_object(
+                "osm",
                 func.jsonb_build_object(
-                    "osm",
-                    func.jsonb_build_object(
-                        "tags",
-                        base.c.tags,
-                        "type",
-                        base.c.osm_type,
-                        "id",
-                        base.c.osm_id,
-                        "category",
-                        base.c.category,
-                    ),
+                    "tags",
+                    base.c.tags,
+                    "type",
+                    base.c.osm_type,
+                    "id",
+                    base.c.osm_id,
+                    "category",
+                    base.c.category,
                 ),
-                cast(base.c.osm_id, String()),
-            ).label("feature")
-        )
-        .select_from(base)
-        .limit(limit)
-    )
+            ),
+            cast(base.c.osm_id, String()),
+        ).label("features")
+    ).select_from(base)
     return stmt

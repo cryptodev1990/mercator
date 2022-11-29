@@ -40,21 +40,16 @@ async def _get_query(
 
     This endpoint accepts a natural
 
-    It currently supports:
+    It currently supports queries like:
 
-    - "*spatial feature*", which searches OSM for a spatial feature using full-text search.
-    - "*features_1* in *features_2*", which constrains results  which constrains results to
-        the search results in *features_1* that are contained in any of the search results
-        of *feature_2*.
-    - "*features_1* not in *features_2*" which constrains results to features matches by the
-        search in *features_1* that are not contained in *feature_2*.
-
-    Examples:
-
-    - coffee shops in San Francisco
-    - Coffee shops in Oakland
-    - Coffee shops
-    - Coffee shops not in Oakland
+    - "San Francisco"
+    - "Coffee shops"
+    - "Coffee shops in San Francisco"
+    - "Coffee shops not in San Francisco"
+    - "Restaurants near Lake Merritt"
+    - "Restaurants not near Lake Merritt"
+    - "Restaurants within 10 miles of Lake Merritt"
+    - "Restaurants more than 10 miles from Lake Merritt"
 
     """
     try:
@@ -63,13 +58,13 @@ async def _get_query(
         raise HTTPException(status_code=422, detail="Unable to parse query.") from None
 
     sql = to_sql(parsed_query, bbox=bbox, limit=limit)
-    results = await conn.execute(sql)
+    results = (await conn.execute(sql)).scalar()
 
     return OsmSearchResponse(
         query=query,
         label=str(parsed_query),
         parse=parsed_query,
-        results=FeatureCollection(features=[row.feature for row in results]),  # type: ignore
+        results=FeatureCollection.parse_obj(results or {}),  # type: ignore
     )
 
 
