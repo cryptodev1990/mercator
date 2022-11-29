@@ -3,7 +3,7 @@ from functools import lru_cache
 from typing import Any, Mapping, Optional, cast
 
 import jinja2 as j2
-from pydantic import BaseSettings, Field, SecretStr # pylint: disable=no-name-in-module
+from pydantic import BaseSettings, Field, SecretStr  # pylint: disable=no-name-in-module
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 

@@ -1,16 +1,29 @@
+# Choose a command
+choose:
+    @just --choose
+
+# List commands
+help:
+    @just --list
+
+# Run migration for the mercator dev Snowflake account
 migrate-dev TEMPLATE:
     poetry run python -m mercator_snowflake.migrate --no-include-mercator --no-include-customers --include-dev {{ TEMPLATE }}
 
+# Run migration for the mercator prod Snowflake account
 migrate-mercator TEMPLATE:
     poetry run python -m mercator_snowflake.migrate --include-mercator --no-include-customers --no-include-dev {{ TEMPLATE }}
 
+# Run migration for customer's Snowflake account
 migrate-customers TEMPLATE:
     poetry run python -m mercator_snowflake.migrate --no-include-mercator --include-customers --no-include-dev {{ TEMPLATE }}
 
+# Format code
 format:
-    isort .
-    black .
+    poetry run isort .
+    poetry run black .
 
+# Lint code
 lint:
-    mypy mercator_snowflake
-    pylint mercator_snowflake
+    poetry run mypy mercator_snowflake
+    poetry run pylint mercator_snowflake

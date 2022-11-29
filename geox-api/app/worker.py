@@ -109,6 +109,7 @@ def query_shapes_table(
                     AND s.namespace_id = n.id
                     AND n.organization_id = :organization_id
                     AND s.organization_id = :organization_id
+                    AND s.deleted_at IS NULL
                 ORDER BY s.uuid
                 """
         )

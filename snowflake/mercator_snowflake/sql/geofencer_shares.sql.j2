@@ -66,7 +66,7 @@ FROM (
         try_to_geography($1:geom::BINARY),
         coalesce(parse_json($1:properties::TEXT)::OBJECT, object_construct()),
         -- this seems to work for reading timestamps from parquet.
-        -- the scale is important - the wrong scale
+        -- the scale is necessary for it to work
         to_timestamp_ntz($1:created_at::INT, 6),
         to_timestamp_ntz($1:updated_at::INT, 6),
         to_timestamp_ntz($1:deleted_at::INT, 6),
@@ -93,7 +93,6 @@ SELECT
     geom,
     properties,
     updated_at,
-    deleted_at,
     exported_at,
     namespace_id,
     namespace_name,
@@ -104,30 +103,6 @@ FROM {{ shapes_exports_table }}
 WHERE export_id = (SELECT max(export_id) FROM {{ shapes_exports_table }});
 
 COMMENT ON VIEW {{ shapes_view }} IS $$S3 Location of geofencer exports for organization {{ org_id }}$$;
-
-{%- set shapes_view = full_schema_name ~ ".shapes" %}
-CREATE OR REPLACE SECURE VIEW {{ shapes_view }}
-AS
-SELECT
-    uuid,
-    name,
-    geom,
-    properties,
-    updated_at,
-    deleted_at,
-    exported_at,
-    namespace_id,
-    namespace_name,
-    namespace_slug
-FROM {{ shapes_exports_table }}
-{#- max(export_id) works to get latest exported shapes because export_id begins with partitioned
-   export time in reverse time part order (padded with zeros) #}
-WHERE export_id = (SELECT max(export_id) FROM {{ shapes_exports_table }});
-
-{# Cleanup
-DROP SHARE {{ share_name }}; -- cannot drop database until any shares using it are dropped
-DROP DATABASE {{ db_name }}; -- this will drop everything in the database
-#}
 
 {# Create sharing #}
 {# create share if not exists - there is only create or replace share, or  #}

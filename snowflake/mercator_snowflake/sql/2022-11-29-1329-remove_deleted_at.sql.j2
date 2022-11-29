@@ -1,0 +1,73 @@
+{%- set full_schema_name = db_name ~ '.geofencer' %}
+{%- set shapes_exports_table = full_schema_name ~ ".shapes_exports" %}
+{%- set shapes_stage = full_schema_name ~ ".shapes_stage" %}
+{%- set shapes_view = full_schema_name ~ ".shapes" %}
+{%- set shapes_view_with_deleted = full_schema_name ~ ".shapes_latest_with_deleted" %}
+{%- set shapes_pipe = full_schema_name ~ ".shapes_pipe" %}
+
+USE ROLE geofencer_etl_role;
+
+{% if org_id != "b02fe057-de05-40a0-b04a-7742a1189b91" %}
+ALTER TABLE  {{ shapes_exports_table }} DROP COLUMN deleted_at;
+{% endif %}
+
+{# pause pipe for safe shut down
+
+See https://docs.snowflake.com/en/sql-reference/sql/alter-pipe.html
+
+#}
+ALTER PIPE {{ shapes_pipe }} SET pipe_execution_paused = true;
+
+CREATE OR REPLACE PIPE {{ shapes_pipe }}
+AUTO_INGEST=TRUE
+ERROR_INTEGRATION={{ error_int }}
+AS
+COPY INTO {{ shapes_exports_table }}
+(uuid, name, geom, properties, created_at, updated_at, exported_at, organization_id, export_id,
+namespace_id, namespace_name, namespace_slug)
+FROM (
+    SELECT
+        $1:uuid::TEXT,
+        $1:name::TEXT,
+        -- geo is stored in wkb format
+        try_to_geography($1:geom::BINARY),
+        coalesce(parse_json($1:properties::TEXT)::OBJECT, object_construct()),
+        {# this seems to work for reading timestamps from parquet #}
+        {# the scale is important - the wrong scale #}
+        to_timestamp_ntz($1:created_at::INT, 6),
+        to_timestamp_ntz($1:updated_at::INT, 6),
+        to_timestamp_ntz($1:exported_at::INT, 6),
+        $1:organization_id::TEXT,
+        $1:export_id::TEXT,
+        $1:namespace_id::TEXT,
+        $1:namespace_name::TEXT,
+        $1:namespace_slug::TEXT
+    FROM @{{ shapes_stage }}
+)
+{#- binary_as_text=false is necessary to read the wkb column without errors
+    otherwise the binary column will be treated as a text column #}
+FILE_FORMAT=(TYPE=parquet COMPRESSION=snappy BINARY_AS_TEXT=false);
+
+COMMENT ON PIPE {{ shapes_pipe }} IS $$Pipe to load new geofencer shape exports of organization {{ org_id }}.$$;
+
+{% if org_id != "b02fe057-de05-40a0-b04a-7742a1189b91" %}
+CREATE OR REPLACE SECURE VIEW {{ shapes_view }}
+AS
+SELECT
+    uuid,
+    name,
+    geom,
+    properties,
+    updated_at,
+    exported_at,
+    namespace_id,
+    namespace_name,
+    namespace_slug
+FROM {{ shapes_exports_table }}
+WHERE export_id = (SELECT max(export_id) FROM {{ shapes_exports_table }});
+
+COMMENT ON VIEW {{ shapes_view }} IS $$S3 Location of geofencer exports for organization {{ org_id }}$$;
+GRANT SELECT ON VIEW {{ shapes_view }} TO SHARE {{ share_name }};
+
+DROP VIEW {{ shapes_view_with_deleted }};
+{% endif %}

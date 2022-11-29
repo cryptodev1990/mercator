@@ -105,7 +105,7 @@ def run(
             include_mercator=include_mercator,
         )
         for row in shares:
-            logger.info("Migrating: %s", row['name'])
+            logger.info("Migrating: %s", row["name"])
             sql = render_sql(template_name, row)
             logger.debug(sql)
             for _ in execute_script(conn, sql):
