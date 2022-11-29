@@ -27,6 +27,10 @@ type Action =
       multiSelectedShape: Feature;
     }
   | {
+      type: "ADD_SHAPES_TO_MULTISELECTED_SHAPES";
+      multiSelectedShapes: Feature[];
+    }
+  | {
       type: "REMOVE_SHAPE_FROM_MULTISELECT";
       multiSelectedUuid: GeoShapeMetadata["uuid"];
     }
@@ -60,6 +64,25 @@ export function selectionReducer(state: State, action: Action): State {
         ],
       };
     }
+    case "ADD_SHAPES_TO_MULTISELECTED_SHAPES": {
+      return {
+        ...state,
+        multiSelectedShapesUuids: [
+          ...state.multiSelectedShapes,
+          ...action.multiSelectedShapes.map((shape) => {
+            if (shape.properties) {
+              return shape.properties.__uuid;
+            }
+            return null;
+          }),
+        ],
+        multiSelectedShapes: [
+          ...state.multiSelectedShapes,
+          ...action.multiSelectedShapes,
+        ],
+      };
+    }
+
     case "REMOVE_SHAPE_FROM_MULTISELECT": {
       const multiSelectedShapesUuids = state.multiSelectedShapesUuids.filter(
         (uuid) => uuid !== action.multiSelectedUuid

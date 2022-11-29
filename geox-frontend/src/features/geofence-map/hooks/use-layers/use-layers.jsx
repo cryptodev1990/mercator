@@ -17,8 +17,11 @@ export const useLayers = () => {
 
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
-  const { selectedFeatureCollection, multiSelectedShapes } =
-    useSelectedShapes();
+  const {
+    selectedFeatureCollection,
+    multiSelectedShapes,
+    addShapesToMultiSelectedShapes,
+  } = useSelectedShapes();
 
   console.log("multiSelectedShapes", multiSelectedShapes);
 
@@ -97,37 +100,24 @@ export const useLayers = () => {
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
-      selected &&
-        new GeoJsonLayer({
-          id: "multi-select-geojson-view",
-          pickable: true,
-          // @ts-ignore
-          getFillColor: [0, 0, 255, 100],
-          getLineColor: [128, 128, 128, 255],
-          lineWidthMinPixels: 1,
-          onClick: (info) => {},
-          stroked: true,
-          filled: true,
-          // @ts-ignore
-          data: selected,
-        }),
-      // new SelectionLayer({
-      //   id: "selection",
-      //   selectionType: "polygon",
-      //   onSelect: ({ pickingInfos }) => {
-      //     console.log("pickingInfos", pickingInfos);
-      //     const newObjs = [];
-      //     for (const obj of pickingInfos) {
-      //       newObjs.push(obj.object);
-      //     }
-      //     setSelected(newObjs);
-      //   },
-      //   layerIds: ["gf-mvt"],
-      //   getTentativeFillColor: () => [255, 0, 255, 100],
-      //   getTentativeLineColor: () => [0, 0, 255, 255],
-      //   getTentativeLineDashArray: () => [0, 0],
-      //   lineWidthMinPixels: 3,
-      // }),
+
+      new SelectionLayer({
+        id: "selection",
+        selectionType: "polygon",
+        onSelect: ({ pickingInfos }) => {
+          console.log("pickingInfos", pickingInfos);
+          const newObjs = [];
+          for (const obj of pickingInfos) {
+            newObjs.push(obj.object);
+          }
+          addShapesToMultiSelectedShapes(newObjs);
+        },
+        layerIds: ["gf-mvt"],
+        getTentativeFillColor: () => [255, 0, 255, 100],
+        getTentativeLineColor: () => [0, 0, 255, 255],
+        getTentativeLineDashArray: () => [0, 0],
+        lineWidthMinPixels: 3,
+      }),
     ],
   };
 };

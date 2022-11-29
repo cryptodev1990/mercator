@@ -12,6 +12,7 @@ export interface SelectionContextI {
   multiSelectedShapesUuids: GeoShapeMetadata["uuid"][];
   multiSelectedShapes: Feature[];
   addShapeToMultiSelectedShapes: (shape: Feature) => void;
+  addShapesToMultiSelectedShapes: (shape: Feature[]) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
   removeSelectedShapeUuid: (uuid: string) => void;
   removeShapeFromMultiSelect: (uuid: string) => void;
@@ -28,6 +29,7 @@ export const SelectionContext = createContext<SelectionContextI>({
   multiSelectedShapesUuids: [],
   multiSelectedShapes: [],
   addShapeToMultiSelectedShapes: () => {},
+  addShapesToMultiSelectedShapes: () => {},
   isSelected: () => false,
   removeSelectedShapeUuid: () => {},
   removeShapeFromMultiSelect: () => {},
@@ -56,6 +58,13 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({
       type: "ADD_SHAPE_TO_MULTISELECTED_SHAPES",
       multiSelectedShape: shape,
+    });
+  };
+
+  const addShapesToMultiSelectedShapes = (shape: Feature[]) => {
+    dispatch({
+      type: "ADD_SHAPES_TO_MULTISELECTED_SHAPES",
+      multiSelectedShapes: shape,
     });
   };
 
@@ -115,6 +124,7 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
         clearMultiSelectedShapeUuids,
         clearSelectedShapeUuids,
         addShapeToMultiSelectedShapes,
+        addShapesToMultiSelectedShapes,
         // @ts-ignore
         selectedFeatureCollection,
         selectedDataIsLoading,
