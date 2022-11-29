@@ -1,8 +1,11 @@
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { useOsmQueryGetQuery } from "src/store/search-api";
-import { appendSearchResult } from "@/pages/components/state/search-slice";
-import { setInputText, selectSearchState } from "../state/search-slice";
+import { appendSearchResult } from "src/search/search-slice";
+import {
+  setInputText,
+  selectSearchState,
+} from "../../../src/search/search-slice";
 import { useDispatch, useSelector } from "react-redux";
 
 const CancelButton = () => {

@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { SearchResponse } from "../search/api";
+import { SearchResponse } from "../../../src/search/api";
 
 type Layer = {
   id: number;

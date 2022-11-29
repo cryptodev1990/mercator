@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 // @ts-ignore
 import DeckGL, { GeoJsonLayer, FlyToInterpolator } from "deck.gl";
 import StaticMap from "react-map-gl";
-import { snapToBounds } from "./utils";
+import { snapToBounds } from "../../../src/lib/geo-utils";
 import { useSelector } from "react-redux";
-import { selectSearchState } from "@/pages/components/state/search-slice";
+import { selectSearchState } from "src/search/search-slice";
 
 type Viewport = {
   latitude: number;

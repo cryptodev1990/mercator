@@ -1,7 +1,7 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { searchSlice } from "./state/search-slice";
+import { searchSlice } from "../search/search-slice";
 import { createWrapper } from "next-redux-wrapper";
-import { searchApi } from "../../src/store/search-api";
+import { searchApi } from "./search-api";
 
 export const makeStore = () =>
   configureStore({
@@ -24,5 +24,3 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 
 export const wrapper = createWrapper<AppStore>(makeStore);
-
-export const store = makeStore();

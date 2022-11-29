@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { OsmSearchResponse } from "../../../src/store/search-api";
-import { AppState } from "../store";
+import { OsmSearchResponse } from "../store/search-api";
+import { AppState } from "../store/store";
 
 // Type for our state
 export interface SearchState {

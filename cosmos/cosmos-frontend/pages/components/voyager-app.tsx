@@ -9,8 +9,7 @@ import {
   useDispatch,
   useSelector,
 } from "react-redux";
-import { store } from "./store";
-import { searchSlice, selectSearchState } from "./state/search-slice";
+import { selectSearchState } from "../../src/search/search-slice";
 import LayerCardBar from "./layer-card-bar";
 
 type ContextType = {
@@ -100,12 +99,6 @@ const VoyagerApp = () => {
   const providers = [
     {
       component: ToastProvider,
-    },
-    {
-      component: ReduxProvider,
-      props: {
-        store,
-      },
     },
   ];
 

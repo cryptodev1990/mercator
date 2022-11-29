@@ -40,3 +40,9 @@ export const snapToBounds = (fc: FeatureCollection) => {
     zoom,
   };
 };
+
+const utils = {
+  snapToBounds,
+};
+
+export default utils;
