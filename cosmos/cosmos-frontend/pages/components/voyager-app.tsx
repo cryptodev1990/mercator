@@ -11,6 +11,7 @@ import {
 } from "react-redux";
 import { selectSearchState } from "../../src/search/search-slice";
 import LayerCardBar from "./layer-card-bar";
+import { wrapper } from "src/store/store";
 
 type ContextType = {
   component: any;
@@ -96,6 +97,7 @@ const MainView = () => {
 
 const VoyagerApp = () => {
   // first context provider is the outermost
+
   const providers = [
     {
       component: ToastProvider,

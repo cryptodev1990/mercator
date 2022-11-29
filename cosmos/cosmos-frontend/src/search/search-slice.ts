@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { OsmSearchResponse } from "../store/search-api";
 import { AppState } from "../store/store";
+import { HYDRATE } from "next-redux-wrapper";
 
 // Type for our state
 export interface SearchState {
@@ -18,6 +19,14 @@ const initialState: SearchState = {
 export const searchSlice = createSlice({
   name: "search",
   initialState,
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      return {
+        ...state,
+        ...action.payload.search,
+      };
+    },
+  },
   reducers: {
     setSearchResults(state, action: { payload: OsmSearchResponse[] }) {
       state.searchResults = action.payload;
