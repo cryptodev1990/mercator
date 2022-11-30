@@ -111,6 +111,7 @@ export const useLayers = () => {
             }
             const distinctShapes = _.uniqBy(newObjs, "properties.__uuid");
             addShapesToMultiSelectedShapes(distinctShapes);
+            setCursorMode(EditorMode.ViewMode);
           },
           layerIds: ["gf-mvt"],
           getTentativeFillColor: () => [255, 0, 255, 100],

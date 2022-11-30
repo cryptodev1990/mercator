@@ -48,7 +48,7 @@ export const ToolButtonBank = () => {
       name: "MultiSelect",
       icon: <DrawPolygonIcon />,
       onClick: () => setCursorMode(EditorMode.MultiSelectMode),
-      dataTip: "Multiselect",
+      dataTip: "Select Multiple Shapes",
       active: cursorMode === EditorMode.MultiSelectMode,
       key: "mode-multi-select",
     },
