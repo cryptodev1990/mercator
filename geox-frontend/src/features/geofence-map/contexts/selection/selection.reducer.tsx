@@ -24,10 +24,6 @@ type Action =
       uuids: GeoShapeMetadata["uuid"][];
     }
   | {
-      type: "ADD_SHAPE_TO_MULTISELECTED_SHAPES";
-      multiSelectedShape: Feature;
-    }
-  | {
       type: "ADD_SHAPES_TO_MULTISELECTED_SHAPES";
       multiSelectedShapes: Feature[];
     }
@@ -50,21 +46,6 @@ export function selectionReducer(state: State, action: Action): State {
       return generateFinalState(state, [...state.uuids, ...action.uuids]);
     }
 
-    case "ADD_SHAPE_TO_MULTISELECTED_SHAPES": {
-      return {
-        ...state,
-        multiSelectedShapesUuids: [
-          ...state.multiSelectedShapes,
-          ...(action.multiSelectedShape.properties
-            ? [action.multiSelectedShape.properties.__uuid]
-            : []),
-        ],
-        multiSelectedShapes: [
-          ...state.multiSelectedShapes,
-          action.multiSelectedShape,
-        ],
-      };
-    }
     case "ADD_SHAPES_TO_MULTISELECTED_SHAPES": {
       const distinctShapes = _.uniqBy(
         [...state.multiSelectedShapes, ...action.multiSelectedShapes],

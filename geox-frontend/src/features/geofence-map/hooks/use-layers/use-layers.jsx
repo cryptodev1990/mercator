@@ -22,8 +22,8 @@ export const useLayers = () => {
     addShapesToMultiSelectedShapes,
   } = useSelectedShapes();
 
-  console.log("multiSelectedShapesUuids", multiSelectedShapesUuids);
-  console.log("multiSelectedShapes", multiSelectedShapes);
+  // console.log("multiSelectedShapesUuids", multiSelectedShapesUuids);
+  // console.log("multiSelectedShapes", multiSelectedShapes);
 
   const tiles = useTiles();
   const editLayer = useEditLayer();

@@ -33,12 +33,11 @@ const GeofenceMap = () => {
   const {
     selectedUuids,
     multiSelectedShapesUuids,
-    multiSelectedShapes,
     clearSelectedShapeUuids,
     isSelected,
     setSelectedShapeUuid,
-    addShapeToMultiSelectedShapes,
-    removeShapeFromMultiSelect,
+    addShapesToMultiSelectedShapes,
+    removeShapeFromMultiSelectedShapes,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
@@ -184,18 +183,18 @@ const GeofenceMap = () => {
           if (cursorMode === EditorMode.SplitMode) {
             return;
           }
+          // if you click already selected shape, deselect it
           if (
             e.changedPointers[0].metaKey &&
             multiSelectedShapesUuids.includes(uuid)
           ) {
-            removeShapeFromMultiSelect(uuid);
+            removeShapeFromMultiSelectedShapes(uuid);
           }
-
           if (
             e.changedPointers[0].metaKey &&
             !multiSelectedShapesUuids.includes(uuid)
           ) {
-            addShapeToMultiSelectedShapes(object);
+            addShapesToMultiSelectedShapes([object]);
           }
 
           if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
