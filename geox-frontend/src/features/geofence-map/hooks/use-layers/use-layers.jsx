@@ -4,7 +4,7 @@ import { EditorMode } from "../../cursor-modes";
 import { featureToFeatureCollection } from "../../utils";
 import { useCursorMode } from "../use-cursor-mode";
 import { useShapes } from "../use-shapes";
-
+import _ from "lodash";
 import { useTiles } from "./use-tiles";
 import { useModifyLayer } from "./use-modify-layer";
 import { useEditLayer } from "./use-edit-layer";
@@ -22,6 +22,7 @@ export const useLayers = () => {
     addShapesToMultiSelectedShapes,
   } = useSelectedShapes();
 
+  console.log("multiSelectedShapesUuids", multiSelectedShapesUuids);
   console.log("multiSelectedShapes", multiSelectedShapes);
 
   const tiles = useTiles();
@@ -108,7 +109,8 @@ export const useLayers = () => {
             for (const obj of pickingInfos) {
               newObjs.push(obj.object);
             }
-            addShapesToMultiSelectedShapes(newObjs);
+            const distinctShapes = _.uniqBy(newObjs, "properties.__uuid");
+            addShapesToMultiSelectedShapes(distinctShapes);
           },
           layerIds: ["gf-mvt"],
           getTentativeFillColor: () => [255, 0, 255, 100],

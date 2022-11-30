@@ -67,19 +67,16 @@ export function selectionReducer(state: State, action: Action): State {
     }
     case "ADD_SHAPES_TO_MULTISELECTED_SHAPES": {
       const distinctShapes = _.uniqBy(
-        action.multiSelectedShapes,
+        [...state.multiSelectedShapes, ...action.multiSelectedShapes],
         "properties.__uuid"
       );
 
       return {
         ...state,
-        multiSelectedShapesUuids: [
-          ...state.multiSelectedShapes,
-          ...distinctShapes.map(
-            (shape: any) => shape.properties && shape.properties.__uuid
-          ),
-        ],
-        multiSelectedShapes: [...state.multiSelectedShapes, ...distinctShapes],
+        multiSelectedShapesUuids: distinctShapes.map(
+          (shape: any) => shape.properties && shape.properties.__uuid
+        ),
+        multiSelectedShapes: distinctShapes,
       };
     }
 
