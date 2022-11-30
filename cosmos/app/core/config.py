@@ -64,6 +64,14 @@ class AppDatabase(BaseModel):
         )
 
 
+class GraphHopper(BaseModel):
+    """Graphhopper settings."""
+
+    api_key: Optional[SecretStr] = Field(None)
+    use_nominatim: bool = True
+    use_osm: bool = True
+
+
 class Settings(BaseSettings):
     """App settings."""
 
@@ -74,6 +82,8 @@ class Settings(BaseSettings):
 
     env: AppEnvEnum = Field(..., description="App environment")
     log_level: LogLevel = Field(LogLevel.INFO, description="Python logging module log level")
+
+    graph_hopper: GraphHopper = GraphHopper()  # type: ignore
 
     class Config:  # noqa
         """Pydantic config."""

@@ -4,12 +4,15 @@ from functools import singledispatch
 from typing import Any, List, Optional, Union
 
 from geoalchemy2 import Geography, Geometry
+from httpx import HTTPStatusError
 from sqlalchemy import String, Table, and_
 from sqlalchemy import case as sql_case
 from sqlalchemy import cast, func, or_, select
 from sqlalchemy.sql import ColumnElement, Select
 
+from app.core.config import get_settings
 from app.core.datatypes import BBox, MapProjection
+from app.core.graphhopper import get_graph_hopper
 from app.db import osm as osm_tbl
 from app.parsers.rules import (
     Buffer,
@@ -23,6 +26,9 @@ from app.parsers.rules import (
     SpRelOutsideDistOf,
     SpRelWithinDistOf,
 )
+
+settings = get_settings()
+graph_hopper = get_graph_hopper()
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +85,9 @@ def to_sql(arg: Any, **kwargs: Any) -> Any:
 
 
 @to_sql.register
-def _(arg: Place, bbox: Optional[BBox] = None, **kwargs: Any) -> Select: # pylint: disable=unused-argument
+def _(
+    arg: Place, bbox: Optional[BBox] = None, **kwargs: Any  # pylint: disable=unused-argument
+) -> Select:
     """SQL query for Place.
 
     Returns results that match a full text search of the properties.
@@ -112,9 +120,27 @@ def named_place_lookup_db(
 
 
 @to_sql.register
-def _(arg: NamedPlace, bbox: Optional[BBox] = None, **kwargs: Any) -> Select:  # pylint: disable=unused-argument
+def _(
+    arg: NamedPlace, bbox: Optional[BBox] = None, **kwargs: Any  # pylint: disable=unused-argument
+) -> Select:
     query = " ".join(arg.value)
     # hard code the case of San Francisco since we use it so much in early demos
+    if settings.graph_hopper.use_nominatim and graph_hopper:
+        res = None
+        try:
+            logger.exception("Querying GraphHopper for %s", query)
+            res = graph_hopper.geocode(" ".join(arg.value), bbox=bbox, limit=1)
+        except HTTPStatusError as exc:  # pylint: disable=broad-except
+            logger.error("Error geocoding %s with Graphhopper: %s", arg.value, exc)
+        osm_id = None
+        if res:
+            hits = res.get("hits", [])
+            if not hits:
+                logger.debug("No geocode results found for Graphhopper: %s")
+            else:
+                osm_id = hits[0].get("osm_id")
+        if osm_id:
+            return _select_osm().where(osm_tbl.c.osm_id == osm_id)
     return named_place_lookup_db(query=query, bbox=bbox)
 
 
