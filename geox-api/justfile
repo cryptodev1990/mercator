@@ -100,7 +100,7 @@ dev:
 
 # Run app locally
 e2e-test:
-  ENV_FILE=.env.local APP_RELOAD=1 overmind start -D -f Procfile.dev > /dev/null &
+  ENV_FILE=.env.local APP_RELOAD=1 overmind start -D -f Procfile.dev > /dev/null
   ENV_FILE=.env.local ./bin/test-local.sh test/browser/ -x -vvv --base-url http://localhost:3000/ --browser chromium --headed
   overmind stop
 
