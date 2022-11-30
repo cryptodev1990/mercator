@@ -1,5 +1,6 @@
 import { Feature, FeatureCollection } from "@turf/helpers";
 import { GeoShapeMetadata } from "../../../../client";
+import _ from "lodash";
 
 export interface State {
   uuids: GeoShapeMetadata["uuid"][];
@@ -65,21 +66,20 @@ export function selectionReducer(state: State, action: Action): State {
       };
     }
     case "ADD_SHAPES_TO_MULTISELECTED_SHAPES": {
+      const distinctShapes = _.uniqBy(
+        action.multiSelectedShapes,
+        "properties.__uuid"
+      );
+
       return {
         ...state,
         multiSelectedShapesUuids: [
           ...state.multiSelectedShapes,
-          ...action.multiSelectedShapes.map((shape) => {
-            if (shape.properties) {
-              return shape.properties.__uuid;
-            }
-            return null;
-          }),
+          ...distinctShapes.map(
+            (shape: any) => shape.properties && shape.properties.__uuid
+          ),
         ],
-        multiSelectedShapes: [
-          ...state.multiSelectedShapes,
-          ...action.multiSelectedShapes,
-        ],
+        multiSelectedShapes: [...state.multiSelectedShapes, ...distinctShapes],
       };
     }
 

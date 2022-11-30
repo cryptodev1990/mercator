@@ -13,13 +13,12 @@ import { useImageLayer } from "./use-image-layer";
 import { SelectionLayer } from "@nebula.gl/layers";
 
 export const useLayers = () => {
-  const [selected, setSelected] = React.useState([]);
-
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
   const {
     selectedFeatureCollection,
     multiSelectedShapes,
+    multiSelectedShapesUuids,
     addShapesToMultiSelectedShapes,
   } = useSelectedShapes();
 
@@ -69,7 +68,6 @@ export const useLayers = () => {
           data: selectedFeatureCollection,
         }),
       multiSelectedShapes &&
-        cursorMode === EditorMode.ViewMode &&
         new GeoJsonLayer({
           id: "multi-select-geojson-view",
           pickable: true,
@@ -100,24 +98,24 @@ export const useLayers = () => {
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
-
-      new SelectionLayer({
-        id: "selection",
-        selectionType: "polygon",
-        onSelect: ({ pickingInfos }) => {
-          console.log("pickingInfos", pickingInfos);
-          const newObjs = [];
-          for (const obj of pickingInfos) {
-            newObjs.push(obj.object);
-          }
-          addShapesToMultiSelectedShapes(newObjs);
-        },
-        layerIds: ["gf-mvt"],
-        getTentativeFillColor: () => [255, 0, 255, 100],
-        getTentativeLineColor: () => [0, 0, 255, 255],
-        getTentativeLineDashArray: () => [0, 0],
-        lineWidthMinPixels: 3,
-      }),
+      cursorMode === EditorMode.MultiSelectMode &&
+        new SelectionLayer({
+          id: "selection",
+          selectionType: "polygon",
+          onSelect: ({ pickingInfos }) => {
+            console.log("pickingInfos", pickingInfos);
+            const newObjs = [];
+            for (const obj of pickingInfos) {
+              newObjs.push(obj.object);
+            }
+            addShapesToMultiSelectedShapes(newObjs);
+          },
+          layerIds: ["gf-mvt"],
+          getTentativeFillColor: () => [255, 0, 255, 100],
+          getTentativeLineColor: () => [0, 0, 255, 255],
+          getTentativeLineDashArray: () => [0, 0],
+          lineWidthMinPixels: 3,
+        }),
     ],
   };
 };
