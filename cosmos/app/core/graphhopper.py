@@ -3,13 +3,13 @@
 See `<https://www.graphhopper.com/developers/>`__.
 """
 from functools import lru_cache
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 import httpx
 from httpx import Response
 
 from app.core.config import get_settings
-from app.core.datatypes import BBox
+from app.core.datatypes import BBox, Latitude, Longitude
 
 
 class GraphHopper:
@@ -42,7 +42,27 @@ class GraphHopper:
         if bbox:
             params["bounds"] = ",".join([str(c) for c in bbox])
         url = "https://graphhopper.com/api/1/geocode"
-        response = httpx.get(url, params=params)
+        response = self._get(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def isochrone(
+        self,
+        point: Tuple[Latitude, Longitude],
+        time_limit: float,
+        profile: str = "car",
+        reverse_flow: bool = True,
+    ) -> Dict[str, Any]:
+        """Geocode a query using OSM Nomatim."""
+        params: Dict[str, Any] = {
+            "point": ",".join([str(c) for c in point]),
+            "profile": profile,
+            "time_limit": time_limit,
+            # X within time of Y should use the reverse_flow
+            "reverse_flow": reverse_flow,
+        }
+        url = "https://graphhopper.com/api/1/isochrone"
+        response = self._get(url, params=params)
         response.raise_for_status()
         return response.json()
 

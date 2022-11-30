@@ -8,7 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from app.core.datatypes import BBox, FeatureCollection
-from app.crud.osm_search import to_sql
+from app.crud.osm_search import eval_query
 from app.dependencies import get_conn
 from app.parsers.exceptions import QueryParseError
 from app.parsers.rules import parse
@@ -50,21 +50,19 @@ async def _get_query(
     - "Restaurants not near Lake Merritt"
     - "Restaurants within 10 miles of Lake Merritt"
     - "Restaurants more than 10 miles from Lake Merritt"
+    - "Draw an isochrone of 10 minutes around Lake Merritt"
 
     """
     try:
         parsed_query = parse(query)
     except QueryParseError:
         raise HTTPException(status_code=422, detail="Unable to parse query.") from None
-
-    sql = to_sql(parsed_query, bbox=bbox, limit=limit)
-    results = (await conn.execute(sql)).scalar()
-
+    results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn)
     return OsmSearchResponse(
         query=query,
         label=str(parsed_query),
         parse=parsed_query,
-        results=FeatureCollection.parse_obj(results or {}),  # type: ignore
+        results=results or FeatureCollection(features=[]),  # type: ignore
     )
 
 

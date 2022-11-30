@@ -1,6 +1,8 @@
 """Parser for time strings."""
 import re
 from datetime import timedelta
+from functools import singledispatch
+from typing import Any
 
 NUMBER_PAT = r"(?P<value>\d+(?:\.\d+)?|\.\d+)"
 NOT_FOLLOWED_BY_LETTER_PAT = r"(?=[^A-Za-z]|$)"
@@ -51,3 +53,47 @@ def parse(string: str) -> timedelta:
     if not has_match:
         raise ValueError(f"Could not parse string: {string}")
     return timedelta(hours=hour, minutes=minute, seconds=second)
+
+
+@singledispatch
+def readable_duration(time: Any) -> str:
+    """Return a human-readable duration string.
+
+    Args:
+        time: Duration
+    Returns:
+        str: Human-readable duration string.
+    """
+    raise NotImplementedError(f"readable_duration() not implemented for {type(time)}")
+
+
+@readable_duration.register(float)
+@readable_duration.register(int)
+def _(time: float) -> str:
+    """Return a human-readable duration string.
+
+    Args:
+        time (float): Duration in seconds.
+    Returns:
+        str: Human-readable duration string.
+    """
+    hours = int(time // 3600)
+    minutes = int((time % 3600) // 60)
+    seconds = int(time % 60)
+    out = []
+    if time < 0:
+        raise ValueError("time must be non-negative")
+    if int(time) == 0:
+        return "0 minutes"
+    if hours > 0:
+        out.extend([str(hours), str("hour" if hours == 1 else "hours")])
+    if minutes > 0:
+        out.extend([str(minutes), str("minute" if minutes == 1 else "minutes")])
+    if seconds > 0:
+        out.extend([str(seconds), str("second" if seconds == 1 else "seconds")])
+    return " ".join(out)
+
+
+@readable_duration.register
+def _(time: timedelta) -> str:
+    return readable_duration(time.total_seconds())

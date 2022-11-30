@@ -12,6 +12,7 @@ from spacy.util import filter_spans
 
 from app.parsers.dist import parse as parse_distance
 from app.parsers.time import parse as parse_time
+from app.parsers.time import readable_duration
 
 from .exceptions import QueryParseError
 
@@ -171,11 +172,19 @@ class SpRelOutsideTimeOf(_SpatialRelationship):
 
     type: Literal["outside_time_of"] = Field("outside_time_of", const=True)
     duration: timedelta
-    method: TravelMethod = TravelMethod.drive
+    profile: TravelMethod = Field(
+        TravelMethod.drive, description="Isochrone profile used in the calculation."
+    )
 
     def __str__(self) -> str:
         return " ".join(
-            [str(self.subject), "MORE THAN", str(self.duration), "FROM", str(self.object)]
+            [
+                str(self.subject),
+                "MORE THAN",
+                readable_duration(self.duration),
+                "FROM",
+                str(self.object),
+            ]
         )
 
 
@@ -188,7 +197,7 @@ class Buffer(_LocalModel):
 
     def __str__(self) -> str:
         return " ".join(
-            ["BUFFER OF", str(Quantity(self.distance, "meters")), "AROUND", str(self.object)]
+            ["BUFFER OF", str(Quantity(self.distance, "miles")), "AROUND", str(self.object)]
         )
 
 
@@ -198,10 +207,14 @@ class Isochrone(_LocalModel):
     type: Literal["isochrone"] = Field("isochrone", const=True)
     object: Union[Place, NamedPlace]
     duration: timedelta
-    method: TravelMethod = TravelMethod.drive
+    profile: TravelMethod = Field(
+        TravelMethod.drive, description="Isochrone profile used in the calculation."
+    )
 
     def __str__(self) -> str:
-        return " ".join(["ISOCHRONE OF", str(self.duration), "AROUND", str(self.object)])
+        return " ".join(
+            ["ISOCHRONE OF", readable_duration(self.duration), "AROUND", str(self.object)]
+        )
 
 
 class Route(_LocalModel):
@@ -211,7 +224,9 @@ class Route(_LocalModel):
     start: NamedPlace
     end: NamedPlace
     along: Union[Place, NamedPlace, None] = None
-    method: TravelMethod = TravelMethod.drive
+    profile: TravelMethod = Field(
+        TravelMethod.drive, description="Isochrone profile used in the calculation."
+    )
 
     def __str__(self) -> str:
         words = []

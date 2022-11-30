@@ -1,30 +1,36 @@
 """OSM search functions."""
 import logging
 from functools import singledispatch
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
+from fastapi import HTTPException
 from geoalchemy2 import Geography, Geometry
 from httpx import HTTPStatusError
 from sqlalchemy import String, Table, and_
 from sqlalchemy import case as sql_case
-from sqlalchemy import cast, func, or_, select
+from sqlalchemy import cast as sql_cast
+from sqlalchemy import func, or_, select
+from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy.sql import ColumnElement, Select
 
 from app.core.config import get_settings
-from app.core.datatypes import BBox, MapProjection
-from app.core.graphhopper import get_graph_hopper
+from app.core.datatypes import BBox, FeatureCollection, MapProjection
+from app.core.graphhopper import GraphHopper, get_graph_hopper
 from app.db import osm as osm_tbl
 from app.parsers.rules import (
     Buffer,
+    Isochrone,
     NamedPlace,
     ParsedQuery,
     Place,
+    Route,
     SpRelCoveredBy,
     SpRelDisjoint,
     SpRelNear,
     SpRelNotNear,
     SpRelOutsideDistOf,
     SpRelWithinDistOf,
+    SpRelWithinTimeOf,
 )
 
 settings = get_settings()
@@ -119,28 +125,55 @@ def named_place_lookup_db(
     return stmt
 
 
+def _check_graph_hopper() -> None:
+    if not graph_hopper:
+        raise HTTPException(
+            status_code=501,
+            detail="GraphHopper is not configured, cannot generate isochrones",
+        )
+
+
+def _geocode(query: str, bbox: Optional[BBox] = None) -> Optional[Dict[str, Any]]:
+    _check_graph_hopper()
+    res = None
+    try:
+        logger.exception("Querying GraphHopper for %s", query)
+        res = cast(GraphHopper, graph_hopper).geocode(query, bbox=bbox, limit=1)
+    except HTTPStatusError as exc:  # pylint: disable=broad-except
+        logger.error("Error geocoding %s with Graphhopper: %s", query, exc)
+    if res:
+        hits = res.get("hits", [])
+        return hits[0]
+    # Note - results include a point and a bounding box, not the geom
+    return None
+
+
+def get_named_place_nominatim(query: str, bbox: Optional[BBox] = None) -> Optional[Select]:
+    """Retrieve a named place using GraphHopper to geocode it."""
+    # Since GraphHopper nominatinm returns a point and a bbox, we need to
+    # lookup the goemetry in the OSM database. Returns none if no results.
+    # TODO: raise exceptions
+    _check_graph_hopper()
+    res = _geocode(query, bbox=bbox)
+    if res:
+        osm_id = res.get("osm_id")
+        if osm_id:
+            stmt = _select_osm().where(osm_tbl.c.osm_id == osm_id)
+            return stmt
+    return None
+
+
 @to_sql.register
 def _(
     arg: NamedPlace, bbox: Optional[BBox] = None, **kwargs: Any  # pylint: disable=unused-argument
 ) -> Select:
     query = " ".join(arg.value)
     # hard code the case of San Francisco since we use it so much in early demos
+    stmt = None
     if settings.graph_hopper.use_nominatim and graph_hopper:
-        res = None
-        try:
-            logger.exception("Querying GraphHopper for %s", query)
-            res = graph_hopper.geocode(" ".join(arg.value), bbox=bbox, limit=1)
-        except HTTPStatusError as exc:  # pylint: disable=broad-except
-            logger.error("Error geocoding %s with Graphhopper: %s", arg.value, exc)
-        osm_id = None
-        if res:
-            hits = res.get("hits", [])
-            if not hits:
-                logger.debug("No geocode results found for Graphhopper: %s")
-            else:
-                osm_id = hits[0].get("osm_id")
-        if osm_id:
-            return _select_osm().where(osm_tbl.c.osm_id == osm_id)
+        stmt = get_named_place_nominatim(query, bbox)
+        if stmt:
+            return stmt
     return named_place_lookup_db(query=query, bbox=bbox)
 
 
@@ -159,7 +192,7 @@ def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = N
     # Order by distance to the center of the object it is in
     stmt = stmt.order_by(
         func.ST_Distance(
-            cast(subj.c.geom, Geography()), cast(func.ST_Centroid(obj.c.geom), Geography())
+            sql_cast(subj.c.geom, Geography()), sql_cast(func.ST_Centroid(obj.c.geom), Geography())
         )
     )
     if limit:
@@ -183,7 +216,7 @@ def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = No
     stmt = select(subj).join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
     # Order by distance to the object it is outside of, e.g. the closest objects that aren't inside that object
     stmt = stmt.order_by(
-        func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+        func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
     )
     if limit:
         stmt = stmt.limit(limit)
@@ -204,14 +237,14 @@ def _(
         and_(
             func.ST_Disjoint(subj.c.geom, obj.c.geom),
             func.ST_DWithin(
-                cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()), arg.distance
+                sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()), arg.distance
             ),
         ),
     )
     if limit:
         stmt = stmt.limit(limit)
     stmt = stmt.order_by(
-        func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+        func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
     )
     return stmt
 
@@ -227,15 +260,16 @@ def _(
     obj = to_sql(arg.object, bbox=bbox).cte()
     stmt = select(subj).join(
         obj,
+        # near or close to must be outside the object
         and_(
             func.ST_Disjoint(subj.c.geom, obj.c.geom),
-            func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+            func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
             > arg.distance,
         ),
     )
     # Order by the objects closest to the object it is not near
     stmt = stmt.order_by(
-        func.ST_Distance(cast(subj.c.geom, Geography()), cast(obj.c.geom, Geography()))
+        func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
     )
     if limit:
         stmt = stmt.limit(limit)
@@ -251,34 +285,73 @@ def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> 
             obj.c.osm_type,
             obj.c.osm_id,
             obj.c.category,
-            cast(
-                func.ST_Buffer(cast(obj.c.geom, Geography()), arg.distance),
+            sql_cast(
+                func.ST_Buffer(sql_cast(obj.c.geom, Geography()), arg.distance),
                 Geometry(srid=MapProjection.WGS84),
             ).label("geom"),
         ]
     ).limit(limit)
 
 
-@to_sql.register
-def _(arg: ParsedQuery, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
-    base = to_sql(arg.value, bbox=bbox, limit=limit).cte()
+def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
     stmt = select(
         func.to_geojson_feature_collection_agg(
-            base.c.geom,
+            stmt.c.geom,
             func.jsonb_build_object(
                 "osm",
                 func.jsonb_build_object(
                     "tags",
-                    base.c.tags,
+                    stmt.c.tags,
                     "type",
-                    base.c.osm_type,
+                    stmt.c.osm_type,
                     "id",
-                    base.c.osm_id,
+                    stmt.c.osm_id,
                     "category",
-                    base.c.category,
+                    stmt.c.category,
                 ),
             ),
-            cast(base.c.osm_id, String()),
+            sql_cast(stmt.c.osm_id, String()),
         ).label("features")
-    ).select_from(base)
+    ).select_from(stmt.limit(limit))
     return stmt
+
+
+async def eval_isochrone(
+    arg: Isochrone,
+    bbox: Optional[BBox] = None,
+) -> FeatureCollection:
+    """Generate an isochrone from a center point and time in seconds.
+
+    Currently hardcoded for cars.
+
+    """
+    _check_graph_hopper()
+    assert isinstance(arg.object, NamedPlace)
+    obj = _geocode(" ".join(arg.object.value), bbox=bbox)
+    if not obj:
+        raise ValueError("Could not geo-locate the named place")
+    point: Dict[str, float] = obj["point"]
+    res = cast(GraphHopper, graph_hopper).isochrone(
+        (point["lat"], point["lng"]), int(arg.duration.total_seconds()), profile="car"
+    )
+    return FeatureCollection(features=res.get("polygons", []))
+
+
+async def eval_query(
+    arg: ParsedQuery,
+    *,
+    conn: AsyncConnection,
+    bbox: Optional[BBox] = None,
+    limit: Optional[int] = None,
+) -> FeatureCollection:
+    """Evaluate a query"""
+    expr = arg.value
+    if isinstance(expr, Isochrone):
+        return await eval_isochrone(expr, bbox=bbox)
+    if isinstance(expr, Route):
+        raise NotImplementedError()
+    if isinstance(expr, SpRelWithinTimeOf):
+        raise NotImplementedError()
+    stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit))
+    res = (await conn.execute(stmt)).scalar()
+    return FeatureCollection.parse_obj(res)
