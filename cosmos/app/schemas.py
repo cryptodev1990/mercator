@@ -52,6 +52,7 @@ class OsmSearchResponse(BaseModel):
 
     class Config:
         """Pydantic config."""
+
         # pylint: disable=line-too-long
         schema_extra = {
             "example": {

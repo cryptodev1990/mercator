@@ -1,7 +1,7 @@
 """OSM search functions."""
 import logging
 from functools import singledispatch
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 from fastapi import HTTPException
 from geoalchemy2 import Geography, Geometry
@@ -14,7 +14,14 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy.sql import ColumnElement, Select
 
 from app.core.config import get_settings
-from app.core.datatypes import BBox, FeatureCollection, MapProjection
+from app.core.datatypes import (
+    BBox,
+    Feature,
+    FeatureCollection,
+    Latitude,
+    Longitude,
+    MapProjection,
+)
 from app.core.graphhopper import GraphHopper, get_graph_hopper
 from app.db import osm as osm_tbl
 from app.parsers.rules import (
@@ -29,6 +36,7 @@ from app.parsers.rules import (
     SpRelNear,
     SpRelNotNear,
     SpRelOutsideDistOf,
+    SpRelOutsideTimeOf,
     SpRelWithinDistOf,
     SpRelWithinTimeOf,
 )
@@ -143,7 +151,8 @@ def _geocode(query: str, bbox: Optional[BBox] = None) -> Optional[Dict[str, Any]
         logger.error("Error geocoding %s with Graphhopper: %s", query, exc)
     if res:
         hits = res.get("hits", [])
-        return hits[0]
+        if hits:
+            return hits[0]
     # Note - results include a point and a bounding box, not the geom
     return None
 
@@ -287,33 +296,54 @@ def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> 
             obj.c.category,
             sql_cast(
                 func.ST_Buffer(sql_cast(obj.c.geom, Geography()), arg.distance),
-                Geometry(srid=MapProjection.WGS84),
+                Geometry(srid=int(MapProjection.WGS84)),
             ).label("geom"),
         ]
     ).limit(limit)
 
 
 def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
-    stmt = select(
+    if limit:
+        base = stmt.limit(limit)
+    else:
+        base = stmt
+    base = select(
         func.to_geojson_feature_collection_agg(
-            stmt.c.geom,
+            base.c.geom,
             func.jsonb_build_object(
                 "osm",
                 func.jsonb_build_object(
                     "tags",
-                    stmt.c.tags,
+                    base.c.tags,
                     "type",
-                    stmt.c.osm_type,
+                    base.c.osm_type,
                     "id",
-                    stmt.c.osm_id,
+                    base.c.osm_id,
                     "category",
-                    stmt.c.category,
+                    base.c.category,
                 ),
             ),
-            sql_cast(stmt.c.osm_id, String()),
+            sql_cast(base.c.osm_id, String()),
         ).label("features")
-    ).select_from(stmt.limit(limit))
-    return stmt
+    )
+    return base
+
+
+def _get_isochrone(
+    query: str, seconds: float, bbox: Optional[BBox] = None
+) -> Tuple[Feature, Tuple[Latitude, Longitude]]:
+    _check_graph_hopper()
+    obj = _geocode(query, bbox=bbox)
+    if not obj:
+        raise ValueError("Could not geo-locate the named place")
+    point: Dict[str, float] = obj["point"]
+    res = cast(GraphHopper, graph_hopper).isochrone(
+        (point["lat"], point["lng"]), int(seconds), profile="car"
+    )
+    return (
+        Feature.parse_obj(res.get("polygons", [])[0]),
+        (float(point["lat"]), float(point["lng"])),
+    )
 
 
 async def eval_isochrone(
@@ -326,15 +356,107 @@ async def eval_isochrone(
 
     """
     _check_graph_hopper()
-    assert isinstance(arg.object, NamedPlace)
-    obj = _geocode(" ".join(arg.object.value), bbox=bbox)
-    if not obj:
-        raise ValueError("Could not geo-locate the named place")
-    point: Dict[str, float] = obj["point"]
-    res = cast(GraphHopper, graph_hopper).isochrone(
-        (point["lat"], point["lng"]), int(arg.duration.total_seconds()), profile="car"
+    if not isinstance(arg.object, NamedPlace):
+        logger.warning("Attempting to search for an unnamed place")
+    feature, _ = _get_isochrone(" ".join(arg.object.value), arg.duration.total_seconds(), bbox=bbox)
+    return FeatureCollection(features=[feature])
+
+
+async def eval_within_time_of(
+    arg: SpRelWithinTimeOf,
+    *,
+    conn: AsyncConnection,
+    bbox: Optional[BBox] = None,
+    limit: Optional[int] = None,
+) -> FeatureCollection:
+    """Generate an isochrone from a center point and time in seconds.
+
+    Currently hardcoded for cars.
+
+    """
+    _check_graph_hopper()
+    if not isinstance(arg.object, NamedPlace):
+        logger.warning("Attempting to search for an unnamed place")
+    obj_poly, obj_point = _get_isochrone(
+        " ".join(arg.object.value), arg.duration.total_seconds(), bbox=bbox
     )
-    return FeatureCollection(features=res.get("polygons", []))
+    obj_lat, obj_lng = obj_point
+    # Case: there is an isochrone, but no objects to check
+    obj_geom = obj_poly.geometry.json()
+    obj = select(
+        [
+            func.ST_GeomFromGeoJSON(obj_geom).label("geom"),
+            func.ST_SetSRID(func.ST_MakePoint(obj_lng, obj_lat), int(MapProjection.WGS84)).label(
+                "center"
+            ),
+        ]
+    ).cte()
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    if subj is None:
+        return FeatureCollection(features=[])
+    # TODO: any subject features should also be outside of the starting point of the
+    # isochrone.
+    stmt = (
+        select(subj)
+        .join(
+            obj,
+            and_(
+                func.ST_Intersects(subj.c.geom, obj.c.geom),
+                func.ST_Disjoint(subj.c.geom, obj.c.center),
+            ),
+        )
+        .order_by(func.ST_Distance(subj.c.geom, obj.c.center))
+    )
+    if limit:
+        stmt = stmt.limit(limit)
+    res = (await conn.execute(_feature_coll_sql(stmt))).scalar()
+    return FeatureCollection.parse_obj(res or {})
+
+
+async def eval_outside_time_of(
+    arg: SpRelOutsideTimeOf,
+    *,
+    conn: AsyncConnection,
+    bbox: Optional[BBox] = None,
+    limit: Optional[int] = None,
+) -> FeatureCollection:
+    """Generate an isochrone from a center point and time in seconds.
+
+    Currently hardcoded for cars.
+
+    """
+    # get feature collection from isochrone
+    _check_graph_hopper()
+    if not isinstance(arg.object, NamedPlace):
+        logger.warning("Attempting to search for an unnamed place")
+    obj_poly, obj_point = _get_isochrone(
+        " ".join(arg.object.value), arg.duration.total_seconds(), bbox=bbox
+    )
+    obj_lat, obj_lng = obj_point
+    # Case: there is an isochrone, but no objects to check
+    obj_geom = obj_poly.geometry.json()
+    obj = select(
+        [
+            func.ST_GeomFromGeoJSON(obj_geom).label("geom"),
+            func.ST_SetSRID(func.ST_MakePoint(obj_lng, obj_lat), int(MapProjection.WGS84)).label(
+                "center"
+            ),
+        ]
+    ).cte()
+    subj = to_sql(arg.subject, bbox=bbox).cte()
+    if subj is None:
+        return FeatureCollection(features=[])
+    # TODO: any subject features should also be outside of the starting point of the
+    # isochrone.
+    stmt = (
+        select(subj)
+        .join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
+        .order_by(func.ST_Distance(subj.c.geom, obj.c.center))
+    )
+    if limit:
+        stmt = stmt.limit(limit)
+    res = (await conn.execute(_feature_coll_sql(stmt))).scalar()
+    return FeatureCollection.parse_obj(res or {})
 
 
 async def eval_query(
@@ -348,9 +470,11 @@ async def eval_query(
     expr = arg.value
     if isinstance(expr, Isochrone):
         return await eval_isochrone(expr, bbox=bbox)
-    if isinstance(expr, Route):
-        raise NotImplementedError()
     if isinstance(expr, SpRelWithinTimeOf):
+        return await eval_within_time_of(expr, bbox=bbox, conn=conn)
+    if isinstance(expr, SpRelOutsideTimeOf):
+        return await eval_outside_time_of(expr, bbox=bbox, conn=conn)
+    if isinstance(expr, Route):
         raise NotImplementedError()
     stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit))
     res = (await conn.execute(stmt)).scalar()

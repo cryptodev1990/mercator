@@ -38,7 +38,7 @@ async def _get_query(
 ) -> OsmSearchResponse:
     """Query OSM.
 
-    This endpoint accepts a natural
+    This endpoint accepts a natural language query and returns a list of matching features.
 
     It currently supports queries like:
 
@@ -51,6 +51,8 @@ async def _get_query(
     - "Restaurants within 10 miles of Lake Merritt"
     - "Restaurants more than 10 miles from Lake Merritt"
     - "Draw an isochrone of 10 minutes around Lake Merritt"
+    - "Cafes within 10 minutes of Lake Merritt"
+    - "Cafes more than 10 minutes from Lake Merritt"
 
     """
     try:
