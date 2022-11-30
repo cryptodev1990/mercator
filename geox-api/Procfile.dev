@@ -1,0 +1,3 @@
+web-server: ./start.sh
+worker-queue: ./worker-start.sh
+frontend: cd ../geox-frontend && PORT=3000 yarn run start

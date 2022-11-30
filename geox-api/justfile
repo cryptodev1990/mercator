@@ -98,6 +98,12 @@ dev-install:
 dev:
 	ENV_FILE=.env.local APP_RELOAD=1 overmind start
 
+# Run app locally
+e2e-test:
+  ENV_FILE=.env.local APP_RELOAD=1 overmind start -D -f Procfile.dev > /dev/null &
+  ENV_FILE=.env.local ./bin/test-local.sh test/browser/ -x -vvv --base-url http://localhost:3000/ --browser chromium --headed
+  overmind stop
+
 # Connect to running local postgres database
 pg:
 	pgcli -p5432 "geox"
@@ -122,11 +128,11 @@ lint: ## Lint the project
 
 # Run tests
 test *FLAGS="-x -vvv .":
-	ENV_FILE=.env.local ./bin/test-local.sh {{ FLAGS }}
+	ENV_FILE=.env.local ./bin/test-local.sh {{ FLAGS }} --ignore=test/browser
 
 # Run tests against local, non-Dockerized database
 test-local-db *FLAGS=".":
-	ENV_FILE=.env.local ./tests-start.sh {{ FLAGS }}
+	ENV_FILE=.env.local ./tests-start.sh {{ FLAGS }} --ignore=test/browser
 
 ## Alembic
 

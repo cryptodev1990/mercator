@@ -83,7 +83,7 @@ jobs:
         run: pip install -r ./geox-api/requirements.txt
       - name: Install python dev requirements
         run: pip install -r ./geox-api/requirements-dev.txt
-      - run: ./tests-start.sh
+      - run: ./tests-start.sh --ignore=test/browser
         working-directory: geox-api
         env:
           POSTGRES_CONNECTION: "postgresql+psycopg2://postgres:postgres@localhost:5432/geox"
