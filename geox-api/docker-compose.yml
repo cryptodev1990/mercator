@@ -33,8 +33,12 @@ services:
       ENV_FILE: .env.docker
       POSTGRES_SERVER: db
       REDIS_CONNECTION: 'redis://queue:6379/0'
+      DD_APM_ENABLED: false
       # needed to avoid reading .env file
       OVERMIND_SKIP_ENV: 1
+    logging:
+      options:
+        tag: ""
     ports:
       - "8080:8080"
 
