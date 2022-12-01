@@ -223,16 +223,12 @@ class Route(_LocalModel):
     type: Literal["route"] = Field("route", const=True)
     start: NamedPlace
     end: NamedPlace
-    along: Union[Place, NamedPlace, None] = None
     profile: TravelMethod = Field(
         TravelMethod.drive, description="Isochrone profile used in the calculation."
     )
 
     def __str__(self) -> str:
-        words = []
-        if self.along:
-            words = [str(self.along), "ALONG"]
-        words += ["ROUTE FROM", str(self.start), "TO", str(self.end)]
+        words = ["ROUTE FROM", str(self.start), "TO", str(self.end)]
         return " ".join(words)
 
 
@@ -655,8 +651,7 @@ def _get_buffer_time_args(span: Span) -> Dict[str, Any]:
 
 
 def _get_route_args(span: Span) -> Dict[str, Any]:
-    root = span.root
-    start = end = along = None
+    start = end = None
     doc = span.doc
     # Try looking for start and end after the span
     for tok in doc[span.end :]:
@@ -669,19 +664,17 @@ def _get_route_args(span: Span) -> Dict[str, Any]:
                 if grandchild.dep_ == "pobj":
                     end = _get_noun_chunk(grandchild)
     if not start or not end:
-        remainder = Span(span.doc, span.end, len(doc))
+        # Fixes: route San Francisco to Oakland
+        remainder = Span(span.doc, span.end, len(doc)).as_doc()
+        logger.error(remainder)
         noun_chunks = []
         for nc in remainder.noun_chunks:
-            if nc.start > span.end or nc.end < span.start:
-                noun_chunks.append(nc)
+            noun_chunks.append(nc)
         start = noun_chunks[0]
         end = noun_chunks[1]
-    if root.head.lemma_ == "along":
-        along = _get_noun_chunk(root.head.head)
     return {
         "start": placemaker(start),
         "end": placemaker(end),
-        "along": placemaker(along) if along else None,
     }
 
 
@@ -744,6 +737,8 @@ def parse(text: str) -> ParsedQuery:
             raise QueryParseError(f"Unknown label {label}")
     if value is None:
         value = parse_default(sent)
+    if value is None:
+        raise QueryParseError("No valid query found")
     return ParsedQuery.parse_obj(
         {"tokens": [str(tok) for tok in sent], "text": str(doc), "value": value}
     )

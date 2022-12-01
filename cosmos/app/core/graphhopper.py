@@ -53,7 +53,7 @@ class GraphHopper:
         profile: str = "car",
         reverse_flow: bool = True,
     ) -> Dict[str, Any]:
-        """Geocode a query using OSM Nomatim."""
+        """Generate an isochrone around a point."""
         params: Dict[str, Any] = {
             "point": ",".join([str(c) for c in point]),
             "profile": profile,
@@ -62,6 +62,28 @@ class GraphHopper:
             "reverse_flow": reverse_flow,
         }
         url = "https://graphhopper.com/api/1/isochrone"
+        response = self._get(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def route(
+        self,
+        start: Tuple[Latitude, Longitude],
+        end: Tuple[Latitude, Longitude],
+        profile: str = "car",
+    ) -> Dict[str, Any]:
+        """Find route between start and end."""
+        start_str = ",".join([str(c) for c in start])
+        end_str = ",".join([str(c) for c in end])
+        params: Dict[str, Any] = {
+            "point": [start_str, end_str],
+            "profile": profile,
+            "elevation": False,
+            "instructions": False,
+            "calc_points": True,
+            "points_encoded": False,
+        }
+        url = "https://graphhopper.com/api/1/route"
         response = self._get(url, params=params)
         response.raise_for_status()
         return response.json()

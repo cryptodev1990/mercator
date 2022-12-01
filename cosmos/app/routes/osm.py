@@ -53,6 +53,7 @@ async def _get_query(
     - "Draw an isochrone of 10 minutes around Lake Merritt"
     - "Cafes within 10 minutes of Lake Merritt"
     - "Cafes more than 10 minutes from Lake Merritt"
+    - "Route from Lake Merritt to the Ferry Building"
 
     """
     try:

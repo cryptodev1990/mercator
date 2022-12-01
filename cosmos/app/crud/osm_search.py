@@ -1,7 +1,7 @@
 """OSM search functions."""
 import logging
 from functools import singledispatch
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union, cast
 
 from fastapi import HTTPException
 from geoalchemy2 import Geography, Geometry
@@ -19,8 +19,10 @@ from app.core.datatypes import (
     Feature,
     FeatureCollection,
     Latitude,
+    LineString,
     Longitude,
     MapProjection,
+    Point,
 )
 from app.core.graphhopper import GraphHopper, get_graph_hopper
 from app.db import osm as osm_tbl
@@ -145,7 +147,6 @@ def _geocode(query: str, bbox: Optional[BBox] = None) -> Optional[Dict[str, Any]
     _check_graph_hopper()
     res = None
     try:
-        logger.exception("Querying GraphHopper for %s", query)
         res = cast(GraphHopper, graph_hopper).geocode(query, bbox=bbox, limit=1)
     except HTTPStatusError as exc:  # pylint: disable=broad-except
         logger.error("Error geocoding %s with Graphhopper: %s", query, exc)
@@ -459,6 +460,42 @@ async def eval_outside_time_of(
     return FeatureCollection.parse_obj(res or {})
 
 
+class _PointDict(TypedDict):
+    lat: float
+    lng: float
+
+
+async def eval_route(arg: Route, *, bbox: Optional[BBox] = None) -> FeatureCollection:
+    """Generate a route from a start point to an end point."""
+    # lat, lon = 37.7749, -122.4194
+    _check_graph_hopper()
+    start = _geocode(" ".join(arg.start.value), bbox=bbox)
+    if not start:
+        raise ValueError(f"Could not geo-locate the start point {arg.start}")
+    start_point: _PointDict = start["point"]
+    end = _geocode(" ".join(arg.end.value), bbox=bbox)
+    if not end:
+        raise ValueError(f"Could not geo-locate the end point {arg.end}")
+    end_point: _PointDict = end["point"]
+    res = cast(GraphHopper, graph_hopper).route(
+        (start_point["lat"], start_point["lng"]), (end_point["lat"], end_point["lng"])
+    )
+    points = LineString.parse_obj(res["paths"][0]["points"])
+    return FeatureCollection(
+        features=[
+            Feature(geometry=points, properties={"name": "route"}),
+            Feature(
+                geometry=Point(coordinates=[start_point["lng"], start_point["lat"]]),
+                properties={"name": "start"},
+            ),
+            Feature(
+                geometry=Point(coordinates=[end_point["lng"], end_point["lat"]]),
+                properties={"name": "end"},
+            ),
+        ]
+    )
+
+
 async def eval_query(
     arg: ParsedQuery,
     *,
@@ -475,7 +512,7 @@ async def eval_query(
     if isinstance(expr, SpRelOutsideTimeOf):
         return await eval_outside_time_of(expr, bbox=bbox, conn=conn)
     if isinstance(expr, Route):
-        raise NotImplementedError()
+        return await eval_route(expr, bbox=bbox)
     stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit))
     res = (await conn.execute(stmt)).scalar()
     return FeatureCollection.parse_obj(res)

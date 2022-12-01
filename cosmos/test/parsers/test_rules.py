@@ -107,6 +107,10 @@ examples: List[Tuple[str, QueryIntents]] = [
             object=NamedPlace(value=["San Francisco"]), subject=Place(value=["all", "the", "shops"])
         ),
     ),
+    (
+        "route San Francisco to Oakland",
+        Route(start=NamedPlace(value=["San Francisco"]), end=NamedPlace(value=["Oakland"])),
+    ),
 ]
 
 
