@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectSearchState, setInputText } from "src/search/search-slice";
+import { useOsmQueryGetQuery } from "src/store/search-api";
+
 const nab = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 const SUGGESTIONS = [
@@ -30,8 +35,25 @@ const Tag = ({
 );
 
 const SearchSuggestions = () => {
+  const { inputText } = useSelector(selectSearchState);
+  useOsmQueryGetQuery(
+    {
+      query: inputText || "",
+    },
+    {
+      skip: inputText?.length === 0 ?? true,
+    }
+  );
+  const dispatch = useDispatch();
+
   const tags = SUGGESTIONS.map((suggestion, i) => (
-    <Tag key={i} text={suggestion} onClick={(text) => console.log(text)} />
+    <Tag
+      key={i}
+      text={suggestion}
+      onClick={() => {
+        dispatch(setInputText(suggestion));
+      }}
+    />
   ));
   return (
     <div>

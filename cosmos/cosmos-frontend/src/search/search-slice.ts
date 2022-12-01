@@ -33,14 +33,25 @@ export const searchSlice = createSlice({
     },
     appendSearchResult(state, action: { payload: OsmSearchResponse }) {
       state.searchResults = state.searchResults.concat(action.payload);
+      state.inputText = "";
     },
     deleteOneSearchResult(state, action: { payload: string }) {
       state.searchResults = state.searchResults.filter(
         (result) => result.query !== action.payload
       );
     },
+    clearSearchResults(state) {
+      state.searchResults = [];
+    },
     setInputText(state, actions: { payload: string }) {
       state.inputText = actions.payload;
+    },
+    clearInputText(state) {
+      state.inputText = null;
+    },
+    reset(state) {
+      state.searchResults = [];
+      state.inputText = null;
     },
   },
 });
@@ -50,6 +61,8 @@ export const {
   appendSearchResult,
   deleteOneSearchResult,
   setInputText,
+  clearInputText,
+  clearSearchResults,
 } = searchSlice.actions;
 
 export const selectSearchState = (state: AppState) => state.search;

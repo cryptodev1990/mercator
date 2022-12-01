@@ -1,44 +1,35 @@
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
-import { useOsmQueryGetQuery } from "src/store/search-api";
-import { appendSearchResult } from "src/search/search-slice";
 import {
-  setInputText,
+  appendSearchResult,
   selectSearchState,
+  setInputText,
 } from "../../../src/search/search-slice";
 import { useDispatch, useSelector } from "react-redux";
-
-const CancelButton = () => {
-  return (
-    <div className="cursor-pointer" onClick={() => {}}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M6 18L18 6M6 6l12 12"
-        />
-      </svg>
-    </div>
-  );
-};
+import { useOsmQueryGetQuery } from "src/store/search-api";
 
 const SearchBar = () => {
   const focusRef = useRef<HTMLInputElement>(null);
-  const [query, setQuery] = useState<string>("");
-  const { data, error, isLoading, isSuccess } = useOsmQueryGetQuery(
-    { query },
-    { skip: !query }
-  );
-
-  const dispatch = useDispatch();
+  // within-component copy of query text
   const { inputText } = useSelector(selectSearchState);
+  const [localInputText, setLocalInputText] = useState<string>(inputText || "");
+  const [timeElapsed, setTimeElapsed] = useState<number>(0);
+  const { data, isSuccess, isLoading } = useOsmQueryGetQuery(
+    {
+      query: inputText || "",
+    },
+    {
+      skip: inputText?.length === 0 ?? true,
+    }
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // if the query is successful, clear the query and append the results
+    if (isSuccess) {
+      dispatch(appendSearchResult(data));
+    }
+  }, [isSuccess, data, dispatch]);
 
   useEffect(() => {
     if (focusRef.current) {
@@ -47,42 +38,48 @@ const SearchBar = () => {
   }, []);
 
   useEffect(() => {
-    if (isSuccess && query && data) {
-      console.log(data);
-      dispatch(appendSearchResult(data));
-      dispatch(setInputText(""));
-      setQuery("");
+    // if the query is loading, start the timer
+    let interval: NodeJS.Timeout;
+    if (isLoading) {
+      setTimeElapsed(0);
+      interval = setInterval(() => {
+        setTimeElapsed((prev) => prev + 1);
+      }, 1000);
     }
-  }, [isSuccess, query]);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isLoading]);
 
   return (
-    <div className="flex flex-col justify-start items-center w-[80vw] m-auto space-y-10">
+    <div className="flex flex-col justify-start items-center space-y-10">
       <div className="border border-slate-200 rounded h-12 px-4 z-10 w-full bg-slate-200 relative flex flex-row">
         <div className="absolute top-0 left-0 flex flex-row m-0 p-0 h-full w-full">
           <input
             ref={focusRef}
-            value={inputText || ""}
+            value={localInputText || ""}
+            id="search"
             placeholder="Start typing to search..."
             className="w-full h-full bg-transparent pl-2 text-black outline-none"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setQuery(inputText || "");
+                dispatch(setInputText(e.currentTarget.value));
               }
             }}
             onChange={(e) => {
-              dispatch(setInputText(e.currentTarget.value));
+              setLocalInputText(e.currentTarget.value);
             }}
           />
           <button
             className={clsx(
-              "p-1 px-5 bg-purple-500 rounded",
+              "p-1 px-5 bg-purple-500 rounded w-40 h-full text-white",
               isLoading && "animate-pulse"
             )}
             onClick={(e) => {
-              setQuery(inputText || "");
+              dispatch(setInputText(localInputText));
             }}
           >
-            {isLoading ? "Loading..." : "Locate"}
+            {isLoading ? `${timeElapsed} sec` : "Locate"}
           </button>
         </div>
       </div>

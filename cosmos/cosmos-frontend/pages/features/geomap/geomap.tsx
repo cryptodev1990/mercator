@@ -81,6 +81,7 @@ const GeoMap = () => {
           <StaticMap
             reuseMaps
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+            attributionControl={false}
             mapStyle="mapbox://styles/mapbox/dark-v9"
           />
         </DeckGL>

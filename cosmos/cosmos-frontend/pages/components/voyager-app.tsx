@@ -3,15 +3,10 @@ import Header from "./header";
 import SearchBar from "./search-bar/search-bar";
 import SearchSuggestions from "./search-suggestions";
 import { ToastProvider } from "react-toast-notifications";
-import GeoMap from "../features/geomap/geomap";
-import {
-  Provider as ReduxProvider,
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useSelector } from "react-redux";
 import { selectSearchState } from "../../src/search/search-slice";
-import LayerCardBar from "./layer-card-bar";
-import { wrapper } from "src/store/store";
+import AnalysisView from "./analysis-view";
+import ErrorBar from "./error-bar";
 
 type ContextType = {
   component: any;
@@ -40,30 +35,13 @@ const MainView = () => {
   const { inputText, searchResults } = useSelector(selectSearchState);
 
   if (searchResults.length > 0) {
-    return (
-      <main className="flex flex-row">
-        <header className="relative m-10 select-none">
-          <h1 className="absolute text-md">Voyager</h1>
-          <Image
-            src="/small-star.svg"
-            alt="Star"
-            width={100}
-            height={100}
-          ></Image>
-        </header>
-        <section className="z-10 m-10">
-          <SearchBar />
-        </section>
-        <GeoMap />
-        <LayerCardBar />
-      </main>
-    );
+    return <AnalysisView />;
   }
 
   if (inputText && inputText.length > 0) {
     return (
-      <main className="">
-        <header className="relative m-10 select-none">
+      <main className="max-w-5xl m-auto flex flex-col justify-center items-center">
+        <header className="relative m-10 select-none flex flex-row min-w-full gap-5">
           <h1 className="absolute text-md">Voyager</h1>
           <Image
             src="/small-star.svg"
@@ -71,8 +49,9 @@ const MainView = () => {
             width={100}
             height={100}
           ></Image>
+          <ErrorBar />
         </header>
-        <section className="z-10 m-10 flex flex-col">
+        <section className="z-10 w-full">
           <SearchBar />
         </section>
       </main>
@@ -82,7 +61,7 @@ const MainView = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main>
-        <section className="20vh">
+        <section>
           <Header />
         </section>
         <section className="z-10">
@@ -106,7 +85,9 @@ const VoyagerApp = () => {
 
   return (
     <ContextProviderNest contextProviders={providers}>
-      <MainView />
+      <div className="w-screen h-screen">
+        <MainView />
+      </div>
       <Footer />
     </ContextProviderNest>
   );
