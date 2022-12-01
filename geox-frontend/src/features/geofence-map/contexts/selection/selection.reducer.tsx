@@ -55,7 +55,7 @@ export function selectionReducer(state: State, action: Action): State {
       return {
         ...state,
         multiSelectedShapesUuids: distinctShapes.map(
-          (shape: any) => shape.properties && shape.properties.__uuid
+          (shape: Feature) => shape.properties && shape.properties.__uuid
         ),
         multiSelectedShapes: distinctShapes,
       };
