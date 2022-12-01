@@ -15,7 +15,6 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR, UUID
-from sqlalchemy.types import TypeDecorator
 
 from app.db.metadata.common import metadata
 

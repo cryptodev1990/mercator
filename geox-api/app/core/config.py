@@ -86,16 +86,14 @@ class CacheOptions(BaseModel):
     enabled: bool = Field(
         True, description="If true, then use a cache. If false, no cache."
     )
-    timeout: int = Field(
-        3600, ge=0, description="Cache key default timeout in seconds.")
+    timeout: int = Field(3600, ge=0, description="Cache key default timeout in seconds.")
 
 
 class Settings(BaseSettings):
     """Config settings."""
 
     app_name: str = Field("geox_api", env="APP_NAME")
-    version: str = Field(
-        __VERSION__, description="App version number", env="APP_VERSION")
+    version: str = Field(__VERSION__, description="App version number", env="APP_VERSION")
     app_secret_key: SecretStr = Field(...)
 
     # Auth For JWT
@@ -103,8 +101,7 @@ class Settings(BaseSettings):
     auth_client_id: str = Field(..., env="AUTH0_CLIENT_ID")
     auth_client_secret: SecretStr = Field(..., env="AUTH0_CLIENT_SECRET")
     management_client_id: str = Field(..., env="AUTH0_MACHINE_CLIENT_ID")
-    management_client_secret: SecretStr = Field(
-        ..., env="AUTH0_MACHINE_CLIENT_SECRET")
+    management_client_secret: SecretStr = Field(..., env="AUTH0_MACHINE_CLIENT_SECRET")
     auth_domain: str = Field(..., env="AUTH0_DOMAIN")
     auth_audience: str = Field(..., env="AUTH0_API_AUDIENCE")
     # TODO: AUTH0_ALGORITHMS should be an enum/literal set
@@ -118,8 +115,7 @@ class Settings(BaseSettings):
 
     # Stripe API key
     stripe_api_key: Optional[str] = Field(None, env="STRIPE_API_KEY")
-    stripe_webhook_secret: Optional[str] = Field(
-        None, env="STRIPE_WEBHOOK_SECRET")
+    stripe_webhook_secret: Optional[str] = Field(None, env="STRIPE_WEBHOOK_SECRET")
     skip_stripe: Optional[bool] = Field(None, env="SKIP_STRIPE")
 
     # Sendgrid API key
@@ -128,11 +124,11 @@ class Settings(BaseSettings):
     # Email approved by Sendgrid for sending automated emails
     # Configure this at https://app.sendgrid.com/settings/sender_auth/senders
     sendgrid_sender_email: Optional[EmailStr] = Field(
-        "founders@mercator.tech", env="SENDGRID_SENDER_EMAIL")
+        EmailStr("founders@mercator.tech"), env="SENDGRID_SENDER_EMAIL"
+    )
 
     # Webhook secret for external communication to our email endpoint
-    email_webhook_secret: Optional[SecretStr] = Field(
-        None, env="EMAIL_WEBHOOK_SECRET")
+    email_webhook_secret: Optional[SecretStr] = Field(None, env="EMAIL_WEBHOOK_SECRET")
 
     # Datadog config
     dd_api_key: str = Field("", env="DD_API_KEY")
@@ -174,8 +170,7 @@ class Settings(BaseSettings):
         None, env="AWS_S3_UPLOAD_SECRET_ACCESS_KEY"
     )
 
-    machine_account_email: EmailStr = Field(
-        cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
+    machine_account_email: EmailStr = Field(cast(EmailStr, DEFAULT_MACHINE_ACCOUNT_EMAIL))
     contact_email: EmailStr = Field(cast(EmailStr, CONTACT_EMAIL))
 
     # pylint: disable=no-self-argument
@@ -184,8 +179,7 @@ class Settings(BaseSettings):
         cls, v: str  # pylint: disable=no-self-argument
     ) -> str:
         if not v.endswith(f"@{DEFAULT_DOMAIN}"):
-            raise ValueError(
-                f"Machine account email must end with {DEFAULT_DOMAIN}")
+            raise ValueError(f"Machine account email must end with {DEFAULT_DOMAIN}")
         return v
 
     # pylint: enable=no-self-argument
@@ -297,8 +291,7 @@ class Settings(BaseSettings):
         # Case in which GIT_COMMIT does not exist
         try:
             # TODO: be more careful about where this is searching and handling specific errors
-            git_repo = Repo(Path(__file__).resolve(),
-                            search_parent_directories=True)
+            git_repo = Repo(Path(__file__).resolve(), search_parent_directories=True)
             if git_repo.is_dirty():
                 logger.warning(
                     "Git repo is dirty. The setting `git_commit` does not reflect local changes."

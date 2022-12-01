@@ -152,3 +152,29 @@ def test_post(
 
 
 # pylint: enable=unused-argument, redefined-outer-name
+
+
+def test_post_include_shapes(
+    client: TestClient, db: ExampleDbAbc, examples: List[Dict[str, Any]]
+) -> None:
+    n_shapes = len(examples)
+    response = client.post(
+        "/geofencer/shapes/bulk", json=examples, params={"include_shapes": True}
+    )
+    assert response.status_code == 200
+    actual = response.json()
+    assert actual["num_shapes"] == n_shapes
+    assert actual["shapes"] and len(actual["shapes"]) == n_shapes
+
+
+def test_post_bad_shape(client: TestClient, db: ExampleDbAbc) -> None:
+    examples = [{"geojson": {"geometry": None}}]
+    response = client.post(
+        "/geofencer/shapes/bulk", json=examples, params={"include_shapes": True}
+    )
+    assert response.status_code == 200
+    actual = response.json()
+    assert actual["num_shapes"] == 0
+    assert not actual["shapes"]
+    assert actual["num_failed"] == 1
+    assert actual["shapes_failed_indexes"] == [0]

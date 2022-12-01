@@ -1,7 +1,4 @@
-"""CRUD functions for interacting with shapes.
-
-NOTE: All queries use `shapes` table and no ORM features
-"""
+"""CRUD functions for interacting with shapes."""
 import datetime
 import logging
 from enum import Enum
@@ -23,6 +20,7 @@ import sqlalchemy as sa
 from geojson_pydantic import Feature, GeometryCollection, LineString, Point, Polygon
 from geojson_pydantic.geometries import Geometry
 from pydantic import UUID4  # pylint: disable=no-name-in-module
+from pydantic import Field, NonNegativeInt
 from sqlalchemy import String, and_, func, insert, or_, select, update
 from sqlalchemy.engine import Connection
 from sqlalchemy.sql import ColumnElement, Select, bindparam
@@ -32,6 +30,7 @@ from app.core.stats import time_db_query
 from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import GeoShape, GeoShapeCreate, GeoShapeMetadata, ViewportBounds
+from app.schemas.common import BaseModel
 
 T = TypeVar("T")
 
@@ -101,6 +100,8 @@ def create_shape(
     values = {
         **_parse_shape_args(geojson=geojson, name=name, properties=properties, geom=geom),
     }
+    if values.get("geom") is None:
+        raise ValueError("geometry cannot be missing when creating a shape")
     values["properties"] = values.get("properties") or {}
     with time_db_query("create_shape"):
         res = conn.execute(stmt, values).first()
@@ -168,13 +169,22 @@ def _parse_shape_args(
     return {k: v for k, v in out.items() if v is not None}
 
 
+class CreateManyShapesResult(BaseModel):
+    shapes_created: List[GeoShape] = Field(
+        default_factory=list, description="The created shapes"
+    )
+    shapes_failed: List[NonNegativeInt] = Field(
+        default_factory=list, description="Indices of shapes with bad data"
+    )
+
+
 def create_many_shapes(
     conn: Connection,
     data: Sequence[GeoShapeCreate],
     user_id: int,
     organization_id: UUID4,
     namespace_id: Optional[UUID4] = None,
-) -> Generator[Union[UUID4, GeoShape], None, None]:
+) -> CreateManyShapesResult:
     """Create many new shapes."""
     stmt = (
         insert(shapes_tbl)  # type: ignore
@@ -200,10 +210,17 @@ def create_many_shapes(
         }
         for x in data
     ]
-    with time_db_query("create_many_shapes"):
-        new_shapes = conn.execute(stmt, params)
-    for row in new_shapes:
-        yield GeoShape.parse_obj(dict(row))
+    # Remove any empty values
+    failures = [i for i, row in enumerate(params) if row["geom"] is None]
+    params = [row for row in params if row["geom"] is not None]
+    if len(params):
+        with time_db_query("create_many_shapes"):
+            new_shapes = conn.execute(stmt, params)
+    else:
+        logger.warning("No shapes uploaded.")
+        new_shapes = []
+    shapes = [GeoShape.from_orm(row) for row in new_shapes]
+    return CreateManyShapesResult(shapes_created=shapes, shapes_failed=failures)
 
 
 def shape_exists(conn: Connection, shape_id: UUID4, include_deleted=False) -> bool:

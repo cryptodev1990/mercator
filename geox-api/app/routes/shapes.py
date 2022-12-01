@@ -35,6 +35,7 @@ from app.schemas import (
     GeoShapeUpdate,
     RequestErrorModel,
     ShapeCountResponse,
+    ShapesCreatedResponse,
     ShapesDeletedResponse,
     ViewportBounds,
 )
@@ -122,29 +123,31 @@ def shapes_export(
     return run_shapes_export(user_conn, settings)
 
 
-@router.post(
-    "/geofencer/shapes/bulk", response_model=Union[ShapeCountResponse, List[GeoShape]]
-)
+@router.post("/geofencer/shapes/bulk", response_model=ShapesCreatedResponse)
 def bulk_create_shapes(
     data: List[GeoShapeCreate],
     user_conn: UserConnection = Depends(get_app_user_connection),
     namespace: Optional[UUID4] = Query(default=None),
-    as_list: Optional[bool] = Query(default=False),
-) -> Union[ShapeCountResponse, List[GeoShape]]:
+    include_shapes: Optional[bool] = Query(
+        default=False,
+        description="If true, then the shapes will be returned in the response. Otherwise only a count will be returned.",
+    ),
+) -> ShapesCreatedResponse:
     """Create multiple shapes."""
     # Needs to go before /geofencer/shapes/{shape_id}
-    shapes = list(
-        create_many_shapes(
-            user_conn.connection,
-            data,
-            user_id=user_conn.user.id,
-            organization_id=user_conn.organization.id,
-            namespace_id=namespace,
-        )
+    res = create_many_shapes(
+        user_conn.connection,
+        data,
+        user_id=user_conn.user.id,
+        organization_id=user_conn.organization.id,
+        namespace_id=namespace,
     )
-    if as_list:
-        return shapes
-    return ShapeCountResponse(num_shapes=len(shapes))
+    return ShapesCreatedResponse(
+        num_shapes=len(res.shapes_created),
+        num_failed=len(res.shapes_failed),
+        shapes_failed_indexes=res.shapes_failed,
+        shapes=res.shapes_created if include_shapes else None,
+    )
 
 
 @router.post("/geofencer/shapes", response_model=GeoShape)
@@ -156,16 +159,19 @@ def _post_shapes(
         data.namespace
         or get_default_namespace(user_conn.connection, user_conn.organization.id).id
     )
-    shape = create_shape(
-        user_conn.connection,
-        user_id=user_conn.user.id,
-        organization_id=user_conn.organization.id,
-        geojson=data.geojson,
-        name=data.name,
-        properties=data.properties,
-        geom=data.geometry,
-        namespace_id=namespace_id,
-    )
+    try:
+        shape = create_shape(
+            user_conn.connection,
+            user_id=user_conn.user.id,
+            organization_id=user_conn.organization.id,
+            geojson=data.geojson,
+            name=data.name,
+            properties=data.properties,
+            geom=data.geometry,
+            namespace_id=namespace_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
     return shape
 
 

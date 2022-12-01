@@ -203,3 +203,8 @@ def test_post(client: TestClient, db: ExampleDbAbc, examples: Dict[str, Any]) ->
 
 
 # pylint: enable=unused-argument, redefined-outer-name
+
+
+def test_post_null_geom(client: TestClient, db: ExampleDbAbc) -> None:
+    response = client.post("/geofencer/shapes", json={"geojson": {"geometry": None}})
+    assert response.status_code == 422

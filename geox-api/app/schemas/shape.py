@@ -124,6 +124,17 @@ class ShapeCountResponse(BaseModel):
         schema_extra = {"example": {"num_shapes": 5}}
 
 
+class ShapesCreatedResponse(BaseModel):
+    num_shapes: int = Field(..., description="Number of shapes created.")
+    num_failed: int = Field(
+        ..., description="Number of shapes that could not be created."
+    )
+    shapes_failed_indexes: List[int] = Field(
+        default_factory=list, description="Indexes of shapes that failed to be created."
+    )
+    shapes: Optional[List[GeoShape]] = Field(None, description="New shapes")
+
+
 class CeleryTaskResponse(BaseModel):
     """Response from submitting a Celery task."""
 
