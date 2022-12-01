@@ -111,6 +111,14 @@ examples: List[Tuple[str, QueryIntents]] = [
         "route San Francisco to Oakland",
         Route(start=NamedPlace(value=["San Francisco"]), end=NamedPlace(value=["Oakland"])),
     ),
+    (
+        "All the coffee shops in San Francisco",
+        SpRelCoveredBy(subject=Place(value=["All", "the", "coffee", "shops"]), object=NamedPlace(value=["San Francisco"])),
+    ),
+    (
+        "coffee shops in richmond",
+        SpRelCoveredBy(subject=Place(value=["coffee", "shops"]), object=NamedPlace(value=["richmond"])),
+    ),
 ]
 
 
