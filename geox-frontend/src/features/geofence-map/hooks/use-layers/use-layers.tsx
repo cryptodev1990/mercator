@@ -102,9 +102,10 @@ export const useLayers = () => {
       cursorMode === EditorMode.MultiSelectMode &&
         new SelectionLayer({
           id: "selection",
+          // @ts-ignore
           selectionType: "polygon",
+          // @ts-ignore
           onSelect: ({ pickingInfos }) => {
-            console.log("pickingInfos", pickingInfos);
             const newObjs = [];
             for (const obj of pickingInfos) {
               newObjs.push(obj.object);

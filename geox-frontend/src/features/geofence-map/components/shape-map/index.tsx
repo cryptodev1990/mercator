@@ -4,9 +4,8 @@ import StaticMap from "react-map-gl";
 
 // @ts-ignore
 import { useCursorMode } from "../../hooks/use-cursor-mode";
-
 import { EditorMode } from "../../cursor-modes";
-import { useLayers } from "../../hooks/use-layers/use-layers.jsx";
+import { useLayers } from "../../hooks/use-layers/use-layers";
 import { useViewport } from "../../hooks/use-viewport";
 import { useShapes } from "../../hooks/use-shapes";
 import { useContext, useEffect } from "react";
