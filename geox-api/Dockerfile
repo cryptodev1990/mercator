@@ -42,7 +42,7 @@ COPY --from=builder /usr/local/cargo/bin/just /usr/local/bin/just
 
 WORKDIR /webapp
 
-RUN DD_API_KEY=MY_DD_API_KEY_PLACEHOLDER bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+RUN DD_API_KEY=MY_DD_API_KEY_PLACEHOLDER DD_INSTALL_ONLY=true bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
 
 COPY ./app /webapp/app
 COPY ./cli /webapp/cli
@@ -71,6 +71,11 @@ RUN chmod a+rwx /etc/datadog-agent/security-agent.yaml
 COPY ./datadog.yaml /etc/datadog-agent/datadog.yaml
 RUN chown dd-agent:dd-agent /etc/datadog-agent/datadog.yaml
 RUN chmod a+rwx /etc/datadog-agent/datadog.yaml
+
+RUN mkdir /etc/datadog-agent/conf.d/python.d
+COPY ./datadog_config.yaml /etc/datadog-agent/conf.d/python.d/conf.yaml
+RUN chown dd-agent:dd-agent /etc/datadog-agent/conf.d/python.d/conf.yaml
+RUN chmod a+rwx /etc/datadog-agent/conf.d/python.d/conf.yaml
 
 EXPOSE 8080
 ENV PYTHONPATH=/webapp

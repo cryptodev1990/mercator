@@ -1,4 +1,5 @@
 api_key: MY_DD_API_KEY_PLACEHOLDER
+logs_enabled: true
 apm_config:
   enabled: false
 appsec_config:
