@@ -3,59 +3,87 @@ import { useCallback, useEffect, useState } from "react";
 import DeckGL, { GeoJsonLayer, FlyToInterpolator } from "deck.gl";
 import StaticMap from "react-map-gl";
 import { snapToBounds } from "../../../src/lib/geo-utils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectSearchState } from "src/search/search-slice";
+import clsx from "clsx";
+import { selectGeoMapState, setViewport } from "src/shapes/shape-slice";
 
-type Viewport = {
-  latitude: number;
-  longitude: number;
-  zoom: number;
-  bearing?: number;
-  pitch?: number;
-  width?: number;
-  height?: number;
-};
+const DARK = "mapbox://styles/mapbox/dark-v9";
+const SATELLITE = "mapbox://styles/mapbox/satellite-v9";
 
 const GeoMap = () => {
   const { searchResults } = useSelector(selectSearchState);
+  const { viewport } = useSelector(selectGeoMapState);
+  const [localViewPort, setLocalViewPort] = useState(viewport);
   // deck.gl map with a GeoJsonLayer
+  const dispatch = useDispatch();
 
-  const [viewport, setViewport] = useState<Viewport>({
-    latitude: 37.7577,
-    longitude: -122.4376,
-    zoom: 8,
-    bearing: 0,
-    pitch: 0,
-  });
+  const [baseMap, setBaseMap] = useState(DARK);
+
+  useEffect(() => {
+    setLocalViewPort({ ...viewport });
+  }, [viewport]);
+
+  // After 500 ms of inactivity, set the global viewport to be the local viewport
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      dispatch(setViewport({ ...localViewPort }));
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [localViewPort, dispatch]);
 
   useEffect(() => {
     if (searchResults.length > 0) {
-      fitViewport();
-    }
-  }, [searchResults]);
-
-  const fitViewport = useCallback(() => {
-    // TODO handle the feature collection here
-    const newBounds = snapToBounds(
-      // @ts-ignore
-      searchResults[searchResults.length - 1].results
-    );
-    if (newBounds) {
-      setViewport({
-        ...newBounds,
+      const bounds = snapToBounds(
         // @ts-ignore
-        // transitionDuration: 1000,
-      });
+        searchResults[searchResults.length - 1].results
+      );
+      if (bounds) {
+        setLocalViewPort({
+          ...localViewPort,
+          longitude: bounds?.longitude,
+          latitude: bounds?.latitude,
+          zoom: 12,
+          // @ts-ignore
+          transitionDuration: 1000,
+          transitionInterpolator: new FlyToInterpolator(),
+        });
+      }
     }
-  }, [searchResults]);
+  }, [searchResults, localViewPort]);
+
+  if (!viewport || !viewport.zoom) {
+    return null;
+  }
 
   return (
     <div className="w-full h-full">
-      <div className="w-full h-full">
+      <div className="w-full h-full relative">
+        <div
+          className={clsx(
+            "absolute top-0 right-0 z-50 m-2",
+            "bg-slate-100 rounded-md shadow-md text-black",
+            "flex flex-row justify-center items-center space-x-2 p-2",
+            "cursor-pointer",
+            "hover:bg-slate-200"
+          )}
+        >
+          <button
+            onClick={() => setBaseMap(baseMap !== DARK ? DARK : SATELLITE)}
+          >
+            {baseMap === DARK ? "Dark" : "Satellite"}
+          </button>
+        </div>
         <DeckGL
-          initialViewState={viewport}
-          controller={true}
-          onViewStateChange={({ viewState }: any) => setViewport(viewState)}
+          initialViewState={localViewPort}
+          onViewStateChange={({ viewState }: any) => {
+            const { latitude, longitude, zoom } = viewState;
+            setLocalViewPort({ latitude, longitude, zoom });
+          }}
+          controller={{
+            touchRotate: false,
+            dragRotate: false,
+          }}
           getTooltip={({ object }: any) =>
             object && object?.properties?.osm?.tags?.name
           }
@@ -63,17 +91,16 @@ const GeoMap = () => {
             new GeoJsonLayer({
               id: `geojson-layer-${i}`,
               data: x.results,
-              stroked: false,
               getRadius: 100,
               filled: true,
               extruded: false,
+              stroked: true,
               wireframe: true,
               lineWidthMinPixels: 1,
-              getFillColor: [
-                Math.abs(255 - 20 * i) % 255,
-                Math.abs(255 - 20 * i) % 255,
-                (50 * i) % 255,
-              ],
+              radiusMinPixels: 1,
+              radiusMaxPixels: 1,
+              getFillColor: [255, 0, 0],
+              getLineColor: [255, 0, 0],
               pickable: true,
             }),
           ])}
@@ -82,7 +109,7 @@ const GeoMap = () => {
             reuseMaps
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
             attributionControl={false}
-            mapStyle="mapbox://styles/mapbox/dark-v9"
+            mapStyle={baseMap}
           />
         </DeckGL>
       </div>

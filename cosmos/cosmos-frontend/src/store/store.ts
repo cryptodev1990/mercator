@@ -3,11 +3,13 @@ import { searchSlice } from "../search/search-slice";
 import { createWrapper } from "next-redux-wrapper";
 import { searchApi } from "./search-api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import { geoMapSlice } from "src/shapes/shape-slice";
 
 export const makeStore = () => {
   const store = configureStore({
     reducer: {
       [searchSlice.name]: searchSlice.reducer,
+      [geoMapSlice.name]: geoMapSlice.reducer,
       [searchApi.reducerPath]: searchApi.reducer,
     },
     devTools: true,

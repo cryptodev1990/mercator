@@ -1,7 +1,33 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { OsmSearchResponse } from "src/store/search-api";
 import { selectSearchState } from "../../src/search/search-slice";
 import simplur from "simplur";
+import { setViewport } from "src/shapes/shape-slice";
+
+const ZoomButton = ({ searchResult }: { searchResult: OsmSearchResponse }) => {
+  const dispatch = useDispatch();
+  function onClick() {
+    const { results } = searchResult;
+    const bbox = results?.bbox;
+    if (bbox) {
+      dispatch(
+        setViewport({
+          latitude: bbox[1],
+          longitude: bbox[0],
+          zoom: 12,
+        })
+      );
+    }
+  }
+  return (
+    <button
+      className="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 px-4 rounded"
+      onClick={onClick}
+    >
+      Zoom
+    </button>
+  );
+};
 
 const LayerCard = ({ searchResult }: { searchResult: OsmSearchResponse }) => {
   const { query, results } = searchResult;
@@ -31,6 +57,7 @@ const LayerCard = ({ searchResult }: { searchResult: OsmSearchResponse }) => {
           </svg>
         </button>
         <p>{simplur`${results?.features?.length} shape[|s]`}</p>
+        <ZoomButton searchResult={searchResult} />
       </div>
     </div>
   );
