@@ -35,9 +35,14 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs: Any) -> Asy
         "future": True,
         "pool_pre_ping": True,
         **opts,
+        "connect_args": {"server_settings": {"session_preload_libraries": "auto_explain",
+                                             "auto_explain.log_min_duration": "10000",
+                                             "auto_explain.log_format": 'text'
+                                             }},
     }
     params.update(kwargs)
     engine_: AsyncEngine = create_async_engine(uri, **params)
+
     return engine_
 
 

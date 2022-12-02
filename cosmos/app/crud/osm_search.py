@@ -102,7 +102,9 @@ def to_sql(arg: Any, **kwargs: Any) -> Any:
 
 @to_sql.register
 def _(
-    arg: Place, bbox: Optional[BBox] = None, **kwargs: Any  # pylint: disable=unused-argument
+    arg: Place, bbox: Optional[BBox] = None,
+    cols: Optional[List[ColumnElement]] = None,
+    **kwargs: Any  # pylint: disable=unused-argument
 ) -> Select:
     """SQL query for Place.
 
@@ -110,7 +112,7 @@ def _(
 
     """
     query = " ".join(arg.value)
-    stmt = _select_osm(bbox=bbox).where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
+    stmt = _select_osm(bbox=bbox, cols=cols).where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
     return stmt
 
 
@@ -182,7 +184,7 @@ def _(
     stmt = None
     if settings.graph_hopper.use_nominatim and graph_hopper:
         stmt = get_named_place_nominatim(query, bbox)
-        if stmt:
+        if stmt is not None:
             return stmt
     return named_place_lookup_db(query=query, bbox=bbox)
 
@@ -191,7 +193,7 @@ def _(
 def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
-        to_sql(arg.object, bbox=bbox).where(
+        to_sql(arg.object, bbox=bbox, cols=[]).where(
             or_(
                 func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
                 osm_tbl.c.category == "boundary",
@@ -214,7 +216,7 @@ def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = N
 def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
-        to_sql(arg.object, bbox=bbox)
+        to_sql(arg.object, bbox=bbox, cols=[])
         .where(
             or_(
                 func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
@@ -225,9 +227,10 @@ def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = No
     )
     stmt = select(subj).join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
     # Order by distance to the object it is outside of, e.g. the closest objects that aren't inside that object
-    stmt = stmt.order_by(
-        func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
-    ).offset(offset)
+    # stmt = stmt.order_by(
+    #     func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
+    # ).offset(offset)
+    stmt = stmt.order_by().offset(offset)
     if limit:
         stmt = stmt.limit(limit)
     return stmt
@@ -242,7 +245,7 @@ def _(
     offset: Optional[int] = 0,
 ) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
-    obj = to_sql(arg.object, bbox=bbox).cte()
+    obj = to_sql(arg.object, bbox=bbox, cols=[]).cte()
     stmt = select(subj).join(
         obj,
         and_(
@@ -270,7 +273,7 @@ def _(
     offset: int = 0
 ) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
-    obj = to_sql(arg.object, bbox=bbox).cte()
+    obj = to_sql(arg.object, bbox=bbox, cols=[]).cte()
     stmt = select(subj).join(
         obj,
         # near or close to must be outside the object
@@ -291,7 +294,7 @@ def _(
 
 @to_sql.register
 def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
-    obj = to_sql(arg.object, bbox=bbox, limit=limit).cte()
+    obj = to_sql(arg.object, bbox=bbox, cols=[], limit=limit).cte()
     return select(
         [
             obj.c.tags,
@@ -312,7 +315,7 @@ def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
     else:
         base = stmt
     base = select(
-        func.to_geojson_feature_collection_agg(
+        func.to_geojson_feature(
             base.c.geom,
             func.jsonb_build_object(
                 "osm",
@@ -328,7 +331,7 @@ def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
                 ),
             ),
             sql_cast(base.c.osm_id, String()),
-        ).label("features")
+        ).label("feature")
     )
     return base
 
@@ -414,8 +417,8 @@ async def eval_within_time_of(
     ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
-    res = (await conn.execute(_feature_coll_sql(stmt))).scalar()
-    return FeatureCollection.parse_obj(res or {})
+    res = (await conn.execute(_feature_coll_sql(stmt)))
+    return FeatureCollection(features=[r.feature for r in res])
 
 
 async def eval_outside_time_of(
@@ -520,5 +523,6 @@ async def eval_query(
     if isinstance(expr, Route):
         return await eval_route(expr, bbox=bbox)
     stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit, offset=offset))
-    res = (await conn.execute(stmt)).scalar()
-    return FeatureCollection.parse_obj(res)
+    res = (await conn.execute(stmt))
+    features = [r.feature for r in res]
+    return FeatureCollection(features=features)
