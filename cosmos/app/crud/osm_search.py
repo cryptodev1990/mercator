@@ -188,7 +188,7 @@ def _(
 
 
 @to_sql.register
-def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
+def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
         to_sql(arg.object, bbox=bbox).where(
@@ -204,14 +204,14 @@ def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = N
         func.ST_Distance(
             sql_cast(subj.c.geom, Geography()), sql_cast(func.ST_Centroid(obj.c.geom), Geography())
         )
-    )
+    ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
     return stmt
 
 
 @to_sql.register
-def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
+def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
         to_sql(arg.object, bbox=bbox)
@@ -227,7 +227,7 @@ def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = No
     # Order by distance to the object it is outside of, e.g. the closest objects that aren't inside that object
     stmt = stmt.order_by(
         func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
-    )
+    ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
     return stmt
@@ -239,6 +239,7 @@ def _(
     arg: Union[SpRelNear, SpRelWithinDistOf],
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
+    offset: Optional[int] = 0,
 ) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = to_sql(arg.object, bbox=bbox).cte()
@@ -251,11 +252,12 @@ def _(
             ),
         ),
     )
-    if limit:
-        stmt = stmt.limit(limit)
+
     stmt = stmt.order_by(
         func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
-    )
+    ).offset(offset)
+    if limit:
+        stmt = stmt.limit(limit)
     return stmt
 
 
@@ -265,6 +267,7 @@ def _(
     arg: Union[SpRelOutsideDistOf, SpRelNotNear],
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
+    offset: int = 0
 ) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = to_sql(arg.object, bbox=bbox).cte()
@@ -280,14 +283,14 @@ def _(
     # Order by the objects closest to the object it is not near
     stmt = stmt.order_by(
         func.ST_Distance(sql_cast(subj.c.geom, Geography()), sql_cast(obj.c.geom, Geography()))
-    )
+    ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
     return stmt
 
 
 @to_sql.register
-def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> Select:
+def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
     obj = to_sql(arg.object, bbox=bbox, limit=limit).cte()
     return select(
         [
@@ -300,7 +303,7 @@ def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None) -> 
                 Geometry(srid=int(MapProjection.WGS84)),
             ).label("geom"),
         ]
-    ).limit(limit)
+    ).limit(limit).offset(offset)
 
 
 def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
@@ -369,6 +372,7 @@ async def eval_within_time_of(
     conn: AsyncConnection,
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
+    offset: int = 0,
 ) -> FeatureCollection:
     """Generate an isochrone from a center point and time in seconds.
 
@@ -407,7 +411,7 @@ async def eval_within_time_of(
             ),
         )
         .order_by(func.ST_Distance(subj.c.geom, obj.c.center))
-    )
+    ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
     res = (await conn.execute(_feature_coll_sql(stmt))).scalar()
@@ -420,6 +424,7 @@ async def eval_outside_time_of(
     conn: AsyncConnection,
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
+    offset: int = 0,
 ) -> FeatureCollection:
     """Generate an isochrone from a center point and time in seconds.
 
@@ -453,7 +458,7 @@ async def eval_outside_time_of(
         select(subj)
         .join(obj, func.ST_Disjoint(subj.c.geom, obj.c.geom))
         .order_by(func.ST_Distance(subj.c.geom, obj.c.center))
-    )
+    ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
     res = (await conn.execute(_feature_coll_sql(stmt))).scalar()
@@ -502,17 +507,18 @@ async def eval_query(
     conn: AsyncConnection,
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
+    offset: int = 0
 ) -> FeatureCollection:
     """Evaluate a query"""
     expr = arg.value
     if isinstance(expr, Isochrone):
         return await eval_isochrone(expr, bbox=bbox)
     if isinstance(expr, SpRelWithinTimeOf):
-        return await eval_within_time_of(expr, bbox=bbox, conn=conn)
+        return await eval_within_time_of(expr, bbox=bbox, conn=conn, offset=offset)
     if isinstance(expr, SpRelOutsideTimeOf):
-        return await eval_outside_time_of(expr, bbox=bbox, conn=conn)
+        return await eval_outside_time_of(expr, bbox=bbox, conn=conn, offset=offset)
     if isinstance(expr, Route):
         return await eval_route(expr, bbox=bbox)
-    stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit))
+    stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit, offset=offset))
     res = (await conn.execute(stmt)).scalar()
     return FeatureCollection.parse_obj(res)

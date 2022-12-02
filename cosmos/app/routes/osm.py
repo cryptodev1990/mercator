@@ -33,11 +33,12 @@ async def _get_query(
         ..., example="Coffee shops in San Francisco", description="Query text string."
     ),
     bbox: BBox = Query(
-        (-180, -90, 180, 90),
+        None,
         example=[-124.5, 32.6, -114.2, 42.1],
         description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
     ),
     limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
+    offset: NonNegativeInt = Query(0, description="Offset into the results"),
     conn: AsyncConnection = Depends(get_conn),
 ) -> OsmSearchResponse:
     """Query OSM.
