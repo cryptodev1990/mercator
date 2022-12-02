@@ -9,7 +9,7 @@ from httpx import HTTPStatusError
 from sqlalchemy import String, Table, and_
 from sqlalchemy import case as sql_case
 from sqlalchemy import cast as sql_cast
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy.sql import ColumnElement, Select
 

@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import List, Tuple, Any
+from typing import Any, List, Tuple
 
 import pytest
 from pint import Quantity

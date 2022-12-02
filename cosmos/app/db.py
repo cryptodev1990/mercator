@@ -27,8 +27,15 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs: Any) -> Asy
 
     """
     uri = settings.db.url.get_secret_value()
-    params: Dict[str, Any] = {"future": True, "pool_pre_ping": True}
-    params.update(settings.db.options.dict())
+    opts = {
+        k: getattr(settings.db.options, k)
+        for k in ("echo", "echo_pool", "pool_recycle", "pool_size", "max_overflow", "pool_timeout")
+    }
+    params: Dict[str, Any] = {
+        "future": True,
+        "pool_pre_ping": True,
+        **opts,
+    }
     params.update(kwargs)
     engine_: AsyncEngine = create_async_engine(uri, **params)
     return engine_

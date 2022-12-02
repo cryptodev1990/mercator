@@ -2,6 +2,7 @@
 """App settings and configuration management."""
 import logging
 from functools import lru_cache
+from textwrap import dedent
 from typing import Optional, Tuple
 
 # pylint: disable=no-name-in-module
@@ -47,6 +48,17 @@ class AppDatabase(BaseModel):
     password: Optional[SecretStr] = Field(None)
     port: int = Field(5432)
     options: EngineOptions = EngineOptions()  # type: ignore
+    # default timeout = 5 min
+    statement_timeout: int = Field(
+        30000,
+        ge=0,
+        description=dedent(
+            """
+            Statement timeout (in milliseconds). 0 is no timeout.
+            See https://www.postgresql.org/docs/current/runtime-config-client.html
+            """
+        ).strip(),
+    )
 
     @property
     def url(self) -> SecretStr:

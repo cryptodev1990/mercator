@@ -2,6 +2,7 @@
 import logging
 from typing import Any
 
+import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
 from sqlalchemy import text
@@ -22,7 +23,10 @@ logger = logging.getLogger(__name__)
 @router.get(
     "/query",
     response_model=OsmSearchResponse,
-    responses={"400": {"description": "Unable to parse query."}},
+    responses={
+        "400": {"description": "Unable to parse query."},
+        "504": {"description": "Query timed out."},
+    },
 )
 async def _get_query(
     query: str = Query(
@@ -60,7 +64,12 @@ async def _get_query(
         parsed_query = parse(query)
     except QueryParseError as exc:
         raise HTTPException(status_code=422, detail=f"Unable to parse query: {exc}") from None
-    results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn)
+    try:
+        results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn)
+    except sqlalchemy.exc.DBAPIError as exc:
+        if "canceling statement due to statement timeout" in str(exc.orig):
+            raise HTTPException(status_code=504, detail="Query timed out.") from None
+        raise exc
     return OsmSearchResponse(
         query=query,
         label=str(parsed_query),
