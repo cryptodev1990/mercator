@@ -58,8 +58,8 @@ async def _get_query(
     """
     try:
         parsed_query = parse(query)
-    except QueryParseError:
-        raise HTTPException(status_code=422, detail="Unable to parse query.") from None
+    except QueryParseError as exc:
+        raise HTTPException(status_code=422, detail=f"Unable to parse query: {exc}") from None
     results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn)
     return OsmSearchResponse(
         query=query,

@@ -273,7 +273,9 @@ nlp = spacy.load("en_core_web_sm")
 KILOMETERS = ["km", "kilometers", "kilometer", "kilometres", "kilometre"]
 METERS = ["m", "meters", "meter", "metres", "metre"]
 MILES = ["mi", "miles", "mile"]
-DIST_UNITS = KILOMETERS + METERS + MILES
+FEET = ["ft", "feet"]
+YARDS = ["yd", "yards", "yard"]
+DIST_UNITS = KILOMETERS + METERS + MILES + FEET + YARDS
 
 DIST_UNIT_PAT = "(?:" + "|".join(DIST_UNITS) + ")"
 NUM_PAT = r"(?:\d+(?:\.\d+)?|\.\d+)"
@@ -704,6 +706,9 @@ def parse_default(span: Span) -> SpRelCoveredBy | NamedPlace | Place | None:
 # pylint: disable=too-many-branches,too-many-locals
 def parse(text: str) -> ParsedQuery:
     """Parse a text string into structured arguments that can be converted into SQL."""
+    text = str(text).strip()
+    if text == "":
+        raise QueryParseError("Empty query")
     doc = nlp(text)
     sent = _first_sentence(doc)
     # retrieve spans

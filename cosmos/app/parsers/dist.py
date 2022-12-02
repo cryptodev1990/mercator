@@ -13,6 +13,7 @@ _units = {
     # yeah - no one is going to use nautical miles but it appears in OSM
     # https://wiki.openstreetmap.org/wiki/Map_features/Units
     "nmi": (r"nmi|(?:international\s*)?nautical\s*miles?", ureg.nautical_mile),
+    "yd": (r"yd|yard|yards", ureg.yard),
     "ft": (r"ft|feet|'|′", ureg.foot),
     "in": (r"in|inch|inches|\"|″", ureg.inch),
 }
