@@ -59,16 +59,6 @@ def _in_bbox(
     return func.ST_Intersects(col, envelope)
 
 
-def _geom_col(tbl: Table) -> ColumnElement:
-    return sql_case(
-        (
-            tbl.c.category == "boundary" and func.ST_MakeArea(tbl.c.geom).is_not(None),
-            func.St_BuildArea(tbl.c.geom),
-        ),
-        else_=tbl.c.geom,
-    )
-
-
 def _select_osm(
     *,
     bbox: Optional[BBox] = None,
@@ -81,11 +71,10 @@ def _select_osm(
         cols = [
             osm_tbl.c.osm_id,
             osm_tbl.c.osm_type,
-            osm_tbl.c.category,
             osm_tbl.c.tags,
         ]
     if include_geom:
-        cols.append(_geom_col(osm_tbl).label("geom"))
+        cols.append(osm_tbl.c.geom)
     stmt = select(cols).select_from(osm_tbl)  # type: ignore
     if bbox:
         stmt = stmt.where(_in_bbox(osm_tbl.c.geom, bbox))  # type: ignore
@@ -193,12 +182,7 @@ def _(
 def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
-        to_sql(arg.object, bbox=bbox, cols=[]).where(
-            or_(
-                func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
-                osm_tbl.c.category == "boundary",
-            )
-        )
+        to_sql(arg.object, bbox=bbox, cols=[]).where(func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]))
     ).cte()
     stmt = select(subj).join(obj, func.ST_CoveredBy(subj.c.geom, obj.c.geom))
     # Order by distance to the center of the object it is in
@@ -218,10 +202,7 @@ def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = No
     obj = (
         to_sql(arg.object, bbox=bbox, cols=[])
         .where(
-            or_(
-                func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
-                osm_tbl.c.category == "boundary",
-            )
+            func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]),
         )
         .cte()
     )
@@ -300,7 +281,6 @@ def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None, off
             obj.c.tags,
             obj.c.osm_type,
             obj.c.osm_id,
-            obj.c.category,
             sql_cast(
                 func.ST_Buffer(sql_cast(obj.c.geom, Geography()), arg.distance),
                 Geometry(srid=int(MapProjection.WGS84)),
@@ -325,9 +305,7 @@ def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
                     "type",
                     base.c.osm_type,
                     "id",
-                    base.c.osm_id,
-                    "category",
-                    base.c.category,
+                    base.c.osm_id
                 ),
             ),
             sql_cast(base.c.osm_id, String()),

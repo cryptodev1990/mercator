@@ -37,7 +37,7 @@ async def _get_query(
         example=[-124.5, 32.6, -114.2, 42.1],
         description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
     ),
-    limit: NonNegativeInt = Query(20, description="Maximum number of results to return"),
+    limit: NonNegativeInt = Query(100, description="Maximum number of results to return"),
     offset: NonNegativeInt = Query(0, description="Offset into the results"),
     conn: AsyncConnection = Depends(get_conn),
 ) -> OsmSearchResponse:
@@ -66,7 +66,7 @@ async def _get_query(
     except QueryParseError as exc:
         raise HTTPException(status_code=422, detail=f"Unable to parse query: {exc}") from None
     try:
-        results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn)
+        results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn, offset=offset)
     except sqlalchemy.exc.DBAPIError as exc:
         if "canceling statement due to statement timeout" in str(exc.orig):
             raise HTTPException(status_code=504, detail="Query timed out.") from None

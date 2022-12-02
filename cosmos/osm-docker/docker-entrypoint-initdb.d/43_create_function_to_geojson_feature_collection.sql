@@ -35,7 +35,7 @@ STABLE
 LANGUAGE SQL
 AS
 $$
-SELECT _geojson_feature_collection_sfunc(prev, g, '{}'::JSONB);
+SELECT _geojson_feature_collection_agg_sfunc(prev, g, '{}'::JSONB);
 $$;
 
 CREATE OR REPLACE FUNCTION _geojson_feature_collection_agg_combine(a JSONB, b JSONB)

@@ -20,12 +20,6 @@ local dtable = osm2pgsql.define_table{
     }
 }
 
-function attrs(object)
-    return {
-        version = object.version,
-        timestamp = object.timestamp,
-    }
-end
 
 -- These tag keys are generally regarded as useless for most rendering. Most
 -- of them are from imports or intended as internal information for mappers.
@@ -175,6 +169,56 @@ local clean_tags = osm2pgsql.make_clean_tags_func(delete_keys)
 
 -- Helper function that looks at the tags and decides if this is possibly
 -- an area.
+
+area_tags = {}
+area_tags["addr:*"] = {}
+area_tags["advertising"] = {['billboard'] = true}
+area_tags["aerialway"] = {['cable_car'] = true, ['chair_lift'] = true, ['drag_lift'] = true, ['gondola'] = true, ['goods'] = true, ['j-bar'] = true, ['magic_carpet'] = true, ['mixed_lift'] = true, ['platter'] = true, ['rope_tow'] = true, ['t-bar'] = true, ['zip_line'] = true}
+area_tags["aeroway"] = {['jet_bridge'] = true, ['parking_position'] = true, ['runway'] = true, ['taxiway'] = true}
+area_tags["allotments"] = {}
+area_tags["amenity"] = {['bench'] = true, ['weighbridge'] = true}
+area_tags["area:highway"] = {}
+area_tags["attraction"] = {['dark_ride'] = true, ['river_rafting'] = true, ['summer_toboggan'] = true, ['train'] = true, ['water_slide'] = true}
+area_tags["bridge:support"] = {}
+area_tags["building"] = {}
+area_tags["building:part"] = {}
+area_tags["cemetery"] = {}
+area_tags["club"] = {}
+area_tags["craft"] = {}
+area_tags["demolished:building"] = {}
+area_tags["disused:amenity"] = {}
+area_tags["disused:railway"] = {}
+area_tags["disused:shop"] = {}
+area_tags["emergency"] = {['designated'] = true, ['destination'] = true, ['no'] = true, ['official'] = true, ['private'] = true, ['yes'] = true}
+area_tags["golf"] = {['cartpath'] = true, ['hole'] = true, ['path'] = true}
+area_tags["healthcare"] = {}
+area_tags["historic"] = {}
+area_tags["indoor"] = {['corridor'] = true, ['wall'] = true}
+area_tags["industrial"] = {}
+area_tags["internet_access"] = {}
+area_tags["junction"] = {}
+area_tags["landuse"] = {}
+area_tags["leisure"] = {['slipway'] = true, ['track'] = true}
+area_tags["man_made"] = {['yes'] = true, ['breakwater'] = true, ['carpet_hanger'] = true, ['crane'] = true, ['cutline'] = true, ['dyke'] = true, ['embankment'] = true, ['goods_conveyor'] = true, ['groyne'] = true, ['pier'] = true, ['pipeline'] = true, ['torii'] = true, ['video_wall'] = true}
+area_tags["military"] = {['trench'] = true}
+area_tags["natural"] = {['bay'] = true, ['cliff'] = true, ['coastline'] = true, ['ridge'] = true, ['strait'] = true, ['tree_row'] = true, ['valley'] = true}
+area_tags["office"] = {}
+area_tags["piste:type"] = {['downhill'] = true, ['hike'] = true, ['ice_skate'] = true, ['nordic'] = true, ['skitour'] = true, ['sled'] = true, ['sleigh'] = true}
+area_tags["place"] = {}
+area_tags["playground"] = {['activitypanel'] = true, ['balancebeam'] = true, ['basketswing'] = true, ['bridge'] = true, ['climbingwall'] = true, ['hopscotch'] = true, ['horizontal_bar'] = true, ['seesaw'] = true, ['slide'] = true, ['structure'] = true, ['swing'] = true, ['tunnel_tube'] = true, ['water'] = true, ['zipwire'] = true}
+area_tags["police"] = {}
+area_tags["polling_station"] = {}
+area_tags["power"] = {['cable'] = true, ['line'] = true, ['minor_line'] = true}
+area_tags["public_transport"] = {['platform'] = true}
+area_tags["residential"] = {}
+area_tags["seamark:type"] = {}
+area_tags["shop"] = {}
+area_tags["telecom"] = {}
+area_tags["tourism"] = {['artwork'] = true, ['attraction'] = true}
+area_tags["traffic_calming"] = {['yes'] = true, ['bump'] = true, ['chicane'] = true, ['choker'] = true, ['cushion'] = true, ['dip'] = true, ['hump'] = true, ['island'] = true, ['mini_bumps'] = true, ['rumble_strip'] = true}
+area_tags["waterway"] = {['canal'] = true, ['dam'] = true, ['ditch'] = true, ['drain'] = true, ['fish_pass'] = true, ['lock_gate'] = true, ['river'] = true, ['stream'] = true, ['tidal_channel'] = true, ['weir'] = true}
+
+
 function has_area_tags(tags)
     if tags.area == 'yes' then
         return true
@@ -182,34 +226,15 @@ function has_area_tags(tags)
     if tags.area == 'no' then
         return false
     end
-
-    return tags.aeroway
-        or tags.amenity
-        or tags.building
-        or tags.harbour
-        or tags.historic
-        or tags.landuse
-        or tags.leisure
-        or tags.man_made
-        or tags.military
-        or tags.natural
-        or tags.office
-        or tags.place
-        or tags.power
-        or tags.public_transport
-        or tags.shop
-        or tags.sport
-        or tags.tourism
-        or tags.water
-        or tags.waterway
-        or tags.wetland
-        or tags['abandoned:aeroway']
-        or tags['abandoned:amenity']
-        or tags['abandoned:building']
-        or tags['abandoned:landuse']
-        or tags['abandoned:power']
-        or tags['area:highway']
-        or tags['building:part']
+    for key, value in pairs(tags) do
+        if area_tags[key] and not area_tags[key][value] then
+            return true
+        end
+        if string.find(key, 'addr:*') then
+            return true
+        end
+    end
+    return false
 end
 
 function osm2pgsql.process_node(object)
@@ -217,13 +242,11 @@ function osm2pgsql.process_node(object)
         return
     end
 
-    -- point
     dtable:insert({
-        attrs = attrs(object),
         tags = object.tags,
         geom = object:as_point(),
-        category = 'point'
     })
+
 end
 
 function osm2pgsql.process_way(object)
@@ -231,24 +254,19 @@ function osm2pgsql.process_way(object)
         return
     end
 
-
     if object.is_closed and has_area_tags(object.tags) then
         -- polygon
         dtable:insert({
-            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_polygon(),
-            category = 'polygon'
-        })
-    else
-        -- line
-        dtable:insert({
-            attrs = attrs(object),
-            tags = object.tags,
-            geom = object:as_linestring(),
-            category = 'line'
         })
     end
+
+    dtable:insert({
+        tags = object.tags,
+        geom = object:as_linestring():line_merge(),
+    })
+
 end
 
 function osm2pgsql.process_relation(object)
@@ -260,35 +278,18 @@ function osm2pgsql.process_relation(object)
         return
     end
 
-    if relation_type == 'route' then
-        -- route
-        dtable:insert({
-            attrs = attrs(object),
-            tags = object.tags,
-            geom = object:as_multilinestring(),
-            category = 'route'
-        })
-        return
-    end
-
     -- boundary
-    if relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
+    if relation_type == 'boundary' or relation_type == 'multipolygon' then
         dtable:insert({
-            attrs = attrs(object),
-            tags = object.tags,
-            geom = object:as_multilinestring():line_merge(),
-            category = 'boundary'
-        })
-        return
-    end
-
-    if relation_type == 'multipolygon' then
-        -- polygon
-        dtable:insert({
-            attrs = attrs(object),
             tags = object.tags,
             geom = object:as_multipolygon(),
-            category = 'polygon'
         })
+        return
     end
+
+    dtable:insert({
+        tags = object.tags,
+        geom = object:as_multilinestring():line_merge(),
+    })
+
 end
