@@ -9,7 +9,7 @@ from app.parsers.rules import (
     Isochrone,
     NamedPlace,
     Place,
-    QueryIntents,
+    QueryIntent,
     QueryParseError,
     Route,
     SpRelCoveredBy,
@@ -23,7 +23,7 @@ from app.parsers.rules import (
     parse,
 )
 
-examples: List[Tuple[str, QueryIntents]] = [
+examples: List[Tuple[str, QueryIntent]] = [
     ("Shops", Place(value=["Shops"])),
     ("San Francisco", NamedPlace(value=["San Francisco"])),
     ("Chinese restaurants", Place(value=["Chinese", "restaurants"])),
@@ -189,7 +189,7 @@ def compare_within_dist_of(a: SpRelWithinDistOf, b: Any) -> bool:
 
 
 @pytest.mark.parametrize("example,expected", examples)
-def test_parse_works(example: str, expected: QueryIntents) -> None:
+def test_parse_works(example: str, expected: QueryIntent) -> None:
     actual = parse(example).value
     if isinstance(expected, SpRelOutsideDistOf):
         compare_outside_dist_of(expected, actual)
