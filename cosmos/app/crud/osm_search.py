@@ -6,10 +6,9 @@ from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union, cast
 from fastapi import HTTPException
 from geoalchemy2 import Geography, Geometry
 from httpx import HTTPStatusError
-from sqlalchemy import String, Table, and_
-from sqlalchemy import case as sql_case
+from sqlalchemy import String, and_
 from sqlalchemy import cast as sql_cast
-from sqlalchemy import func, or_, select, text
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy.sql import ColumnElement, Select
 
@@ -91,9 +90,10 @@ def to_sql(arg: Any, **kwargs: Any) -> Any:
 
 @to_sql.register
 def _(
-    arg: Place, bbox: Optional[BBox] = None,
+    arg: Place,  # pylint: disable=unused-argument
+    bbox: Optional[BBox] = None,
     cols: Optional[List[ColumnElement]] = None,
-    **kwargs: Any  # pylint: disable=unused-argument
+    **kwargs: Any,
 ) -> Select:
     """SQL query for Place.
 
@@ -101,7 +101,9 @@ def _(
 
     """
     query = " ".join(arg.value)
-    stmt = _select_osm(bbox=bbox, cols=cols).where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
+    stmt = _select_osm(bbox=bbox, cols=cols).where(
+        osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query))
+    )
     return stmt
 
 
@@ -179,10 +181,14 @@ def _(
 
 
 @to_sql.register
-def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
+def _(
+    arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0
+) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
-        to_sql(arg.object, bbox=bbox, cols=[]).where(func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"]))
+        to_sql(arg.object, bbox=bbox, cols=[]).where(
+            func.ST_GeometryType(osm_tbl.c.geom).in_(["ST_Polygon", "ST_MultiPolygon"])
+        )
     ).cte()
     stmt = select(subj).join(obj, func.ST_CoveredBy(subj.c.geom, obj.c.geom))
     # Order by distance to the center of the object it is in
@@ -197,7 +203,9 @@ def _(arg: SpRelCoveredBy, bbox: Optional[BBox] = None, limit: Optional[int] = N
 
 
 @to_sql.register
-def _(arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
+def _(
+    arg: SpRelDisjoint, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0
+) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = (
         to_sql(arg.object, bbox=bbox, cols=[])
@@ -251,7 +259,7 @@ def _(
     arg: Union[SpRelOutsideDistOf, SpRelNotNear],
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
-    offset: int = 0
+    offset: int = 0,
 ) -> Select:
     subj = to_sql(arg.subject, bbox=bbox).cte()
     obj = to_sql(arg.object, bbox=bbox, cols=[]).cte()
@@ -274,19 +282,25 @@ def _(
 
 
 @to_sql.register
-def _(arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0) -> Select:
+def _(
+    arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0
+) -> Select:
     obj = to_sql(arg.object, bbox=bbox, cols=[], limit=limit).cte()
-    return select(
-        [
-            obj.c.tags,
-            obj.c.osm_type,
-            obj.c.osm_id,
-            sql_cast(
-                func.ST_Buffer(sql_cast(obj.c.geom, Geography()), arg.distance),
-                Geometry(srid=int(MapProjection.WGS84)),
-            ).label("geom"),
-        ]
-    ).limit(limit).offset(offset)
+    return (
+        select(
+            [
+                obj.c.tags,
+                obj.c.osm_type,
+                obj.c.osm_id,
+                sql_cast(
+                    func.ST_Buffer(sql_cast(obj.c.geom, Geography()), arg.distance),
+                    Geometry(srid=int(MapProjection.WGS84)),
+                ).label("geom"),
+            ]
+        )
+        .limit(limit)
+        .offset(offset)
+    )
 
 
 def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
@@ -300,12 +314,7 @@ def _feature_coll_sql(stmt: Select, limit: Optional[int] = None) -> Select:
             func.jsonb_build_object(
                 "osm",
                 func.jsonb_build_object(
-                    "tags",
-                    base.c.tags,
-                    "type",
-                    base.c.osm_type,
-                    "id",
-                    base.c.osm_id
+                    "tags", base.c.tags, "type", base.c.osm_type, "id", base.c.osm_id
                 ),
             ),
             sql_cast(base.c.osm_id, String()),
@@ -395,7 +404,7 @@ async def eval_within_time_of(
     ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
-    res = (await conn.execute(_feature_coll_sql(stmt)))
+    res = await conn.execute(_feature_coll_sql(stmt))
     return FeatureCollection(features=[r.feature for r in res])
 
 
@@ -488,7 +497,7 @@ async def eval_query(
     conn: AsyncConnection,
     bbox: Optional[BBox] = None,
     limit: Optional[int] = None,
-    offset: int = 0
+    offset: int = 0,
 ) -> FeatureCollection:
     """Evaluate a query"""
     expr = arg.value
@@ -501,6 +510,6 @@ async def eval_query(
     if isinstance(expr, Route):
         return await eval_route(expr, bbox=bbox)
     stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit, offset=offset))
-    res = (await conn.execute(stmt))
+    res = await conn.execute(stmt)
     features = [r.feature for r in res]
     return FeatureCollection(features=features)

@@ -55,7 +55,6 @@ class Place(_LocalModel):
     # Field(..., discriminator=...) to work.
     type: Literal["place"] = Field("place", const=True)
     value: List[str]
-    keywords: Optional[List[str]] = Field(None, description="Keywords associated with the place.")
 
     def __str__(self) -> str:
         return " ".join(self.value)

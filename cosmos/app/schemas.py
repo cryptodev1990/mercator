@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
+from pydantic import UUID4, BaseModel, Field  # pylint: disable=no-name-in-module
 
 from app.core.datatypes import FeatureCollection
 from app.parsers.rules import ParsedQuery
@@ -49,6 +49,7 @@ class OsmSearchResponse(BaseModel):
     results: FeatureCollection = Field(
         ..., description="Feature collection of spatial features matching the query."
     )
+    id: UUID4 = Field(..., description="Unique ID for this query.")
 
     class Config:
         """Pydantic config."""
@@ -63,7 +64,6 @@ class OsmSearchResponse(BaseModel):
                         "subject": {
                             "type": "place",
                             "value": ["Coffee", "shops"],
-                            "keywords": None,
                         },
                         "object": {"type": "named_place", "value": ["San Francisco"]},
                         "type": "covered_by",
@@ -102,6 +102,7 @@ class OsmSearchResponse(BaseModel):
                     ],
                     "bbox": [-122.508978, 37.7604494, -122.508978, 37.7604494],
                 },
+                "id": "6f8b6f8b-6f8b-6f8b-6f8b-6f8b6f8b6f8b",
             }
         }
 

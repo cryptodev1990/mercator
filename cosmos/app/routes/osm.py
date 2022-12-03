@@ -1,5 +1,6 @@
 """Open Street Maps (OSM) routes."""
 import logging
+import uuid
 from typing import Any
 
 import sqlalchemy.exc
@@ -61,6 +62,8 @@ async def _get_query(
     - "Route from Lake Merritt to the Ferry Building"
 
     """
+    # unique identifier for this query
+    id_ = uuid.uuid4()
     try:
         parsed_query = parse(query)
     except QueryParseError as exc:
@@ -76,6 +79,7 @@ async def _get_query(
         label=str(parsed_query),
         parse=parsed_query,
         results=results or FeatureCollection(features=[]),  # type: ignore
+        id=id_,
     )
 
 
