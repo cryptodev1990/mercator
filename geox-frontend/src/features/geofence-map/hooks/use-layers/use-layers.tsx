@@ -13,7 +13,7 @@ import { useImageLayer } from "./use-image-layer";
 export const useLayers = () => {
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
 
-  const memoinzedTentativeShapes = useMemo(
+  const memoizedTentativeShapes = useMemo(
     () =>
       simplify(
         {
@@ -81,7 +81,7 @@ export const useLayers = () => {
           stroked: true,
           filled: true,
           // @ts-ignore
-          data: memoinzedTentativeShapes,
+          data: memoizedTentativeShapes,
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
