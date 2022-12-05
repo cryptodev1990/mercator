@@ -96,6 +96,8 @@ def _(
     arg: Place,  # pylint: disable=unused-argument
     bbox: Optional[BBox] = None,
     cols: Optional[List[ColumnElement]] = None,
+    limit: Optional[int] = None,
+    offset: int = 0,
 ) -> Select:
     """SQL query for Place.
 
@@ -106,14 +108,13 @@ def _(
     stmt = _select_osm(bbox=bbox, cols=cols).where(
         or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
             func.similarity(query, osm_tbl.c.tags_text) > PLACE_STRING_SIMILARITY)
-    )
+    ).limit(limit=limit).offset(offset=offset)
     return stmt
 
 
 def named_place_lookup_db(
     query: str,
     bbox: Optional[BBox] = None,
-    limit: int = 1,
     cols: Optional[List[ColumnElement]] = None,
 ) -> Select:
     """Search OSM for a place.
@@ -127,7 +128,7 @@ def named_place_lookup_db(
         .where(or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
                    func.similarity(query, osm_tbl.c.tags_text) > NAMED_PLACE_STRING_SIMILARITY))
         .order_by(func.ts_rank_cd(osm_tbl.c.fts, func.plainto_tsquery(query), 1).desc())
-        .limit(limit)
+        .limit(1)
     )
     return stmt
 
