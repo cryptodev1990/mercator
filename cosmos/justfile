@@ -31,4 +31,5 @@ db-local db input_file *args:
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/41_cardinal_direction.sql
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/42_create_function_to_geojson_feature.sql
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/43_create_function_to_geojson_feature_collection.sql
+	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/50_trgm.sql
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/90_analyze.sql
