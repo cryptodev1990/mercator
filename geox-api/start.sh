@@ -31,7 +31,6 @@ __start_dd_agent() {
   fi
 
   sed -i "s/MY_DD_API_KEY_PLACEHOLDER/$DD_API_KEY/g" /etc/datadog-agent/datadog.yaml
-  # service datadog-agent start || true
   service datadog-agent start
 }
 

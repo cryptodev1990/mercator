@@ -60,22 +60,11 @@ ENV APP_ENV=production
 RUN touch /webapp/.env && \
     echo "GIT_COMMIT=$GIT_COMMIT" >> /webapp/.env
 
-RUN cp /etc/datadog-agent/security-agent.yaml.example /etc/datadog-agent/security-agent.yaml
-
-# RUN printf "runtime_security_config:\n  enabled: false\n" > /etc/datadog-agent/security-agent.yaml
-RUN sed -i "s/# runtime_security_config/runtime_security_config/g" /etc/datadog-agent/security-agent.yaml
-RUN sed -i "s/# enabled/enabled/g" /etc/datadog-agent/security-agent.yaml
-RUN chown dd-agent:dd-agent /etc/datadog-agent/security-agent.yaml
-RUN chmod a+rwx /etc/datadog-agent/security-agent.yaml
-
-COPY ./datadog.yaml /etc/datadog-agent/datadog.yaml
-RUN chown dd-agent:dd-agent /etc/datadog-agent/datadog.yaml
-RUN chmod a+rwx /etc/datadog-agent/datadog.yaml
-
+# copy in datadog config files
 RUN mkdir /etc/datadog-agent/conf.d/python.d
-COPY ./datadog_config.yaml /etc/datadog-agent/conf.d/python.d/conf.yaml
-RUN chown dd-agent:dd-agent /etc/datadog-agent/conf.d/python.d/conf.yaml
-RUN chmod a+rwx /etc/datadog-agent/conf.d/python.d/conf.yaml
+COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog-python-conf.yaml /etc/datadog-agent/conf.d/python.d/conf.yaml
+COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog-security-agent.yaml /etc/datadog-agent/security-agent.yaml
+COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog.yaml /etc/datadog-agent/datadog.yaml
 
 EXPOSE 8080
 ENV PYTHONPATH=/webapp
