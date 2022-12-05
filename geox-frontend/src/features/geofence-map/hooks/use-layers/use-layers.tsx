@@ -19,7 +19,7 @@ export const useLayers = () => {
   const {
     selectedFeatureCollection,
     multiSelectedShapes,
-    multiSelectedShapesUuids,
+    addShapesToMultiSelectedShapes,
   } = useSelectedShapes();
 
   const memoizedTentativeShapes = useMemo(
