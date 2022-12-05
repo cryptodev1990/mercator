@@ -1,12 +1,9 @@
+import { useMemo } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { EditorMode } from "../../cursor-modes";
-import {
-  featureToFeatureCollection,
-  geoShapesToFeatureCollection,
-} from "../../utils";
 import { useCursorMode } from "../use-cursor-mode";
 import { useShapes } from "../use-shapes";
-
+import { Feature, simplify } from "@turf/turf";
 import { useTiles } from "./use-tiles";
 import { useModifyLayer } from "./use-modify-layer";
 import { useEditLayer } from "./use-edit-layer";
@@ -15,6 +12,18 @@ import { useImageLayer } from "./use-image-layer";
 
 export const useLayers = () => {
   const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
+
+  const memoizedTentativeShapes = useMemo(
+    () =>
+      simplify(
+        {
+          type: "FeatureCollection",
+          features: tentativeShapes.map((x) => x.geojson) as Feature[],
+        },
+        { tolerance: 0.001 }
+      ),
+    [tentativeShapes.length]
+  );
 
   const { selectedFeatureCollection } = useSelectedShapes();
 
@@ -72,9 +81,7 @@ export const useLayers = () => {
           stroked: true,
           filled: true,
           // @ts-ignore
-          data: featureToFeatureCollection(
-            tentativeShapes.map((x) => x.geojson)
-          ),
+          data: memoizedTentativeShapes,
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
