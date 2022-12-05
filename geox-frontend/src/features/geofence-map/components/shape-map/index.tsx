@@ -4,7 +4,6 @@ import StaticMap from "react-map-gl";
 
 // @ts-ignore
 import { useCursorMode } from "../../hooks/use-cursor-mode";
-
 import { EditorMode } from "../../cursor-modes";
 import { useLayers } from "../../hooks/use-layers/use-layers";
 import { useViewport } from "../../hooks/use-viewport";
@@ -32,9 +31,12 @@ const GeofenceMap = () => {
 
   const {
     selectedUuids,
+    multiSelectedShapesUuids,
     clearSelectedShapeUuids,
     isSelected,
-    selectOneShapeUuid,
+    setSelectedShapeUuid,
+    addShapesToMultiSelectedShapes,
+    removeShapeFromMultiSelectedShapes,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
@@ -57,6 +59,14 @@ const GeofenceMap = () => {
               },
             });
           }
+        }
+        if (multiSelectedShapesUuids) {
+          deleteShapes(multiSelectedShapesUuids, {
+            onSuccess: () => {
+              clearSelectedShapeUuids();
+              setCursorMode(EditorMode.ViewMode);
+            },
+          });
         }
       }
     };
@@ -92,7 +102,7 @@ const GeofenceMap = () => {
       document.removeEventListener("keydown", escFunction);
       document.removeEventListener("keydown", undoHandler);
     };
-  }, [selectedUuids, deleteShapes]);
+  }, [multiSelectedShapesUuids, selectedUuids, deleteShapes]);
 
   const { layers } = useLayers();
 
@@ -143,7 +153,11 @@ const GeofenceMap = () => {
         onViewStateChange={({ viewState, oldViewState }) =>
           setViewport(viewState)
         }
-        onClick={({ object, x, y, coordinate }: any) => {
+        onClick={({ object, x, y, coordinate }: any, e: any) => {
+          if (window.location.hash === "#click") {
+            console.log("object", object);
+          }
+
           if (cursorMode === EditorMode.DrawIsochroneMode) {
             getIsochrones(
               coordinate as number[],
@@ -158,10 +172,6 @@ const GeofenceMap = () => {
             return;
           }
 
-          if (window.location.hash === "#click") {
-            console.log("object", object);
-          }
-
           if (!object || !object.properties?.__uuid) {
             return;
           }
@@ -172,8 +182,22 @@ const GeofenceMap = () => {
           if (cursorMode === EditorMode.SplitMode) {
             return;
           }
-          if (!isSelected(uuid)) {
-            selectOneShapeUuid(uuid);
+          // if you click already selected shape, deselect it
+          if (
+            e.changedPointers[0].metaKey &&
+            multiSelectedShapesUuids.includes(uuid)
+          ) {
+            removeShapeFromMultiSelectedShapes(uuid);
+          }
+          if (
+            e.changedPointers[0].metaKey &&
+            !multiSelectedShapesUuids.includes(uuid)
+          ) {
+            addShapesToMultiSelectedShapes([object]);
+          }
+
+          if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
+            setSelectedShapeUuid(uuid);
           }
         }}
         onHover={({ object, x, y }: any) => {

@@ -11,7 +11,7 @@ import {
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const genericErrorHandler = (error: any) => {
   const status = error?.status;

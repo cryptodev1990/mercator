@@ -1,6 +1,8 @@
 export enum EditorMode {
   // Read existing
   ViewMode = "ViewMode",
+  // select multiple shapes by drawing polygon
+  MultiSelectMode = "MultiSelectMode",
   // Add a new polygon, corresponds to PolygonEditMode in nebula
   EditMode = "EditMode",
   // Modify an existing polygon, corresponds to ModifyMode in nebula

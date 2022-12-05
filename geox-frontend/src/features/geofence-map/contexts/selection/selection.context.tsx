@@ -1,4 +1,4 @@
-import { FeatureCollection } from "@turf/helpers";
+import { Feature, FeatureCollection } from "@turf/helpers";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { GeoShapeMetadata } from "../../../../client/models/GeoShapeMetadata";
 import { useGetOneShapeByUuid } from "../../hooks/use-openapi-hooks";
@@ -8,10 +8,14 @@ import { selectionReducer, initialState } from "./selection.reducer";
 
 export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
+  setSelectedShapeUuid: (uuid: string) => void;
+  multiSelectedShapesUuids: GeoShapeMetadata["uuid"][];
+  multiSelectedShapes: Feature[];
+  addShapesToMultiSelectedShapes: (shape: Feature[]) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
-  addSelectedShapeUuid: (uuid: string) => void;
-  selectOneShapeUuid: (uuid: string) => void;
   removeSelectedShapeUuid: (uuid: string) => void;
+  removeShapeFromMultiSelectedShapes: (uuid: string) => void;
+  clearMultiSelectedShapeUuids: () => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
   selectedDataIsLoading: boolean;
@@ -20,10 +24,14 @@ export interface SelectionContextI {
 
 export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
+  setSelectedShapeUuid: () => {},
+  multiSelectedShapesUuids: [],
+  multiSelectedShapes: [],
+  addShapesToMultiSelectedShapes: () => {},
   isSelected: () => false,
-  addSelectedShapeUuid: () => {},
-  selectOneShapeUuid: () => {},
   removeSelectedShapeUuid: () => {},
+  removeShapeFromMultiSelectedShapes: () => {},
+  clearMultiSelectedShapeUuids: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
   selectedDataIsLoading: false,
@@ -39,17 +47,33 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
   const { data: selectedShapeData, isLoading: selectedDataIsLoading } =
     useGetOneShapeByUuid(state.uuids[0] ?? null);
 
-  const addSelectedShapeUuid = (uuid: string) => {
-    dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
-  };
-
-  const selectOneShapeUuid = (uuid: string) => {
+  const setSelectedShapeUuid = (uuid: string) => {
     dispatch({ type: "RESET_SELECTION" });
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
   };
 
+  const addShapesToMultiSelectedShapes = (shape: Feature[]) => {
+    dispatch({
+      type: "ADD_SHAPES_TO_MULTISELECTED_SHAPES",
+      multiSelectedShapes: shape,
+    });
+  };
+
+  const removeShapeFromMultiSelectedShapes = (uuid: string) => {
+    dispatch({
+      type: "REMOVE_SHAPE_FROM_MULTISELECT",
+      multiSelectedUuid: uuid,
+    });
+  };
+
   const removeSelectedShapeUuid = (uuid: string) => {
     dispatch({ type: "REMOVE_SELECTED_SHAPE_UUIDS", uuids: [uuid] });
+  };
+
+  const clearMultiSelectedShapeUuids = () => {
+    dispatch({
+      type: "CLEAR_MULTI_SELECTED_SHAPE_UUIDS",
+    });
   };
 
   const clearSelectedShapeUuids = () => {
@@ -81,12 +105,16 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     <SelectionContext.Provider
       value={{
         selectedUuids: state.uuids,
+        multiSelectedShapesUuids: state.multiSelectedShapesUuids,
+        multiSelectedShapes: state.multiSelectedShapes,
         numSelected: state.numSelected,
         isSelected,
-        addSelectedShapeUuid,
-        selectOneShapeUuid,
+        setSelectedShapeUuid,
+        removeShapeFromMultiSelectedShapes,
         removeSelectedShapeUuid,
+        clearMultiSelectedShapeUuids,
         clearSelectedShapeUuids,
+        addShapesToMultiSelectedShapes,
         // @ts-ignore
         selectedFeatureCollection,
         selectedDataIsLoading,

@@ -12,7 +12,7 @@ export function useModifyLayer() {
   const { selectedFeatureIndexes, setSelectedFeatureIndexes, updateShape } =
     useShapes();
   const { cursorMode } = useCursorMode();
-  const { selectOneShapeUuid, isSelected, selectedFeatureCollection } =
+  const { setSelectedShapeUuid, isSelected, selectedFeatureCollection } =
     useSelectedShapes();
   const { viewport } = useViewport();
 
@@ -84,7 +84,7 @@ export function useModifyLayer() {
         return;
       } else if (o.object) {
         // Click of a layer should make that layer selected
-        selectOneShapeUuid((o.object as any).properties.__uuid);
+        setSelectedShapeUuid((o.object as any).properties.__uuid);
         setSelectedFeatureIndexes([o.index]);
       }
     },

@@ -44,6 +44,14 @@ export const ToolButtonBank = () => {
       active: cursorMode === EditorMode.EditMode,
       key: "mode-edit",
     },
+    {
+      name: "MultiSelect",
+      icon: <DrawPolygonIcon />,
+      onClick: () => setCursorMode(EditorMode.MultiSelectMode),
+      dataTip: "Select Multiple Shapes",
+      active: cursorMode === EditorMode.MultiSelectMode,
+      key: "mode-multi-select",
+    },
     // {
     //   name: "Drive time",
     //   icon: <DriveEtaIcon />,

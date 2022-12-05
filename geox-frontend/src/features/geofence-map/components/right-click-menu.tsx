@@ -23,6 +23,7 @@ export const RightClickMenu = () => {
     isSelected,
     selectedUuids,
     clearSelectedShapeUuids,
+    clearMultiSelectedShapeUuids,
   } = useSelectedShapes();
 
   function closeMenu() {
@@ -31,6 +32,7 @@ export const RightClickMenu = () => {
   }
 
   function cleanup() {
+    clearMultiSelectedShapeUuids();
     setShapeForPropertyEdit(null);
     clearSelectedFeatureIndexes();
     clearSelectedShapeUuids();
