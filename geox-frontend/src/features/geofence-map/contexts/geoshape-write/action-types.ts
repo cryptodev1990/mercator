@@ -66,6 +66,10 @@ export type Action =
       shapes: GeoShape[];
     }
   | {
+      type: "SET_SHAPE_LOADING";
+      value: boolean;
+    }
+  | {
       type: "UPDATE_SHAPE_SUCCESS";
       updatedShapeIds: string[];
       updatedShape: GeoShape | null;

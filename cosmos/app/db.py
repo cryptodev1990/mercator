@@ -38,7 +38,7 @@ def create_app_engine(settings: Settings = get_settings(), **kwargs: Any) -> Asy
         "connect_args": {
             "server_settings": {
                 "session_preload_libraries": "auto_explain",
-                "auto_explain.log_min_duration": "10000",
+                "auto_explain.log_min_duration": "1000",
                 "auto_explain.log_format": "text",
             }
         },
@@ -57,8 +57,7 @@ osm = Table(
     Column("osm_id", Integer, primary_key=True),
     Column("osm_type", String(1), nullable=False),
     Column("tags", JSONB()),
-    Column("attrs", JSONB()),
     Column("geom", Geometry(srid=4326)),
-    Column("category", String()),
     Column("fts", TSVECTOR, Computed("to_tsvector('english', tags)")),
+    Column("tags_text", String()),
 )

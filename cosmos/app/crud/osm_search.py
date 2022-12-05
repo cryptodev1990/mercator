@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union, cast
 from fastapi import HTTPException
 from geoalchemy2 import Geography, Geometry
 from httpx import HTTPStatusError
-from sqlalchemy import String, and_
+from sqlalchemy import String, and_, or_
 from sqlalchemy import cast as sql_cast
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncConnection
@@ -46,6 +46,9 @@ settings = get_settings()
 graph_hopper = get_graph_hopper()
 
 logger = logging.getLogger(__name__)
+
+PLACE_STRING_SIMILARITY = 0.2
+NAMED_PLACE_STRING_SIMILARITY = 0.2
 
 
 def _in_bbox(
@@ -93,7 +96,8 @@ def _(
     arg: Place,  # pylint: disable=unused-argument
     bbox: Optional[BBox] = None,
     cols: Optional[List[ColumnElement]] = None,
-    **kwargs: Any,
+    limit: Optional[int] = None,
+    offset: int = 0,
 ) -> Select:
     """SQL query for Place.
 
@@ -102,15 +106,15 @@ def _(
     """
     query = " ".join(arg.value)
     stmt = _select_osm(bbox=bbox, cols=cols).where(
-        osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query))
-    )
+        or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
+            func.similarity(query, osm_tbl.c.tags_text) > PLACE_STRING_SIMILARITY)
+    ).limit(limit=limit).offset(offset=offset)
     return stmt
 
 
 def named_place_lookup_db(
     query: str,
     bbox: Optional[BBox] = None,
-    limit: int = 1,
     cols: Optional[List[ColumnElement]] = None,
 ) -> Select:
     """Search OSM for a place.
@@ -121,9 +125,10 @@ def named_place_lookup_db(
     """
     stmt = (
         _select_osm(bbox=bbox, cols=cols)
-        .where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
+        .where(or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
+                   func.similarity(query, osm_tbl.c.tags_text) > NAMED_PLACE_STRING_SIMILARITY))
         .order_by(func.ts_rank_cd(osm_tbl.c.fts, func.plainto_tsquery(query), 1).desc())
-        .limit(limit)
+        .limit(1)
     )
     return stmt
 

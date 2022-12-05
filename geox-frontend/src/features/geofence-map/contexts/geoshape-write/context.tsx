@@ -238,16 +238,15 @@ export const GeoShapeWriteContextProvider = ({
     }
     opLog("UPDATE_SHAPE", update);
     // @ts-ignore
-    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update] });
+    dispatch({ type: "SET_SHAPE_LOADING", value: true });
 
     GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatch(
       update.uuid,
       update
-    ).then((data: GeoShape) => {
+    ).then(() => {
       dispatch({
-        type: "UPDATE_SHAPE_SUCCESS",
-        updatedShapeIds: [data.uuid],
-        updatedShape: data,
+        type: "SET_SHAPE_LOADING",
+        value: false,
       });
       qc.fetchQuery("geofencer");
     });

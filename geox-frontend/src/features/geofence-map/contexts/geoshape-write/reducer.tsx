@@ -69,6 +69,13 @@ export function reducer(state: State, action: Action): State {
   switch (action.type) {
     // Shape metadata actions
     // Add shape actions
+
+    case "SET_SHAPE_LOADING": {
+      return {
+        ...state,
+        shapeUpdateLoading: action.value,
+      };
+    }
     case "UPDATE_SHAPE_LOADING": {
       const osu = [
         ...new Set([...state.optimisticShapeUpdates, ...action.shapes]),

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { EditorMode } from "../../cursor-modes";
 import { featureToFeatureCollection } from "../../utils";
 import { useCursorMode } from "../use-cursor-mode";
 import { useShapes } from "../use-shapes";
 import _ from "lodash";
+import { Feature, simplify } from "@turf/turf";
 import { useTiles } from "./use-tiles";
 import { useModifyLayer } from "./use-modify-layer";
 import { useEditLayer } from "./use-edit-layer";
@@ -19,11 +20,19 @@ export const useLayers = () => {
     selectedFeatureCollection,
     multiSelectedShapes,
     multiSelectedShapesUuids,
-    addShapesToMultiSelectedShapes,
   } = useSelectedShapes();
 
-  // console.log("multiSelectedShapesUuids", multiSelectedShapesUuids);
-  // console.log("multiSelectedShapes", multiSelectedShapes);
+  const memoizedTentativeShapes = useMemo(
+    () =>
+      simplify(
+        {
+          type: "FeatureCollection",
+          features: tentativeShapes.map((x) => x.geojson) as Feature[],
+        },
+        { tolerance: 0.001 }
+      ),
+    [tentativeShapes.length]
+  );
 
   const tiles = useTiles();
   const editLayer = useEditLayer();
@@ -93,9 +102,7 @@ export const useLayers = () => {
           stroked: true,
           filled: true,
           // @ts-ignore
-          data: featureToFeatureCollection(
-            tentativeShapes.map((x) => x.geojson)
-          ),
+          data: memoizedTentativeShapes,
           pointRadiusMinPixels: 7,
         }),
       modifyLayer,
