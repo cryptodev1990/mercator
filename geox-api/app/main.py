@@ -9,10 +9,11 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app import routes
 from app.core.config import get_settings
+from app.core.logging import get_logger
 from app.core.stats import attach_stats_middleware, stats
 from app.tiler import add_tiler_routes
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 __VERSION__ = "0.0.1"

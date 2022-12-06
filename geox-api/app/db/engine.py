@@ -8,8 +8,9 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
 from app.core.config import Settings, get_settings
+from app.core.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def _set_default_app_user_id(dbapi_connection):

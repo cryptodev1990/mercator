@@ -6,8 +6,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
 from app.core.config import Settings, get_settings
+from app.core.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def create_osm_engine(settings: Settings = get_settings()) -> Optional[Engine]:

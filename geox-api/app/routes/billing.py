@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.engine import Engine
 
 from app.core.config import get_settings
+from app.core.logging import get_logger
 from app.crud.organization import (
     add_stripe_customer,
     add_subscription,
@@ -27,7 +28,7 @@ from app.dependencies import (
 )
 from app.schemas.common import BaseModel
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 router = APIRouter(tags=["billing"], include_in_schema=False)

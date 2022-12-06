@@ -4,6 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import UUID4  # pylint: disable=no-name-in-module
 
+from app.core.logging import get_logger
 from app.crud.namespaces import (
     DefaultNamespaceCannotBeRenamedError,
     NamespaceDoesNotExistError,
@@ -27,7 +28,7 @@ from app.schemas.namespaces_api import NamespaceResponse
 
 # from app.crud.namespaces import *
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 router = APIRouter(
     tags=["namespaces"],

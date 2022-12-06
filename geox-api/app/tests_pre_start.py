@@ -9,11 +9,12 @@ from tenacity.before import before_log
 from tenacity.stop import stop_after_attempt
 from tenacity.wait import wait_fixed
 
+from app.core.logging import get_logger
 from app.db.engine import engine
 
 # pylint: disable=duplicate-code
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1

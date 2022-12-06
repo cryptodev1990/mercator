@@ -47,9 +47,7 @@ RUN DD_API_KEY=MY_DD_API_KEY_PLACEHOLDER DD_INSTALL_ONLY=true bash -c "$(curl -L
 COPY ./app /webapp/app
 COPY ./cli /webapp/cli
 COPY ./alembic /webapp/alembic
-#COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/
-COPY ./start.sh ./start-dd-agent.sh ./worker-start.sh ./alembic.ini ./Procfile ./hypercorn.toml ./justfile /webapp/
-RUN chmod a+x ./start-dd-agent.sh
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./hypercorn.toml ./justfile /webapp/
 
 # ARG have to be after FROM to be read
 # This sets GIT_COMMIT in two ways - default env variable (expected not to be overwritten)
