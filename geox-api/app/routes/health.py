@@ -6,19 +6,15 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-from app.core.logging import get_logger
 from app.dependencies import get_connection, verify_subscription, verify_token
 
 import time
 
 router = APIRouter()
 
-logger = get_logger(__name__)
-
 
 @router.get("/health", tags=["health"])
 async def health() -> Dict[str, str]:
-    logger.info("HELLO THIS IS THE HEALTH ENDPOINT", extra={"foo":"bar", "hello":123})
     return {"message": "OK"}
 
 
