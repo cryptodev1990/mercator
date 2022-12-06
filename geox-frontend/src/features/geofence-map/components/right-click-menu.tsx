@@ -4,6 +4,8 @@ import { EditorMode } from "../cursor-modes";
 import { useCursorMode } from "../hooks/use-cursor-mode";
 import { useSelectedShapes } from "../hooks/use-selected-shapes";
 import { useShapes } from "../hooks/use-shapes";
+import { useUiModals } from "../hooks/use-ui-modals";
+import { UIModalEnum } from "../types";
 
 export const RightClickMenu = () => {
   const [xPos, setXPos] = useState<string | null>(null);
@@ -30,6 +32,8 @@ export const RightClickMenu = () => {
     setXPos(null);
     setYPos(null);
   }
+
+  const { openModal } = useUiModals();
 
   function cleanup() {
     clearMultiSelectedShapeUuids();
@@ -115,6 +119,9 @@ export const RightClickMenu = () => {
           return { ...prevOptions, denyOverlap: !prevOptions.denyOverlap };
         });
         return;
+      case "Bulk Edit":
+        openModal(UIModalEnum.BulkEditModal);
+        return;
       default:
         return () => {
           setRecentActivity(recentActivity + 1);
@@ -134,6 +141,7 @@ export const RightClickMenu = () => {
       "Copy as GeoJSON",
       "Delete (Backspace)",
       "Unselect (Esc)",
+      "Bulk Edit",
     ];
   } else {
     options = [""];
