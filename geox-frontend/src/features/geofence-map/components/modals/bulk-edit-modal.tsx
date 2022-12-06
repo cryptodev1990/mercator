@@ -3,105 +3,97 @@ import { useUiModals } from "features/geofence-map/hooks/use-ui-modals";
 import { UIModalEnum } from "features/geofence-map/types";
 import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import {
+  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  RowData,
   useReactTable,
 } from "@tanstack/react-table";
 import { Properties } from "@turf/helpers";
 
-// Create an editable cell renderer
-const EditableCell = ({
-  value: initialValue,
-}: // row: { index },
-// column: { id },
-// updateMyData,
-{
-  value: any;
-  // row: any;
-  // column: any;
-  // updateMyData: any;
-}) => {
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = React.useState(initialValue);
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+  }
+}
 
-  const onChange = (e: any) => {
-    setValue(e.target.value);
-  };
+// Give our default column cell renderer editing superpowers!
+const defaultColumn: Partial<ColumnDef<Properties>> = {
+  cell: ({ getValue, row: { index }, column: { id }, table }) => {
+    const initialValue = getValue();
+    // We need to keep and update the state of the cell normally
+    /* eslint-disable */
+    const [value, setValue] = useState(initialValue);
 
-  // We'll only update the external data when the input is blurred
-  // const onBlur = () => {
-  //   updateMyData(index, id, value);
-  // };
+    // When the input is blurred, we'll call our table meta's updateData function
+    const onBlur = () => {
+      table.options.meta?.updateData(index, id, value);
+    };
 
-  // If the initialValue is changed external, sync it up with our state
-  React.useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+    // If the initialValue is changed external, sync it up with our state
+    /* eslint-disable */
+    useEffect(() => {
+      setValue(initialValue);
+    }, [initialValue]);
 
-  return <input value={value} onChange={onChange} />;
+    return (
+      <input
+        value={value as string}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={onBlur}
+      />
+    );
+  },
 };
 
 const BulkEditModal = () => {
   const { modal, closeModal } = useUiModals();
   const { multiSelectedShapes } = useSelectedShapes();
 
+  console.log("multiSelectedShapes", multiSelectedShapes);
+  const [data, setData] = React.useState(() =>
+    multiSelectedShapes.map((shape) => shape.properties)
+  );
+
   const columnHelper = createColumnHelper<Properties>();
 
   const columns = [
     columnHelper.accessor("NAMELSAD", {
       header: () => "Name",
-      cell: (info) => <EditableCell value={info.getValue()} />,
     }),
-    columnHelper.accessor("LSAD", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    columnHelper.accessor("MEMI", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    columnHelper.accessor("ALAND", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    // columnHelper.accessor("CSAFP", {
-    //   cell: (info) => info.getValue(),
-    // }),
-    columnHelper.accessor("GEOID", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    columnHelper.accessor("MTFCC", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    columnHelper.accessor("AWATER", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    columnHelper.accessor("CBSAFP", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    columnHelper.accessor("INTPTLAT", {
-      cell: (info) => <EditableCell value={info.getValue()} />,
-    }),
-    // columnHelper.accessor("topojson_object_name", {
-    //   cell: (info) => info.getValue(),
-    // }),
-    // columnHelper.accessor("__uuid", {
-    //   cell: (info) => info.getValue(),
-    // }),
-    columnHelper.accessor("__namespace_id", {
-      header: () => "Namespace ID",
-      cell: (info) => info.getValue(),
-    }),
-    // columnHelper.accessor("layerName", {
-    //   header: () => "Layer Name",
-    //   cell: (info) => info.getValue(),
-    // }),
+    columnHelper.accessor("LSAD", {}),
+    columnHelper.accessor("MEMI", {}),
+    columnHelper.accessor("ALAND", {}),
+    columnHelper.accessor("GEOID", {}),
+    columnHelper.accessor("MTFCC", {}),
+    columnHelper.accessor("AWATER", {}),
+    columnHelper.accessor("CBSAFP", {}),
+    columnHelper.accessor("INTPTLAT", {}),
   ];
 
   const table = useReactTable({
-    data: multiSelectedShapes.map((shape) => shape.properties),
+    data: data,
     columns,
+    defaultColumn,
     getCoreRowModel: getCoreRowModel(),
+    meta: {
+      updateData: (rowIndex, columnId, value) => {
+        setData((old) => {
+          return old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex]!,
+                [columnId]: value,
+              };
+            }
+            return row;
+          });
+        });
+      },
+    },
   });
 
   return (
@@ -141,7 +133,6 @@ const BulkEditModal = () => {
                   </thead>
                   <tbody>
                     {table.getRowModel().rows.map((row) => {
-                      console.log("row", row);
                       return (
                         <tr key={row.id}>
                           {row.getVisibleCells().map((cell) => (
@@ -167,6 +158,13 @@ const BulkEditModal = () => {
                     onClick={() => closeModal()}
                   >
                     Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    onClick={() => console.log("data", data)}
+                  >
+                    Save
                   </button>
                 </div>
               </Dialog.Panel>
