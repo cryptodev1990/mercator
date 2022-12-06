@@ -18,3 +18,4 @@ randomname
 geojson
 types-python-slugify
 pylint
+pytest-playwright
