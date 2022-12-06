@@ -261,9 +261,12 @@ patterns["BUFFER"] = [
     [
         {"ENT_TYPE": "DISTANCE"},
         {"LEMMA": {"IN": ["buffer"]}},
+        {"LEMMA": "around", "OP": "?"}
+    ],
+    [
         {"ENT_TYPE": "DISTANCE"},
         {"LEMMA": "around"},
-    ],
+    ]
 ]
 
 patterns["ISOCHRONE"] = [
@@ -280,6 +283,11 @@ patterns["ISOCHRONE"] = [
         {"LEMMA": {"IN": ["buffer", "isochrone"]}},
         {"LEMMA": "around", "OP": "?"},
     ],
+    # {duration} around
+    [
+        {"ENT_TYPE": "DURATION"},
+        {"LEMMA": "around"}
+    ]
 ]
 
 patterns["NEAR"] = [
@@ -310,9 +318,11 @@ for _label, _pat in patterns.items():
 del patterns
 
 
+NAMED_PLACE_ENTS = {"GPE", "FAC", "LOC"}
+
 def placemaker(span: Span) -> NamedPlace | Place:
     """Generates a NamedPlace or Place object from a Span."""
-    if span.root.ent_type_ == "GPE":
+    if span.root.ent_type_ in NAMED_PLACE_ENTS:
         return NamedPlace.parse_obj({"value": [str(span.root)]})
     return Place.parse_obj({"value": [str(t) for t in span]})
 
@@ -321,6 +331,7 @@ def _get_prep_args(span: Span) -> dict[str, NamedPlace | Place]:
     root = span.root
     subj = None
     for ancestor in reversed(list(root.ancestors)):
+        print(ancestor)
         if ancestor.pos_ in NOUN_POS:
             subj = _get_noun_chunk(ancestor)
             break
@@ -455,15 +466,15 @@ def _get_route_args(span: Span) -> Dict[str, Any]:
     }
 
 
-def parse_default(span: Span) -> SpRelCoveredBy | NamedPlace | Place | None:
+def parse_default(span: Span) -> SpRelCoveredBy | NamedPlace | Place:
     """Parse the default case, where the span is a noun chunk."""
     noun_chunk = _get_main_noun_chunk(span)
     if noun_chunk:
         root_noun = noun_chunk.root
         in_obj = None
-        if root_noun.ent_type_ != "GPE":
+        if root_noun.ent_type_ == "GPE":
             for child in noun_chunk.root.children:
-                if child.ent_type_ == "GPE" and child.pos_ == "PROPN":
+                if child.ent_type_ == "GPE":
                     in_obj = child
                     break
             if in_obj:
@@ -475,7 +486,9 @@ def parse_default(span: Span) -> SpRelCoveredBy | NamedPlace | Place | None:
                     }
                 )
         return placemaker(noun_chunk)
-    return None
+    else:
+        return Place(value=[str(tok) for tok in span])
+
 
 
 # pylint: disable=too-many-branches,too-many-locals
@@ -491,14 +504,8 @@ def parse(text: str) -> ParsedQuery:
     value: Optional[QueryIntent] = None
     for span in doc.spans["cosmos"]:
         label = doc.vocab.strings[span.label]
-        if label == "IN":
-            value = SpRelCoveredBy.parse_obj(_get_prep_args(span))
-        elif label == "NOT_IN":
-            value = SpRelDisjoint.parse_obj(_get_prep_args(span))
-        elif label == "NEAR":
-            value = SpRelNear.parse_obj(_get_prep_args(span))
-        elif label == "NOT_NEAR":
-            value = SpRelNotNear.parse_obj(_get_prep_args(span))
+        if label == "ROUTE":
+            value = Route.parse_obj(_get_route_args(span))
         elif label == "WITHIN_DIST_OF":
             value = SpRelWithinDistOf.parse_obj(_get_within_dist_args(span))
         elif label == "OUTSIDE_DIST_OF":
@@ -507,12 +514,18 @@ def parse(text: str) -> ParsedQuery:
             value = SpRelWithinTimeOf.parse_obj(_get_within_time_args(span))
         elif label == "OUTSIDE_TIME_OF":
             value = SpRelOutsideTimeOf.parse_obj(_get_within_time_args(span))
-        elif label == "BUFFER":
-            value = Buffer.parse_obj(_get_buffer_dist_args(span))
         elif label == "ISOCHRONE":
             value = Isochrone.parse_obj(_get_buffer_time_args(span))
-        elif label == "ROUTE":
-            value = Route.parse_obj(_get_route_args(span))
+        elif label == "BUFFER":
+            value = Buffer.parse_obj(_get_buffer_dist_args(span))
+        elif label == "IN":
+            value = SpRelCoveredBy.parse_obj(_get_prep_args(span))
+        elif label == "NOT_IN":
+            value = SpRelDisjoint.parse_obj(_get_prep_args(span))
+        elif label == "NEAR":
+            value = SpRelNear.parse_obj(_get_prep_args(span))
+        elif label == "NOT_NEAR":
+            value = SpRelNotNear.parse_obj(_get_prep_args(span))
         else:
             raise QueryParseError(f"Unknown label {label}")
     if value is None:

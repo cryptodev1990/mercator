@@ -51,6 +51,14 @@ PLACE_STRING_SIMILARITY = 0.2
 NAMED_PLACE_STRING_SIMILARITY = 0.2
 
 
+class EvalError(Exception):
+    """Error evaluating a query."""
+
+    def __init__(self, message: str, query: ParsedQuery) -> None:
+        """Initialize."""
+        super().__init__(message)
+        self.query = query
+
 def _in_bbox(
     col: ColumnElement,
     bbox: BBox,
@@ -97,7 +105,7 @@ def _(
     bbox: Optional[BBox] = None,
     cols: Optional[List[ColumnElement]] = None,
     limit: Optional[int] = None,
-    offset: int = 0,
+    offset: int = 0
 ) -> Select:
     """SQL query for Place.
 
@@ -108,7 +116,11 @@ def _(
     stmt = _select_osm(bbox=bbox, cols=cols).where(
         or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
             func.similarity(query, osm_tbl.c.tags_text) > PLACE_STRING_SIMILARITY)
-    ).limit(limit=limit).offset(offset=offset)
+    ).offset(offset)
+    if limit:
+        stmt = stmt.limit(limit)
+    if bbox:
+        stmt = stmt.where(_in_bbox(osm_tbl.c.geom, bbox))
     return stmt
 
 
@@ -130,6 +142,8 @@ def named_place_lookup_db(
         .order_by(func.ts_rank_cd(osm_tbl.c.fts, func.plainto_tsquery(query), 1).desc())
         .limit(1)
     )
+    if bbox:
+        stmt = stmt.where(_in_bbox(osm_tbl.c.geom, bbox))
     return stmt
 
 
@@ -333,8 +347,9 @@ def _get_isochrone(
 ) -> Tuple[Feature, Tuple[Latitude, Longitude]]:
     _check_graph_hopper()
     obj = _geocode(query, bbox=bbox)
+    print(obj)
     if not obj:
-        raise ValueError("Could not geo-locate the named place")
+        raise EvalError(f"Could not geo-locate named place: {query}", ParsedQuery)
     point: Dict[str, float] = obj["point"]
     res = cast(GraphHopper, graph_hopper).isochrone(
         (point["lat"], point["lng"]), int(seconds), profile="car"
@@ -514,6 +529,7 @@ async def eval_query(
         return await eval_outside_time_of(expr, bbox=bbox, conn=conn, offset=offset)
     if isinstance(expr, Route):
         return await eval_route(expr, bbox=bbox)
+    print(type(expr))
     stmt = _feature_coll_sql(to_sql(expr, bbox=bbox, limit=limit, offset=offset))
     res = await conn.execute(stmt)
     features = [r.feature for r in res]
