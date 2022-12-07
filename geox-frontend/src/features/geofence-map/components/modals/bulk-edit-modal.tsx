@@ -13,27 +13,52 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Properties } from "@turf/helpers";
-
+import _ from "lodash";
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+    updateHeader: (rowIndex: number, columnId: string, value: string) => void;
   }
 }
 
 // Give our default column cell renderer editing superpowers!
 const defaultColumn: Partial<ColumnDef<Properties>> = {
   cell: ({ getValue, row: { index }, column: { id }, table }) => {
+    console.log("i am in cell");
+
     const initialValue = getValue();
-    // We need to keep and update the state of the cell normally
     /* eslint-disable */
     const [value, setValue] = useState(initialValue);
-
-    // When the input is blurred, we'll call our table meta's updateData function
     const onBlur = () => {
       table.options.meta?.updateData(index, id, value);
     };
 
-    // If the initialValue is changed external, sync it up with our state
+    /* eslint-disable */
+    useEffect(() => {
+      setValue(initialValue);
+    }, [initialValue]);
+
+    return (
+      <input
+        value={value as string}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={onBlur}
+      />
+    );
+  },
+
+  header: (prop) => {
+    const initialValue = prop.column.id;
+    /* eslint-disable */
+    const [value, setValue] = useState(initialValue);
+    const onBlur = () => {
+      prop.table.options.meta?.updateHeader(
+        prop.header.index,
+        prop.header.id,
+        value
+      );
+    };
+
     /* eslint-disable */
     useEffect(() => {
       setValue(initialValue);
@@ -53,26 +78,27 @@ const BulkEditModal = () => {
   const { modal, closeModal } = useUiModals();
   const { multiSelectedShapes } = useSelectedShapes();
 
-  console.log("multiSelectedShapes", multiSelectedShapes);
   const [data, setData] = React.useState(() =>
     multiSelectedShapes.map((shape) => shape.properties)
   );
 
+  const [tableColumns, setTableColumns] = useState([
+    "NAMELSAD",
+    "LSAD",
+    "MEMI",
+    "ALAND",
+    "GEOID",
+    "MTFCC",
+    "AWATER",
+    "CBSAFP",
+    "INTPTLAT",
+  ]);
+
   const columnHelper = createColumnHelper<Properties>();
 
-  const columns = [
-    columnHelper.accessor("NAMELSAD", {
-      header: () => "Name",
-    }),
-    columnHelper.accessor("LSAD", {}),
-    columnHelper.accessor("MEMI", {}),
-    columnHelper.accessor("ALAND", {}),
-    columnHelper.accessor("GEOID", {}),
-    columnHelper.accessor("MTFCC", {}),
-    columnHelper.accessor("AWATER", {}),
-    columnHelper.accessor("CBSAFP", {}),
-    columnHelper.accessor("INTPTLAT", {}),
-  ];
+  const columns = tableColumns.map((column) =>
+    columnHelper.accessor(column, {})
+  );
 
   const table = useReactTable({
     data: data,
@@ -82,6 +108,7 @@ const BulkEditModal = () => {
     meta: {
       updateData: (rowIndex, columnId, value) => {
         setData((old) => {
+          console.log("data it is", old);
           return old.map((row, index) => {
             if (index === rowIndex) {
               return {
@@ -90,6 +117,18 @@ const BulkEditModal = () => {
               };
             }
             return row;
+          });
+        });
+      },
+      updateHeader: (rowIndex: number, columnId: string, value: string) => {
+        setData((old) => {
+          return old.map((row, index) => {
+            const temp = row && row[columnId];
+            const newObj = _.omit(row, columnId);
+            return {
+              ...newObj,
+              [value]: temp,
+            };
           });
         });
       },
@@ -111,46 +150,56 @@ const BulkEditModal = () => {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all p-4">
-                <table className="border-collapse border border-slate-500">
-                  <thead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <tr key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <th
-                            className="border border-slate-600 text-black"
-                            key={header.id}
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </th>
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody>
-                    {table.getRowModel().rows.map((row) => {
-                      return (
-                        <tr key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <td
-                              className="border border-slate-700 text-black"
-                              key={cell.id}
+                <div>
+                  <Dialog.Title
+                    as="h1"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Bulk Edit Updte
+                  </Dialog.Title>
+                </div>
+                <div>
+                  <table className="border-collapse border border-slate-500">
+                    <thead>
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => (
+                            <th
+                              className="border border-slate-600 text-black"
+                              key={header.id}
                             >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </th>
                           ))}
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      ))}
+                    </thead>
+                    <tbody>
+                      {table.getRowModel().rows.map((row) => {
+                        return (
+                          <tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                              <td
+                                className="border border-slate-700 text-black"
+                                key={cell.id}
+                              >
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
@@ -165,6 +214,18 @@ const BulkEditModal = () => {
                     onClick={() => console.log("data", data)}
                   >
                     Save
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    onClick={() => {
+                      // add new column to tableColumns using setTableColumns
+                      setTableColumns((old) => {
+                        return [...old, "new"];
+                      });
+                    }}
+                  >
+                    Add Column
                   </button>
                 </div>
               </Dialog.Panel>
