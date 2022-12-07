@@ -4,25 +4,38 @@
 # set the default shell (to be safe)
 set shell := ["zsh", "-uc"]
 
+venv := 'env'
+source_venv := 'source ' + venv + '/bin/activate'
+
 git_commit_hash := `git rev-parse HEAD`
 
 default:
 	@just --list
 
 test +ARGS='--cov=app test':
-	poetry run pytest {{ ARGS }}
+	#!/bin/zsh
+	{{ source_venv }}
+	pytest {{ ARGS }}
 
 run:
-	poetry run ./start.sh
+	#!/bin/zsh
+	{{ source_venv }}
+	./start.sh
 
 lint:
-	poetry run mypy .
-	poetry run pylint app test
+	#!/bin/zsh
+	{{ source_venv }}
+	python -m mypy .
+	python -m pylintpython -m
 
 format:
-	poetry run isort --quiet .
-	poetry run black .
+	#!/bin/zsh
+	{{ source_venv }}
+	set -x
+	python -m isort --quiet .
+	python -m black .
 
+# Create and update a new local OSM database
 db-local db input_file *args:
 	createdb {{ db }}
 	psql {{ db }} -c "CREATE EXTENSION postgis;"
@@ -33,3 +46,15 @@ db-local db input_file *args:
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/43_create_function_to_geojson_feature_collection.sql
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/50_trgm.sql
 	psql {{ db }} -f ./osm-docker/docker-entrypoint-initdb.d/90_analyze.sql
+
+# Create and update a new local OSM database
+install-deps:
+	#!/bin/zsh
+	set -e
+	if [[ ! -d .venv ]]; then
+		python3 -m venv {{ venv }}
+	fi
+	{{ source_venv }}
+	pip install --upgrade pip wheel
+	pip install -r requirements.txt
+	pip install -r requirements-dev.txt
