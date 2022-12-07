@@ -18,6 +18,7 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
     updateHeader: (rowIndex: number, columnId: string, value: string) => void;
+    deleteColumn: (columnId: string) => void;
   }
 }
 
@@ -65,11 +66,19 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
     }, [initialValue]);
 
     return (
-      <input
-        value={value as string}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={onBlur}
-      />
+      <div>
+        <input
+          value={value as string}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={onBlur}
+        />
+        <button
+          type="button"
+          onClick={() => prop.table.options.meta?.deleteColumn(prop.header.id)}
+        >
+          Delete
+        </button>
+      </div>
     );
   },
 };
@@ -108,7 +117,6 @@ const BulkEditModal = () => {
     meta: {
       updateData: (rowIndex, columnId, value) => {
         setData((old) => {
-          console.log("data it is", old);
           return old.map((row, index) => {
             if (index === rowIndex) {
               return {
@@ -121,16 +129,25 @@ const BulkEditModal = () => {
         });
       },
       updateHeader: (rowIndex: number, columnId: string, value: string) => {
-        setData((old) => {
-          return old.map((row, index) => {
-            const temp = row && row[columnId];
-            const newObj = _.omit(row, columnId);
-            return {
-              ...newObj,
-              [value]: temp,
-            };
-          });
+        const newData = data.map((row) => {
+          const temp = row && row[columnId];
+          console.log("temp", temp);
+          const newObj = _.omit(row, columnId);
+          return {
+            ...newObj,
+            [value]: temp,
+          };
         });
+
+        setData(newData);
+      },
+      deleteColumn: (columnId: string) => {
+        const newData = data.map((row) => {
+          const newObj = _.omit(row, columnId);
+          return newObj;
+        });
+        setTableColumns(tableColumns.filter((column) => column !== columnId));
+        setData(newData);
       },
     },
   });
