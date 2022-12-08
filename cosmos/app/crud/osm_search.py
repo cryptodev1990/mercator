@@ -47,9 +47,6 @@ graph_hopper = get_graph_hopper()
 
 logger = logging.getLogger(__name__)
 
-PLACE_STRING_SIMILARITY = 0.2
-NAMED_PLACE_STRING_SIMILARITY = 0.2
-
 
 class EvalError(Exception):
     """Error evaluating a query."""
@@ -81,7 +78,7 @@ def _select_osm(
         cols = [
             osm_tbl.c.osm_id,
             osm_tbl.c.osm_type,
-            osm_tbl.c.tags,
+            osm_tbl.c.tags
         ]
     if include_geom:
         cols.append(osm_tbl.c.geom)
@@ -114,8 +111,7 @@ def _(
     """
     query = " ".join(arg.value)
     stmt = _select_osm(bbox=bbox, cols=cols).where(
-        or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
-            func.similarity(query, osm_tbl.c.tags_text) > PLACE_STRING_SIMILARITY)
+        osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query))
     ).offset(offset)
     if limit:
         stmt = stmt.limit(limit)
@@ -137,8 +133,7 @@ def named_place_lookup_db(
     """
     stmt = (
         _select_osm(bbox=bbox, cols=cols)
-        .where(or_(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)),
-                   func.similarity(query, osm_tbl.c.tags_text) > NAMED_PLACE_STRING_SIMILARITY))
+        .where(osm_tbl.c.fts.op("@@")(func.plainto_tsquery(query)))
         .order_by(func.ts_rank_cd(osm_tbl.c.fts, func.plainto_tsquery(query), 1).desc())
         .limit(1)
     )
@@ -304,7 +299,7 @@ def _(
 def _(
     arg: Buffer, bbox: Optional[BBox] = None, limit: Optional[int] = None, offset: int = 0
 ) -> Select:
-    obj = to_sql(arg.object, bbox=bbox, cols=[], limit=limit).cte()
+    obj = to_sql(arg.object, bbox=bbox, limit=limit).cte()
     return (
         select(
             [

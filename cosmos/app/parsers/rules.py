@@ -331,7 +331,6 @@ def _get_prep_args(span: Span) -> dict[str, NamedPlace | Place]:
     root = span.root
     subj = None
     for ancestor in reversed(list(root.ancestors)):
-        print(ancestor)
         if ancestor.pos_ in NOUN_POS:
             subj = _get_noun_chunk(ancestor)
             break
@@ -502,32 +501,35 @@ def parse(text: str) -> ParsedQuery:
     # retrieve spans
     doc.spans["cosmos"] = filter_spans(sorted(doc.spans["cosmos"], key=lambda x: (x.start, -x.end)))
     value: Optional[QueryIntent] = None
-    for span in doc.spans["cosmos"]:
-        label = doc.vocab.strings[span.label]
-        if label == "ROUTE":
-            value = Route.parse_obj(_get_route_args(span))
-        elif label == "WITHIN_DIST_OF":
-            value = SpRelWithinDistOf.parse_obj(_get_within_dist_args(span))
-        elif label == "OUTSIDE_DIST_OF":
-            value = SpRelOutsideDistOf.parse_obj(_get_within_dist_args(span))
-        elif label == "WITHIN_TIME_OF":
-            value = SpRelWithinTimeOf.parse_obj(_get_within_time_args(span))
-        elif label == "OUTSIDE_TIME_OF":
-            value = SpRelOutsideTimeOf.parse_obj(_get_within_time_args(span))
-        elif label == "ISOCHRONE":
-            value = Isochrone.parse_obj(_get_buffer_time_args(span))
-        elif label == "BUFFER":
-            value = Buffer.parse_obj(_get_buffer_dist_args(span))
-        elif label == "IN":
-            value = SpRelCoveredBy.parse_obj(_get_prep_args(span))
-        elif label == "NOT_IN":
-            value = SpRelDisjoint.parse_obj(_get_prep_args(span))
-        elif label == "NEAR":
-            value = SpRelNear.parse_obj(_get_prep_args(span))
-        elif label == "NOT_NEAR":
-            value = SpRelNotNear.parse_obj(_get_prep_args(span))
-        else:
-            raise QueryParseError(f"Unknown label {label}")
+    try:
+        for span in doc.spans["cosmos"]:
+            label = doc.vocab.strings[span.label]
+            if label == "ROUTE":
+                value = Route.parse_obj(_get_route_args(span))
+            elif label == "WITHIN_DIST_OF":
+                value = SpRelWithinDistOf.parse_obj(_get_within_dist_args(span))
+            elif label == "OUTSIDE_DIST_OF":
+                value = SpRelOutsideDistOf.parse_obj(_get_within_dist_args(span))
+            elif label == "WITHIN_TIME_OF":
+                value = SpRelWithinTimeOf.parse_obj(_get_within_time_args(span))
+            elif label == "OUTSIDE_TIME_OF":
+                value = SpRelOutsideTimeOf.parse_obj(_get_within_time_args(span))
+            elif label == "ISOCHRONE":
+                value = Isochrone.parse_obj(_get_buffer_time_args(span))
+            elif label == "BUFFER":
+                value = Buffer.parse_obj(_get_buffer_dist_args(span))
+            elif label == "IN":
+                value = SpRelCoveredBy.parse_obj(_get_prep_args(span))
+            elif label == "NOT_IN":
+                value = SpRelDisjoint.parse_obj(_get_prep_args(span))
+            elif label == "NEAR":
+                value = SpRelNear.parse_obj(_get_prep_args(span))
+            elif label == "NOT_NEAR":
+                value = SpRelNotNear.parse_obj(_get_prep_args(span))
+            else:
+                raise QueryParseError(f"Unknown label {label}")
+    except Exception:
+        logger.error("Error parsing query: %s", text)
     if value is None:
         value = parse_default(sent)
     if value is None:
