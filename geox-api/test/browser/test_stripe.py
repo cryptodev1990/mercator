@@ -1,5 +1,5 @@
 """
-E2E test for the index (/) page.
+E2E test for Stripe payment on signup.
 """
 
 import pytest
@@ -12,8 +12,6 @@ def test_index_page_title(page):
     page.click('.relative > .relative > .space-x-10 > div > .hover\\:underline')
     assert page.url == 'http://localhost:3000/subscribe'
     assert page.title() == 'Mercator'
-
-    # assert the text is on the page
 
     page.wait_for_selector('#checkout-and-portal-button')
     page.click('#checkout-and-portal-button')
