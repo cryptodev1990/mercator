@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../store/store";
 import { HYDRATE } from "next-redux-wrapper";
 
-type Viewport = {
+export type Viewport = {
   latitude: number;
   longitude: number;
   zoom: number;
@@ -10,10 +10,18 @@ type Viewport = {
   pitch?: number;
 };
 
+export type LayerStyle = {
+  id: string;
+  type: string;
+  lineThicknessPx: number;
+  opacity: number;
+  paint: number[];
+};
+
 // Type for our state
 export interface GeoMapState {
   viewport: Viewport;
-  layerStyles: any[];
+  layerStyles: LayerStyle[];
 }
 
 // Initial state
@@ -42,10 +50,34 @@ export const geoMapSlice = createSlice({
     setViewport(state, action: { payload: Viewport }) {
       state.viewport = action.payload;
     },
+    addLayerStyle(state, action: { payload: LayerStyle }) {
+      state.layerStyles = state.layerStyles.concat(action.payload);
+    },
+    removeLayerStyle(state, action: { payload: string }) {
+      state.layerStyles = state.layerStyles.filter(
+        (style) => style.id !== action.payload
+      );
+    },
+    updateStyle(
+      state,
+      action: {
+        payload: {
+          id: string;
+          lineThicknessPx?: number;
+          paint?: number[];
+          opacity?: number;
+        };
+      }
+    ) {
+      state.layerStyles = state.layerStyles.map((style) =>
+        style.id === action.payload.id ? { ...style, ...action.payload } : style
+      );
+    },
   },
 });
 
-export const { setViewport } = geoMapSlice.actions;
+export const { setViewport, addLayerStyle, removeLayerStyle, updateStyle } =
+  geoMapSlice.actions;
 
 export const selectGeoMapState = (state: AppState) => state.geoMap;
 

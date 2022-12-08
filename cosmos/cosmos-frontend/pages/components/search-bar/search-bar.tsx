@@ -1,12 +1,12 @@
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import {
-  appendSearchResult,
   selectSearchState,
   setInputText,
 } from "../../../src/search/search-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { useOsmQueryGetQuery } from "src/store/search-api";
+import { addNewLayer } from "src/lib/add-new-layer";
 
 const SearchBar = () => {
   const focusRef = useRef<HTMLInputElement>(null);
@@ -17,9 +17,10 @@ const SearchBar = () => {
   const { data, isSuccess, isLoading } = useOsmQueryGetQuery(
     {
       query: inputText || "",
+      limit: 10000,
     },
     {
-      skip: inputText?.length === 0 ?? true,
+      skip: (inputText?.length ?? false) > 0 ? false : true,
     }
   );
   const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const SearchBar = () => {
   useEffect(() => {
     // if the query is successful, clear the query and append the results
     if (isSuccess) {
-      dispatch(appendSearchResult(data));
+      addNewLayer(data, dispatch);
     }
   }, [isSuccess, data, dispatch]);
 

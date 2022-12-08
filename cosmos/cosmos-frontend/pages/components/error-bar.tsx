@@ -19,7 +19,7 @@ const ErrorBar = () => {
       query: inputText || "",
     },
     {
-      skip: inputText?.length === 0 ?? true,
+      skip: inputText?.length === 0 ? true : false,
     }
   );
 
