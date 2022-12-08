@@ -25,8 +25,6 @@ declare module "@tanstack/react-table" {
 // Give our default column cell renderer editing superpowers!
 const defaultColumn: Partial<ColumnDef<Properties>> = {
   cell: ({ getValue, row: { index }, column: { id }, table }) => {
-    console.log("i am in cell");
-
     const initialValue = getValue();
     /* eslint-disable */
     const [value, setValue] = useState(initialValue);
@@ -55,7 +53,7 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
     const onBlur = () => {
       prop.table.options.meta?.updateHeader(
         prop.header.index,
-        prop.header.id,
+        prop.column.id,
         value
       );
     };
@@ -74,9 +72,15 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
         />
         <button
           type="button"
-          onClick={() => prop.table.options.meta?.deleteColumn(prop.header.id)}
+          onClick={() => {
+            prop.table.options.meta?.updateHeader(
+              prop.header.index,
+              prop.column.id,
+              value
+            );
+          }}
         >
-          Delete
+          update
         </button>
       </div>
     );
@@ -116,28 +120,30 @@ const BulkEditModal = () => {
     getCoreRowModel: getCoreRowModel(),
     meta: {
       updateData: (rowIndex, columnId, value) => {
-        setData((old) => {
-          return old.map((row, index) => {
-            if (index === rowIndex) {
-              return {
-                ...old[rowIndex]!,
-                [columnId]: value,
-              };
-            }
-            return row;
-          });
+        const newData = data.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...data[rowIndex]!,
+              [columnId]: value,
+            };
+          }
+          return row;
         });
+        setData(newData);
       },
-      updateHeader: (rowIndex: number, columnId: string, value: string) => {
-        const newData = data.map((row) => {
-          const temp = row && row[columnId];
-          console.log("temp", temp);
+      updateHeader: (index: number, columnId: string, value: string) => {
+        const newData = data.map((row: any) => {
+          const temp = row[columnId];
           const newObj = _.omit(row, columnId);
           return {
             ...newObj,
             [value]: temp,
           };
         });
+        const newTableColumns = [...tableColumns];
+        newTableColumns[index] = value;
+
+        setTableColumns(newTableColumns);
 
         setData(newData);
       },
@@ -237,8 +243,17 @@ const BulkEditModal = () => {
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                     onClick={() => {
                       // add new column to tableColumns using setTableColumns
+                      const headerName = tableColumns.length + 1;
                       setTableColumns((old) => {
-                        return [...old, "new"];
+                        return [...old, `Column ${headerName}`];
+                      });
+                      setData((old) => {
+                        return old.map((row) => {
+                          return {
+                            ...row,
+                            [`Column ${headerName}`]: "",
+                          };
+                        });
                       });
                     }}
                   >
