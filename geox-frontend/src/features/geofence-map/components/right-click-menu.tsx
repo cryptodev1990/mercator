@@ -143,6 +143,13 @@ export const RightClickMenu = () => {
       case "Bulk Edit":
         openModal(UIModalEnum.BulkEditModal);
         return;
+      case "Bulk Delete":
+        deleteShapes(multiSelectedShapesUuids, {
+          onSuccess: () => {
+            cleanup();
+          },
+        });
+        return;
       default:
         return () => {
           setRecentActivity(recentActivity + 1);
