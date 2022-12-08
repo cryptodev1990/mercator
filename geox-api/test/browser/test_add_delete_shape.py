@@ -4,6 +4,7 @@ E2E test for adding a shape.
 
 import pytest
 import time
+import os
 
 username = os.getenv('PLAYWRIGHT_USERNAME')
 password = os.getenv('PLAYWRIGHT_PASSWORD')
