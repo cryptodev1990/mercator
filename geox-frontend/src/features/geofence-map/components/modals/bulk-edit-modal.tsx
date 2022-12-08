@@ -73,14 +73,10 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
         <button
           type="button"
           onClick={() => {
-            prop.table.options.meta?.updateHeader(
-              prop.header.index,
-              prop.column.id,
-              value
-            );
+            prop.table.options.meta?.deleteColumn(prop.column.id);
           }}
         >
-          update
+          Delete
         </button>
       </div>
     );
