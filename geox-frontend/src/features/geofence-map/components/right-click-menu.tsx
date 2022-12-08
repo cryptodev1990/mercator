@@ -11,6 +11,7 @@ export const RightClickMenu = () => {
   const [xPos, setXPos] = useState<string | null>(null);
   const [yPos, setYPos] = useState<string | null>(null);
   const [recentActivity, setRecentActivity] = useState<number>(0);
+  const [options, setMenuOptions] = useState<string[]>([]);
   // read selection from context
   const {
     setShapeForPropertyEdit,
@@ -24,6 +25,7 @@ export const RightClickMenu = () => {
     numSelected,
     isSelected,
     selectedUuids,
+    multiSelectedShapesUuids,
     clearSelectedShapeUuids,
     clearMultiSelectedShapeUuids,
   } = useSelectedShapes();
@@ -52,6 +54,25 @@ export const RightClickMenu = () => {
 
   const listenerFunc = (event: MouseEvent) => {
     event.preventDefault();
+
+    if (!multiSelectedShapesUuids.length && !selectedUuids.length) {
+      setMenuOptions([
+        "Draw",
+        editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
+      ]);
+    }
+    if (!selectedUuids.length && event.metaKey) {
+      setMenuOptions(["Bulk Delete", "Bulk Edit"]);
+    }
+    if (selectedUuids.length && !event.metaKey) {
+      setMenuOptions([
+        "Edit Metadata",
+        "Copy as GeoJSON",
+        "Delete (Backspace)",
+        "Unselect (Esc)",
+      ]);
+    }
+
     const xPos = event.pageX - 10 + "px";
     const yPos = event.pageY - 5 + "px";
     setXPos(xPos);
@@ -68,7 +89,7 @@ export const RightClickMenu = () => {
         ref.removeEventListener("contextmenu", listenerFunc, false);
       };
     }
-  }, [mapRef]);
+  }, [mapRef, multiSelectedShapesUuids.length, selectedUuids.length]);
 
   if (!xPos || !yPos) {
     return null;
@@ -127,24 +148,6 @@ export const RightClickMenu = () => {
           setRecentActivity(recentActivity + 1);
         };
     }
-  }
-
-  let options;
-  if (numSelected === 0) {
-    options = [
-      "Draw",
-      editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
-    ];
-  } else if (numSelected === 1) {
-    options = [
-      "Edit Metadata",
-      "Copy as GeoJSON",
-      "Delete (Backspace)",
-      "Unselect (Esc)",
-      "Bulk Edit",
-    ];
-  } else {
-    options = [""];
   }
 
   return (
