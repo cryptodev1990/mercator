@@ -49,7 +49,13 @@ class TravelMethod(str, Enum):
 
 
 class Place(_LocalModel):
-    """Represents a place."""
+    """Represents a place.
+
+    Examples:
+
+    - coffee shops
+
+    """
 
     # NOTE: the Literal[...] = Field(...) is redundant, but it seems to be needed to get
     # Field(..., discriminator=...) to work.
@@ -61,7 +67,15 @@ class Place(_LocalModel):
 
 
 class NamedPlace(_LocalModel):
-    """Named place."""
+    """Named place.
+
+    Examples:
+
+    - "Los Angeles"
+    - "San Francisco"
+    - "Salesforce Tower"
+
+    """
 
     type: Literal["named_place"] = Field("named_place", const=True)
     value: List[str]
@@ -76,7 +90,14 @@ class _SpatialRelationship(_LocalModel):
 
 
 class SpRelCoveredBy(_SpatialRelationship):
-    """Spatial relationship of X is covered by Y."""
+    """Spatial relationship of X is covered by Y.
+
+    Examples:
+
+    - "Coffee shops in San Francisco"
+    - "[place or named place] in [place or named place]"
+
+    """
 
     type: Literal["covered_by"] = Field("covered_by", const=True)
 
@@ -85,7 +106,14 @@ class SpRelCoveredBy(_SpatialRelationship):
 
 
 class SpRelDisjoint(_SpatialRelationship):
-    """Spatial relationship of X disjoint Y."""
+    """Spatial relationship of X disjoint Y.
+
+    Examples:
+
+    - "Coffee shops not in San Francisco"
+    - "[place or named place] not in [place or named place]"
+
+    """
 
     type: Literal["disjoint"] = Field("disjoint", const=True)
 
@@ -94,7 +122,17 @@ class SpRelDisjoint(_SpatialRelationship):
 
 
 class SpRelWithinDistOf(_SpatialRelationship):
-    """Spatial relationship of X within D distance of Y."""
+    """Spatial relationship of X within D distance of Y.
+
+
+    Examples:
+
+    - "Coffee shops within 20 miles of San Francisco"
+    - "[place or named place] within [distance] of [place or named place]"
+
+    Allowed distances are meters, miles, kilometers, yards, and feet.
+
+    """
 
     type: Literal["within_dist_of"] = Field("within_dist_of", const=True)
     distance: float = Field(..., ge=0, description="Distance in meters")
@@ -103,8 +141,8 @@ class SpRelWithinDistOf(_SpatialRelationship):
         return " ".join(
             [
                 str(self.subject),
-                "LESS THAN",
-                str(Quantity(self.distance, "meters")),
+                "WITHIN",
+                str(Quantity(self.distance, "meters").to("miles")),
                 "FROM",
                 str(self.object),
             ]
@@ -112,7 +150,16 @@ class SpRelWithinDistOf(_SpatialRelationship):
 
 
 class SpRelOutsideDistOf(_SpatialRelationship):
-    """Spatial relationship of X more than D distance of Y."""
+    """Spatial relationship of X more than D distance of Y.
+
+    Examples:
+
+    - "Coffee shops within 20 miles of San Francisco"
+    - "[place or named place] outside of [distance] of [place or named place]"
+
+    Allowed distances are meters, miles, kilometers, yards, and feet.
+
+    """
 
     type: Literal["outside_dist_of"] = Field("outside_dist_of", const=True)
     distance: float = Field(..., ge=0, description="Distance in meters")
@@ -121,9 +168,9 @@ class SpRelOutsideDistOf(_SpatialRelationship):
         return " ".join(
             [
                 str(self.subject),
-                "MORE THAN",
-                str(Quantity(self.distance, "meters")),
-                "FROM",
+                "NOT WITHIN",
+                str(Quantity(self.distance, "meters").to("miles")),
+                "OF",
                 str(self.object),
             ]
         )
@@ -134,7 +181,16 @@ NEAR_DISTANCE = 1609.344
 
 
 class SpRelNear(_SpatialRelationship):
-    """Spatial relationship of X near Y."""
+    """Spatial relationship of X near Y.
+
+    Examples:
+
+    - "Coffee shops near parks"
+    - "[place or named place] near [place or named place]"
+
+    The distance at which two objects are near is defined by the cosntant `NEAR_DISTANCE`.
+
+    """
 
     type: Literal["near"] = Field("near", const=True)
     distance: float = Field(NEAR_DISTANCE, ge=0, description="Distance in meters")
@@ -144,7 +200,14 @@ class SpRelNear(_SpatialRelationship):
 
 
 class SpRelNotNear(_SpatialRelationship):
-    """Spatial relationship of X not near Y."""
+    """Spatial relationship of X not near Y.
+
+    Examples:
+
+    - "Coffee shops not near parks"
+    - "[place or named place] not near [place or named place]"
+
+    """
 
     type: Literal["not_near"] = Field("not_near", const=True)
     distance: float = Field(NEAR_DISTANCE, ge=0, description="Distance in meters")
@@ -154,7 +217,14 @@ class SpRelNotNear(_SpatialRelationship):
 
 
 class SpRelWithinTimeOf(_SpatialRelationship):
-    """Spatial relationship of X within D time of Y."""
+    """Spatial relationship of X within D time of Y.
+
+    Examples:
+
+    - "Coffee shops within 20 minutes of the Salesforce Tower"
+    - "[place or named place] within [time] of [place or named place]"
+
+    """
 
     type: Literal["within_time_of"] = Field("within_time_of", const=True)
     duration: timedelta
@@ -162,12 +232,19 @@ class SpRelWithinTimeOf(_SpatialRelationship):
 
     def __str__(self) -> str:
         return " ".join(
-            [str(self.subject), "LESS THAN", str(self.duration), "FROM", str(self.object)]
+            [str(self.subject), "WITHIN", str(self.duration), "OF", str(self.object)]
         )
 
 
 class SpRelOutsideTimeOf(_SpatialRelationship):
-    """Spatial relationship of X greater than D time from Y."""
+    """Spatial relationship of X greater than D time from Y.
+
+    Examples:
+
+    - "Coffee shops not within 20 minutes of the Salesforce Tower"
+    - "[place or named place] not within [time] of [place or named place]"
+
+    """
 
     type: Literal["outside_time_of"] = Field("outside_time_of", const=True)
     duration: timedelta
@@ -188,7 +265,14 @@ class SpRelOutsideTimeOf(_SpatialRelationship):
 
 
 class Buffer(_LocalModel):
-    """Buffer around object."""
+    """Buffer around object.
+
+    Examples:
+
+    - "Buffer of 20 miles around the Salesforce Tower"
+    - "Buffer of [time] round [place or named place]"
+
+    """
 
     type: Literal["buffer"] = Field("buffer", const=True)
     object: Union[Place, NamedPlace]
@@ -201,7 +285,14 @@ class Buffer(_LocalModel):
 
 
 class Isochrone(_LocalModel):
-    """Isochrone around an object."""
+    """Isochrone around an object.
+
+    Examples:
+
+    - "Buffer of 20 minutes around the Salesforce Tower"
+    - "Buffer of [time] around [place or named place]"
+
+    """
 
     type: Literal["isochrone"] = Field("isochrone", const=True)
     object: Union[Place, NamedPlace]
@@ -212,12 +303,19 @@ class Isochrone(_LocalModel):
 
     def __str__(self) -> str:
         return " ".join(
-            ["ISOCHRONE OF", readable_duration(self.duration), "AROUND", str(self.object)]
+            ["BUFFER OF", readable_duration(self.duration), "AROUND", str(self.object)]
         )
 
 
 class Route(_LocalModel):
-    """Route between two places."""
+    """Route between two places.
+
+    Examples:
+
+    - "Route from San Francisco to San Jose"
+    - "Route from [named place] to [named place]"
+
+    """
 
     type: Literal["route"] = Field("route", const=True)
     start: NamedPlace

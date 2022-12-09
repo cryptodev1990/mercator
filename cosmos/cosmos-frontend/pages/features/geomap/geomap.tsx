@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 // @ts-ignore
 import DeckGL, { GeoJsonLayer, FlyToInterpolator } from "deck.gl";
 import StaticMap from "react-map-gl";
@@ -13,12 +13,13 @@ const SATELLITE = "mapbox://styles/mapbox/satellite-v9";
 
 const GeoMap = () => {
   const { searchResults } = useSelector(selectSearchState);
-  const { viewport } = useSelector(selectGeoMapState);
+  const { layerStyles, viewport } = useSelector(selectGeoMapState);
   const [localViewPort, setLocalViewPort] = useState(viewport);
   // deck.gl map with a GeoJsonLayer
   const dispatch = useDispatch();
 
   const [baseMap, setBaseMap] = useState(DARK);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setLocalViewPort({ ...viewport });
@@ -26,10 +27,20 @@ const GeoMap = () => {
 
   // After 500 ms of inactivity, set the global viewport to be the local viewport
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      dispatch(setViewport({ ...localViewPort }));
-    }, 500);
-    return () => clearTimeout(timeout);
+    if (
+      localViewPort.latitude !== viewport.latitude &&
+      localViewPort.longitude !== viewport.longitude &&
+      localViewPort.zoom !== viewport.zoom
+    ) {
+      timeoutRef.current = setTimeout(() => {
+        dispatch(setViewport({ ...localViewPort }));
+      }, 500);
+    }
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [localViewPort, dispatch]);
 
   useEffect(() => {
@@ -46,11 +57,10 @@ const GeoMap = () => {
           zoom: 12,
           // @ts-ignore
           transitionDuration: 1000,
-          transitionInterpolator: new FlyToInterpolator(),
         });
       }
     }
-  }, [searchResults, localViewPort]);
+  }, [searchResults]);
 
   if (!viewport || !viewport.zoom) {
     return null;
@@ -86,24 +96,34 @@ const GeoMap = () => {
           }}
           getTooltip={({ object }: any) =>
             object && object?.properties?.osm?.tags?.name
+              ? JSON.stringify(object?.properties)
+              : null
           }
-          layers={searchResults.map((x, i) => [
-            new GeoJsonLayer({
-              id: `geojson-layer-${i}`,
-              data: x.results,
-              getRadius: 100,
-              filled: true,
-              extruded: false,
-              stroked: true,
-              wireframe: true,
-              lineWidthMinPixels: 1,
-              radiusMinPixels: 1,
-              radiusMaxPixels: 1,
-              getFillColor: [255, 0, 0],
-              getLineColor: [255, 0, 0],
-              pickable: true,
-            }),
-          ])}
+          onHover={({ object }: any) => {
+            console.log(object);
+          }}
+          layers={searchResults.map((x, i) => {
+            const layerStyle = layerStyles[i];
+            return [
+              new GeoJsonLayer({
+                id: `geojson-layer-${i}-${layerStyle.id}`,
+                data: x.results,
+                pickingRadius: 5,
+                getRadius: layerStyle.lineThicknessPx,
+                getLineWidth: layerStyle.lineThicknessPx,
+                opacity: layerStyle.opacity,
+                filled: true,
+                extruded: false,
+                stroked: true,
+                wireframe: true,
+                radiusMinPixels: 3,
+                radiusMaxPixels: 3,
+                getFillColor: layerStyle.paint,
+                getLineColor: layerStyle.paint,
+                pickable: true,
+              }),
+            ];
+          })}
         >
           <StaticMap
             reuseMaps

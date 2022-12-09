@@ -7,6 +7,7 @@ const nab = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 const SUGGESTIONS = [
   "All the coffee shops in California",
+  "Benches in San Francisco",
   "Where does it rain fewer than six days out of the year?",
   "Where is the tallest mountain in California?",
   "What's a location that's within 100 miles of San Francisco and within 5 minutes of a freeway?",
@@ -41,7 +42,7 @@ const SearchSuggestions = () => {
       query: inputText || "",
     },
     {
-      skip: inputText?.length === 0 ?? true,
+      skip: (inputText?.length ?? false) > 0 ? false : true,
     }
   );
   const dispatch = useDispatch();

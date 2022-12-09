@@ -46,20 +46,21 @@ async def _get_query(
 
     This endpoint accepts a natural language query and returns a list of matching features.
 
-    It currently supports queries like:
+    It currently supports the following queries:
 
-    - "San Francisco"
-    - "Coffee shops"
-    - "Coffee shops in San Francisco"
-    - "Coffee shops not in San Francisco"
-    - "Restaurants near Lake Merritt"
-    - "Restaurants not near Lake Merritt"
-    - "Restaurants within 10 miles of Lake Merritt"
-    - "Restaurants more than 10 miles from Lake Merritt"
-    - "Draw an isochrone of 10 minutes around Lake Merritt"
-    - "Cafes within 10 minutes of Lake Merritt"
-    - "Cafes more than 10 minutes from Lake Merritt"
-    - "Route from Lake Merritt to the Ferry Building"
+    - named places: "San Francisco"
+    - places: "Coffee shops"
+    - X in Y: "Coffee shops in San Francisco"
+    - X not in Y: "Coffee shops not in San Francisco"
+    - X near Y: "Restaurants near Lake Merritt"
+    - X not near Y: "Restaurants not near Lake Merritt"
+    - X within distance of Y: "Restaurants within 10 miles of Lake Merritt"
+    - X not within distance of Y: "Restaurants more than 10 miles from Lake Merritt"
+    - X within time of Y: "Cafes within 10 minutes of Lake Merritt"
+    - X not within time of Y: "Cafes not within 10 minutes of Lake Merritt"
+    - Buffer of time around Y: "Buffer of 10 minutes around Lake Merritt"
+    - Buffer of distance around Y: "Buffer of 10 miles around Lake Merritt"
+    - Route from X to Y: "Route from Lake Merritt to the Ferry Building"
 
     """
     # unique identifier for this query

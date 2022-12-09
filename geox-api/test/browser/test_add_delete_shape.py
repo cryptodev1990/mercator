@@ -92,4 +92,3 @@ def test_index_page_title(page):
     # Look for "0 shapes in 1 folder"
     expect(locator).to_contain_text("0 shapes in 1 folder")
 
-    

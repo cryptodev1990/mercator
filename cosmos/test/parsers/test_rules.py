@@ -4,13 +4,12 @@ from typing import Any, List, Tuple
 import pytest
 from pint import Quantity
 
-from app.parsers.rules import (
+from app.parsers.intents import (
     Buffer,
     Isochrone,
     NamedPlace,
     Place,
     QueryIntent,
-    QueryParseError,
     Route,
     SpRelCoveredBy,
     SpRelDisjoint,
@@ -20,8 +19,8 @@ from app.parsers.rules import (
     SpRelOutsideTimeOf,
     SpRelWithinDistOf,
     SpRelWithinTimeOf,
-    parse,
 )
+from app.parsers.rules import parse,     QueryParseError
 
 examples: List[Tuple[str, QueryIntent]] = [
     ("Shops", Place(value=["Shops"])),
@@ -92,6 +91,10 @@ examples: List[Tuple[str, QueryIntent]] = [
     ),
     (
         "Route from Los Angeles to San Francisco",
+        Route(start=NamedPlace(value=["Los Angeles"]), end=NamedPlace(value=["San Francisco"])),
+    ),
+    (
+        "Route Los Angeles to San Francisco",
         Route(start=NamedPlace(value=["Los Angeles"]), end=NamedPlace(value=["San Francisco"])),
     ),
     (
@@ -167,6 +170,111 @@ examples: List[Tuple[str, QueryIntent]] = [
     ("camping site", Place(value=["camping", "site"])),
     ("light pole", Place(value=["light", "pole"])),
     ("Coastal camping sites", Place(value=["Coastal", "camping", "sites"])),
+    ("solar", Place(value=["solar"])),
+    ("wind mills", Place(value=["wind", "mills"])),
+    ("bike", Place(value=["bike"])),
+    # Fails - fire hydrant = "fire"
+    # ("fire hydrant", Place(value=["fire", "hydrant"])),
+    ("wind mills", Place(value=["wind", "mills"])),
+    ("windmills", Place(value=["windmills"])),
+    ("ethiopian", Place(value=["ethiopian"])),
+    ("power lines", Place(value=["power", "lines"])),
+    ("power stations", Place(value=["power", "stations"])),
+    ("ethiopian food", Place(value=["ethiopian", "food"])),
+    ("ethiopian cuisine", Place(value=["ethiopian", "cuisine"])),
+    ("train stations in sacramento",
+     SpRelCoveredBy(
+         subject=Place(value=["train", "stations"]),
+         object=NamedPlace(value=["sacramento"])
+     )),
+    ("trains in sacramento",
+     SpRelCoveredBy(
+         subject=Place(value=["trains"]),
+         object=NamedPlace(value=["sacramento"])
+     )),
+    # ("route from san francisco to los angeles",
+    #  Route(
+    #      start = NamedPlace(value=["san francisco"]),
+    #      end = NamedPlace(value=["los angeles"]),
+    #      profile = TravelMethod.drive
+    #      )),
+    # ("route san francisco to los angeles",
+    #  Route(
+    #      start = NamedPlace(value=["san francisco"]),
+    #      end = NamedPlace(value=["los angeles"]),
+    #      profile = TravelMethod.drive
+    #      )),
+    # ("san francisco to los angeles",
+    #  Route(
+    #      start = NamedPlace(value=["san francisco"]),
+    #      end = NamedPlace(value=["los angeles"]),
+    #      profile = TravelMethod.drive
+    #      )),
+    # ("San Francisco to Los Angeles",
+    #  Route(
+    #      start = NamedPlace(value=["San Francisco"]),
+    #      end = NamedPlace(value=["Los Angeles"]),
+    #      profile = TravelMethod.drive
+    #      )),
+    # Fails
+    ("buffer of 20 meters around daly city",
+     Buffer(
+         object = Place(value=["daly", "city"]),
+         distance = 20
+     )),
+    # Fails
+    ("20 meters around coffee shops",
+     Buffer(
+         object = Place(value=["coffee", "shops"]),
+         distance = 20
+     )),
+    # Fails
+    # ("volcano San Francisco", CoveredBy(subject=Place("volcano"),
+    #                                     object=NamedPlace(value=["volcano", "San", "Francisco"])))
+    ("churches near parking lots",
+     SpRelNear(subject=Place(value=['churches']), object=Place(value=['parking', 'lots']))),
+    ("Buffer of 20 minutes around the Salesforce Tower",
+     Isochrone(duration=timedelta(minutes=20), object=NamedPlace(value=['the Salesforce Tower']))),
+    ("Buffer of 20 miles around the Salesforce Tower",
+     Buffer(distance=32186.88, object=NamedPlace(value=['the Salesforce Tower']))),
+    (
+        "lakes near a forest",
+        SpRelNear(
+            subject=Place(value=["Lakes"]), object=Place(value=["a", "forest"])
+        ),
+    ),
+    (
+        "lakes not near a forest",
+        SpRelNotNear(
+            subject=Place(value=["Lakes"]), object=Place(value=["a", "forest"])
+        ),
+    ),
+    (
+        "Coffee shops near the Salesforce Tower",
+        SpRelNear(
+            subject=Place(value=["Coffee", "shops"]), object=NamedPlace(value=["the Salesforce Tower"])
+        ),
+    ),
+    (
+       "Coffee shops not near the Salesforce Tower",
+        SpRelNotNear(
+            subject=Place(value=["Coffee", "shops"]), object=NamedPlace(value=["the Salesforce Tower"])
+        ),
+    ),
+    (
+       "Coffee shops greater than 20 minutes from the Salesforce Tower",
+        SpRelOutsideTimeOf(
+            subject=Place(value=["Coffee", "shops"]), object=Place(value=["the", "Salesforce", "Tower"]),
+            duration=timedelta(minutes=20)
+        ),
+    ),
+    (
+       "Coffee shops within 20 minutes of the Salesforce Tower",
+        SpRelWithinTimeOf(
+            subject=Place(value=["Coffee", "shops"]), object=Place(value=["the", "Salesforce", "Tower"]),
+            duration=timedelta(minutes=20)
+        ),
+    )
 ]
 
 

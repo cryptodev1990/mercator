@@ -96,6 +96,7 @@ class Settings(BaseSettings):
     log_level: LogLevel = Field(LogLevel.INFO, description="Python logging module log level")
 
     graph_hopper: GraphHopper = GraphHopper()  # type: ignore
+    openai_api_key: SecretStr = Field(...)
 
     class Config:  # noqa
         """Pydantic config."""

@@ -33,27 +33,42 @@ _setup_python() {
 
 _install_overmind() {
     if ! which overmind > /dev/null; then
-        echo "Installing overmind"
-        brew install -q overmind
+        if [[ `uname` = "Darwin" ]]; then
+            echo "Installing overmind"
+            brew install -q overmind
+        else
+            echo "Install overmind before proceeding"
+            exit 1
+        fi
     fi
 }
 
 _install_just() {
     if ! which just > /dev/null; then
-        echo "Installing just"
-        brew install -q rust just
+        if [[ `uname` = "Darwin" ]]; then
+            echo "Installing just"
+            brew install -q rust just
+        else
+            echo "Instll just before proceeding: https://github.com/casey/just"
+            exit 1
+        fi
     fi
 }
 
 _install_redis() {
     if ! which redis-cli > /dev/null; then
-        echo "Installing redis"
-        brew install -q redis
+        if [[ `uname` = "Darwin" ]]; then
+            echo "Installing redis"
+            brew install -q redis
+        else
+            echo "Install redis before continuing"
+            exit 1
+        fi
     fi
 }
 
-_install_dependencies() {
-    brew install rust openssl@1.1
+_install_playright() {
+    playwright install
 }
 
 if [[ `uname` = "Darwin" ]]; then
@@ -63,12 +78,11 @@ if [[ `uname` = "Darwin" ]]; then
         echo "Install brew before continuing"
         exit
     fi
-
-    _install_redis
-    _install_overmind
-    _install_just
-    _install_dependencies
 fi
 
 _check_postgres
+_install_just
+_install_redis
+_install_overmind
 _setup_python
+_install_playright

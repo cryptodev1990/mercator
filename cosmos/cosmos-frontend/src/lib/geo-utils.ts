@@ -1,9 +1,9 @@
 import { FeatureCollection, SearchResponse } from "../search/api";
 import { bbox } from "@turf/turf";
 
-export function bboxToZoom(bbox: any): number {
+export function bboxToZoom(bbox: number[]): number {
   let zoomLevel;
-  const [latMin, latMax, lngMin, lngMax] = bbox;
+  const [lngMin, latMin, lngMax, latMax] = bbox;
   const latDiff = +latMax - +latMin;
   const lngDiff = +lngMax - +lngMin;
   const maxDiff = lngDiff > latDiff ? lngDiff : latDiff;
