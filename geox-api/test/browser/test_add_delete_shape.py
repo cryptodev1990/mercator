@@ -5,6 +5,7 @@ E2E test for adding a shape.
 import pytest
 import time
 import os
+from playwright.sync_api import expect
 
 username = os.getenv('PLAYWRIGHT_USERNAME')
 password = os.getenv('PLAYWRIGHT_PASSWORD')
@@ -35,6 +36,10 @@ def test_index_page_title(page):
     # assert '/geofencer' in page.url
     page.set_viewport_size({"width": 1600, "height": 1200})
 
+    # Look for "0 shapes in 1 folder"
+    locator = page.locator('#root > div > div > div > div > div > div > footer > p')
+    expect(locator).to_contain_text("0 shapes in 1 folder")
+
     #Select draw shape
     page.wait_for_selector('.flex:nth-child(1) > div:nth-child(2) > .bg-slate-600 > svg > path')
     page.click('.flex:nth-child(1) > div:nth-child(2) > .bg-slate-600 > svg > path')
@@ -57,8 +62,33 @@ def test_index_page_title(page):
     page.click('div > form > .grid > .col-span-9 > .btn:nth-child(2)')
     time.sleep(1)
 
+    # Look for "1 shape in 1 folder"
+    locator = page.locator('#root > div > div > div > div > div > div > footer > p')
+    expect(locator).to_contain_text("1 shape in 1 folder")
+
+    # Select, split, save the shape
+    page.mouse.click(450, 450)
+    page.wait_for_selector('#root > div > div > div > div > div > div:nth-child(2) > div > div:nth-child(6) > button')
+    page.click('#root > div > div > div > div > div > div:nth-child(2) > div > div:nth-child(6) > button')
+    time.sleep(1)
+    page.mouse.click(450,350)
+    page.mouse.click(450,500)
+    time.sleep(1)
+
+    # Look for "2 shapes in 1 folder"
+    expect(locator).to_contain_text("2 shapes in 1 folder")
+
     # Select the shape and delete it
-    page.mouse.click(450, 450, button='right')
+    page.mouse.click(475, 450, button='right')
     time.sleep(1)
     page.mouse.click(500, 550)
     time.sleep(1)
+
+    page.mouse.click(425, 450, button='right')
+    time.sleep(1)
+    page.mouse.click(500, 550)
+    time.sleep(1)
+
+    # Look for "0 shapes in 1 folder"
+    expect(locator).to_contain_text("0 shapes in 1 folder")
+

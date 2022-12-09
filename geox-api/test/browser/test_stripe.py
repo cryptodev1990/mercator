@@ -1,5 +1,5 @@
 """
-E2E test for the index (/) page.
+E2E test for Stripe payment on signup.
 """
 
 import pytest
