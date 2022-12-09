@@ -14,6 +14,8 @@ import {
 } from "@tanstack/react-table";
 import { Properties } from "@turf/helpers";
 import _ from "lodash";
+import { MdDelete } from "react-icons/md";
+
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
@@ -64,20 +66,17 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
     }, [initialValue]);
 
     return (
-      <div>
+      <div className="flex">
         <input
           value={value as string}
           onChange={(e) => setValue(e.target.value)}
           onBlur={onBlur}
         />
-        <button
-          type="button"
-          onClick={() => {
-            prop.table.options.meta?.deleteColumn(prop.column.id);
-          }}
-        >
-          Delete
-        </button>
+
+        <MdDelete
+          className="cursor-pointer"
+          onClick={() => prop.table.options.meta?.deleteColumn(prop.column.id)}
+        />
       </div>
     );
   },
