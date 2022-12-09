@@ -37,7 +37,7 @@ def test_index_page_title(page):
     page.set_viewport_size({"width": 1600, "height": 1200})
 
     # Look for "0 shapes in 1 folder"
-    locator = page.locator('#root > div > div.text-slate-50.h-screen.w-screen.relative.flex.flex-col.overflow-hidden.border > div.flex-auto.w-screen.relative.border.m-0.p-0 > div.h-\\[95vh\\].px-5.py-5.flex.flex-row.relative > div.w-\\[300px\\].z-10.bg-slate-700.overflow-y-scroll.scrollbar-thin > div.sticky.bottom-0.left-0.w-full.z-50 > footer > p')
+    locator = page.locator('#root > div > div > div > div > div > div > footer > p')
     expect(locator).to_contain_text("0 shapes in 1 folder")
 
     #Select draw shape
@@ -63,17 +63,33 @@ def test_index_page_title(page):
     time.sleep(1)
 
     # Look for "1 shape in 1 folder"
-    locator = page.locator('#root > div > div.text-slate-50.h-screen.w-screen.relative.flex.flex-col.overflow-hidden.border > div.flex-auto.w-screen.relative.border.m-0.p-0 > div.h-\\[95vh\\].px-5.py-5.flex.flex-row.relative > div.w-\\[300px\\].z-10.bg-slate-700.overflow-y-scroll.scrollbar-thin > div.sticky.bottom-0.left-0.w-full.z-50 > footer > p')
+    locator = page.locator('#root > div > div > div > div > div > div > footer > p')
     expect(locator).to_contain_text("1 shape in 1 folder")
 
+    # Select, split, save the shape
+    page.mouse.click(450, 450)
+    page.wait_for_selector('#root > div > div > div > div > div > div:nth-child(2) > div > div:nth-child(6) > button')
+    page.click('#root > div > div > div > div > div > div:nth-child(2) > div > div:nth-child(6) > button')
+    time.sleep(1)
+    page.mouse.click(450,350)
+    page.mouse.click(450,500)
+    time.sleep(1)
+
+    # Look for "2 shapes in 1 folder"
+    expect(locator).to_contain_text("2 shapes in 1 folder")
+
     # Select the shape and delete it
-    page.mouse.click(450, 450, button='right')
+    page.mouse.click(475, 450, button='right')
+    time.sleep(1)
+    page.mouse.click(500, 550)
+    time.sleep(1)
+
+    page.mouse.click(425, 450, button='right')
     time.sleep(1)
     page.mouse.click(500, 550)
     time.sleep(1)
 
     # Look for "0 shapes in 1 folder"
-    locator = page.locator('#root > div > div.text-slate-50.h-screen.w-screen.relative.flex.flex-col.overflow-hidden.border > div.flex-auto.w-screen.relative.border.m-0.p-0 > div.h-\\[95vh\\].px-5.py-5.flex.flex-row.relative > div.w-\\[300px\\].z-10.bg-slate-700.overflow-y-scroll.scrollbar-thin > div.sticky.bottom-0.left-0.w-full.z-50 > footer > p')
     expect(locator).to_contain_text("0 shapes in 1 folder")
 
     
