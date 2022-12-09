@@ -60,7 +60,6 @@ export class GeofencerService {
     });
   }
 
-
   /**
    * Bulk Create Shapes
    * Create multiple shapes.
@@ -71,26 +70,24 @@ export class GeofencerService {
    * @throws ApiError
    */
   public static bulkCreateShapesGeofencerShapesBulkPost(
-      requestBody: Array<GeoShapeCreate>,
-      namespace?: string,
-      asList = false,
-  ): CancelablePromise<(ShapeCountResponse | Array<GeoShape>)> {
-      return __request(OpenAPI, {
-          method: 'POST',
-          url: '/geofencer/shapes/bulk',
-          query: {
-              'namespace': namespace,
-              'as_list': asList,
-          },
-          body: requestBody,
-          mediaType: 'application/json',
-          errors: {
-              422: `Validation Error`,
-          },
-      });
+    requestBody: Array<GeoShapeCreate>,
+    namespace?: string,
+    asList = false
+  ): CancelablePromise<ShapeCountResponse | Array<GeoShape>> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/geofencer/shapes/bulk",
+      query: {
+        namespace: namespace,
+        as_list: asList,
+      },
+      body: requestBody,
+      mediaType: "application/json",
+      errors: {
+        422: `Validation Error`,
+      },
+    });
   }
-
-
 
   /**
    * Bulk Delete Shapes
@@ -267,6 +264,25 @@ export class GeofencerService {
   public static patchShapesShapeIdGeofencerShapesShapeIdPatch(
     shapeId: string,
     requestBody: GeoShapeUpdate
+  ): CancelablePromise<GeoShape> {
+    return __request(OpenAPI, {
+      method: "PATCH",
+      url: "/geofencer/shapes/{shape_id}",
+      path: {
+        shape_id: shapeId,
+      },
+      body: requestBody,
+      mediaType: "application/json",
+      errors: {
+        404: `Shape does not exist`,
+        422: `Validation Error`,
+      },
+    });
+  }
+
+  public static patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
+    shapeId: string,
+    requestBody: any
   ): CancelablePromise<GeoShape> {
     return __request(OpenAPI, {
       method: "PATCH",

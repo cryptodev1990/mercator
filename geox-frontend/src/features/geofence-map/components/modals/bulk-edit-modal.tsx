@@ -1,7 +1,7 @@
 import { useSelectedShapes } from "features/geofence-map/hooks/use-selected-shapes";
 import { useUiModals } from "features/geofence-map/hooks/use-ui-modals";
 import { UIModalEnum } from "features/geofence-map/types";
-import { Fragment, useRef } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import React, { useState, useEffect } from "react";
 import {
@@ -15,6 +15,7 @@ import {
 import { Properties } from "@turf/helpers";
 import _ from "lodash";
 import { MdDelete } from "react-icons/md";
+import { GeofencerService } from "client";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -229,7 +230,22 @@ const BulkEditModal = () => {
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => console.log("data", data)}
+                    onClick={() => {
+                      for (let shapeProperties of data) {
+                        GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
+                          shapeProperties && shapeProperties.__uuid,
+                          {
+                            properties: shapeProperties,
+                            namespace_id:
+                              shapeProperties && shapeProperties.__namespace_id,
+                          }
+                        ).then((res) => {
+                          console.log("success", res);
+                        });
+                      }
+
+                      console.log("data", data);
+                    }}
                   >
                     Save
                   </button>
