@@ -27,6 +27,9 @@ export type Action =
       namespaces: Namespace[];
     }
   | {
+      type: "REFRESH_TILES";
+    }
+  | {
       type: "FETCH_NUM_SHAPES_LOADING";
     }
   | {

@@ -45,6 +45,8 @@ export interface IGeoShapeMetadataContext {
     namespace: NamespaceUpdate
   ) => void;
   namespacesError: Error | null;
+  refreshTiles: boolean;
+  setRefreshTiles: () => void;
 }
 
 export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
@@ -62,6 +64,8 @@ export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
   removeNamespace: async () => {},
   updateNamespace: async () => {},
   namespacesError: null,
+  refreshTiles: false,
+  setRefreshTiles: () => {},
 });
 
 GeoShapeMetadataContext.displayName = "GeoShapeMetadataContext";
@@ -162,6 +166,12 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     });
   }
 
+  function setRefreshTiles() {
+    dispatch({
+      type: "REFRESH_TILES",
+    });
+  }
+
   const { mutate: addNamespaceMutation } = useAddNamespaceMutation();
 
   function addNamespace(namespace: NamespaceCreate) {
@@ -252,6 +262,8 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
         addNamespace,
         removeNamespace,
         updateNamespace,
+        setRefreshTiles,
+        refreshTiles: state.refreshTiles,
         namespacesError: state.namespacesError,
       }}
     >

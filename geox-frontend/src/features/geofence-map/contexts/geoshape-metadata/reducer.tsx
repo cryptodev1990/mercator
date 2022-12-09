@@ -12,6 +12,7 @@ export interface State {
   numShapesIsLoading: boolean;
   numShapesError: Error | null;
   namespacesError: Error | null;
+  refreshTiles: boolean;
 }
 
 export const initialState: State = {
@@ -25,6 +26,7 @@ export const initialState: State = {
   numShapesIsLoading: false,
   numShapesError: null,
   namespacesError: null,
+  refreshTiles: false,
 };
 
 export function geoshapeReducer(state: State, action: Action): State {
@@ -82,6 +84,12 @@ export function geoshapeReducer(state: State, action: Action): State {
       return {
         ...state,
         visibleNamespaces: action.namespaces,
+      };
+    }
+    case "REFRESH_TILES": {
+      return {
+        ...state,
+        refreshTiles: !state.refreshTiles,
       };
     }
     case "DELETE_NAMESPACE_LOADING": {

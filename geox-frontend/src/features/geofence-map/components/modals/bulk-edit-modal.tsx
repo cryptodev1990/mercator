@@ -16,6 +16,7 @@ import { Properties } from "@turf/helpers";
 import _ from "lodash";
 import { MdDelete } from "react-icons/md";
 import { GeofencerService } from "client";
+import { useShapes } from "features/geofence-map/hooks/use-shapes";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -90,6 +91,8 @@ const BulkEditModal = () => {
   const [data, setData] = React.useState(() =>
     multiSelectedShapes.map((shape) => shape.properties)
   );
+
+  const { setRefreshTiles } = useShapes();
 
   const [tableColumns, setTableColumns] = useState([
     "NAMELSAD",
@@ -240,7 +243,7 @@ const BulkEditModal = () => {
                               shapeProperties && shapeProperties.__namespace_id,
                           }
                         ).then((res) => {
-                          console.log("success", res);
+                          setRefreshTiles();
                         });
                       }
 
