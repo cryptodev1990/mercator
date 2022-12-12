@@ -47,7 +47,9 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
         value={value as string}
         onChange={(e) => setValue(e.target.value)}
         onBlur={onBlur}
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className={`text-ellipsis ${
+          JSON.stringify(initialValue + "").length > 12 ? "focus:absolute" : ""
+        } bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-slate-800 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
       />
     );
   },
@@ -70,12 +72,14 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
     }, [initialValue]);
 
     return (
-      <div className="flex bg-gray-50 border border-gray-300 dark:bg-gray-700 p-1">
+      <div className="flex bg-gray-50 border border-gray-300 dark:bg-slate-800 p-1">
         <input
           value={value as string}
           onChange={(e) => setValue(e.target.value)}
           onBlur={onBlur}
-          className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className={`text-ellipsis ${
+            JSON.stringify(initialValue + "").length > 9 ? "focus:absolute" : ""
+          } text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-slate-800  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
         />
 
         <MdDelete
@@ -176,18 +180,18 @@ const BulkEditModal = () => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden bg-slate-700 text-left shadow-xl transition-all">
+              <Dialog.Panel className="relative transform overflow-hidden bg-slate-700 text-left shadow-2xl transition-all">
                 <h1 className="text-3xl font-bold text-white bg-slate-800 p-2">
                   Bulk Edit Updte
                 </h1>
                 <div className="p-2">
-                  <div className="max-w-5xl overflow-auto">
+                  <div className="max-w-6xl overflow-auto">
                     <table>
                       <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
                           <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                              <th key={header.id}>
+                              <th key={header.id} className="w-24">
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(
@@ -217,19 +221,11 @@ const BulkEditModal = () => {
                       </tbody>
                     </table>
                   </div>
-                  <div className="flex justify-end mt-2">
-                    {/* <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => closeModal()}
-                  >
-                    Cancel
-                  </button> */}
+                  <div className="flex justify-end mt-2 mb-2">
                     <button
                       type="button"
                       className="btn btn-primary btn-xs"
                       onClick={() => {
-                        // add new column to tableColumns using setTableColumns
                         const headerName = tableColumns.length + 1;
                         setTableColumns((old) => {
                           return [...old, `Column ${headerName}`];
@@ -268,6 +264,13 @@ const BulkEditModal = () => {
                       }}
                     >
                       Save
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-base-300 btn-xs capitalize"
+                      onClick={() => closeModal()}
+                    >
+                      Cancel
                     </button>
                   </div>
                 </div>
