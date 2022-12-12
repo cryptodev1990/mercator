@@ -42,11 +42,12 @@ COPY --from=builder /usr/local/cargo/bin/just /usr/local/bin/just
 
 WORKDIR /webapp
 
+RUN DD_API_KEY=MY_DD_API_KEY_PLACEHOLDER DD_INSTALL_ONLY=true bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+
 COPY ./app /webapp/app
 COPY ./cli /webapp/cli
 COPY ./alembic /webapp/alembic
-COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./log_config.yaml ./hypercorn.toml ./justfile /webapp/
-
+COPY ./start.sh ./worker-start.sh ./alembic.ini ./Procfile ./hypercorn.toml ./justfile /webapp/
 
 # ARG have to be after FROM to be read
 # This sets GIT_COMMIT in two ways - default env variable (expected not to be overwritten)
@@ -56,6 +57,12 @@ ENV GIT_COMMIT=${git_commit_hash}
 ENV APP_ENV=production
 RUN touch /webapp/.env && \
     echo "GIT_COMMIT=$GIT_COMMIT" >> /webapp/.env
+
+# copy in datadog config files
+RUN mkdir /etc/datadog-agent/conf.d/python.d
+COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog-python-conf.yaml /etc/datadog-agent/conf.d/python.d/conf.yaml
+COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog-security-agent.yaml /etc/datadog-agent/security-agent.yaml
+COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog.yaml /etc/datadog-agent/datadog.yaml
 
 EXPOSE 8080
 ENV PYTHONPATH=/webapp

@@ -9,6 +9,7 @@ from pydantic import UUID4  # pylint: disable=no-name-in-module
 from app.core.celery_app import celery_app
 from app.core.config import Settings, get_settings
 from app.core.datatypes import Latitude, Longitude
+from app.core.logging import get_logger
 from app.crud import shape as crud
 from app.crud.namespaces import get_default_namespace
 from app.crud.shape import (
@@ -41,7 +42,7 @@ from app.schemas import (
 )
 from app.worker import copy_to_s3
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 router = APIRouter(
     tags=["geofencer"], dependencies=[Depends(verify_token), Depends(verify_subscription)]

@@ -15,6 +15,7 @@ from sqlalchemy import text
 from sqlalchemy.engine import Connection, Engine
 
 from app.core.config import Settings, get_settings
+from app.core.logging import get_logger
 from app.core.security import VerifyToken, token_auth_scheme
 from app.core.stats import time_db_query
 from app.crud.organization import get_active_organization
@@ -25,7 +26,7 @@ from app.db.osm import osm_engine
 from app.schemas import User, UserOrganization
 from app.schemas.organizations import Organization, StripeSubscriptionStatus
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 async def get_engine() -> Engine:

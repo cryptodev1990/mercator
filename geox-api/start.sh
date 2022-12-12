@@ -24,6 +24,16 @@ export DD_TRACE_ENABLED=${DD_TRACE_ENABLED:-false}
 
 APP_WORKERS=${APP_WORKERS:-8}
 
+__start_dd_agent() {
+  if [ -z "$DD_API_KEY" ]; then
+      echo "Error: DD_API_KEY is required for DataDog Agent but was not set.  Exiting."
+      exit 1
+  fi
+
+  sed -i "s/MY_DD_API_KEY_PLACEHOLDER/$DD_API_KEY/g" /etc/datadog-agent/datadog.yaml
+  service datadog-agent start
+}
+
 __prestart_app() {
     # Put all pre-start logic in a function - easier to comment out or make conditional if needed
     # Let the DB start
@@ -41,6 +51,7 @@ __prestart_app() {
     python -m app.initial_data
 }
 
+__start_dd_agent
 __prestart_app
 
 # Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false

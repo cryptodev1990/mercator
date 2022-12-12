@@ -27,12 +27,13 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection
 from sqlalchemy.exc import IntegrityError
 
+from app.core.logging import get_logger
 from app.core.stats import time_db_query
 from app.db.metadata import namespaces as namespaces_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import Namespace
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class NamespaceDoesNotExistError(Exception):

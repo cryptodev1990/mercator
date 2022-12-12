@@ -26,6 +26,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.sql import ColumnElement, Select, bindparam
 
 from app.core.datatypes import MapProjection
+from app.core.logging import get_logger
 from app.core.stats import time_db_query
 from app.crud.namespaces import get_default_namespace
 from app.db.metadata import shapes as shapes_tbl
@@ -34,7 +35,7 @@ from app.schemas.common import BaseModel
 
 T = TypeVar("T")
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 METADATA_COLS = [

@@ -31,8 +31,9 @@ from app.core.datatypes import (
     LogLevel,
     S3Url,
 )
+from app.core.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 __VERSION__ = "0.0.1"
 

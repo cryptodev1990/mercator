@@ -1,0 +1,12 @@
+init_config:
+
+instances:
+
+##Log section
+logs:
+
+  - type: file
+    path: "/var/log/geox_api.log"
+    service: "geox_api"
+    source: python
+    sourcecategory: sourcecode
