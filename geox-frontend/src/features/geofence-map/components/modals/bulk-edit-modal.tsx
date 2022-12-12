@@ -17,6 +17,7 @@ import _ from "lodash";
 import { MdDelete } from "react-icons/md";
 import { GeofencerService } from "client";
 import { useShapes } from "features/geofence-map/hooks/use-shapes";
+import { AiOutlinePlus } from "react-icons/ai";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -46,6 +47,7 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
         value={value as string}
         onChange={(e) => setValue(e.target.value)}
         onBlur={onBlur}
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
       />
     );
   },
@@ -68,15 +70,16 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
     }, [initialValue]);
 
     return (
-      <div className="flex">
+      <div className="flex bg-gray-50 border border-gray-300 dark:bg-gray-700 p-1">
         <input
           value={value as string}
           onChange={(e) => setValue(e.target.value)}
           onBlur={onBlur}
+          className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
 
         <MdDelete
-          className="cursor-pointer"
+          className="cursor-pointer fill-white"
           onClick={() => prop.table.options.meta?.deleteColumn(prop.column.id)}
         />
       </div>
@@ -92,37 +95,19 @@ const BulkEditModal = () => {
     multiSelectedShapes.map((shape) => shape.properties)
   );
 
-  console.log("multiSelectedShapes", multiSelectedShapes);
   const [tableColumns, setTableColumns] = useState<string[]>([]);
 
-  // declare state for array of strings
+  const { setShapeLoading } = useShapes();
 
   useEffect(() => {
-    console.log("I am in cols");
     const cols = [
       ...new Set(
         multiSelectedShapes
           .map((shape: any) => Object.keys(shape.properties))
           .flat()
-          .filter(
-            (column) =>
-              ![
-                "__uuid",
-                "__namespace_id",
-                "LSAD",
-                "MEMI",
-                "ALAND",
-                "CSAFP",
-                "GEOID",
-                "MTFCC",
-                "AWATER",
-                "CBSAFP",
-                "INTPTLAT",
-              ].includes(column)
-          )
+          .filter((column) => !["__uuid", "__namespace_id"].includes(column))
       ),
     ];
-    console.log("cols", cols);
     setTableColumns(cols);
   }, []);
 
@@ -191,106 +176,100 @@ const BulkEditModal = () => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all p-4">
-                <div>
-                  <Dialog.Title
-                    as="h1"
-                    className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Bulk Edit Updte
-                  </Dialog.Title>
-                </div>
-                <div>
-                  <table className="border-collapse border border-slate-500">
-                    <thead>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => (
-                            <th
-                              className="border border-slate-600 text-black"
-                              key={header.id}
-                            >
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                  )}
-                            </th>
-                          ))}
-                        </tr>
-                      ))}
-                    </thead>
-                    <tbody>
-                      {table.getRowModel().rows.map((row) => {
-                        return (
-                          <tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                              <td
-                                className="border border-slate-700 text-black"
-                                key={cell.id}
-                              >
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </td>
+              <Dialog.Panel className="relative transform overflow-hidden bg-slate-700 text-left shadow-xl transition-all">
+                <h1 className="text-3xl font-bold text-white bg-slate-800 p-2">
+                  Bulk Edit Updte
+                </h1>
+                <div className="p-2">
+                  <div className="max-w-5xl overflow-auto">
+                    <table>
+                      <thead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                          <tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                              <th key={header.id}>
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext()
+                                    )}
+                              </th>
                             ))}
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button
+                        ))}
+                      </thead>
+                      <tbody>
+                        {table.getRowModel().rows.map((row) => {
+                          return (
+                            <tr key={row.id}>
+                              {row.getVisibleCells().map((cell) => (
+                                <td key={cell.id}>
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    {/* <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                     onClick={() => closeModal()}
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={async () => {
-                      for (let shapeProperties of data) {
-                        const response =
-                          await GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
-                            shapeProperties && shapeProperties.__uuid,
-                            {
-                              properties: shapeProperties,
-                              namespace_id:
-                                shapeProperties &&
-                                shapeProperties.__namespace_id,
-                            }
-                          );
-                      }
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => {
-                      // add new column to tableColumns using setTableColumns
-                      const headerName = tableColumns.length + 1;
-                      setTableColumns((old) => {
-                        return [...old, `Column ${headerName}`];
-                      });
-                      setData((old) => {
-                        return old.map((row) => {
-                          return {
-                            ...row,
-                            [`Column ${headerName}`]: "",
-                          };
+                  </button> */}
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-xs"
+                      onClick={() => {
+                        // add new column to tableColumns using setTableColumns
+                        const headerName = tableColumns.length + 1;
+                        setTableColumns((old) => {
+                          return [...old, `Column ${headerName}`];
                         });
-                      });
-                    }}
-                  >
-                    Add Column
-                  </button>
+                        setData((old) => {
+                          return old.map((row) => {
+                            return {
+                              ...row,
+                              [`Column ${headerName}`]: "",
+                            };
+                          });
+                        });
+                      }}
+                    >
+                      <AiOutlinePlus />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-success btn-xs capitalize"
+                      onClick={async () => {
+                        closeModal();
+                        setShapeLoading(true);
+                        for (let shapeProperties of data) {
+                          const response =
+                            await GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
+                              shapeProperties && shapeProperties.__uuid,
+                              {
+                                properties: shapeProperties,
+                                namespace_id:
+                                  shapeProperties &&
+                                  shapeProperties.__namespace_id,
+                              }
+                            );
+                        }
+                        setShapeLoading(false);
+                      }}
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
