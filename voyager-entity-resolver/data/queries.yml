@@ -1,0 +1,175 @@
+- text: "power lines"
+  tags:
+    - 'power=line'
+    - 'power=minor_line'
+    - 'power=cable'
+- text: "powerplants"
+  tags:
+    - 'power=plant'
+- text: "power plants"
+  tags:
+    - 'power=plant'
+- text: "power stations"
+  tags:
+  - power=substation
+- text: "ethiopian"
+  tags:
+  - cusisine=ethiopian
+  note: "Query assumed to mean Ethiopian food. It could also mean shops selling Ethiopian goods, Ethiopian cultural centers, or Ethiopian Catholic or Orthodox churches."
+- text: "ethiopian food"
+  tags:
+  - cusisine=ethiopian
+- text: "ethiopian restaurant"
+  tags:
+    - ["cusisine=ethiopian", "amenity=restaurant"]  # This means both cuisine=ethiopian + restraunt
+- text: "train stations"
+  tags:
+  - railway=station
+- text: "train"
+  tags:
+  - railway=station
+- text: "retail area"
+  tags:
+  - landuse=retail
+- text: "homes"
+  tags:
+  - ["building=yes", "amenity=house"]
+- text: "parks"
+  tags:
+  - leisure=park
+- text: "churches"
+  tags:
+  - amenity=place_of_worship
+  - religion=christian
+- text: "chargers"
+  tags:
+  - amenity=charging_station
+- text: "ev chargers"
+  tags:
+  - amenity=charging_station
+- text: "windmills"
+  tags:
+  - man_made=windmill
+- text: "wind mills"
+  tags:
+  - man_made=windmill
+- text: "benches"
+  tags:
+  - amenity=bench
+- text: "fire hydrant"
+  tags:
+  - emergency=fire_hydrant
+- text: "bike"
+  tags:
+  - bicycle_road=yes
+  - cycleway=*
+  - cyclestreet=yes
+  - highway=cycleway
+- text: solar
+  note: "Assuming solar power plant"
+  tags:
+  - ["power=plant", "generator:source=solar"]
+- text: coffee shops
+  tags:
+  - amenity=cafe
+  - ["amenity=restaurant", "cuisine=coffee_shop"]
+- text: bookstores
+  tags:
+  - shop=books
+- text: clothing stores
+  tags:
+  - shop=clothes
+  - shop=fashion
+- text: jewelry stores
+  tags:
+  - shop=jewelry
+- text: bakeries
+  tags:
+  - shop=bakery
+- text: places with animals
+  note: https://wiki.openstreetmap.org/wiki/Animals
+  tags:
+    - amenity=animal_boarding
+    - amenity=animal_shelter
+    - amenity=animal_training
+    - amenity=game_feeding
+    - amenity=petting_zoo
+    - amenity=watering_place
+    - amentity=animal_breeding
+    - animal=*
+    - attraction=animal
+    - hazard=animal_crossing
+    - hazard=horse_riders
+    - highway=bridleway
+    - leisure=dog_park
+    - leisure=horse_riding
+    - route=horse
+    - shop=pet
+    - sport=dog_racing
+    - sport=equestrian
+    - sport=horse_racing
+    - tourism=zoo
+- text: shopping
+  note: "Result includes retail areas and shops"
+  tags:
+  - landuse=retail
+  - shop=*
+  - building=retail
+- text: public art
+  tags:
+  - tourism=artwork
+- text: recycling centers
+  tags:
+  - amenity=recycling
+  - recycling_type=centre
+- text: Post boxes
+  tags:
+  - amenity=post_box
+- text: Post offices
+  tags:
+  - ["amenity=post_office", "post_office=*"]
+- text: soccer fields
+  tags:
+  - ["leisure=pitch", "sport=soccer"]
+  - ["leisure=stadium", "sport=soccer"]
+  - ["leisure=sports_centre", "sport=soccer"]
+- text: residential neighborhoods
+  tags:
+  - landuse=residential
+- text: hotels
+  tags:
+  - tourism=hotel
+- text: bars
+  tags:
+  - amenity=bar
+  - amenity=pub
+  - amentity=biergarden
+- text: clubs
+  note: Assuming nightclub
+  tags:
+  - amenity=nightclub
+- text: commercial district
+  tags:
+  -  landuse=commercial
+- text: tattoo shops
+  tags:
+  - shop=tattoo
+- text: pub
+  tags:
+  - amenity=pub
+- text: hospitals
+  tags:
+  - amenity=hospital
+- text: doctor's offices
+  tags:
+  - amenity=doctors
+- text: schools
+  tags:
+  - amenity=school
+  - amenity=kindergarden
+  - amenity=university
+  - amentity=college
+  - landuse=education
+- text: accountants
+  tags:
+   - office=accountant

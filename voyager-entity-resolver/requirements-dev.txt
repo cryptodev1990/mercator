@@ -1,0 +1,7 @@
+ipykernel
+jupyterlab
+pandas
+altair
+huggingface
+httpx
+ruamel.yaml
