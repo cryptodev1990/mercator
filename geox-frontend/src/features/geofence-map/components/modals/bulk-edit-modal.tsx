@@ -92,19 +92,39 @@ const BulkEditModal = () => {
     multiSelectedShapes.map((shape) => shape.properties)
   );
 
-  const { setRefreshTiles } = useShapes();
+  console.log("multiSelectedShapes", multiSelectedShapes);
+  const [tableColumns, setTableColumns] = useState<string[]>([]);
 
-  const [tableColumns, setTableColumns] = useState([
-    "NAMELSAD",
-    "LSAD",
-    "MEMI",
-    "ALAND",
-    "GEOID",
-    "MTFCC",
-    "AWATER",
-    "CBSAFP",
-    "INTPTLAT",
-  ]);
+  // declare state for array of strings
+
+  useEffect(() => {
+    console.log("I am in cols");
+    const cols = [
+      ...new Set(
+        multiSelectedShapes
+          .map((shape: any) => Object.keys(shape.properties))
+          .flat()
+          .filter(
+            (column) =>
+              ![
+                "__uuid",
+                "__namespace_id",
+                "LSAD",
+                "MEMI",
+                "ALAND",
+                "CSAFP",
+                "GEOID",
+                "MTFCC",
+                "AWATER",
+                "CBSAFP",
+                "INTPTLAT",
+              ].includes(column)
+          )
+      ),
+    ];
+    console.log("cols", cols);
+    setTableColumns(cols);
+  }, []);
 
   const columnHelper = createColumnHelper<Properties>();
 
@@ -233,21 +253,19 @@ const BulkEditModal = () => {
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => {
+                    onClick={async () => {
                       for (let shapeProperties of data) {
-                        GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
-                          shapeProperties && shapeProperties.__uuid,
-                          {
-                            properties: shapeProperties,
-                            namespace_id:
-                              shapeProperties && shapeProperties.__namespace_id,
-                          }
-                        ).then((res) => {
-                          setRefreshTiles();
-                        });
+                        const response =
+                          await GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
+                            shapeProperties && shapeProperties.__uuid,
+                            {
+                              properties: shapeProperties,
+                              namespace_id:
+                                shapeProperties &&
+                                shapeProperties.__namespace_id,
+                            }
+                          );
                       }
-
-                      console.log("data", data);
                     }}
                   >
                     Save

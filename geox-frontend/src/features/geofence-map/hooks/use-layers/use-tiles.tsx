@@ -138,7 +138,7 @@ export function useTiles() {
 
 const useTileArgs = () => {
   const { idToken } = useIdToken();
-  const { visibleNamespaces, numShapes, refreshTiles } = useShapes();
+  const { visibleNamespaces, numShapes } = useShapes();
 
   const getTileUrl = useCallback(() => {
     if (visibleNamespaces.length === 0) {
@@ -156,7 +156,7 @@ const useTileArgs = () => {
         "&"
       )}`
     );
-  }, [refreshTiles, visibleNamespaces, numShapes]);
+  }, [visibleNamespaces, numShapes]);
 
   return {
     // @ts-ignore
