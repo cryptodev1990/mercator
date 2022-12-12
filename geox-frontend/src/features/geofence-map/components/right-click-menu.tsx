@@ -61,7 +61,7 @@ export const RightClickMenu = () => {
         editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
       ]);
     }
-    if (!selectedUuids.length && event.metaKey) {
+    if (multiSelectedShapesUuids.length && event.metaKey) {
       setMenuOptions(["Bulk Delete", "Bulk Edit"]);
     }
     if (selectedUuids.length && !event.metaKey) {
