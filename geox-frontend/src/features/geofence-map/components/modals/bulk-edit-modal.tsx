@@ -185,7 +185,7 @@ const BulkEditModal = () => {
                   Bulk Edit Updte
                 </h1>
                 <div className="p-2">
-                  <div className="max-w-6xl overflow-auto">
+                  <div className="overflow-auto">
                     <table>
                       <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
