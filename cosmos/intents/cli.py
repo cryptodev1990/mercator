@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import os
 import yaml
 
@@ -35,8 +36,8 @@ def main():
     print(intent)
     parsed_intent = intent.parse(text)
     print(parsed_intent)
-    intent.execute(**parsed_intent)
-    
+    res = asyncio.run(intent.execute(**parsed_intent))
+    print(res)
     
 
 if __name__ == "__main__":

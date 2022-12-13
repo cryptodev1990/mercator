@@ -1,14 +1,29 @@
 import re
 
+DIST_REGEX = r'^(?P<distance>\d+(?:\.\d+)?)\s?(?P<unit>meters|m|km|mi|miles|kilometers|mile|kilometer|feet|foot|yard|yards)$'
+TIME_REGEX = r'^(?P<time>\d+(?:\.\d+)?)\s?(?P<unit>s|sec|secs|seconds|second|min|mins|minutes|minute|hr|hrs|hours|hour)$'
+
+def parse_into_meters(
+    text: str,
+) -> float:
+    """Function that takes a string, parses out a distance or a time"""
+    text = text.strip()
+    matched = re.match(DIST_REGEX, text)
+    if matched:
+        return Distance(text).distance_in_meters
+    else:
+        # TODO how to handle failures?
+        print(f'Could not parse {text} as a distance, returning 100m')
+        return Distance('100m').distance_in_meters
+
 class Distance:
     def __init__(self, text: str):
         """Function that takes a string, parses out a distance or a time"""
-        DIST_REGEX = r'^(?P<distance>\d+(?:\.\d+)?)\s?(?P<unit>meters|m|km|mi|miles|kilometers|mile|kilometer|feet|foot|yard|yards)$'
         text = text.strip()
         matched = re.match(DIST_REGEX, text)
         if matched:
-            self.distance = matched.group('distance')
-            self.unit = matched.group('unit')
+            self.distance = float(matched.group('distance'))
+            self.unit = str(matched.group('unit'))
             self.distance_in_meters = self.convert_to_meters()
         else:
             raise ValueError(f'Could not parse {text} as a distance')
@@ -34,7 +49,6 @@ class Distance:
 class Time:
     def __init__(self, text: str):
         """Function that takes a string, parses out a distance or a time"""
-        TIME_REGEX = r'^(?P<time>\d+(?:\.\d+)?)\s?(?P<unit>s|sec|secs|seconds|second|min|mins|minutes|minute|hr|hrs|hours|hour)$'
         matched = re.match(TIME_REGEX, text)
         text = text.strip()
         if matched:

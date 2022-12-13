@@ -21,10 +21,14 @@ class Intent:
     @staticmethod
     def get_parse_method(parse_method: str, intent_name: str) -> Callable:
         if parse_method == '-':
-            return executors.raw_lookup
+            # return executors.raw_lookup
+            # await the raw lookup and resolve
+            return lambda x: {"search_term": x}
         elif parse_method == 'openai_slot_fill':
             def curried_openai(text):
-                return openai_slot_fill(text, intent_function_signatures=get_function_signature(intent_name, module=executors))
+                intent_function_signatures = get_function_signature(intent_name, module=executors)
+                examples = getattr(executors, intent_name).__doc__.split('Parse examples')[1].strip()
+                return openai_slot_fill(text, intent_function_signatures=intent_function_signatures, examples=examples)
             return curried_openai
         else:
             raise ValueError(f'Parse method {parse_method} not supported')

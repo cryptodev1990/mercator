@@ -4,16 +4,21 @@ intents:
     description: Looks for an area meeting a set of criteria
     examples:
       - within 20 minutes of a school and 10 minutes of a highway on-ramp
+      - within 10 minutes of San Francisco and 10 miles of a church
     parser: openai_slot_fill
 
   - name: raw_lookup
     human_readable: "Database search"
     description: "Pull the text input and get a list of possible results back"
     examples:
-      - "Find all the places in the database that have a name that contains 'pizza'"
       - "Pizza"
+      - "watersheds"
       - "San Francisco"
       - "boutique hotels"
+      - "churches"
+      - "parks"
+      - "the Golden Gate Bridge"
+      - "fields or meadows"
       - "boulevard"
       - "Lower Haight"
     # No parser, just pass to the executor
@@ -31,10 +36,10 @@ intents:
 
   - name: x_in_y
     human_readable: "Places in another object"
-    description: "Get all objects in another object"
+    description: "Get all locations within a container location, like an adminstrative boundary"
     examples:
-      - "Coffee shops in the Lower Haight"
-      - "Schools in San Francisco"
+      - "coffee shops in Los Angeles"
+      - "San Francisco parks"
       - "Schools, parks, and hospitals in San Francisco"
     parser: openai_slot_fill
 
@@ -55,7 +60,7 @@ intents:
       - "Find all the places visible from a highway on-ramp"
     parser: openai_slot_fill
 
-  - name: x_between_y
+  - name: x_between_y_and_z
     human_readable: "Areas between two other POIs"
     description: "Get a specific category of POIs between one location and another"
     examples:
