@@ -11,10 +11,18 @@ def parse_into_meters(
     matched = re.match(DIST_REGEX, text)
     if matched:
         return Distance(text).distance_in_meters
-    else:
-        # TODO how to handle failures?
-        print(f'Could not parse {text} as a distance, returning 100m')
-        return Distance('100m').distance_in_meters
+    raise ValueError(f'Could not parse {text} as a distance')
+
+
+def parse_into_seconds(
+    text: str,
+) -> float:
+    """Function that takes a string, parses out a distance or a time"""
+    text = text.strip()
+    matched = re.match(TIME_REGEX, text)
+    if matched:
+        return Time(text).time_in_seconds
+    raise ValueError(f'Could not parse {text} as a time')
 
 class Distance:
     def __init__(self, text: str):
@@ -52,15 +60,15 @@ class Time:
         matched = re.match(TIME_REGEX, text)
         text = text.strip()
         if matched:
-            self.time = matched.group('time')
-            self.unit = matched.group('unit')
+            self.time = float(matched.group('time'))
+            self.unit = str(matched.group('unit'))
             self.time_in_seconds = self.convert_to_seconds()
         else:
             raise ValueError(f'Could not parse {text} as a time')
         
-    def convert_to_seconds(self):
+    def convert_to_seconds(self) -> float:
         if self.unit in ['s', 'sec', 'secs', 'seconds', 'second']:
-            return self.time
+            return self.time * 1.0
         elif self.unit in ['min', 'mins', 'minutes', 'minute']:
             return self.time * 60
         elif self.unit in ['hr', 'hrs', 'hours', 'hour']:

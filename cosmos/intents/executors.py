@@ -1,10 +1,10 @@
-# Alternative -- calculate the distance to each major category at a level 11 h3 hexagon
-# About 192,713,636 cells in CA
-# Distance to each major category of amenity, like "food", "shopping", "healthcare", "education", "entertainment", "public services", "transportation", "tourism", "other"
+"""
+NOTE: Currently, all functions in this file are used as executors for intents and their signatures are used by OpenAI.
+"""
 import jinja2
 from sqlalchemy import text
 from app.db import engine
-from intents.entity_resolvers import parse_into_meters
+from intents.entity_resolvers import parse_into_meters, parse_into_seconds, Time
 
 
 async def area_near_constraint(
@@ -16,7 +16,7 @@ async def area_near_constraint(
 ):
     """
     Parse examples
-    
+
     Within 500m of a public school and 200m of a coffee shop -> area_near_constraint("public school", "500m", "coffee shop", "200m")
     100m of a storefront and 10m of a bike lane -> area_near_constraint("storefront", "100m", "bike lane", "10m")
     20 ft of a bus stop, 100m of a park, and 500m of a hospital -> area_near_constraint("bus stop", "20 ft", "park", "100m", "hospital", "500m")
@@ -35,7 +35,11 @@ async def area_near_constraint(
 
     for k, v in collective_dict.items():
         if k.startswith('distance_or_time_'):
-            collective_dict[k] = parse_into_meters(v)
+            try:
+                collective_dict[k] = parse_into_meters(v)
+            except ValueError:
+                raise ValueError(f"Could not parse {v} into meters")
+
 
     num_pairs = int(len(collective_dict) / 2)
     if num_pairs % 2 != 0:
@@ -47,6 +51,7 @@ async def area_near_constraint(
     WITH t1 AS (
     {% for i in range(0, num_pairs) %}
     SELECT ST_Union(ST_Buffer(geom::GEOGRAPHY, :distance_or_time_{{ loop.index0 }})::geometry) AS geom_buff
+    SELECT isochrone(:distance_or_time_{{ loop.index0 }}, geom)
     FROM
       osm, 
       WEBSEARCH_TO_TSQUERY(:named_place_or_amenity_{{ loop.index0 }}) query,
@@ -62,7 +67,7 @@ async def area_near_constraint(
     SELECT ST_AsGeoJson(ST_INTERSECTION(a.geom_buff, b.geom_buff)) AS geom_buff
     FROM t1 a, t1 b
     WHERE 1=1
-      AND ST_Intersects(a.geom_buff, b.geom_buff)  
+      AND ST_Intersects(a.geom_buff, b.geom_buff)
       AND a.geom_buff < b.geom_buff -- only get one of the pairs
     ;
     """).render(num_pairs=num_pairs)
@@ -86,18 +91,18 @@ async def raw_lookup(search_term: str):
               'id', osm_id,
               'geometry', ST_AsGeoJSON(geom)::JSONB,
               'properties', JSONB_BUILD_OBJECT(
-                  'osm_id', osm_id,   
+                  'osm_id', osm_id,
                   'tags', tags
               )
           ) AS feature
-          FROM 
-              osm, 
+          FROM
+              osm,
               WEBSEARCH_TO_TSQUERY(:search_term) query,
               SIMILARITY(:search_term, tags_text) similarity
-          WHERE 1=1 
+          WHERE 1=1
               AND query @@ fts
               AND similarity > 0.01
-          ORDER BY 
+          ORDER BY
               TS_RANK_CD(fts, query) DESC,
               similarity DESC
           LIMIT 100000
@@ -107,13 +112,121 @@ async def raw_lookup(search_term: str):
     return res
 
 
-def x_within_time_or_distance_of_y(
+async def x_within_time_or_distance_of_y(
     named_place_or_amenity_0: str,
-    distance_or_time_0: str,
+    distance_or_time: str,
     named_place_or_amenity_1: str,
-    distance_or_time_1: str,
 ):
-    print(f"Saw {named_place_or_amenity_0} {distance_or_time_0} {named_place_or_amenity_1} {distance_or_time_1}")
+    """
+    Parse examples
+
+    All the coffee shops within 500m of a public school -> x_within_time_or_distance_of_y("coffee shop", "500m", "public school")
+    All the bike lanes within 10m of a storefront -> x_within_time_or_distance_of_y("bike lane", "10m", "storefront")
+    bars within 20 minutes of Alamo Square Park -> x_within_time_or_distance_of_y("bar", "20 minutes", "alamo square park")
+    convenience store within a 20 minute drive of 1455 Market St -> x_within_time_or_distance_of_y("convenience store", "20 minute", "1455 Market St")
+    ATMs within 10 minutes of a gas station -> x_within_time_or_distance_of_y("ATM", "20 minutes", "gas station")
+    """
+
+    try:
+        Time(distance_or_time)
+        async with engine.begin() as conn:  # type: ignore
+            # get all entities that belong to the consequent
+            res = await conn.execute(text("""
+            -- build a geosjon feature collection
+                SELECT COUNT(*) AS num_rows
+                FROM
+                    osm,
+                    WEBSEARCH_TO_TSQUERY(:named_place_or_amenity_0) query,
+                    SIMILARITY(:named_place_or_amenity_0, tags_text) similarity
+                WHERE 1=1
+                    AND query @@ fts
+                    AND similarity > 0.01
+            """), {"named_place_or_amenity_0": named_place_or_amenity_0})
+            res = res.fetchone()
+            if res is None:
+                return None
+            num_rows = res["num_rows"]
+            if num_rows > 100:
+                raise ValueError("Too many rows, narrow down search")
+            # get all entities that belong to the consequent
+            res = await conn.execute(text("""
+            -- build a geosjon feature collection
+            SELECT JSONB_BUILD_OBJECT(
+                'type', 'FeatureCollection',
+                'features', jsonb_agg(feature)
+            )
+            FROM (
+                SELECT JSONB_BUILD_OBJECT(
+                    'type', 'Feature',
+                    'id', osm_id,
+                    'geometry', ST_AsGeoJSON(geom)::JSONB,
+                    'properties', JSONB_BUILD_OBJECT(
+                        'osm_id', osm_id,
+                        'tags', tags
+                    )
+                ) AS feature
+                FROM
+                    osm,
+                    WEBSEARCH_TO_TSQUERY(:named_place_or_amenity_1) query,
+                    SIMILARITY(:named_place_or_amenity_1, tags_text) similarity
+                WHERE 1=1
+                    AND query @@ fts
+                    AND similarity > 0.01
+                ORDER BY
+                    TS_RANK_CD(fts, query) DESC,
+                    similarity DESC
+            ) AS features
+            LIMIT 50
+            """), {"named_place_or_amenity_1": named_place_or_amenity_1})
+            res = res.fetchall()
+    except ValueError:
+        pass
+
+    res = await area_near_constraint(
+        named_place_or_amenity_0,
+        '5m',
+        named_place_or_amenity_1,
+        distance_or_time,
+    )
+    if res is None:
+        return None
+    async with engine.begin() as conn:  # type: ignore
+        res = await conn.execute(text("""
+        -- build a geosjon feature collection  
+        SELECT JSONB_BUILD_OBJECT(
+            'type', 'FeatureCollection',
+            'features', jsonb_agg(feature)
+        )
+        FROM (
+            SELECT JSONB_BUILD_OBJECT(
+                'type', 'Feature',
+                'id', osm_id,
+                'geometry', ST_AsGeoJSON(geom)::JSONB,
+                'properties', JSONB_BUILD_OBJECT(
+                    'osm_id', osm_id,
+                    'tags', tags
+                )
+            ) AS feature
+          FROM
+              osm,
+              WEBSEARCH_TO_TSQUERY(:search_term) query,
+              SIMILARITY(:search_term, tags_text) similarity
+          WHERE 1=1
+              AND query @@ fts
+              AND similarity > 0.01
+          ORDER BY
+              TS_RANK_CD(fts, query) DESC,
+              similarity DESC
+            WHERE 1=1
+              AND ST_Intersects(geom, ST_GeomFromGeoJSON(:geom_buff))
+            LIMIT 100000
+        ) AS features
+        """), {
+            "geom_buff": res.geom_buff,
+            "named_place_or_amenity_0": named_place_or_amenity_0,
+        })
+        res = res.fetchall()
+        return res
 
 
 async def x_in_y(
@@ -122,7 +235,7 @@ async def x_in_y(
 ):
     """
     Parse examples
-    
+
     San Francisco public schools -> x_in_y("public schools", "San Francisco")
     California coffee shops -> x_in_y("coffee shops", "California")
     zoos in Dayton, Ohio -> x_in_y("zoos", "Dayton, Ohio")
@@ -142,22 +255,22 @@ async def x_in_y(
                   'id', osm_id,
                   'geometry', ST_AsGeoJSON(geom)::JSONB,
                   'properties', JSONB_BUILD_OBJECT(
-                      'osm_id', osm_id,   
+                      'osm_id', osm_id,
                       'tags', tags
                   )
               ) AS feature
-              FROM 
-                  osm, 
+              FROM
+                  osm,
                   WEBSEARCH_TO_TSQUERY(:needle) query,
                   SIMILARITY(:needle, tags_text) similarity
-              WHERE 1=1 
+              WHERE 1=1
                   AND query @@ fts
                   AND similarity > 0.01
-                  AND ST_Intersects(geom, 
+                  AND ST_Intersects(geom,
                    (
                       SELECT geom AS container_geom
                       FROM
-                        osm, 
+                        osm,
                         WEBSEARCH_TO_TSQUERY(:haystack) query,
                         SIMILARITY(:haystack, tags_text) similarity
                       WHERE 1=1
@@ -167,7 +280,7 @@ async def x_in_y(
                       ORDER BY ST_Area(geom) DESC
                       LIMIT 1
                    ))
-              ORDER BY 
+              ORDER BY
                   TS_RANK_CD(fts, query) DESC,
                   similarity DESC
               LIMIT 100000
@@ -182,7 +295,7 @@ async def x_near_y(
     named_place_or_amenity_1: str,
 ):
     pass
-    
+
 
 def x_visible_from_y(
     named_place_or_amenity_0: str,
@@ -204,7 +317,7 @@ def x_between_y_and_z(
 ):
     """
     Parse examples
-    
+
     Gas stations from San Francisco to Peoria -> x_between_y_and_z("gas stations", "San Francisco", "Peoria")
     Amusement parks along the way from Austin to Miami -> x_between_y_and_z("amusement parks", "Austin", "Miami")
     Parks along the way from Miami to Austin -> x_between_y_and_z("parks", "Miami", "Austin")

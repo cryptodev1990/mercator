@@ -17,7 +17,7 @@ def openai_slot_fill(text: str, intent_function_signatures: str, examples = None
     prompt = query_template.render(function_signature=intent_function_signatures, function_examples=examples, user_prompt=text, field_delimiter='||')
     print(prompt)
     response = openai_lib.Completion.create(
-        engine="text-davinci-003",
+        engine="text-ada-001",
         prompt=prompt,
         temperature=0.7,
         max_tokens=256,

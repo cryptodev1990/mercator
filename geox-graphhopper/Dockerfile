@@ -1,6 +1,16 @@
-FROM israelhikingmap/graphhopper
-RUN apt-get update && apt-get install wget
-RUN wget https://download.geofabrik.de/north-america/us/california-latest.osm.pbf
+FROM openjdk:8-jre
+
+COPY config.yml .
+RUN wget https://graphhopper.com/public/releases/graphhopper-web-4.0.jar
+
 EXPOSE 8080
-# RUN /graphhopper/graphhopper.sh --url california-latest.osm.pbf --host 0.0.0.0 --port 8080
-RUN /bin/bash
+
+# For whatever reason, GraphHopper won't let me switch its port
+# So I put it behind a reverse proxy
+RUN apt-get update && apt-get install nginx -y
+RUN unlink /etc/nginx/sites-enabled/default
+COPY reverse-proxy.conf /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+
+COPY start.sh .
+CMD ./start.sh

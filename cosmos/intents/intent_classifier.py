@@ -27,13 +27,12 @@ Output the names of the top 3 intents that best correspond to that input text, i
 def openai_intent_classifier(text: str, intent_dict: Dict[str, Intent]) -> List[str]:
     intents = [f'{v.name}: {v.description}. One example: "{v.examples[0]}". Another example: "{v.examples[1]}"' for k, v in intent_dict.items()]
     prompt = template.render(intents=intents, user_prompt=text)
-    print(prompt)
-    input('press any key to continue')
+    print(f'{len(' '.split(prompt)) tokens}')
     response = openai_lib.Completion.create(
-        engine="text-davinci-003",
+        engine="text-ada-001",
         prompt=prompt,
         temperature=0.7,
-        max_tokens=256,
+        max_tokens=512,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
