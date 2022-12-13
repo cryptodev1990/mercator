@@ -1,0 +1,830 @@
+# https://wiki.openstreetmap.org/wiki/Map_features
+- query: aerialway
+  tags:
+  - aerielway=*
+- query: aeroway
+  tags:
+  - aeroway=*
+- query: amenity
+  tags:
+  - amenity=*
+- query: sustenance amenity
+  tags:
+  - amenity=bar
+  - amenity=biergarten
+  - amenity=cafe
+  - amenity=fast_food
+  - amenity=food_court
+  - amenity=ice_cream
+  - amenity=pub
+  - amenity=restaurant
+- query: education amenity
+  tags:
+  - amenity=college
+  - amenity=driving_school
+  - amenity=kindergarten
+  - amenity=language_school
+  - amenity=library
+  - amenity=toy_library
+  - amenity=training
+  - amenity=music_school
+  - amenity=school
+  - amenity=university
+- query: transportation amenity
+  tags:
+  - amenity=bicycle_parking
+  - amenity=bicycle_repair_station
+  - amenity=bicycle_rental
+  - amenity=boat_rental
+  - amenity=boat_sharing
+  - amenity=bus_station
+  - amenity=car_rental
+  - amenity=car_sharing
+  - amenity=car_wash
+  - amenity=compressed_air
+  - amenity=vehicle_inspection
+  - amenity=charging_station
+  - amenity=ferry_terminal
+  - amenity=fuel
+  - amenity=grit_bin
+  - amenity=motorcycle_parking
+  - amenity=parking
+  - amenity=parking_entrance
+  - amenity=parking_space
+  - amenity=taxi
+- query: financial amenity
+  tags:
+  - amenity=atm
+  - amenity=bureau_de_change
+  - amenity=bank
+- query: healthcare amenity
+  tags:
+  - amenity=baby_hatch
+  - amenity=clinic
+  - amenity=dentist
+  - amenity=doctors
+  - amenity=hospital
+  - amenity=nursing_home
+  - amenity=pharmacy
+  - amenity=social_facility
+  - amenity=veterinary
+- query: entertainment, arts, and culture amenity
+  tags:
+  - amenity=arts_centre
+  - amenity=brothel
+  - amenity=casino
+  - amenity=cinema
+  - amenity=community_centre
+  - amenity=conference_centre
+  - amenity=event_venue
+  - amenity=fountain
+  - amenity=gambling
+  - amenity=love_hotel
+  - amenity=nightclub
+  - amenity=public_bookcase
+  - amenity=social_centre
+  - amenity=stripclub
+  - amenity=studio
+  - amenity=swingerclub
+  - amenity=theatre
+- query: public service amenity
+  tags:
+  - amenity=courthouse
+  - amenity=fire_station
+  - amenity=police
+  - amenity=post_box
+  - amenity=post_depot
+  - amenity=post_office
+  - amenity=prison
+  - amenity=ranger_station
+  - amenity=townhall
+- query: facilities amenity
+  tags:
+  - amenity=bbq
+  - amenity=bench
+  - amenity=dog_toilet
+  - amenity=dressing_room
+  - amenity=drinking_water
+  - amenity=give_box
+  - amenity=mailroom
+  - amenity=parcel_locker
+  - amenity=shelter
+  - amenity=shower
+  - amenity=telephone
+  - amenity=toilets
+  - amenity=water_point
+  - amenity=watering_place
+- query: waste management amenities
+  tags:
+  - amenity=sanitary_dump_station
+  - amenity=recycling
+  - amenity=waste_basket
+  - amenity=waste_disposal
+  - amenity=waste_transfer_station
+- queyr: other amenities
+  tags:
+  - amenity=animal_boarding
+  - amenity=animal_breeding
+  - amenity=animal_shelter
+  - amenity=baking_oven
+  - amenity=childcare
+  - amenity=crematorium
+  - amenity=dive_centre
+  - amenity=funeral_hall
+  - amenity=grave_yard
+  - amenity=hunting_stand
+  - amenity=internet_cafe
+  - amenity=kitchen
+  - amenity=kneipp_water_cure
+  - amenity=lounger
+  - amenity=marketplace
+  - amenity=marketplace
+  - amenity=place_of_worship
+  - amenity=place_of_mourning
+  - amenity=public_bath
+  - amenity=refugee_site
+  - amenity=vending_machine
+- query: barrier
+  tags:
+  - barrier=*
+- query: linear barrier
+  tags:
+  - barrier=cable_barrier
+  - barrier=city_wall
+  - barrier=ditch
+  - barrier=fence
+  - barrier=guard_rail
+  - barrier=handrail
+  - barrier=hedge
+  - barrier=kerb
+  - barrier=retaining_wall
+  - barrier=wall
+- query: access control on highways
+  tags:
+  - barrier=block
+  - barrier=bollard
+  - barrier=border_control
+  - barrier=bump_gate
+  - barrier=bus_trap
+  - barrier=cattle_grid
+  - barrier=chain
+  - barrier=debris
+  - barrier=entrance
+  - barrier=full-height_turnstile
+  - barrier=gate
+  - barrier=hampshire_gate
+  - barrier=height_restrictor
+  - barrier=horse_stile
+  - barrier=jersey_barrier
+  - barrier=kissing_gate
+  - barrier=lift_gate
+  - barrier=log
+  - barrier=motorcycle_barrier
+  - barrier=rope
+  - barrier=sally_port
+  - barrier=stile
+  - barrier=sump_buster
+  - barrier=swing_gate
+  - barrier=toll_booth
+  - barrier=turnstile
+  - barrier=yes
+- query: boundary
+  tags:
+  - boundary=*
+- query: building
+  tags:
+  - building=*
+- query: accomodation building
+  tags:
+  - building=apartments
+  - building=barracks
+  - building=bungalow
+  - building=cabin
+  - building=detached
+  - building=dormitory
+  - building=farm
+  - building=ger
+  - building=hotel
+  - building=house
+  - building=houseboat
+  - building=residential
+  - building=semidetached_house
+  - building=static_caravan
+  - building=stilt_house
+  - building=terrace
+  - building=tree_house
+- query: commercial building
+  tags:
+  - building=commercial
+  - building=industrial
+  - building=kiosk
+  - building=office
+  - building=retail
+  - building=supermarket
+  - building=warehouse
+- query: religious building
+  tags:
+  - building=cathedral
+  - building=chapel
+  - building=church
+  - building=kingdom_hall
+  - building=monastery
+  - building=mosque
+  - building=presbytery
+  - building=religious
+  - building=shrine
+  - building=synagogue
+  - building=temple
+- query: civic/amenity building
+  tags:
+  - building=bakehouse
+  - building=bridge
+  - building=civic
+  - building=college
+  - building=fire_station
+  - building=government
+  - building=gatehouse
+  - building=hospital
+  - building=kindergarten
+  - building=public
+  - building=school
+  - building=toilet
+  - building=train_station
+  - building=transportation
+  - building=university
+- query: agricultural or plant production building
+  tags:
+  - building=barn
+  - building=conservatory
+  - building=cowshed
+  - building=farm_auxiliary
+  - building=greenhouse
+  - building=slurry_tank
+  - building=stable
+  - building=sty
+- query: sports building
+  tags:
+  - building=grandstand
+  - building=pavilion
+  - building=riding_hall
+  - building=sports_hall
+  - building=stadium
+- query: storage building
+  tags:
+  - building=hangar
+  - building=hut
+  - building=shed
+- query: cars building
+  tags:
+  - building=carport
+  - building=garage
+  - building=garages
+  - building=parking
+- query: power or technical buildings
+  tags:
+  - building=digester
+  - building=service
+  - building=transformer_tower
+  - building=water_tower
+  - building=storage_tank
+  - building=silo
+- query: other buildings
+  tags:
+  - building=beach_hut
+  - building=bunker
+  - building=castle
+  - building=construction
+  - building=container
+  - building=military
+  - building=roof
+  - building=ruins
+  - building=tent
+  - building=yes
+- query: craft
+  tags:
+  - craft=*
+- query: emergency
+  tags:
+  - emergency=*
+- query: medical rescue
+  tags:
+  - emergency=ambulance_station
+  - emergency=defibrillator
+  - emergency=landing_site
+  - emergency=emergency_ward_entrance
+- query: firefighters
+  tags:
+  - emergency=dry_rise_inlet
+  - emergency=fire_alarm_box
+  - emergency=fire_extinguisher
+  - emergency=fire_hose
+  - emergency=fire_hydrant
+  - emergency=water_tank
+  - emergency=suction_point
+- query: lifeguards
+  tags:
+  - emergency=lifeguard
+  - emergency=life_ring
+  - lifeguard=tower
+- query: assembly poing
+  tags:
+  - emergency=assembly_point
+- query: other emergency structures
+  tags:
+  - emergency=phone
+  - emergency=siren
+  - emergency=drinking_water
+- query: Geological
+  tags:
+  - geological=*
+- query: Healthcare
+  tags:
+  - healthcare=*
+- query: highway
+  tags:
+  - highway=*
+- query: roads
+  tags:
+  - highway=motorway
+  - highway=trunk
+  - highway=primary
+  - highway=secondary
+  - highway=tertiary
+  - highway=unclassified
+  - highway=residential
+  - highway=unclassified
+- query: link roads
+  tags:
+  - highway=motorway_link
+  - highway=trunk_link
+  - highway=primary_link
+  - highway=secondary_link
+  - highway=tertiary_link
+- query: special road types
+  tags:
+  - highway=living_street
+  - highway=service
+  - highway=pedestrian
+  - highway=track
+  - highway=bus_guideway
+  - highway=escape
+  - highway=raceway
+  - highway=road
+  - highway=busway
+- query: paths
+  tags:
+  - highway=footway
+  - highway=bridleway
+  - highway=steps
+  - highway=corridor
+  - highway=path
+- query: sidewalk or crosswalk
+  tags:
+  - footway=sidewalk
+  - footway=crossing
+  - sidewalk=*
+- query: cycleway
+  tags:
+  - highway=cycleway
+  - cycleway=*
+  - busway=lane
+- query: street parking
+  tags:
+  - parking:*=*
+- query: historic
+  tags:
+  - historic=*
+- query: landuse
+  tags:
+  - landuse=*
+- query: developed land
+  tags:
+  - landuse=commercial
+  - landuse=construction
+  - landuse=industrial
+  - landuse=residential
+  - landuse=retail
+  - landuse=instutional
+- query: rural and agricultural land
+  tags:
+  - landuse=agricultural
+  - landuse=allotments
+  - landuse=farmland
+  - landuse=farmyard
+  - landuse=flowerbed
+  - landuse=forest
+  - landuse=greenhouse_horticulture
+  - landuse=meadow
+  - landuse=orchard
+  - landuse=plant_nursery
+  - landuse=vineyard
+- query: waterbody
+  tags:
+  - landuse=basin
+  - landuse=salt_pond
+  - landuse=reservoir
+- query: other landuse types
+  tags:
+  - landuse=brownfield
+  - landuse=cemetery
+  - landuse=conservation
+  - landuse=depot
+  - landuse=garages
+  - landuse=grass
+  - landuse=greenfield
+  - landuse=landfill
+  - landuse=military
+  - landuse=port
+  - landuse=quarry
+  - landuse=railway
+  - landuse=recreation_ground
+  - landuse=religious
+  - landuse=village_green
+  - landuse=winter_sports
+- query: leisure
+  tags:
+  - leisure=*
+- query: man made
+  tags:
+  - man_made=*
+- query: military
+  tags:
+  - military=*
+- query: natural
+  tags:
+  - natural=*
+- query: vegetation
+  tags:
+  - natural=fell
+  - natural=grassland
+  - natural=heath
+  - natural=moor
+  - natural=scrub
+  - natural=tree
+  - natural=tree_row
+  - natural=tundra
+  - natural=wood
+- query: water related natural features
+  tags:
+  - natural=bay
+  - natural=beach
+  - natural=blowhole
+  - natural=cape
+  - natural=coastline
+  - natural=crevasse
+  - natural=geyser
+  - natural=glacier
+  - natural=hot_spring
+  - natural=isthmus
+  - natural=mud
+  - natural=peninsula
+  - natural=shingle
+  - natural=shoal
+  - natural=spring
+  - natural=strait
+  - natural=water
+  - natural=wetland
+- query: geological natural features
+  tags:
+  - natural=arch
+  - natural=arete
+  - natural=bare_rock
+  - natural=cliff
+  - natural=cave_entrance
+  - natural=dune
+  - natural=earth_bank
+  - natural=fumarole
+  - natural=hill
+  - natural=peak
+  - natural=ridge
+  - natural=rock
+  - natural=saddle
+  - natural=sand
+  - natural=scree
+  - natural=sinkhole
+  - natural=stone
+  - nauatural=valley
+  - natural=volcano
+- query: office
+  tags:
+  - office=*
+- query: place
+  description: >
+    This is used mainly to give details about settlements.
+  tags:
+  - place=*
+- query: populated settlements, urban
+  tags:
+  - place=city
+  - place=borough
+  - place=suburb
+  - place=quarter
+  - place=neighborhood
+  - place=city_block
+- query: populated settlements, urban and rural
+  tags:
+  - place=town
+  - place=village
+  - place=hamlet
+  - place=isolated_dwelling
+  - place=farm
+  - place=allotments
+- query: other places
+  tags:
+  - place=continent
+  - place=archipelago
+  - place=island
+  - place=islet
+  - place=square
+  - place=locality
+  - place=sea
+  - place=ocean
+- query: power
+  description: >
+    These are used to map electrical power generation and distributions systems.
+  tags:
+  - power=*
+- query: public transport
+  description: >
+    This is used for features related to public transport. For example: railway stations, bus stops and services.
+  tags:
+  - public_transport=*
+- query: railway
+  description: >
+    This tag includes all kinds of railways ranging from heavily used mainline railways to an abandoned rail line.
+  tags:
+  - railway=*
+- query: railway tracks
+  tags:
+  - railway=abandoned
+  - railway=construction
+  - railway=disused
+  - railway=funicular
+  - railway=light_rail
+  - railway=miniature
+  - railway=monorail
+  - railway=narrow_gauge
+  - railway=preserved
+  - railway=rail
+  - railway=subway
+  - railway=tram
+- query: railway stations and stops
+  tags:
+  - railway=halt
+  - public_transport=stop_position
+  - public_transport=platform
+  - railway=platform
+  - public_transport=station
+  - railway=station
+  - railway=subway_entrance
+  - railway=tram_stop
+- query: other railways
+  description: >
+    This includes all other railway related features such as level crossings, turntables, washes, etc.
+  tags:
+  - railway=buffer_stop
+  - railway=derail
+  - railway=crossing
+  - railway=level_crossing
+  - railway=tram_level_crossing
+  - landuse=railway
+  - railway=signal
+  - railway=switch
+  - railway=railway_crossing
+  - railway=turntable
+  - railway=roundhouse
+  - railway=traverser
+  - railway=wash
+  - railway=water_crane
+  - railway=ventilation_shaft
+- query: route
+  description: >
+    This is used to describe routes of all different kinds.
+  tags:
+  - route=*
+- query: shop
+  description: >
+    The shop tag is used as a place of business that has stocked goods for sale.
+  tags:
+  - shop=*
+- query: food or beverage shop
+  tags:
+  - shop=alcohol
+  - shop=bakery
+  - shop=beverages
+  - shop=brewing_supplies
+  - shop=butcher
+  - shop=cheese
+  - shop=chocolate
+  - shop=coffee
+  - shop=confectionery
+  - shop=convienience
+  - shop=deli
+  - shop=dairy
+  - shop=farm
+  - shop=frozen_food
+  - shop=greengrocer
+  - shop=health_food
+  - shop=ice_cream
+  - shop=pasta
+  - shop=pastry
+  - shop=seafood
+  - shop=spices
+  - shop=tea
+  - shop=wine
+  - shop=water
+- query: general store, department store or mall
+  tags:
+  - shop=department_store
+  - shop=general
+  - shop=kiosk
+  - shop=mall
+  - shop=supermarket
+  - shop=wholesale
+- query: clothing, shoes, or accessories shope
+  tags:
+  - shop=baby_goods
+  - shop=bag
+  - shop=boutique
+  - shop=clothes
+  - shop=fabric
+  - shop=fashion_accessories
+  - shop=jewelry
+  - shop=leather
+  - shop=sewing
+  - shop=shoes
+  - shop=tailor
+  - shop=watches
+  - shop=wool
+- query: discount store or charity
+  tags:
+  - shop=charity
+  - shop=second_hand
+  - shop=variety_store
+- query: health and beauty shop
+  tags:
+  - shop=beauty
+  - shop=chemist
+  - shop=cosmetics
+  - shop=erotic
+  - shop=hairdresser
+  - shop=hairdresser_supply
+  - shop=hearing_aids
+  - shop=herbalist
+  - shop=medical_supply
+  - shop=nutrition_supplements
+  - shop=optician
+  - shop=perfumery
+  - shop=tattoo
+- query: >
+    Do-it-yourself, household, building materials, or gardening shop
+  tags:
+  - shop=agrian
+  - shop=appliance
+  - shop=bathroom_furnishing
+  - shop=doityourself
+  - shop=electrical
+  - shop=energy
+  - shop=fireplace
+  - shop=florist
+  - shop=garden_centre
+  - shop=garden_furniture
+  - shop=gas
+  - shop=glaziery
+  - shop=groundskeeping
+  - shop=hardware
+  - shop=houseware
+  - shop=locksmith
+  - shop=paint
+  - shop=security
+- query: Furniture and interior shop
+  tags:
+   - shop=antiques
+   - shop=bed
+   - shop=candles
+   - shop=carpet
+   - shop=curtain
+   - shop=doors
+   - shop=flooring
+   - shop=furniture
+   - shop=household_linen
+   - shop=interior_decoration
+   - shop=kitchen
+   - shop=lighting
+   - shop=lamps
+   - shop=tiles
+   - shop=window_blind
+- query:  electronics shop
+  tags:
+  - shop=computer
+  - shop=electronics
+  - shop=hifi
+  - shop=mobile_phone
+  - shop=radiotechnics
+  - shop=telecommunication
+  - shop=vacuum_cleaner
+- query: Outdoors and sports shops
+  tags:
+   - shop=atv
+   - shop=bicycle
+   - shop=boat
+   - shop=car
+   - shop=car_repair
+   - shop=car_parts
+   - shop=caravan
+   - shop=fishing
+   - shop=golf
+   - shop=hunting
+   - shop=jetski
+   - shop=military_surplus
+   - shop=motorcycle
+   - shop=outdoor
+   - shop=scuba_diving
+   - shop=ski
+   - shop=snowmobile
+   - shop=sports
+   - shop=swimming_pool
+   - shop=trailer
+   - shop=tyres
+- query: Art, music, or hobby shop
+  tags:
+   - shop=art
+   - shop=camera
+   - shop=collector
+   - shop=craft
+   - shop=frame
+   - shop=games
+   - shop=model
+   - shop=music
+   - shop=musical_instrument
+   - shop=photo
+   - shop=trophy
+   - shop=video
+   - shop=video_games
+- query: stationary, gifts, books, or newspaper shop
+  tags:
+  - shop=anime
+  - shop=books
+  - shop=gift
+  - shop=lottery
+  - shop=newsagent
+  - shop=stationery
+  - shop=ticket
+- query: sport
+  description: >
+    This is used to provide information about which sports are placed on a facility such as a pitch or stadium. It is intended to be used in conjunction with tags landuse=* or leisure=*.
+  tags:
+  - sport=*
+- query: tourism
+  description: >
+    This is used to map places and things of specific interest to tourists. For example these may be places to see, places to stay and things and places providing support.
+  tags:
+  - tourism=*
+- query: water
+  description: >
+    This is used to describe type of water body and is only used together with natural=water.
+  tags:
+  - water=*
+- query: waterway
+  description: >
+    This is used to described different types of waterways. When mapping the way of a river, stream, drain, canal, etc. these need to be aligned in the direction of the water flow.
+  tags:
+  - waterway=*
+- query: natural watercourses
+  tags:
+  - waterway=river
+  - waterway=riverbank
+  - waterway=stream
+  - waterway=tidal_channel
+- query: man-made waterways
+  tags:
+  - waterway=canal
+  - waterway=drain
+  - waterway=ditch
+  - waterway=pressurised
+  - waterway=fairway
+- query: waterway facilities
+  tags:
+  - waterway=dock
+  - waterway=boatyard
+- query: barriers on waterways
+  tags:
+  - waterway=dam
+  - waterway=weir
+  - waterway=waterfall
+  - waterway=lock_gate
+
+# names:
+# - name
+# - name:en
+# - name:left
+# - name:right
+# - int_name
+# - loc_name
+# - nat_name
+# - official_name
+# - old_name
+# - reg_name
+# - short_name
+# - sorting_name
+# - alt_name - split by ;

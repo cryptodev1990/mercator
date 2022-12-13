@@ -1,0 +1,8 @@
+{
+  "point": { "name": "Point", "tags": {}, "geometry": ["point", "vertex"], "matchScore": 0.1 },
+  "line":
+  { "name": "Line", "tags": { }, "geometry": ["line"], "matchScore": 0.1 },
+  "area":
+  { "name": "Area", "tags": { "area": "yes" }, "geometry": ["area"], "matchScore": 0.1 },
+  "relation": { "name": "Relation", "tags": {}, "geometry": ["relation"], "matchScore": 0.1 }
+}
