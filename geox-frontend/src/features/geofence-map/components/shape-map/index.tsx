@@ -49,25 +49,25 @@ const GeofenceMap = () => {
       if (event.target instanceof HTMLInputElement) {
         return;
       }
-      if (event.key === "Backspace") {
-        if (selectedUuids) {
-          for (const uuid of selectedUuids) {
-            deleteShapes([uuid], {
-              onSuccess: () => {
-                clearSelectedShapeUuids();
-                setCursorMode(EditorMode.ViewMode);
-              },
-            });
-          }
-        }
-        if (multiSelectedShapesUuids) {
-          deleteShapes(multiSelectedShapesUuids, {
-            onSuccess: () => {
-              clearSelectedShapeUuids();
-              setCursorMode(EditorMode.ViewMode);
-            },
-          });
-        }
+      if (event.key === "Backspace" && !event.metaKey && selectedUuids.length) {
+        deleteShapes(selectedUuids, {
+          onSuccess: () => {
+            clearSelectedShapeUuids();
+            setCursorMode(EditorMode.ViewMode);
+          },
+        });
+      }
+      if (
+        event.key === "Backspace" &&
+        event.metaKey &&
+        multiSelectedShapesUuids.length
+      ) {
+        deleteShapes(multiSelectedShapesUuids, {
+          onSuccess: () => {
+            clearSelectedShapeUuids();
+            setCursorMode(EditorMode.ViewMode);
+          },
+        });
       }
     };
 
