@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import UUID4, BaseModel, Field  # pylint: disable=no-name-in-module
 
-from app.core.datatypes import FeatureCollection
+from app.core.datatypes import Feature, FeatureCollection
 from app.parsers.rules import ParsedQuery
 
 
@@ -107,6 +107,17 @@ class OsmSearchResponse(BaseModel):
         }
 
     # pylint: enable=line-too-long
+
+
+class OsmShapeForIdResponse(BaseModel):
+    """Response for querying OSM for given OSM ID."""
+
+    osm_id: int = Field(..., description="The OSM ID from the request.")
+    result: Feature = Field(
+        ..., description="Feature of matching the query. Note that search API returns List[Feature]."
+    )
+    class Config:
+        """Pydantic config."""
 
 
 class OsmRawQueryResponse(BaseModel):

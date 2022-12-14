@@ -14,7 +14,7 @@ from app.crud.osm_search import eval_query
 from app.dependencies import get_conn
 from app.parsers.exceptions import QueryParseError
 from app.parsers.rules import parse
-from app.schemas import OsmRawQueryResponse, OsmSearchResponse
+from app.schemas import OsmRawQueryResponse, OsmSearchResponse, OsmShapeForIdResponse
 
 router = APIRouter(prefix="")
 
@@ -110,3 +110,59 @@ async def _get_raw_query(
     res = await conn.execute(text(query))
     results = [dict(row._mapping) for row in res.fetchall()]  # pylint: disable=protected-access
     return OsmRawQueryResponse(query=query, results=results)
+
+
+@router.get(
+    "/shape_for_id",
+    response_model=OsmShapeForIdResponse,
+    responses={"400": {"description": "Unable to run SQL query."}},
+)
+async def _get_shape_for_id(
+    osm_id: int = Query(
+        ...,
+        example=42298798,
+        description="OSM id.",
+    ),
+    conn: AsyncConnection = Depends(get_conn),
+) -> Any:
+    """Query OSM for a specific ID and return in the Feature struct.
+    Note that the core /query API returns a List[Feature]. Mimick
+    that struct for simplicity, except in this case we only ever have a single
+    row/Feature per queried OSM id.
+
+    ToDo: Possibly switch this to SQL Builder API as in ../crud/osm_search.py et al.
+    """
+    stmt = text(
+        """
+        SELECT
+            jsonb_agg(
+                jsonb_build_object(
+                    'type', 'Feature',
+                    'geometry', ST_AsGeoJSON(geom) :: JSONB,
+                    'properties', jsonb_build_object(
+                        'osm', jsonb_build_object(
+                            'tags', tags,
+                            'type', osm_type,
+                            'id', osm_id
+                        )
+                    ),
+                    'id', osm_id,
+                    'bbox', jsonb_build_array(
+                        ST_XMin(geom), ST_YMin(geom), ST_XMax(geom), ST_YMax(geom)
+                    )
+                )
+            ) AS features
+        FROM osm
+        WHERE TRUE
+            AND osm_id = :osm_id
+        """
+    )
+
+    params = {
+        "osm_id": osm_id,
+    }
+
+    res = await conn.execute(stmt, params)
+    result = res.scalar()
+    assert(len(result) == 1)
+    return OsmShapeForIdResponse(osm_id=osm_id, result=result[0])

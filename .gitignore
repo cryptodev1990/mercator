@@ -13,6 +13,7 @@ __pycache__/
 .env
 /.pnp
 .pnp.js
+*~
 
 # testing
 /coverage
