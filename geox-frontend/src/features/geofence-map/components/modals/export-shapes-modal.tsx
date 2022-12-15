@@ -10,6 +10,11 @@ import { topology } from "topojson-server";
 import { BiCaretDown, BiCaretUp } from "react-icons/bi";
 import clsx from "clsx";
 
+const formatOptions = [
+  { key: "geojson", label: "Geojson" },
+  { key: "topojson", label: "Topojson" },
+];
+
 export const ExportShapesModal = () => {
   const { modal, closeModal } = useUiModals();
   const { numShapes } = useShapes();
@@ -17,10 +22,7 @@ export const ExportShapesModal = () => {
   const offset = useState(0)[0];
   const { data } = useGetAllShapes(limit, offset);
   const [exportable, setExportable] = useState<any>();
-  const [selectedFormat, setSelectedFormat] = useState({
-    key: "geojson",
-    label: "Geojson",
-  });
+  const [selectedFormat, setSelectedFormat] = useState(formatOptions[0]);
 
   useEffect(() => {
     if (data) {
@@ -30,6 +32,7 @@ export const ExportShapesModal = () => {
 
   return (
     <ModalCard
+      isLoading={exportable ? false : true}
       open={modal === UIModalEnum.ExportShapesModal}
       onClose={closeModal}
       onSubmit={() => {
@@ -79,10 +82,7 @@ export const ExportShapesModal = () => {
         <div className="flex p-2">
           <div className="text-black mr-4">Select Export Format:</div>
           <FileFormatSelection
-            options={[
-              { key: "geojson", label: "Geojson" },
-              { key: "topojson", label: "Topojson" },
-            ]}
+            options={formatOptions}
             handleOptionSelect={setSelectedFormat}
             selectedOption={selectedFormat}
           />
