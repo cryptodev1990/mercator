@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CancelIcon, DownloadIcon } from "../../../../common/components/icons";
+import { DownloadIcon } from "../../../../common/components/icons";
 import { useGetAllShapes } from "../../hooks/use-openapi-hooks";
 import { useShapes } from "../../hooks/use-shapes";
 import { useUiModals } from "../../hooks/use-ui-modals";
@@ -7,8 +7,7 @@ import { UIModalEnum } from "../../types";
 import { geoShapesToFeatureCollection } from "../../utils";
 import { ModalCard } from "./modal-card";
 import { topology } from "topojson-server";
-import { BiCaretDown, BiCaretUp } from "react-icons/bi";
-import clsx from "clsx";
+import ControlledDropdown from "common/components/ControlledDropdown";
 
 const formatOptions = [
   { key: "geojson", label: "Geojson" },
@@ -81,7 +80,7 @@ export const ExportShapesModal = () => {
         </p>
         <div className="flex p-2">
           <div className="text-black mr-4">Select Export Format:</div>
-          <FileFormatSelection
+          <ControlledDropdown
             options={formatOptions}
             handleOptionSelect={setSelectedFormat}
             selectedOption={selectedFormat}
@@ -89,55 +88,5 @@ export const ExportShapesModal = () => {
         </div>
       </div>
     </ModalCard>
-  );
-};
-
-// dropdown of the current namespaces
-const FileFormatSelection = ({
-  options,
-  handleOptionSelect,
-  selectedOption,
-}: any) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleDropdownClick = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  return (
-    <div>
-      <div
-        className="flex border p-1 rounded items-center w-24"
-        onClick={handleDropdownClick}
-      >
-        {isDropdownOpen ? (
-          <BiCaretUp className="fill-black" />
-        ) : (
-          <BiCaretDown className="fill-black" />
-        )}
-        <p
-          className={clsx({
-            ["text-black text-sm"]: true,
-          })}
-        >
-          {selectedOption.label || "Select Format"}{" "}
-        </p>
-      </div>
-      {isDropdownOpen && (
-        <div className="absolute bg-white rounded-md shadow-md w-24">
-          {options.map((option: { key: string; label: string }) => (
-            <div
-              className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
-              onClick={() => {
-                handleOptionSelect(option);
-                handleDropdownClick();
-              }}
-            >
-              <p className="text-black text-sm">{option.label}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
   );
 };
