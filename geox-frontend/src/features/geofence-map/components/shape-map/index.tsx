@@ -223,6 +223,8 @@ const GeofenceMap = () => {
         controller={{
           // @ts-ignore
           doubleClickZoom: false,
+          touchRotate: false,
+          dragRotate: false,
         }}
         useDevicePixels={true}
         // @ts-ignore

@@ -121,7 +121,7 @@ export const useLayers = () => {
             addShapesToMultiSelectedShapes(distinctShapes);
             setCursorMode(EditorMode.ViewMode);
           },
-          layerIds: ["gf-mvt"],
+          layerIds: ["gf-mvt", "optimistic-layer"],
           getTentativeFillColor: () => [255, 0, 255, 100],
           getTentativeLineColor: () => [0, 0, 255, 255],
           getTentativeLineDashArray: () => [0, 0],
