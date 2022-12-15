@@ -2,11 +2,17 @@ import { BiCaretDown, BiCaretUp } from "react-icons/bi";
 import clsx from "clsx";
 import { useState } from "react";
 
+type option = { key: string; label: string };
+
 const ControlledDropdown = ({
   options,
   handleOptionSelect,
   selectedOption,
-}: any) => {
+}: {
+  options: option[];
+  handleOptionSelect: Function;
+  selectedOption: option;
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleDropdownClick = () => {
