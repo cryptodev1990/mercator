@@ -17,11 +17,10 @@ export const ExportShapesModal = () => {
   const offset = useState(0)[0];
   const { data } = useGetAllShapes(limit, offset);
   const [exportable, setExportable] = useState<any>();
-  const [selectedFormat, setSelectedFormat] = useState("geojson");
-
-  const handleOptionSelect = (option: string) => {
-    setSelectedFormat(option);
-  };
+  const [selectedFormat, setSelectedFormat] = useState({
+    key: "geojson",
+    label: "Geojson",
+  });
 
   useEffect(() => {
     if (data) {
@@ -39,14 +38,19 @@ export const ExportShapesModal = () => {
           return;
         }
         const exportData =
-          selectedFormat === "geojson" ? exportable : topology({ exportable });
+          selectedFormat.key === "geojson"
+            ? exportable
+            : topology({ exportable });
 
         const dataStr =
             "data:text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(exportData)),
           downloadAnchorNode = document.createElement("a");
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `data.${selectedFormat}`);
+        downloadAnchorNode.setAttribute(
+          "download",
+          `data.${selectedFormat.key}`
+        );
         document.body.appendChild(downloadAnchorNode); // required for firefox
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
@@ -79,8 +83,8 @@ export const ExportShapesModal = () => {
               { key: "geojson", label: "Geojson" },
               { key: "topojson", label: "Topojson" },
             ]}
-            handleOptionSelect={handleOptionSelect}
-            initialOption={{ key: "geojson", label: "Geojson" }}
+            handleOptionSelect={setSelectedFormat}
+            selectedOption={selectedFormat}
           />
         </div>
       </div>
@@ -92,10 +96,9 @@ export const ExportShapesModal = () => {
 const FileFormatSelection = ({
   options,
   handleOptionSelect,
-  initialOption,
+  selectedOption,
 }: any) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(initialOption);
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -126,8 +129,7 @@ const FileFormatSelection = ({
             <div
               className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
               onClick={() => {
-                setSelectedOption(option);
-                handleOptionSelect(option.key);
+                handleOptionSelect(option);
                 handleDropdownClick();
               }}
             >
