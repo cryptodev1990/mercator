@@ -17,7 +17,7 @@ export const ExportShapesModal = () => {
   const offset = useState(0)[0];
   const { data } = useGetAllShapes(limit, offset);
   const [exportable, setExportable] = useState<any>();
-  const [selectedFormat, setSelectedFormat] = useState("Geojson");
+  const [selectedFormat, setSelectedFormat] = useState("geojson");
 
   const handleOptionSelect = (option: string) => {
     setSelectedFormat(option);
@@ -38,30 +38,18 @@ export const ExportShapesModal = () => {
         if (!data) {
           return;
         }
-        if (selectedFormat === "Geojson") {
-          const dataStr =
-              "data:text/json;charset=utf-8," +
-              encodeURIComponent(JSON.stringify(exportable)),
-            downloadAnchorNode = document.createElement("a");
-          downloadAnchorNode.setAttribute("href", dataStr);
-          downloadAnchorNode.setAttribute("download", "data.geojson");
-          document.body.appendChild(downloadAnchorNode); // required for firefox
-          downloadAnchorNode.click();
-          downloadAnchorNode.remove();
-        }
+        const exportData =
+          selectedFormat === "geojson" ? exportable : topology({ exportable });
 
-        if (selectedFormat === "Topojson") {
-          const exportData = topology({ exportable });
-          const dataStr =
-              "data:text/json;charset=utf-8," +
-              encodeURIComponent(JSON.stringify(exportData)),
-            downloadAnchorNode = document.createElement("a");
-          downloadAnchorNode.setAttribute("href", dataStr);
-          downloadAnchorNode.setAttribute("download", "data.topojson");
-          document.body.appendChild(downloadAnchorNode); // required for firefox
-          downloadAnchorNode.click();
-          downloadAnchorNode.remove();
-        }
+        const dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(exportData)),
+          downloadAnchorNode = document.createElement("a");
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `data.${selectedFormat}`);
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
 
         closeModal();
       }}
@@ -85,9 +73,12 @@ export const ExportShapesModal = () => {
           for developer API access.
         </p>
         <FileFormatSelection
-          options={["Geojson", "Topojson"]}
+          options={[
+            { key: "geojson", label: "Geojson" },
+            { key: "topojson", label: "Topojson" },
+          ]}
           handleOptionSelect={handleOptionSelect}
-          initialOption="Geojson"
+          initialOption={{ key: "geojson", label: "Geojson" }}
         />
       </div>
     </ModalCard>
@@ -120,10 +111,10 @@ const FileFormatSelection = ({
             <p
               className={clsx({
                 ["text-black text-sm"]: true,
-                ["opacity-50"]: selectedOption,
+                ["opacity-50"]: selectedOption.key,
               })}
             >
-              {selectedOption || "Select Format"}{" "}
+              {selectedOption.label || "Select Format"}{" "}
             </p>
           </div>
           {isDropdownOpen && (
@@ -134,15 +125,15 @@ const FileFormatSelection = ({
                   onClick={() => setIsDropdownOpen(false)}
                 />
               </div>
-              {options.map((option: string) => (
+              {options.map((option: { key: string; label: string }) => (
                 <div
                   className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
                   onClick={() => {
                     setSelectedOption(option);
-                    handleOptionSelect(option);
+                    handleOptionSelect(option.key);
                   }}
                 >
-                  <p className="text-black text-sm">{option}</p>
+                  <p className="text-black text-sm">{option.label}</p>
                 </div>
               ))}
             </div>
