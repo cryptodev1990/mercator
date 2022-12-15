@@ -8,7 +8,7 @@ export function ModalCard({
   children,
   title,
   icon,
-  isLoading,
+  isLoading = false,
 }: {
   open: boolean;
   onSubmit?: () => void;
