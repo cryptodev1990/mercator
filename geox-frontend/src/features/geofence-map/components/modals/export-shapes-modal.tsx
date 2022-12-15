@@ -7,7 +7,7 @@ import { UIModalEnum } from "../../types";
 import { geoShapesToFeatureCollection } from "../../utils";
 import { ModalCard } from "./modal-card";
 import { topology } from "topojson-server";
-import { BiCaretDown } from "react-icons/bi";
+import { BiCaretDown, BiCaretUp } from "react-icons/bi";
 import clsx from "clsx";
 
 export const ExportShapesModal = () => {
@@ -72,14 +72,17 @@ export const ExportShapesModal = () => {
           </a>{" "}
           for developer API access.
         </p>
-        <FileFormatSelection
-          options={[
-            { key: "geojson", label: "Geojson" },
-            { key: "topojson", label: "Topojson" },
-          ]}
-          handleOptionSelect={handleOptionSelect}
-          initialOption={{ key: "geojson", label: "Geojson" }}
-        />
+        <div className="flex p-2">
+          <div className="text-black mr-4">Select Export Format:</div>
+          <FileFormatSelection
+            options={[
+              { key: "geojson", label: "Geojson" },
+              { key: "topojson", label: "Topojson" },
+            ]}
+            handleOptionSelect={handleOptionSelect}
+            initialOption={{ key: "geojson", label: "Geojson" }}
+          />
+        </div>
       </div>
     </ModalCard>
   );
@@ -99,47 +102,40 @@ const FileFormatSelection = ({
   };
 
   return (
-    <div className="flex flex-row items-center">
-      <div className="flex flex-row items-center">
-        <p className="text-black text-sm mr-2">Select Format</p>
-        <div className="flex flex-row items-center">
-          <div
-            className="flex flex-row items-center justify-center bg-white rounded w-full h-8 m-2 p-2"
-            onClick={handleDropdownClick}
-          >
-            <BiCaretDown className="fill-black" />
-            <p
-              className={clsx({
-                ["text-black text-sm"]: true,
-                ["opacity-50"]: selectedOption.key,
-              })}
-            >
-              {selectedOption.label || "Select Format"}{" "}
-            </p>
-          </div>
-          {isDropdownOpen && (
-            <div className="absolute z-10 bg-white rounded-md shadow-md">
-              <div className="text-black">
-                <CancelIcon
-                  className="float-right m-1 hover:cursor-pointer"
-                  onClick={() => setIsDropdownOpen(false)}
-                />
-              </div>
-              {options.map((option: { key: string; label: string }) => (
-                <div
-                  className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
-                  onClick={() => {
-                    setSelectedOption(option);
-                    handleOptionSelect(option.key);
-                  }}
-                >
-                  <p className="text-black text-sm">{option.label}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+    <div>
+      <div
+        className="flex border p-1 rounded items-center w-24"
+        onClick={handleDropdownClick}
+      >
+        {isDropdownOpen ? (
+          <BiCaretUp className="fill-black" />
+        ) : (
+          <BiCaretDown className="fill-black" />
+        )}
+        <p
+          className={clsx({
+            ["text-black text-sm"]: true,
+          })}
+        >
+          {selectedOption.label || "Select Format"}{" "}
+        </p>
       </div>
+      {isDropdownOpen && (
+        <div className="absolute bg-white rounded-md shadow-md w-24">
+          {options.map((option: { key: string; label: string }) => (
+            <div
+              className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
+              onClick={() => {
+                setSelectedOption(option);
+                handleOptionSelect(option.key);
+                handleDropdownClick();
+              }}
+            >
+              <p className="text-black text-sm">{option.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
