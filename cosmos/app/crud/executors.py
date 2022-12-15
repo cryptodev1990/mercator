@@ -4,7 +4,7 @@ NOTE: Currently, all functions in this file are used as executors for intents an
 import jinja2
 from sqlalchemy import text
 from app.db import engine
-from intents.entity_resolvers import parse_into_meters, parse_into_seconds, Time
+from app.parsers.entity_resolvers import Time, parse_into_meters
 
 
 async def area_near_constraint(
@@ -51,7 +51,6 @@ async def area_near_constraint(
     WITH t1 AS (
     {% for i in range(0, num_pairs) %}
     SELECT ST_Union(ST_Buffer(geom::GEOGRAPHY, :distance_or_time_{{ loop.index0 }})::geometry) AS geom_buff
-    SELECT isochrone(:distance_or_time_{{ loop.index0 }}, geom)
     FROM
       osm, 
       WEBSEARCH_TO_TSQUERY(:named_place_or_amenity_{{ loop.index0 }}) query,
@@ -212,18 +211,17 @@ async def x_within_time_or_distance_of_y(
               WEBSEARCH_TO_TSQUERY(:search_term) query,
               SIMILARITY(:search_term, tags_text) similarity
           WHERE 1=1
+              AND ST_Intersects(geom, ST_GeomFromGeoJSON(:geom_buff))
               AND query @@ fts
               AND similarity > 0.01
           ORDER BY
               TS_RANK_CD(fts, query) DESC,
               similarity DESC
-            WHERE 1=1
-              AND ST_Intersects(geom, ST_GeomFromGeoJSON(:geom_buff))
             LIMIT 100000
         ) AS features
         """), {
             "geom_buff": res.geom_buff,
-            "named_place_or_amenity_0": named_place_or_amenity_0,
+            "search_term": named_place_or_amenity_0,
         })
         res = res.fetchall()
         return res
@@ -286,7 +284,8 @@ async def x_in_y(
               LIMIT 100000
             ) AS features
         """), {"needle": needle_place_or_amenity, "haystack": haystack_place_or_amenity})
-        res = res.fetchall()
+        # TODO what's the right way to do this?
+        res = res.fetchone()[0]  # type: ignore
         return res
 
 

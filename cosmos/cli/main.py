@@ -1,25 +1,23 @@
+"""Utility for testing of intents without
+having to run the entire app. This is useful for debugging and
+development.
+"""
+
 import argparse
 import asyncio
 import os
-import yaml
 
-from intents.intent import hydrate_intents
-from intents.intent_classifier import openai_intent_classifier
+from app.parsers.openai_icsf.openai_intent_classifier import openai_intent_classifier
+from app.models.intent import intents
 
 
 here = os.path.dirname(os.path.abspath(__file__))
-intents = yaml.safe_load(open(os.path.join(here, './intents.yaml')))
-
-
-intents = hydrate_intents(intents)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--intent', type=str, required=False)
     parser.add_argument('--text', type=str, required=True)
-    # example usage:
-    # python cli.py --intent area_near_constraint --text "What is the area near 40.7128, -74.0060?"
     return parser.parse_args()
 
 

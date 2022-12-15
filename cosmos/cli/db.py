@@ -11,8 +11,3 @@ conn = psycopg2.connect(
     user=settings.db.user,
     password=settings.db.password
 )
-
-
-conn.execute("""
-    SELECT 1  -- test health
-""")

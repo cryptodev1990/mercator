@@ -25,6 +25,8 @@ from app.core.datatypes import (
 )
 from app.core.graphhopper import GraphHopper, get_graph_hopper
 from app.db import osm as osm_tbl
+from app.models.intent import intents
+from app.parsers.intents import OpenAIDerivedIntent
 from app.parsers.rules import (
     Buffer,
     Isochrone,
@@ -516,6 +518,9 @@ async def eval_query(
 ) -> FeatureCollection:
     """Evaluate a query"""
     expr = arg.value
+    if isinstance(expr, OpenAIDerivedIntent):
+        # TODO finish
+        return await expr.intent.execute(**expr.args)
     if isinstance(expr, Isochrone):
         return await eval_isochrone(expr, bbox=bbox)
     if isinstance(expr, SpRelWithinTimeOf):

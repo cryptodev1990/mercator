@@ -2,6 +2,7 @@
 import logging
 import uuid
 from typing import Any
+from openai import OpenAIError
 
 import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -13,8 +14,12 @@ from app.core.datatypes import BBox, FeatureCollection
 from app.crud.osm_search import eval_query
 from app.dependencies import get_conn
 from app.parsers.exceptions import QueryParseError
+from app.parsers.intents import OpenAIDerivedIntent, ParsedQuery
 from app.parsers.rules import parse
+
 from app.schemas import OsmRawQueryResponse, OsmSearchResponse, OsmShapeForIdResponse
+from app.parsers.openai_icsf import openai_intent_classifier, openai_slot_fill
+from app.models.intent import intents
 
 router = APIRouter(prefix="")
 
@@ -66,7 +71,23 @@ async def _get_query(
     # unique identifier for this query
     id_ = uuid.uuid4()
     try:
-        parsed_query = parse(query)
+        try:
+            inferred_intents = openai_intent_classifier(query, intents)
+            arg_intent = inferred_intents[0]
+            intent = intents[arg_intent]
+            inferred_slots = intent.parse(query)
+            derived_intent = OpenAIDerivedIntent(
+                intent=intent,
+                type="openai_derived_intent",
+                args=inferred_slots,
+            )
+            parsed_query = ParsedQuery(
+                value=derived_intent,
+                text=query,
+                tokens=[],
+            )
+        except OpenAIError:
+            parsed_query = parse(query)
     except QueryParseError as exc:
         raise HTTPException(status_code=422, detail=f"Unable to parse query: {exc}") from None
     try:

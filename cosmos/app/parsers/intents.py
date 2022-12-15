@@ -6,10 +6,11 @@ The quantity and format of these intents is subject to change.
 import logging
 from datetime import timedelta
 from enum import Enum
-from typing import Any, List, Literal, Union
+from typing import Any, Dict, List, Literal, Union
 
 from pint import Quantity
-from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, Field
+from app.models.intent import Intent  # pylint: disable=no-name-in-module
 
 from app.parsers.time import readable_duration
 
@@ -329,9 +330,18 @@ class Route(_LocalModel):
         return " ".join(words)
 
 
+class OpenAIDerivedIntent(_LocalModel):
+    intent: Any  # TODO how to get the intent class here?
+    type: Literal["openai_derived_intent"] = Field("openai_derived_intent", const=True)
+    args: Dict[str, Any]
+
+    def __str__(self) -> str:
+        return str(self.intent)
+
 QueryIntent = Union[
     Route,
     Isochrone,
+    OpenAIDerivedIntent,
     Buffer,
     SpRelCoveredBy,
     SpRelDisjoint,

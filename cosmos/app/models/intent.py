@@ -1,11 +1,12 @@
+import os
+import yaml
 import inspect
 import re
 
 from typing import Callable, Dict
 
-from intents.parsers import openai_slot_fill
-from intents import executors, parsers
 
+from app.crud import executors
 
 
 class Intent:
@@ -26,6 +27,8 @@ class Intent:
             return lambda x: {"search_term": x}
         elif parse_method == 'openai_slot_fill':
             def curried_openai(text):
+                from app.parsers.openai_icsf import openai_slot_fill
+
                 intent_function_signatures = get_function_signature(intent_name, module=executors)
                 examples = getattr(executors, intent_name).__doc__.split('Parse examples')[1].strip()
                 return openai_slot_fill(text, intent_function_signatures=intent_function_signatures, examples=examples)
@@ -68,7 +71,7 @@ def get_function_signature(intent_name: str, module) -> str:
 
 def _each_intent_has_a_parser(intents_dict: Dict[str, Intent]):
     for _, intent in intents_dict.items():
-        assert intent.parse_method == '-' or intent.parse_method == getattr(parsers, intent.parse_method).__code__.co_name, f'Intent {intent.name} has an invalid parser'
+        assert intent.parse_method == '-' or intent.parse_method == 'openai_slot_fill', f'Intent {intent.name} has an invalid parser'
     return True
 
 
@@ -80,3 +83,8 @@ def _each_intent_has_an_executor(intents_dict: Dict[str, Intent]):
 def _validate_intents(intents_yaml):
     assert _each_intent_has_a_parser(intents_yaml)
     assert _each_intent_has_an_executor(intents_yaml)
+
+
+here = os.path.dirname(os.path.abspath(__file__))
+intents = yaml.safe_load(open(os.path.join(here, './intents.yaml')))
+intents = hydrate_intents(intents)
