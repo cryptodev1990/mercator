@@ -1,11 +1,15 @@
 """
 NOTE: Currently, all functions in this file are used as executors for intents and their signatures are used by OpenAI.
+
+*If you change a function signature, you must also change the corresponding intent in intents.yaml*
+
+This will change when we actually have more users
 """
 import jinja2
 from sqlalchemy import text
 from app.db import engine
+from app.gateways.routes import multiple_concurrent_routes
 from app.parsers.entity_resolvers import Time, parse_into_meters
-
 
 async def area_near_constraint(
     named_place_or_amenity_0: str,
@@ -309,7 +313,7 @@ def x_visible_from_y(
     print(f"Saw {named_place_or_amenity_0} visible from {named_place_or_amenity_1}")
 
 
-def x_between_y_and_z(
+async def x_between_y_and_z(
     named_place_or_amenity_0: str,
     named_place_or_amenity_1: str,
     named_place_or_amenity_2: str,
@@ -325,7 +329,121 @@ def x_between_y_and_z(
     Apple stores on the route to San Jose from San Francisco -> x_between_y_and_z("Apple stores", "San Francisco", "San Jose")
     Find the rest stops between Exit 3 and Exit 40 on I-80 -> x_between_y_and_z("rest stops", "Exit 3", "Exit 40")
     """
-    print(f"Saw {named_place_or_amenity_0} between {named_place_or_amenity_1} and {named_place_or_amenity_2}")
+    async with engine.begin() as conn:  # type: ignore
+        # Get the locations of all three places
+        async def get_geom():
+            res = await conn.execute(text("""
+                WITH a AS (
+                SELECT
+                    ST_Centroid(geom) AS center_geom
+                    , osm_id
+                FROM
+                    osm,
+                    WEBSEARCH_TO_TSQUERY(:anterior) query,
+                    SIMILARITY(:anterior, tags_text) similarity
+                WHERE 1=1
+                    AND query @@ fts
+                    AND similarity > 0.01
+                    LIMIT 5
+                )
+                , p AS (
+                SELECT
+                    ST_Centroid(geom) AS center_geom
+                    , osm_id
+                FROM
+                    osm,
+                    WEBSEARCH_TO_TSQUERY(:posterior) query,
+                    SIMILARITY(:posterior, tags_text) similarity
+                WHERE 1=1
+                    AND query @@ fts
+                    AND similarity > 0.01
+                    LIMIT 5
+                )
+                SELECT ST_X(a.center_geom) AS anterior_x
+                , ST_Y(a.center_geom) AS anterior_y
+                , ST_X(p.center_geom) AS posterior_x
+                , ST_Y(p.center_geom) AS posterior_y
+                , a.osm_id AS anterior_osm_id
+                , p.osm_id AS posterior_osm_id
+                FROM a
+                CROSS JOIN p
+            """), {"anterior": named_place_or_amenity_1, "posterior": named_place_or_amenity_2})
+            if not res:
+                return []
+            rows = res.fetchall()
+            if not rows:
+                return []
+            routes_list = []
+            for row in rows:
+                routes_list.append([
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[3],
+                ])
+            routes = await multiple_concurrent_routes(routes_list)
+            for i, route in enumerate(routes):
+                route['anterior_osm_id'] = rows[i][4]
+                route['posterior_osm_id'] = rows[i][5]
+            res = await conn.execute(text(jinja2.Template("""
+            WITH decoded_routes AS (
+                {% for route in routes %}
+                {% if route.get('paths') and route.get('paths')[0].get('points') %}
+                SELECT 
+                {{ route.get('anterior_osm_id') }} AS anterior_osm_id
+                , {{ route.get('posterior_osm_id') }} AS posterior_osm_id
+                , ST_Buffer(ST_LineFromEncodedPolyline('{{ route.get('paths')[0].get('points') }}')::GEOGRAPHY, 200)::GEOMETRY AS geom
+                {% if not loop.last %} UNION ALL {% endif %}
+                {% endif %}
+                {% endfor %}
+            )
+            , unioned_routes AS (
+                SELECT
+                  ST_UNION(geom) AS unioned_geom
+                FROM decoded_routes
+            )
+            , objects AS (
+            SELECT
+                geom
+                , osm_id
+                , tags
+            FROM
+                osm
+            JOIN unioned_routes ON ST_Intersects(geom, unioned_geom)
+            WHERE 1=1
+                AND WEBSEARCH_TO_TSQUERY(:interior) @@ fts
+            )
+            SELECT JSONB_BUILD_OBJECT(
+                'type', 'FeatureCollection',
+                'features', jsonb_agg(feature)
+            )
+            FROM (
+              SELECT JSONB_BUILD_OBJECT(
+                  'type', 'Feature',
+                  'id', osm_id,
+                  'geometry', ST_AsGeoJSON(geom)::JSONB,
+                  'properties', JSONB_BUILD_OBJECT(
+                      'osm_id', osm_id,
+                      'tags', tags
+                  )
+              ) AS feature
+              FROM (
+                SELECT geom, osm_id, tags FROM objects
+                UNION ALL
+                SELECT geom
+                , -1 AS osm_id
+                , JSONB_BUILD_OBJECT('anterior_osm_id', anterior_osm_id, 'posterior_osm_id', posterior_osm_id) AS tags
+                FROM decoded_routes
+              ) AS subfeatures
+            ) features;
+            """).render(routes=routes)), {"interior": named_place_or_amenity_0})
+            return res.fetchone()[0] if res else []  # type: ignore
+
+        geoms = await get_geom()
+        return geoms
+
+
+    
 
 def x_on_y(
     named_place_or_amenity_0: str,
