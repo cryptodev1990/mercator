@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { useShapes } from "../../../hooks/use-shapes";
@@ -12,22 +12,14 @@ export const UploadModal = () => {
   const { setTentativeShapes } = useShapes();
   const [files, setFiles] = useState<File[]>([]);
   const { modal, closeModal } = useUiModals();
-  const [isUploading, setIsUploading] = useState(false);
 
-  const {
-    fetchGeoJson,
-    geojson,
-    loading,
-    error,
-    convertJsonFileToGeojson,
-    initialUploadSize,
-  } = useConvertedGeojson();
+  const { fetchGeoJson, geojson, loading, convertJsonFileToGeojson } =
+    useConvertedGeojson();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
       if (file.name.endsWith("json")) {
-        const opts: any = {};
-        convertJsonFileToGeojson(file, opts);
+        convertJsonFileToGeojson(file);
       } else {
         fetchGeoJson(file);
       }
@@ -44,28 +36,14 @@ export const UploadModal = () => {
     },
   });
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-      setFiles([]);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (geojson && isUploading) {
-      const prospects = geojson.map((feature) => {
-        return {
-          geojson: feature,
-        };
-      });
-      setTentativeShapes(prospects);
-      setIsUploading(false);
-      closeModal();
-    }
-  }, [geojson, isUploading]);
-
   function onPublish() {
-    setIsUploading(true);
+    const prospects = geojson.map((feature) => {
+      return {
+        geojson: feature,
+      };
+    });
+    setTentativeShapes(prospects);
+    closeModal();
   }
 
   return (
@@ -81,10 +59,9 @@ export const UploadModal = () => {
             getInputProps={getInputProps}
             files={files}
             setFiles={setFiles}
-            loading={loading}
           />
         }
-        loading={loading || isUploading}
+        loading={loading}
       ></UploadModalView>
     </div>
   );
