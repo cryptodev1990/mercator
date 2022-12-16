@@ -40,6 +40,7 @@ export const useConvertedGeojson = () => {
     useContext(GeofencerContext);
 
   function convertJsonFileToGeojson(jsonFile: File, transform?: any) {
+    setLoading(true);
     const reader = new FileReader();
     const blob = new Blob([jsonFile]);
     reader.readAsText(blob);
@@ -55,6 +56,7 @@ export const useConvertedGeojson = () => {
         }
         setGeojson(out);
         setInitialUploadSize(bytes);
+        setLoading(false);
       });
     };
   }
