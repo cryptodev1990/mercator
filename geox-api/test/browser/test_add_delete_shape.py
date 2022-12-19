@@ -63,8 +63,37 @@ def test_index_page_title(page):
     time.sleep(1)
 
     # Look for "1 shape in 1 folder"
-    locator = page.locator('#root > div > div > div > div > div > div > footer > p')
     expect(locator).to_contain_text("1 shape in 1 folder")
+
+    # CRUD metadata
+    page.keyboard.down('Escape')
+    page.mouse.click(450, 450)
+    page.wait_for_selector('#root > div > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div > button')
+    page.click('#root > div > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div > button')
+    time.sleep(1)
+    metadata_locator = page.locator('#root > div > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div:nth-child(2) > section > input')
+    page.wait_for_selector('text="Shape properties"')
+    # expect(metadata_locator).to_contain_text("New Key 1")
+    page.keyboard.down('Escape')
+
+    # Copy the GeoJSON
+    # Click twice to enter  edit mode
+    page.mouse.click(450, 450)
+    time.sleep(1)
+    page.mouse.click(450, 450)
+    # Select the corner, drag it, release
+    time.sleep(1)
+    page.mouse.move(400, 400)
+    time.sleep(1)
+    page.mouse.down()
+    time.sleep(1)
+    page.mouse.move(400, 350, steps=50)
+    time.sleep(1)
+    page.mouse.up()
+    time.sleep(1)
+    page.keyboard.down('Escape')
+    # Copy the GeoJSON
+    # Check if the two GeoJSONs are different
 
     # Select, split, save the shape
     page.mouse.click(450, 450)
@@ -76,6 +105,7 @@ def test_index_page_title(page):
     time.sleep(1)
 
     # Look for "2 shapes in 1 folder"
+    page.keyboard.down('Escape')
     expect(locator).to_contain_text("2 shapes in 1 folder")
 
     # Select the shape and delete it
