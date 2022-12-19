@@ -10,8 +10,8 @@ import { topology } from "topojson-server";
 import ControlledDropdown from "common/components/ControlledDropdown";
 
 const formatOptions = [
-  { key: "geojson", label: "Geojson" },
-  { key: "topojson", label: "Topojson" },
+  { key: "geojson", label: "GeoJSON" },
+  { key: "topojson", label: "TopoJSON" },
 ];
 
 export const ExportShapesModal = () => {
@@ -64,10 +64,10 @@ export const ExportShapesModal = () => {
       }
       title="Download shapes"
     >
-      <div>
+      <div className="text-black">
         <p>
-          Export your shapes as a GeoJSON file. You have <b>{numShapes}</b>{" "}
-          shapes defined.
+          Export your shapes to a flat file, like GeoJSON or TopoJSON. You have{" "}
+          <b>{numShapes}</b> shapes defined.
         </p>
         <br />
         <p>
@@ -78,7 +78,7 @@ export const ExportShapesModal = () => {
           </a>{" "}
           for developer API access.
         </p>
-        <div className="flex p-2">
+        <div className="flex pt-2">
           <div className="text-black mr-4">Select Export Format:</div>
           <ControlledDropdown
             options={formatOptions}
