@@ -13,22 +13,13 @@ function convertBytesToHumanReadable(bytes) {
   return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`;
 }
 
-export function DropZone({
-  getInputProps,
-  getRootProps,
-  files,
-  setFiles,
-  loading,
-}) {
+export function DropZone({ getInputProps, getRootProps, files, setFiles }) {
   const acceptedFilesList = files.map((file) => (
     <li key={file.path} className="flex flex-row space-x-1">
       {file.path} - {convertBytesToHumanReadable(file.size)}
       <button onClick={() => removeFile(file)}>
         <CancelIcon className="hover:fill-red-400" />
       </button>
-      <div>
-        {loading && <Loading type="spin" color="#000" height={20} width={20} />}
-      </div>
     </li>
   ));
 
