@@ -36,7 +36,7 @@ class GraphHopper:
             "locale": "en-US",
             "limit": limit,
             "q": query,
-            "provider": "nominatim",
+            # "provider": "nominatim",
             "key": self._api_key,
         }
         if bbox:
@@ -90,9 +90,9 @@ class GraphHopper:
 
 
 @lru_cache()
-def get_graph_hopper() -> Optional[GraphHopper]:
+def get_graph_hopper() -> GraphHopper:
     """Return a GraphHopper client."""
     settings = get_settings()
     if settings.graph_hopper.api_key:
         return GraphHopper(api_key=settings.graph_hopper.api_key.get_secret_value())
-    return None
+    raise ValueError("GraphHopper API key not set")

@@ -23,6 +23,6 @@ async def eval_query(
     """Evaluate a query"""
     expr = arg.value
     if isinstance(expr, OpenAIDerivedIntent):
-        return await expr.intent.execute(**expr.args)
+        return await expr.intent.execute(**expr.args, conn=conn)
     else:
         raise ValueError("Only OpenAPI derived intents are supported at this time")

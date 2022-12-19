@@ -52,34 +52,12 @@ intents:
       - "Find all the places near a park"
     parser: openai_slot_fill
 
-  - name: x_visible_from_y
-    human_readable: "Places visible from another object"
-    description: "Get all objects visible from another object"
-    examples:
-      - "Find all the places visible from a park"
-      - "Find all the places visible from a highway on-ramp"
-    parser: openai_slot_fill
-
   - name: x_between_y_and_z
     human_readable: "Areas between two other POIs"
     description: "Get a specific category of POIs between one location and another"
     examples:
       - "Find an office between a park and a school"
+      - "Get all the gas stations from New York to Boston"
+      - "convenience stores between Alamo Square and the Golden Gate Bridge"
       - "Find the rest stops between Exit 3 and Exit 40 on I-80"
-    parser: openai_slot_fill
-
-  - name: x_on_y
-    human_readable: "Places on another object"
-    description: "Get all POIs on another location"
-    examples:
-      - Coffee shops on Main St
-      - Grocery stores on Market St
-    parser: openai_slot_fill
-
-  - name: cluster
-    human_readable: "Cluster"
-    description: "Cluster a collection of locations using DBSCAN"
-    examples:
-      - "Cluster the coffee shops in San Francisco"
-      - "Group the benches in San Francisco"
     parser: openai_slot_fill

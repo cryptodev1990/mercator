@@ -1,13 +1,15 @@
 import re
 
-DIST_REGEX = r'^(?P<distance>\d+(?:\.\d+)?)\s?(?P<unit>meters|m|km|mi|miles|kilometers|mile|kilometer|feet|foot|yard|yards)$'
+DIST_REGEX = r'^(?P<distance>\d+(?:\.\d+)?)\s?(?P<unit>meter|meters|m|km|mi|mile|miles|kilometer|kilometers|feet|foot|yard|yards)$'
 TIME_REGEX = r'^(?P<time>\d+(?:\.\d+)?)\s?(?P<unit>s|sec|secs|seconds|second|min|mins|minutes|minute|hr|hrs|hours|hour)$'
 
 def parse_into_meters(
-    text: str,
+    text: str, default_m=None
 ) -> float:
     """Function that takes a string, parses out a distance or a time"""
     text = text.strip()
+    if text == '' and default_m is not None:
+        return default_m
     matched = re.match(DIST_REGEX, text)
     if matched:
         return Distance(text).distance_in_meters

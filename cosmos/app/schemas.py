@@ -127,3 +127,31 @@ class OsmRawQueryResponse(BaseModel):
 
     class Config:
         """Pydantic config options."""
+
+
+class EnrichedEntity(BaseModel):
+    """An entity with additional information"""
+    lookup: str
+    # Can either be "named_place" or "known_category"
+    match_type: str
+    matched_geo_ids: List[str]
+    sql_snippet: str
+
+    def __str__(self):
+        return f"""
+        Entity: {self.lookup}
+        Match type: {self.match_type}
+        Matched geo ids: {self.matched_geo_ids}
+        SQL snippet: {self.sql_snippet}
+        """
+
+    def __repr__(self):
+        return self.__str__()
+
+
+
+class AreaNearConstraintArgument(BaseModel):
+    """Argument for area_near constraint."""
+
+    entity: EnrichedEntity
+    distance_in_meters: float

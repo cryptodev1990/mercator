@@ -6,9 +6,12 @@ development.
 import argparse
 import asyncio
 import os
+import json
 
 from app.parsers.openai_icsf.openai_intent_classifier import openai_intent_classifier
 from app.models.intent import intents
+
+from app.db import engine
 
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +22,17 @@ def parse_args():
     parser.add_argument('--intent', type=str, required=False)
     parser.add_argument('--text', type=str, required=True)
     return parser.parse_args()
+
+
+def make_feature_collection(normal_shape):
+    return {
+        "type": "FeatureCollection",
+        "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": normal_shape
+            }]
+    }
 
 
 def main():
@@ -34,7 +48,11 @@ def main():
     print(intent)
     parsed_intent = intent.parse(text)
     print(parsed_intent)
-    res = asyncio.run(intent.execute(**parsed_intent))
+    async def run_intent():
+        async with engine.begin() as conn:  # type: ignore
+            res = await intent.execute(**parsed_intent, conn=conn)
+            print(json.dumps(make_feature_collection(json.loads(res[0]))))
+    res = asyncio.run(run_intent())
     print(res)
     
 

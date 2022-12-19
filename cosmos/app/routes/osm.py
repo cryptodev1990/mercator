@@ -69,10 +69,14 @@ async def _get_query(
     # unique identifier for this query
     id_ = uuid.uuid4()
     try:
+            # logger.info({"uuid": id_, "query": query})
+            print({"uuid": str(id_), "query": query})
             inferred_intents = openai_intent_classifier(query, intents)
             arg_intent = inferred_intents[0]
             intent = intents[arg_intent]
+            print({"uuid": str(id_), "intent": intent})
             inferred_slots = intent.parse(query)
+            print({"uuid": str(id_), "slots": inferred_slots})
             derived_intent = OpenAIDerivedIntent(
                 intent=intent,
                 args=inferred_slots,

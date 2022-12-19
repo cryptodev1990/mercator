@@ -29,7 +29,7 @@ class Intent:
             def curried_openai(text):
                 from app.parsers.openai_icsf import openai_slot_fill
 
-                intent_function_signatures = get_function_signature(intent_name, module=executors)
+                intent_function_signatures = funcs_for_openai(intent_name, module=executors)
                 examples = getattr(executors, intent_name).__doc__.split('Parse examples')[1].strip()
                 return openai_slot_fill(text, intent_function_signatures=intent_function_signatures, examples=examples)
             return curried_openai
@@ -39,6 +39,9 @@ class Intent:
     @staticmethod
     def get_execute_method(intent_name: str) -> Callable:
         assert getattr(executors, intent_name), f'Executor {intent_name} not found'
+        assert callable(getattr(executors, intent_name)), f'Executor {intent_name} not callable'
+        # assert that one of the arguments is a database connection
+        assert 'conn' in inspect.signature(getattr(executors, intent_name)).parameters.keys(), f'Executor {intent_name} does not have a database connection'
         return getattr(executors, intent_name)
 
     def __str__(self):
@@ -61,12 +64,14 @@ def hydrate_intents(intents_yaml):
     return intents
 
 
-def get_function_signature(intent_name: str, module) -> str:
+def funcs_for_openai(intent_name: str, module) -> str:
     """Use inspect to get the function signatures of the intent executors"""
     signature = inspect.signature(getattr(module, intent_name))
     f = f'def {intent_name}{signature}'
     # assert that the result matches a regex for a python function signature
     assert re.match(r'def \w+\(.*\)', f), f'Function signature {f} does not match regex'
+    # We strip out the database connection info
+    f = re.sub(r', conn: psycopg.AsyncConnection', '', f)
     return f
 
 def _each_intent_has_a_parser(intents_dict: Dict[str, Intent]):
