@@ -30,7 +30,7 @@ class GraphHopper:
         params["key"] = self._api_key
         return httpx.get(url, params=params)
 
-    def geocode(self, query: str, bbox: BBox = None, limit: int = 1) -> Dict[str, Any]:
+    def geocode(self, query: str, bbox: Optional[BBox] = None, limit: int = 1) -> Dict[str, Any]:
         """Geocode a query using OSM Nomatim."""
         params: Dict[str, Any] = {
             "locale": "en-US",

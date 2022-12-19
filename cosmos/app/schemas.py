@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional
 from pydantic import UUID4, BaseModel, Field  # pylint: disable=no-name-in-module
 
 from app.core.datatypes import Feature, FeatureCollection
-from app.parsers.rules import ParsedQuery
 
 
 class Schema(BaseModel):
@@ -25,7 +24,7 @@ class HealthResponse(BaseModel):
     message: HealthStatus
 
 
-OsmQueryParse = ParsedQuery
+OsmQueryParse = Dict[str, Any]
 """Represents information about the parsed query.
 
 The format of this dictionary is subject to change.

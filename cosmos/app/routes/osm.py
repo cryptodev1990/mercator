@@ -11,11 +11,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from app.core.datatypes import BBox, FeatureCollection
-from app.crud.osm_search import eval_query
 from app.dependencies import get_conn
-from app.parsers.exceptions import QueryParseError
+from app.crud.osm_search import eval_query
 from app.parsers.intents import OpenAIDerivedIntent, ParsedQuery
-from app.parsers.rules import parse
 
 from app.schemas import OsmRawQueryResponse, OsmSearchResponse, OsmShapeForIdResponse
 from app.parsers.openai_icsf import openai_intent_classifier, openai_slot_fill
@@ -71,27 +69,22 @@ async def _get_query(
     # unique identifier for this query
     id_ = uuid.uuid4()
     try:
-        try:
             inferred_intents = openai_intent_classifier(query, intents)
             arg_intent = inferred_intents[0]
             intent = intents[arg_intent]
             inferred_slots = intent.parse(query)
             derived_intent = OpenAIDerivedIntent(
                 intent=intent,
-                type="openai_derived_intent",
                 args=inferred_slots,
             )
             parsed_query = ParsedQuery(
                 value=derived_intent,
-                text=query,
-                tokens=[],
+                text=query
             )
-        except OpenAIError:
-            parsed_query = parse(query)
-    except QueryParseError as exc:
+    except OpenAIError as exc:
         raise HTTPException(status_code=422, detail=f"Unable to parse query: {exc}") from None
     try:
-        results = await eval_query(parsed_query, bbox=bbox, limit=limit, conn=conn, offset=offset)
+        results = await eval_query(parsed_query, conn=conn)
     except sqlalchemy.exc.DBAPIError as exc:
         if "canceling statement due to statement timeout" in str(exc.orig):
             raise HTTPException(status_code=504, detail="Query timed out.") from None
@@ -100,7 +93,7 @@ async def _get_query(
         query=query,
         label=str(parsed_query),
         parse=parsed_query,
-        results=results or FeatureCollection(features=[]),  # type: ignore
+        results=results,  # type: ignore
         id=id_,
     )
 
