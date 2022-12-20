@@ -30,7 +30,7 @@ __start_dd_agent() {
       exit 1
   fi
 
-  sed -i "s/MY_DD_API_KEY_PLACEHOLDER/$DD_API_KEY/g" /etc/datadog-agent/datadog.yaml
+  sed "s/MY_DD_API_KEY_PLACEHOLDER/$DD_API_KEY/g" /etc/datadog-agent/datadog.yaml
   service datadog-agent start
 }
 
@@ -51,7 +51,12 @@ __prestart_app() {
     python -m app.initial_data
 }
 
-__start_dd_agent
+# if DD_DISABLED is true, don't start the DataDog agent
+if [ "$DD_DISABLED" = "true" ]
+then
+    __start_dd_agent
+fi
+
 __prestart_app
 
 # Start Uvicorn with live reload if APP_RELOAD is 1 or true; otherwise false

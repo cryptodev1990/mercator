@@ -96,11 +96,11 @@ dev-install:
 
 # Run app locally
 dev:
-	ENV_FILE=.env.local APP_RELOAD=1 overmind start
+	OVERMIND_ENV=.env.local ENV_FILE=.env.local APP_RELOAD=1 overmind start
 
 # Run app locally with overmind
 e2e-test-overmind:
-  ENV_FILE=.env.local APP_RELOAD=1 overmind start -D -f Procfile.dev > /dev/null
+  OVERMIND_ENV=.env.local ENV_FILE=.env.local APP_RELOAD=1 overmind start -D -f Procfile.dev > /dev/null
   ENV_FILE=.env.local ./bin/test-local.sh test/browser/ -x -vvv --base-url http://localhost:3000/ --browser chromium --headed
   overmind stop
 
