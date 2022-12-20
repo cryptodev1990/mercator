@@ -3,6 +3,8 @@
 import logging
 from functools import lru_cache
 from textwrap import dedent
+
+from os.path import abspath, dirname, join
 from typing import Optional, Tuple
 
 # pylint: disable=no-name-in-module
@@ -91,12 +93,17 @@ class Settings(BaseSettings):
 
     db: AppDatabase = AppDatabase()  # type: ignore
     backend_cors_origins: Tuple[str, ...] = Field(default=("*",))
+    resource_path = join(dirname(dirname(dirname(abspath(__file__)))), "resources")
 
     env: AppEnvEnum = Field(..., description="App environment")
     log_level: LogLevel = Field(LogLevel.INFO, description="Python logging module log level")
 
     graph_hopper: GraphHopper = GraphHopper()  # type: ignore
     openai_api_key: SecretStr = Field(...)
+
+    def resource(self, name):
+        return join(self.resource_path, name)
+
 
     class Config:  # noqa
         """Pydantic config."""

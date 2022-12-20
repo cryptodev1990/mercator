@@ -46,6 +46,11 @@ Install dependencies:
 poetry install
 ```
 
+If there is a failure on linux due to a keyring issue, run the following command:
+```
+export PYTHON_KEYRING_BACKEND=keyring.backends.fail.Keyring
+```
+
 Start the app:
 
 ```shell
