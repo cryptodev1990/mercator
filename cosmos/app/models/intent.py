@@ -71,7 +71,7 @@ def funcs_for_openai(intent_name: str, module) -> str:
     # assert that the result matches a regex for a python function signature
     assert re.match(r'def \w+\(.*\)', f), f'Function signature {f} does not match regex'
     # We strip out the database connection info
-    f = re.sub(r', conn: psycopg.AsyncConnection', '', f)
+    f = re.sub(r', conn: .*?AsyncConnection', '', f)
     return f
 
 def _each_intent_has_a_parser(intents_dict: Dict[str, Intent]):
