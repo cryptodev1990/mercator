@@ -7,7 +7,7 @@ This will change when we actually have more users
 """
 from typing import Dict, List
 import jinja2
-from psycopg import AsyncConnection
+from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy import text
 from app.crud.entity_resolve import resolve_entity
 from app.gateways.routes import multiple_concurrent_routes
@@ -32,7 +32,7 @@ def _prepare_args_for_area_near_constraint(collective_dict: Dict) -> List[AreaNe
         if k.startswith('named_place_or_amenity_'):
             if v == "":
                 raise ValueError("Missing a named place or amenity")
-    
+
     num_pairs = int(len(collective_dict) / 2)
     if len(collective_dict) % 2 != 0:
         raise ValueError("Number of elements mismatched")
@@ -254,7 +254,7 @@ async def x_within_time_or_distance_of_y(
         return None
     res = res0.fetchone()  # type: ignore
     res = await conn.execute(text("""
-    -- build a geosjon feature collection  
+    -- build a geosjon feature collection
     SELECT JSONB_BUILD_OBJECT(
         'type', 'FeatureCollection',
         'features', jsonb_agg(feature)
@@ -438,7 +438,7 @@ async def x_between_y_and_z(
     WITH decoded_routes AS (
         {% for route in routes %}
         {% if route.get('paths') and route.get('paths')[0].get('points') %}
-        SELECT 
+        SELECT
         {{ route.get('anterior_osm_id') }} AS anterior_osm_id
         , {{ route.get('posterior_osm_id') }} AS posterior_osm_id
         , ST_Buffer(ST_LineFromEncodedPolyline('{{ route.get('paths')[0].get('points') }}')::GEOGRAPHY, 200)::GEOMETRY AS geom
