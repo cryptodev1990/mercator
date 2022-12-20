@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-MAX_DISTANCE_FOR_SEARCH_KM = 804
+MAX_DISTANCE_FOR_SEARCH_KM = 5000
 
 
 def euclidean(lat0, lng0, lat1, lng1) -> float:
@@ -25,10 +25,14 @@ def euclidean(lat0, lng0, lat1, lng1) -> float:
     >>> distance(-10, -10, 10, 10)
     3139554.1084682713  # Real distance is closer to 3137km
     """
-    return np.sqrt((lat0 - lat1) ** 2 + (lng0 - lng1) ** 2) * 111000
+    dist = np.sqrt((lat0 - lat1) ** 2 + (lng0 - lng1) ** 2) * 111000
+    return dist
 
 
-def named_place(hopeful_place: str, map_centroid: Optional[Point] = None, distance_cap_km=MAX_DISTANCE_FOR_SEARCH_KM) -> EnrichedEntity:
+def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
+    coordinates=[-98.5795, 39.8283],
+    type="Point",
+), distance_cap_km=MAX_DISTANCE_FOR_SEARCH_KM) -> EnrichedEntity:
     """Look up named place in Nominatim via GraphHopper
 
     This is meant to be a rough first guess. We make sure the results is within some distance of the current map centroid.
@@ -37,6 +41,7 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = None, distan
     """
     gh = get_graph_hopper()
     response = gh.geocode(hopeful_place, limit=1)
+    print(response)
     if not response:
         raise Exception("No results from GraphHopper")
     real_place = response["hits"][0]
@@ -46,7 +51,7 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = None, distan
     where = jinja2.Template("""
       AND osm_id = {{ osm_id }}
     """).render(osm_id=osm_id)
-    if map_centroid and euclidean(pt['lat'], pt['lng'], map_centroid.coordinates[1], map_centroid.coordinates[0]) > distance_cap_km:
+    if map_centroid and euclidean(pt['lat'], pt['lng'], map_centroid.coordinates[1], map_centroid.coordinates[0]) > distance_cap_km * 1000:
         logger.info({
             "message": "Named place is too far from map centroid",
             "place": hopeful_place,
@@ -66,6 +71,7 @@ def known_category(hopeful_category: str) -> EnrichedEntity:
 
     TODO is this fast enough? Should each document already know its categories?
     """
+    raise NotImplementedError("This is not implemented yet")
     # TODO - We need our lookup table from keys to our named categories called around here
     # I'll leave this to Jeff A
     where = jinja2.Template("""
