@@ -141,7 +141,7 @@ class Feature(BaseModel):
     id: Union[None, str, int] = Field(None)
     properties: Optional[Dict[str, Any]] = Field(None)
     geometry: Geometry = Field(..., discriminator="type")
-    bbox: Optional[BBox] = Field(None)
+    bbox: Optional[BBox] = None
 
 
 class FeatureCollection(BaseModel):
@@ -149,4 +149,5 @@ class FeatureCollection(BaseModel):
 
     type: Literal["FeatureCollection"] = Field("FeatureCollection", const=True)
     features: List[Feature] = Field(default_factory=list)
-    bbox: Optional[BBox] = Field(None)
+    # make bbox optional
+    bbox: Optional[BBox] = None

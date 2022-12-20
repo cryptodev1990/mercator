@@ -150,8 +150,18 @@ class EnrichedEntity(BaseModel):
 
 
 
-class AreaNearConstraintArgument(BaseModel):
+class BufferedEntity(BaseModel):
     """Argument for area_near constraint."""
 
     entity: EnrichedEntity
     distance_in_meters: float
+
+
+class ExecutorResponse(BaseModel):
+    """Response for executor."""
+
+    geom: FeatureCollection
+    entities: List[EnrichedEntity]
+
+    class Config:
+        """Pydantic config options."""

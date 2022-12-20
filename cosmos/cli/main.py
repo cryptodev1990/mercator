@@ -51,7 +51,7 @@ def main():
     async def run_intent():
         async with engine.begin() as conn:  # type: ignore
             res = await intent.execute(**parsed_intent, conn=conn)
-            print(json.dumps(make_feature_collection(json.loads(res[0]))))
+            print(json.dumps(json.loads(res.json())))
     res = asyncio.run(run_intent())
     print(res)
     

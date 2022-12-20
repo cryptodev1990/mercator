@@ -85,7 +85,37 @@ def known_category(hopeful_category: str) -> EnrichedEntity:
     )
 
 
-def resolve_entity(hopeful_entity: str) -> EnrichedEntity:
+def raw_lookup(hopeful_entity: str) -> EnrichedEntity:
+    """Return the raw lookup as a SQL snippet
+
+    This is meant to be a rough first guess. We make sure the results is within some distance of the current map centroid.
+
+    Returns a SQL snippet to be used in a WHERE clause. 
+    """
+    # TODO is there a SQL injection-safe way to do this?
+    sql_snippet = jinja2.Template("""
+    SELECT osm_id
+    FROM
+      osm,
+      WEBSEARCH_TO_TSQUERY('{{search_term}}') query,
+      SIMILARITY('{{search_term}}', tags_text) similarity
+    WHERE 1=1
+      AND query @@ fts
+      AND similarity > 0.01
+    ORDER BY
+      TS_RANK_CD(fts, query) DESC,
+      similarity DESC
+    LIMIT 100000
+    """).render(search_term=hopeful_entity)
+    return EnrichedEntity(
+        lookup=hopeful_entity,
+        match_type="raw_lookup",
+        matched_geo_ids=[],
+        sql_snippet=sql_snippet,
+    )
+
+
+def resolve_entity(hopeful_entity: str, enabled=set(["named_place", "known_category", "raw_lookup"])) -> EnrichedEntity:
     """Resolve an entity to a SQL snippet
 
     First, we check if the input is a named entity or a known category. If not, we pass the result through.
@@ -93,29 +123,28 @@ def resolve_entity(hopeful_entity: str) -> EnrichedEntity:
     Returns a SQL snippet to be used in a WHERE clause. 
     """
 
-    try:
-        print({
-            "message": "Trying to resolve entity as a named place",
-            "entity": hopeful_entity,
-        })
-        return named_place(hopeful_entity)
-    except Exception as e:
-        print("Failed with exception", e)
-    try:
-        print({
-            "message": "Trying to resolve entity as a known category",
-            "entity": hopeful_entity,
-        })
-        return known_category(hopeful_entity)
-    except Exception as e:
-        print("Failed with exception", e)
+    if "named_place" in enabled:
+        try:
+            print({
+                "message": "Trying to resolve entity as a named place",
+                "entity": hopeful_entity,
+            })
+            return named_place(hopeful_entity)
+        except Exception as e:
+            print("Failed with exception", e)
+    if "known_category" in enabled:
+        try:
+            print({
+                "message": "Trying to resolve entity as a known category",
+                "entity": hopeful_entity,
+            })
+            return known_category(hopeful_entity)
+        except Exception as e:
+            print("Failed with exception", e)
     print({
         "message": "Could not resolve entity",
         "entity": hopeful_entity,
     })
-    return EnrichedEntity(
-        lookup=hopeful_entity,
-        match_type="raw_lookup",
-        matched_geo_ids=[],
-        sql_snippet="",
-    )
+    if "raw_lookup" in enabled:
+        return raw_lookup(hopeful_entity)
+    raise Exception(f"Entity {hopeful_entity} could not be resolved as a " + ", ".join(enabled))
