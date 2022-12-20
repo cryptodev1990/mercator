@@ -86,7 +86,15 @@ async def _get_query(
                 text=query
             )
     except OpenAIError as exc:
-        raise HTTPException(status_code=422, detail=f"Unable to parse query: {exc}") from None
+        logger.warning("Unable to parse query: {exc}")
+        derived_intent = OpenAIDerivedIntent(
+            intent="raw_lookup",
+            args={"search_term": query},
+        )
+        parsed_query = ParsedQuery(
+            value=derived_intent,
+            text=query
+        )
     try:
         results = await eval_query(parsed_query, conn=conn)
     except sqlalchemy.exc.DBAPIError as exc:
