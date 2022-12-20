@@ -68,6 +68,7 @@ async def _get_query(
     """
     # unique identifier for this query
     id_ = uuid.uuid4()
+    intent = None
     try:
             # logger.info({"uuid": id_, "query": query})
             print({"uuid": str(id_), "query": query})
@@ -86,7 +87,8 @@ async def _get_query(
                 text=query
             )
     except OpenAIError as exc:
-        logger.warning("Unable to parse query: {exc}")
+        logger.warning({"msg": "Unable to parse intents with OpenAI", "query": query,
+                        "intent": intent, "query_id": id_})
         derived_intent = OpenAIDerivedIntent(
             intent="raw_lookup",
             args={"search_term": query},
