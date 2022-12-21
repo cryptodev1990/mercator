@@ -184,19 +184,30 @@ const GeofenceMap = () => {
           }
           // if you click already selected shape, deselect it
           if (
+            !selectedUuids.length &&
+            e.leftButton &&
+            cursorMode === EditorMode.ViewMode &&
             e.changedPointers[0].metaKey &&
             multiSelectedShapesUuids.includes(uuid)
           ) {
             removeShapeFromMultiSelectedShapes(uuid);
           }
           if (
+            !selectedUuids.length &&
+            e.leftButton &&
+            cursorMode === EditorMode.ViewMode &&
             e.changedPointers[0].metaKey &&
             !multiSelectedShapesUuids.includes(uuid)
           ) {
             addShapesToMultiSelectedShapes([object]);
           }
 
-          if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
+          if (
+            e.leftButton &&
+            cursorMode === EditorMode.ViewMode &&
+            !isSelected(uuid) &&
+            !e.changedPointers[0].metaKey
+          ) {
             setSelectedShapeUuid(uuid);
           }
         }}

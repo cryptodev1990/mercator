@@ -48,7 +48,9 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
         onChange={(e) => setValue(e.target.value)}
         onBlur={onBlur}
         className={`text-ellipsis ${
-          JSON.stringify(initialValue + "").length > 12 ? "focus:absolute" : ""
+          JSON.stringify(initialValue + "").length > 12
+            ? "focus:absolute focus:w-48"
+            : ""
         } bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-slate-800 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
       />
     );
@@ -78,8 +80,10 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
           onChange={(e) => setValue(e.target.value)}
           onBlur={onBlur}
           className={`text-ellipsis ${
-            JSON.stringify(initialValue + "").length > 9 ? "focus:absolute" : ""
-          } text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-slate-800  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+            JSON.stringify(initialValue + "").length > 9
+              ? "focus:absolute focus:w-48"
+              : ""
+          } text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-slate-800  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 `}
         />
 
         <MdDelete
@@ -180,18 +184,21 @@ const BulkEditModal = () => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden bg-slate-700 text-left shadow-2xl transition-all">
-                <h1 className="text-3xl font-bold text-white bg-slate-800 p-2">
+              <Dialog.Panel
+                className="relative transform overflow-hidden bg-slate-700 text-left shadow-2xl transition-all"
+                style={{ width: 700 }}
+              >
+                <h1 className="text-3xl font-bold text-white bg-slate-800 text-center p-2">
                   Bulk Edit Updte
                 </h1>
-                <div className="p-2">
-                  <div className="overflow-auto">
-                    <table>
+                <div>
+                  <div className="overflow-x-auto p-2">
+                    <table className="w-full p-2 m-1">
                       <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
                           <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                              <th key={header.id} className="w-24">
+                              <th key={header.id}>
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(
