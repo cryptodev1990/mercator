@@ -10,6 +10,7 @@ import json
 
 from app.parsers.openai_icsf.openai_intent_classifier import openai_intent_classifier
 from app.models.intent import intents
+from app.crud.entity_resolve import resolve_entity
 
 from app.db import engine
 
@@ -21,6 +22,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--intent', type=str, required=False)
     parser.add_argument('--text', type=str, required=True)
+    # flag to resolve an entity
+    parser.add_argument('--entity', required=False, action='store_true')
     return parser.parse_args()
 
 
@@ -38,6 +41,12 @@ def make_feature_collection(normal_shape):
 def main():
     args = parse_args()
     text = args.text
+    er = args.entity
+    if er:
+        print("resolving an entity")
+        resolved_entity = resolve_entity(text)
+        print(resolved_entity)
+        return
     if args.intent:
         arg_intent = args.intent 
     else:
