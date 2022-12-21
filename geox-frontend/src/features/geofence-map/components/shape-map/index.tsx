@@ -15,6 +15,7 @@ import { getCursorFromCursorMode } from "./utils";
 import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
+import _ from "lodash";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -199,7 +200,11 @@ const GeofenceMap = () => {
             e.changedPointers[0].metaKey &&
             !multiSelectedShapesUuids.includes(uuid)
           ) {
-            addShapesToMultiSelectedShapes([object]);
+            const filteredObject = {
+              ...object,
+              properties: _.omit(object.properties, ["layerName"]),
+            };
+            addShapesToMultiSelectedShapes([filteredObject]);
           }
 
           if (

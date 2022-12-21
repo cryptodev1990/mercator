@@ -88,7 +88,7 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
 
 const BulkEditModal = () => {
   const { modal, closeModal } = useUiModals();
-  const { multiSelectedShapes } = useSelectedShapes();
+  const { multiSelectedShapes, clearSelectedShapeUuids } = useSelectedShapes();
 
   const [data, setData] = React.useState(() =>
     multiSelectedShapes.map((shape) => shape.properties)
@@ -96,7 +96,7 @@ const BulkEditModal = () => {
 
   const [tableColumns, setTableColumns] = useState<string[]>([]);
 
-  const { setShapeLoading } = useShapes();
+  const { setShapeLoading, tileUpdateCount, setTileUpdateCount } = useShapes();
 
   useEffect(() => {
     const cols = [
@@ -189,7 +189,7 @@ const BulkEditModal = () => {
                         {table.getHeaderGroups().map((headerGroup) => (
                           <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                              <th key={header.id} className="w-24">
+                              <th key={header.id}>
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(
@@ -219,20 +219,20 @@ const BulkEditModal = () => {
                       </tbody>
                     </table>
                   </div>
-                  <div className="flex justify-end mt-2 mb-2">
+                  <div className="flex justify-end p-2">
                     <button
                       type="button"
                       className="btn btn-primary btn-xs"
                       onClick={() => {
                         const headerName = tableColumns.length + 1;
                         setTableColumns((old) => {
-                          return [...old, `Column ${headerName}`];
+                          return [`Column ${headerName}`, ...old];
                         });
                         setData((old) => {
                           return old.map((row) => {
                             return {
-                              ...row,
                               [`Column ${headerName}`]: "",
+                              ...row,
                             };
                           });
                         });
@@ -258,6 +258,8 @@ const BulkEditModal = () => {
                               }
                             );
                         }
+                        clearSelectedShapeUuids();
+                        setTileUpdateCount(tileUpdateCount + 1);
                         setShapeLoading(false);
                       }}
                     >
