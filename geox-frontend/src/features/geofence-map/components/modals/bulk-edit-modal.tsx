@@ -29,33 +29,6 @@ declare module "@tanstack/react-table" {
 
 // Give our default column cell renderer editing superpowers!
 const defaultColumn: Partial<ColumnDef<Properties>> = {
-  cell: ({ getValue, row: { index }, column: { id }, table }) => {
-    const initialValue = getValue();
-    /* eslint-disable */
-    const [value, setValue] = useState(initialValue);
-    const onBlur = () => {
-      table.options.meta?.updateData(index, id, value);
-    };
-
-    /* eslint-disable */
-    useEffect(() => {
-      setValue(initialValue);
-    }, [initialValue]);
-
-    return (
-      <input
-        value={value as string}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={onBlur}
-        className={`text-ellipsis ${
-          JSON.stringify(initialValue + "").length > 12
-            ? "focus:absolute focus:w-48"
-            : ""
-        } bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-slate-800 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-      />
-    );
-  },
-
   header: (prop) => {
     const initialValue = prop.column.id;
     /* eslint-disable */
@@ -74,16 +47,12 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
     }, [initialValue]);
 
     return (
-      <div className="flex bg-gray-50 border border-gray-300 dark:bg-slate-800 p-1">
+      <div className="flex bg-gray-50 border border-gray-300 dark:bg-slate-800 p-1 w-full">
         <input
           value={value as string}
           onChange={(e) => setValue(e.target.value)}
           onBlur={onBlur}
-          className={`text-ellipsis ${
-            JSON.stringify(initialValue + "").length > 9
-              ? "focus:absolute focus:w-48"
-              : ""
-          } text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-slate-800  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 `}
+          className={`text-ellipsis text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block dark:bg-slate-800  dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 `}
         />
 
         <MdDelete
@@ -91,6 +60,28 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
           onClick={() => prop.table.options.meta?.deleteColumn(prop.column.id)}
         />
       </div>
+    );
+  },
+  cell: ({ getValue, row: { index }, column: { id }, table }) => {
+    const initialValue = getValue();
+    /* eslint-disable */
+    const [value, setValue] = useState(initialValue);
+    const onBlur = () => {
+      table.options.meta?.updateData(index, id, value);
+    };
+
+    /* eslint-disable */
+    useEffect(() => {
+      setValue(initialValue);
+    }, [initialValue]);
+
+    return (
+      <input
+        value={value as string}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={onBlur}
+        className={`text-ellipsis bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1 dark:bg-slate-800 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+      />
     );
   },
 };
@@ -198,7 +189,7 @@ const BulkEditModal = () => {
                         {table.getHeaderGroups().map((headerGroup) => (
                           <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                              <th key={header.id}>
+                              <th key={header.id} className="w-24">
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(

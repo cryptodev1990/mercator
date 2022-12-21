@@ -46,6 +46,8 @@ const GuideBar = () => {
     [EditorMode.ViewMode]: "Click a shape to edit or right-click to draw",
     [EditorMode.EditMode]:
       "Click to add points, double-click to finish (ESC to cancel)",
+    [EditorMode.MultiSelectMode]:
+      "Select multiple shapes for property updates or deletion",
     [EditorMode.ModifyMode]: "Drag or delete a point (ESC to cancel)",
     [EditorMode.SplitMode]: "Click through a shape to split it",
     [EditorMode.LassoDrawMode]: "Click and drag to draw",
