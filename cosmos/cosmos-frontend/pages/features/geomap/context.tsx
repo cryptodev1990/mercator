@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { SearchResponse } from "../../../src/search/api";
+import { SearchResponse } from "src/store/search-api";
 
 type Layer = {
   id: number;
@@ -48,7 +48,9 @@ const GeoContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getLayerFromSearchResponse = (searchResponse: SearchResponse) => {
-    const { results } = searchResponse;
+    const {
+      parse_result: { geom },
+    } = searchResponse;
     id += 1;
     const color = [
       Math.random() * 255,
@@ -57,7 +59,7 @@ const GeoContextProvider = ({ children }: { children: React.ReactNode }) => {
     ];
     return {
       id,
-      data: results,
+      data: geom,
       getFillColor: color,
       getLineColor: [255, 255, 255],
       getRadius: 100,

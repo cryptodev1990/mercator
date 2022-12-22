@@ -1,8 +1,8 @@
 import GeoMap from "@/pages/features/geomap/geomap";
 import Image from "next/image";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { clearSearchResults, selectSearchState } from "src/search/search-slice";
+import { useDispatch } from "react-redux";
+import { clearSearchResults } from "src/search/search-slice";
 import ErrorBar from "../error-bar";
 import LayerCardBar from "../layer-card-bar";
 import SearchBar from "../search-bar/search-bar";

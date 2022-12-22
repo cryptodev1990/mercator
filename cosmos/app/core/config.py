@@ -32,7 +32,7 @@ class EngineOptions(BaseModel):
 
     echo: bool = False
     echo_pool: bool = False
-    pool_timeout: int = Field(30, ge=1)
+    pool_timeout: int = Field(60, ge=1)
     pool_recycle: int = -1
     # SQLAlchemy default is 5
     pool_size: int = Field(10, ge=1)
@@ -52,7 +52,7 @@ class AppDatabase(BaseModel):
     options: EngineOptions = EngineOptions()  # type: ignore
     # default timeout = 5 min
     statement_timeout: int = Field(
-        30000,
+        60000,
         ge=0,
         description=dedent(
             """

@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSearchState } from "src/search/search-slice";
 import clsx from "clsx";
 import { selectGeoMapState, setViewport } from "src/shapes/shape-slice";
+import { webGLInit } from "./blend";
+import { Feature } from "src/store/search-api";
 
 const DARK = "mapbox://styles/mapbox/dark-v9";
 const SATELLITE = "mapbox://styles/mapbox/satellite-v9";
@@ -23,7 +25,29 @@ const GeoMap = () => {
 
   useEffect(() => {
     setLocalViewPort({ ...viewport });
+    console.log("testing");
   }, [viewport]);
+
+  useEffect(() => {
+    if (searchResults.length > 0) {
+      const { geom: newGeom } =
+        searchResults[searchResults.length - 1].parse_result;
+      const bounds = snapToBounds({
+        features: (newGeom.features ?? []) as Feature[],
+        type: newGeom.type ?? "FeatureCollection",
+        bbox: [],
+      });
+      if (bounds) {
+        setLocalViewPort({
+          ...localViewPort,
+          longitude: bounds?.longitude,
+          latitude: bounds?.latitude,
+          zoom: 12,
+        });
+      }
+    }
+    console.log("testing");
+  }, [searchResults.length]);
 
   // After 500 ms of inactivity, set the global viewport to be the local viewport
   useEffect(() => {
@@ -42,25 +66,6 @@ const GeoMap = () => {
       }
     };
   }, [localViewPort, dispatch]);
-
-  useEffect(() => {
-    if (searchResults.length > 0) {
-      const bounds = snapToBounds(
-        // @ts-ignore
-        searchResults[searchResults.length - 1].results
-      );
-      if (bounds) {
-        setLocalViewPort({
-          ...localViewPort,
-          longitude: bounds?.longitude,
-          latitude: bounds?.latitude,
-          zoom: 12,
-          // @ts-ignore
-          transitionDuration: 1000,
-        });
-      }
-    }
-  }, [searchResults]);
 
   if (!viewport || !viewport.zoom) {
     return null;
@@ -86,6 +91,7 @@ const GeoMap = () => {
         </div>
         <DeckGL
           initialViewState={localViewPort}
+          onWebGLInitialized={webGLInit}
           onViewStateChange={({ viewState }: any) => {
             const { latitude, longitude, zoom } = viewState;
             setLocalViewPort({ latitude, longitude, zoom });
@@ -99,15 +105,12 @@ const GeoMap = () => {
               ? JSON.stringify(object?.properties)
               : null
           }
-          onHover={({ object }: any) => {
-            console.log(object);
-          }}
           layers={searchResults.map((x, i) => {
             const layerStyle = layerStyles[i];
             return [
               new GeoJsonLayer({
                 id: `geojson-layer-${i}-${layerStyle.id}`,
-                data: x.results,
+                data: x.parse_result.geom,
                 pickingRadius: 5,
                 getRadius: layerStyle.lineThicknessPx,
                 getLineWidth: layerStyle.lineThicknessPx,
@@ -116,7 +119,8 @@ const GeoMap = () => {
                 extruded: false,
                 stroked: true,
                 wireframe: true,
-                radiusMinPixels: 3,
+                pointRadiusMinPixels: 3,
+                lineWidthMinPixels: 5,
                 radiusMaxPixels: 3,
                 getFillColor: layerStyle.paint,
                 getLineColor: layerStyle.paint,

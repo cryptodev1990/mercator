@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { selectSearchState } from "../../src/search/search-slice";
 import AnalysisView from "./analysis-view";
 import ErrorBar from "./error-bar";
+import { useContext } from "react";
 
 type ContextType = {
   component: any;

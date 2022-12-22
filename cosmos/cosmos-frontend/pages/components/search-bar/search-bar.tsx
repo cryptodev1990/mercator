@@ -7,8 +7,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useOsmQueryGetQuery } from "src/store/search-api";
 import { addNewLayer } from "src/lib/add-new-layer";
+import TaggedSearchBar from "./tagged-search-bar";
 
-const SearchBar = () => {
+const SearchBarX = () => {
   const focusRef = useRef<HTMLInputElement>(null);
   // within-component copy of query text
   const { inputText } = useSelector(selectSearchState);
@@ -17,7 +18,6 @@ const SearchBar = () => {
   const { data, isSuccess, isLoading } = useOsmQueryGetQuery(
     {
       query: inputText || "",
-      limit: 10000,
     },
     {
       skip: (inputText?.length ?? false) > 0 ? false : true,
@@ -26,11 +26,10 @@ const SearchBar = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // if the query is successful, clear the query and append the results
     if (isSuccess) {
       addNewLayer(data, dispatch);
     }
-  }, [isSuccess, data, dispatch]);
+  }, [isLoading, isSuccess, data, dispatch]);
 
   useEffect(() => {
     if (focusRef.current) {
@@ -87,5 +86,5 @@ const SearchBar = () => {
     </div>
   );
 };
-
+const SearchBar = TaggedSearchBar;
 export default SearchBar;

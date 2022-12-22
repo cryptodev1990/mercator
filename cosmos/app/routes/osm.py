@@ -41,9 +41,9 @@ async def _get_query(
     This endpoint accepts a natural language query and returns a list of matching features.
     """
     # unique identifier for this query
-    id_ = uuid.uuid4()
     intent, inferred_intents = None, []
     inferred_slots = {}
+    id_ = uuid.uuid4()
     try:
             # logger.info({"uuid": id_, "query": query})
             print({"uuid": str(id_), "query": query})
@@ -84,7 +84,7 @@ async def _get_query(
         query=query,
         parse_result=results,
         intents=inferred_intents,
-        slots=inferred_slots,
+        slots=inferred_slots,  # type: ignore
         id=id_,
     )
 
@@ -169,5 +169,5 @@ async def _get_shape_for_id(
 
     res = await conn.execute(stmt, params)
     result = res.scalar()
-    assert(len(result) == 1)
-    return OsmShapeForIdResponse(osm_id=osm_id, result=result[0])
+    assert(len(result) == 1)  # type: ignore
+    return OsmShapeForIdResponse(osm_id=osm_id, result=result[0])  # type: ignore

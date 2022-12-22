@@ -1265,3 +1265,28 @@ Branch: ``ajd/cache-madness``
 
 - [ ] Voyager: Add redux
   - Actions: set search text, clear search text, add geo layer, clear geo layers
+
+
+## 12-20-22
+
+- Frontend dev issues:
+  - [X] Querying doesn't move to the results page even when results are allegedly resolved
+  - [X] SVGs have magically started to disappear
+  - [X] Intermittent freezing with no logs
+    - All resolved by removing the next.js cache, `.next/`
+
+- Tomorrow, I'll create an end-to-end search, along with the ability to modify the search
+- 1) Enter the query
+  2) Get the results
+  3) You'll see intent candidates, and you can click between them, and get real results based on them
+  4) You'll see the highlighted input text, and you'll have the ability to switch out the search type(?)
+    - This experience is still unclear to me but I know we need it
+      - [San Francisco giants | named_entity] - resolves as a named entity
+      - But on a switch to something like [San Francisco giants | raw_lookup] - you'll change the color of the text?
+        Should some kind of query run immediately?
+
+E.g.
+
+type in `coffee shops in san francisco`
+get back `[[coffee shops | noun class] in [san francisco | named place] | [x in y]]`
+clicking on a result card populates the search bar with this info

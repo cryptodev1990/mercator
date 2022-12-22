@@ -1,6 +1,4 @@
 import Head from "next/head";
-import { setSearchResults } from "src/search/search-slice";
-import { wrapper } from "src/store/store";
 import VoyagerApp from "./components/voyager-app";
 
 export default function Home() {
@@ -15,19 +13,3 @@ export default function Home() {
     </div>
   );
 }
-
-// export const getServerSideProps = wrapper.getServerSideProps(
-//   (store) =>
-//     async ({ params }) => {
-//       // we can set the initial state from here
-//       // we are setting to false but you can run your custom logic here
-//       await store.dispatch(setSearchResults([]));
-//       console.log("State on server", store.getState());
-//       return {
-//         props: {
-//           authState: false,
-//         },
-//       };
-//     }
-// );
-//

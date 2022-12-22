@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { OsmSearchResponse } from "../store/search-api";
+import { SearchResponse } from "../store/search-api";
 import { AppState } from "../store/store";
 import { HYDRATE } from "next-redux-wrapper";
 
 // Type for our state
 export interface SearchState {
-  searchResults: OsmSearchResponse[];
+  searchResults: SearchResponse[];
   inputText: string | null;
 }
 
@@ -28,10 +28,10 @@ export const searchSlice = createSlice({
     },
   },
   reducers: {
-    setSearchResults(state, action: { payload: OsmSearchResponse[] }) {
+    setSearchResults(state, action: { payload: SearchResponse[] }) {
       state.searchResults = action.payload;
     },
-    appendSearchResult(state, action: { payload: OsmSearchResponse }) {
+    appendSearchResult(state, action: { payload: SearchResponse }) {
       state.searchResults = state.searchResults.concat(action.payload);
       state.inputText = "";
     },

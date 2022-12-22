@@ -77,6 +77,7 @@ async def area_near_constraint(
     Parse examples
 
     Within 500m of a public school and 200m of a coffee shop -> area_near_constraint("public school", "500m", "coffee shop", "200m")
+    area 100m from the blue bottle on market and 200m from Twitter HQ and within 1 mile of dolores park -> area_near_constraint("blue bottle on market", "100m", "Twitter HQ", "200m", "dolores park", "1 mile")
     100m of a storefront and 10m of a bike lane -> area_near_constraint("storefront", "100m", "bike lane", "10m")
     20 ft of a bus stop, 100m of a park, and 500m of a hospital -> area_near_constraint("bus stop", "20 ft", "park", "100m", "hospital", "500m")
     Near a bus stop, 100m of a park, and 500m of a hospital -> area_near_constraint("bus stop", "", "park", "100m", "hospital", "500m)
@@ -99,14 +100,10 @@ async def area_near_constraint(
     SELECT ST_Union(ST_Buffer(geom::GEOGRAPHY, {{ rec.distance_in_meters }})::GEOMETRY) AS geom_buff
     FROM
       osm
-    WHERE 1=1
-        AND osm_id IN (
+    JOIN (
             {# If the entity was resolved by the entity resolver, use the matched geo ids #}
-            {% if rec.entity.matched_geo_ids  %}
-                {{ rec.entity.matched_geo_ids | join(',') }}
-            {% elif rec.entity.match_type == "known_category" %}
-                {{ rec.entity.sql_snippet }}
-                LIMIT 50000
+            {% if rec.entity.match_type != "raw_lookup" %}
+                SELECT UNNEST('{ {{ rec.entity.matched_geo_ids | join(',') }} }'::BIGINT []) AS osm_id
             {% else %}
                 {# Otherwise, use the raw text lookup #}
                 SELECT osm_id
@@ -115,14 +112,13 @@ async def area_near_constraint(
                     plainto_tsquery( '{{ rec.entity.lookup }}' ) query,
                     similarity('{{ rec.entity.lookup }}', tags_text) similarity
                 WHERE TRUE
+                    WEBSEARCH_TO_TSQUERY( '{{ rec.entity.lookup }}' ) query
+                WHERE 1=1
                     AND query @@ fts
-                    AND similarity > 0.01
-                ORDER BY
-                    TS_RANK_CD(fts, query) DESC,
-                    similarity DESC
-                LIMIT 50000
+                LIMIT 100000
             {% endif %}
-        )
+    ) queried ON queried.osm_id = osm.osm_id
+    WHERE 1=1
         {# Stack the results set #}
         {% if not loop.last %}UNION ALL{% endif %}
     {% endfor %}
@@ -133,7 +129,7 @@ async def area_near_constraint(
     )
     -- Get the intersection of all the geometries
     , hollow AS (
-      SELECT ST_Union(ST_Difference(a.geom_buff, b.geom_buff)) AS geom_buff
+      SELECT ST_Union(ST_MakeValid(ST_Difference(a.geom_buff, b.geom_buff))) AS geom_buff
       FROM unioned a, t1 b
       WHERE 1=1
         AND ST_Intersects(a.geom_buff, b.geom_buff)
@@ -150,7 +146,7 @@ async def area_near_constraint(
     # Format as geojson polygon
     res = json.loads(res[0])
     print('hey', res)
-    multipolygon = MultiPolygon(type="MultiPolygon", coordinates=[res['coordinates']])
+    multipolygon = MultiPolygon(type="MultiPolygon", coordinates=[res['coordinates']] if res['type'] == 'Polygon' else res['coordinates']) 
     return ExecutorResponse(
         geom=FeatureCollection(
             type="FeatureCollection",
@@ -299,7 +295,7 @@ async def x_within_time_or_distance_of_y(
           AND similarity > 0.01
       ORDER BY
           TS_RANK_CD(fts, query) DESC,
-          similarity DES
+          similarity DESC
         LIMIT 100000
     ) AS features
     """), {

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { OsmSearchResponse } from "src/store/search-api";
+import { SearchResponse } from "src/store/search-api";
 import {
   deleteOneSearchResult,
   selectSearchState,
@@ -11,20 +11,16 @@ import {
   setViewport,
   updateStyle,
 } from "src/shapes/shape-slice";
-import { convertHexToRGB, convertRGBToHex } from "src/lib/add-new-layer";
 import { bbox, centroid } from "@turf/turf";
 import { bboxToZoom } from "src/lib/geo-utils";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
+import { convertHexToRGB, convertRGBToHex } from "src/lib/colors";
 
-const DeleteButton = ({
-  searchResult,
-}: {
-  searchResult: OsmSearchResponse;
-}) => {
+const DeleteButton = ({ searchResult }: { searchResult: SearchResponse }) => {
   const dispatch = useDispatch();
   function onClick() {
-    dispatch(deleteOneSearchResult(searchResult.query));
+    dispatch(deleteOneSearchResult(searchResult?.query));
   }
   return (
     <button
@@ -40,7 +36,7 @@ const HamburgerMenu = ({
   searchResult,
   layerStyle,
 }: {
-  searchResult: OsmSearchResponse;
+  searchResult: SearchResponse;
   layerStyle: LayerStyle;
 }) => {
   return (
@@ -63,22 +59,10 @@ const HamburgerMenu = ({
   );
 };
 
-const ZoomButton = ({ searchResult }: { searchResult: OsmSearchResponse }) => {
+const ZoomButton = ({ searchResult }: { searchResult: SearchResponse }) => {
   const dispatch = useDispatch();
   function onClick() {
-    const { results } = searchResult;
-    const bboxL = bbox(results);
-    // @ts-ignore
-    const center = centroid(results);
-    if (bboxL) {
-      dispatch(
-        setViewport({
-          latitude: center.geometry.coordinates[1],
-          longitude: center.geometry.coordinates[0],
-          zoom: bboxToZoom(bboxL),
-        })
-      );
-    }
+    alert("zoom to " + searchResult?.query);
   }
   return (
     <button
@@ -223,11 +207,19 @@ const LayerCard = ({
   searchResult,
   layerStyle,
 }: {
-  searchResult: OsmSearchResponse;
+  searchResult: SearchResponse;
   layerStyle: LayerStyle;
 }) => {
-  const { query, results } = searchResult;
   const dispatch = useDispatch();
+  if (!searchResult) {
+    console.warn("LayerCard got null search");
+    return null;
+  }
+  const {
+    query,
+    parse_result: { geom },
+  } = searchResult;
+  const numResults = geom?.features?.length ?? 0;
   return (
     <div
       onClick={() => {
@@ -238,7 +230,7 @@ const LayerCard = ({
       <h4 className="font-bold text-ellipsis">{query}</h4>
       <div className="flex flex-row">
         <HamburgerMenu layerStyle={layerStyle} searchResult={searchResult} />
-        <p>{simplur`${results?.features?.length} shape[|s]`}</p>
+        <p>{simplur`${numResults} shape[|s]`}</p>
         <ZoomButton searchResult={searchResult} />
         <ColorPicker
           color={layerStyle.paint}
@@ -274,19 +266,76 @@ const LayerCard = ({
   );
 };
 
+const ColorSquare = ({ color }: { color: number[] }) => {
+  const hexColor = convertRGBToHex(color);
+  return (
+    <div className="relative">
+      <svg
+        className="w-6 h-6"
+        fill={hexColor.toUpperCase()}
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M10 10 L90 10 L90 90 L10 90 Z"
+        />
+      </svg>
+    </div>
+  );
+};
+
+const LayerCardSm = ({
+  searchResult,
+  layerStyle,
+}: {
+  searchResult: SearchResponse;
+  layerStyle: LayerStyle;
+}) => {
+  const query = searchResult?.query;
+  const geom = searchResult?.parse_result.geom;
+  const entities = searchResult?.parse_result.entities;
+
+  if (!query || !geom || !entities) {
+    return null;
+  }
+  return (
+    <div
+      onClick={() => {
+        console.log("clicked");
+      }}
+      className="flex flex-row w-64 bg-slate-100 text-slate-800 shadow-lg p-2 cursor-pointer"
+    >
+      <h4 className="font-bold text-ellipsis">{query}</h4>
+      <div className="flex-none ml-auto">
+        <ColorSquare color={layerStyle.paint} />
+      </div>
+    </div>
+  );
+};
+
 const LayerCardBar = () => {
   const { searchResults } = useSelector(selectSearchState);
   const { layerStyles } = useSelector(selectGeoMapState);
 
+  if (!searchResults) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col items-center justify-start w-full h-[90vh] gap-1 overflow-y-scroll">
-      {searchResults.map((searchResult, i) => (
-        <LayerCard
-          key={i}
-          searchResult={searchResult}
-          layerStyle={layerStyles[i]}
-        />
-      ))}
+      <LayerCard searchResult={searchResults[0]} layerStyle={layerStyles[0]} />
+      {searchResults.map((searchResult, i) => {
+        return (
+          <LayerCardSm
+            key={searchResult.id}
+            searchResult={searchResult}
+            layerStyle={layerStyles[i]}
+          />
+        );
+      })}
     </div>
   );
 };

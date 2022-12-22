@@ -28,7 +28,7 @@ Output the names of the top 3 intents that best correspond to that input text, i
 def openai_intent_classifier(text: str, intent_dict: Dict[str, Intent]) -> List[str]:
     intents = [f'{v.name}: {v.description}. One example: "{v.examples[0]}". Another example: "{v.examples[1]}"' for k, v in intent_dict.items()]
     prompt = template.render(intents=intents, user_prompt=text)
-    print(f"{len(' '.split(prompt))} tokens")
+    print('intent prompt', prompt)
     response = openai_lib.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
@@ -47,7 +47,8 @@ def openai_intent_classifier(text: str, intent_dict: Dict[str, Intent]) -> List[
 
     # We split the result into rows
     rows = response['choices'][0]['text'].split('\n')  # type: ignore
-    rows = [row for row in rows if row != '']
+    rows = [row.strip() for row in rows if row != '']
+    print({'rows': rows})
     assert len(rows) == 3, f'Expected 3 rows, got {len(rows)}'
     assert all([row in intent_dict.keys() for row in rows]), f'Expected rows to be in {intent_dict.keys()}, got {rows}'
     return rows

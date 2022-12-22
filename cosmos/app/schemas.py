@@ -2,6 +2,7 @@
 from enum import Enum
 import json
 from re import L
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import UUID4, BaseModel, Field  # pylint: disable=no-name-in-module
@@ -74,6 +75,7 @@ class ExecutorResponse(BaseModel):
 
     class Config:
         """Pydantic config options."""
+
 class SearchResponse(BaseModel):
 
     id: UUID4 = Field(..., description="Unique ID for this query.")

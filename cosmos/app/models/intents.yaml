@@ -24,16 +24,6 @@ intents:
     # No parser, just pass to the executor
     parser: "-"
 
-  - name: x_within_time_or_distance_of_y
-    human_readable: "Places within a certain drive time or distance of another object"
-    description: "Get all the places within a certain drive time or distance of another object"
-    examples:
-      - "Find all the boutiques within 20 minutes of a school"
-      - "all the power lines within 10 minutes of a highway on-ramp"
-      - "Find all the packing facilities within 10 miles of a highway on-ramp"
-      - "Find all the bike lanes within 3 miles of Golden Gate Bridge"
-    parser: openai_slot_fill
-
   - name: x_in_y
     human_readable: "Places in another object"
     description: "Get all locations within a container location, like an adminstrative boundary"
@@ -41,15 +31,6 @@ intents:
       - "coffee shops in Los Angeles"
       - "San Francisco parks"
       - "Schools, parks, and hospitals in San Francisco"
-    parser: openai_slot_fill
-
-  - name: x_near_y
-    human_readable: "Places near another object (within a 100m radius)"
-    description: "Get all objects near another object"
-    examples:
-      - "Benches near a park"
-      - "Find all the places near a highway on-ramp"
-      - "Find all the places near a park"
     parser: openai_slot_fill
 
   - name: x_between_y_and_z

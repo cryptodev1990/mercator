@@ -4,11 +4,7 @@ const injectedRtkApi = api.injectEndpoints({
     osmQueryGet: build.query<OsmQueryGetApiResponse, OsmQueryGetApiArg>({
       query: (queryArg) => ({
         url: `/osm/query`,
-        params: {
-          query: queryArg.query,
-          bbox: queryArg.bbox,
-          limit: queryArg.limit,
-        },
+        params: { query: queryArg.query },
       }),
     }),
     osmRawQueryGet: build.query<
@@ -26,6 +22,24 @@ const injectedRtkApi = api.injectEndpoints({
         params: { query: queryArg.query },
       }),
     }),
+    osmShapeForIdGet: build.query<
+      OsmShapeForIdGetApiResponse,
+      OsmShapeForIdGetApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/osm/shape_for_id`,
+        params: { osm_id: queryArg.osmId },
+      }),
+    }),
+    autocompleteSearchGet: build.query<
+      AutocompleteSearchGetApiResponse,
+      AutocompleteSearchGetApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/autocomplete/search`,
+        params: { text: queryArg.text, limit: queryArg.limit },
+      }),
+    }),
     get: build.query<GetApiResponse, GetApiArg>({
       query: () => ({ url: `/` }),
     }),
@@ -40,14 +54,10 @@ const injectedRtkApi = api.injectEndpoints({
 });
 export { injectedRtkApi as searchApi };
 export type OsmQueryGetApiResponse =
-  /** status 200 Successful Response */ OsmSearchResponse;
+  /** status 200 Successful Response */ SearchResponse;
 export type OsmQueryGetApiArg = {
   /** Query text string. */
   query: string;
-  /** Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat */
-  bbox?: any[];
-  /** Maximum number of results to return */
-  limit?: number;
 };
 export type OsmRawQueryGetApiResponse =
   /** status 200 Successful Response */ OsmRawQueryResponse;
@@ -60,6 +70,20 @@ export type OsmSqlGetApiResponse =
 export type OsmSqlGetApiArg = {
   /** Query text string */
   query: string;
+};
+export type OsmShapeForIdGetApiResponse =
+  /** status 200 Successful Response */ OsmShapeForIdResponse;
+export type OsmShapeForIdGetApiArg = {
+  /** OSM id. */
+  osmId: number;
+};
+export type AutocompleteSearchGetApiResponse =
+  /** status 200 Successful Response */ string[];
+export type AutocompleteSearchGetApiArg = {
+  /** Incomplete text. */
+  text: string;
+  /** Maximum number of results to return */
+  limit?: number;
 };
 export type GetApiResponse = /** status 200 Successful Response */ any;
 export type GetApiArg = void;
@@ -121,11 +145,23 @@ export type FeatureCollection = {
   features?: Feature[];
   bbox?: any[];
 };
-export type OsmSearchResponse = {
+export type ParsedEntity = {
+  lookup: string;
+  match_type: string;
+  matched_geo_ids: string[];
+};
+export type ExecutorResponse = {
+  geom: FeatureCollection;
+  entities: ParsedEntity[];
+};
+export type SearchResponse = {
+  id: string;
+  parse_result: ExecutorResponse;
   query: string;
-  label?: string;
-  parse?: object;
-  results: FeatureCollection;
+  intents: string[];
+  slots: {
+    [key: string]: string;
+  };
 };
 export type ValidationError = {
   loc: (string | number)[];
@@ -139,10 +175,16 @@ export type OsmRawQueryResponse = {
   query: string;
   results: object[];
 };
+export type OsmShapeForIdResponse = {
+  osm_id: number;
+  result: Feature;
+};
 export const {
   useOsmQueryGetQuery,
   useOsmRawQueryGetQuery,
   useOsmSqlGetQuery,
+  useOsmShapeForIdGetQuery,
+  useAutocompleteSearchGetQuery,
   useGetQuery,
   useHealthGetQuery,
   useHealthDbGetQuery,
