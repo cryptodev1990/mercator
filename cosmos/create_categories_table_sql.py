@@ -8,16 +8,16 @@ template = ENV.from_string("""
 
     DROP TABLE IF EXISTS {{ tablename }};
     CREATE TABLE IF NOT EXISTS {{ tablename }} (
-        osm_id BIGINT NOT NULL, -- REFERENCES osm(osm_id, osm_type),
+        osm_id BIGINT NOT NULL REFERENCES osm (id),
         category TEXT NOT NULL,
-        PRIMARY KEY (osm_id, osm_type, category)
+        PRIMARY KEY (osm_id, category)
     );
 
     BEGIN;
 
     {% for category, preset in presets.items() %}
-    INSERT INTO {{ tablename }} (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, '{{ category }}'
+    INSERT INTO {{ tablename }} (osm_id, category)
+    SELECT id AS osm_id, '{{ category }}'
     FROM osm
     WHERE
     TRUE

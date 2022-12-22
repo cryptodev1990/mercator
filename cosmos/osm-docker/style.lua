@@ -13,9 +13,7 @@ local dtable = osm2pgsql.define_table{
     columns = {
         { column = 'tags',  type = 'jsonb' },
         { column = 'geom',  type = 'geometry', projection = srid, not_null = true},
-        -- values: points, lines, polygons, boundary, or route
-        -- these are the separate tables in generic.lua
-        { column = 'category', type = 'text'}
+        { column = 'id', not_null = true, index = true }
     }
 }
 
@@ -168,6 +166,8 @@ local clean_tags = osm2pgsql.make_clean_tags_func(delete_keys)
 
 -- Helper function that looks at the tags and decides if this is possibly
 -- an area.
+-- The list of tags and their values, as well as the area determination logic
+-- is taken from https://github.com/ideditor/id-area-keys
 
 area_tags = {}
 area_tags["addr:*"] = {}
@@ -241,14 +241,19 @@ function osm2pgsql.process_node(object)
         return
     end
 
+    id = "N" .. object.id,
+
     dtable:insert({
         tags = object.tags,
         geom = object:as_point(),
+        id = id
     })
 
 end
 
 function osm2pgsql.process_way(object)
+    local id = "W" .. object.id
+
     if clean_tags(object.tags) then
         return
     end
@@ -258,6 +263,7 @@ function osm2pgsql.process_way(object)
         dtable:insert({
             tags = object.tags,
             geom = object:as_polygon(),
+            id = id
         })
         return
     end
@@ -265,6 +271,7 @@ function osm2pgsql.process_way(object)
     dtable:insert({
         tags = object.tags,
         geom = object:as_linestring():line_merge(),
+        id = id
     })
 
 end
@@ -273,6 +280,7 @@ function osm2pgsql.process_relation(object)
     -- keep the type tag
     -- local relation_type = object:grab_tag('type')
     local relation_type = object.tags.type
+    local id = "R" .. object.id
 
     if clean_tags(object.tags) then
         return
@@ -283,6 +291,7 @@ function osm2pgsql.process_relation(object)
         dtable:insert({
             tags = object.tags,
             geom = object:as_multipolygon(),
+            id = id
         })
         return
     end
@@ -290,6 +299,7 @@ function osm2pgsql.process_relation(object)
     dtable:insert({
         tags = object.tags,
         geom = object:as_multilinestring():line_merge(),
+        id = id
     })
 
 end

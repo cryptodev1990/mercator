@@ -54,8 +54,9 @@ engine = create_app_engine()
 osm = Table(
     "osm",
     metadata,
+    Column("id", String, primary_key=True),
     Column("osm_id", Integer, primary_key=True),
-    Column("osm_type", String(1), nullable=False),
+    Column("osm_type", String(1)),
     Column("tags", JSONB()),
     Column("geom", Geometry(srid=4326)),
     Column("fts", TSVECTOR, Computed("to_tsvector('english', tags)")),
