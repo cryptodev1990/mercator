@@ -4,6 +4,7 @@ import { DbSyncModal } from "./db-sync-modal";
 import { UploadModal } from "./upload-modal/index";
 import { ExportShapesModal } from "./export-shapes-modal";
 import { SupportModal } from "./support-modal";
+import BulkEditModal from "./bulk-edit-modal";
 
 export const GlobalModal = () => {
   const { modal } = useUiModals();
@@ -13,6 +14,7 @@ export const GlobalModal = () => {
       {modal === UIModalEnum.ExportShapesModal && <ExportShapesModal />}
       {modal === UIModalEnum.DbSyncModal && <DbSyncModal />}
       {modal === UIModalEnum.SupportModal && <SupportModal />}
+      {modal === UIModalEnum.BulkEditModal && <BulkEditModal />}
     </div>
   );
 };

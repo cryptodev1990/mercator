@@ -10,12 +10,8 @@ interface IDictionary<T> {
 // Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
   // add update shape mutation that only modifies shape metadata
-  const {
-    shapeForPropertyEdit,
-    setShapeForPropertyEdit,
-    updateShape,
-    updateLoading,
-  } = useShapes();
+  const { shapeForPropertyEdit, setShapeForPropertyEdit, updateShape } =
+    useShapes();
   const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
     shapeForPropertyEdit?.uuid || ""
   );

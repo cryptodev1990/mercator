@@ -11,6 +11,7 @@ import {
 } from "../../../../common/components/icons";
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { useEffect, useState } from "react";
+import { TbBoxMultiple } from "react-icons/tb";
 
 interface ToolButtonBankMode {
   name: string;
@@ -46,7 +47,7 @@ export const ToolButtonBank = () => {
     },
     {
       name: "MultiSelect",
-      icon: <DrawPolygonIcon />,
+      icon: <TbBoxMultiple />,
       onClick: () => setCursorMode(EditorMode.MultiSelectMode),
       dataTip: "Select Multiple Shapes",
       active: cursorMode === EditorMode.MultiSelectMode,

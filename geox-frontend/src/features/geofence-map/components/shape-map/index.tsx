@@ -15,6 +15,7 @@ import { getCursorFromCursorMode } from "./utils";
 import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
+import _ from "lodash";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -184,19 +185,34 @@ const GeofenceMap = () => {
           }
           // if you click already selected shape, deselect it
           if (
+            !selectedUuids.length &&
+            e.leftButton &&
+            cursorMode === EditorMode.ViewMode &&
             e.changedPointers[0].metaKey &&
             multiSelectedShapesUuids.includes(uuid)
           ) {
             removeShapeFromMultiSelectedShapes(uuid);
           }
           if (
+            !selectedUuids.length &&
+            e.leftButton &&
+            cursorMode === EditorMode.ViewMode &&
             e.changedPointers[0].metaKey &&
             !multiSelectedShapesUuids.includes(uuid)
           ) {
-            addShapesToMultiSelectedShapes([object]);
+            const filteredObject = {
+              ...object,
+              properties: _.omit(object.properties, ["layerName"]),
+            };
+            addShapesToMultiSelectedShapes([filteredObject]);
           }
 
-          if (!isSelected(uuid) && !e.changedPointers[0].metaKey) {
+          if (
+            e.leftButton &&
+            cursorMode === EditorMode.ViewMode &&
+            !isSelected(uuid) &&
+            !e.changedPointers[0].metaKey
+          ) {
             setSelectedShapeUuid(uuid);
           }
         }}

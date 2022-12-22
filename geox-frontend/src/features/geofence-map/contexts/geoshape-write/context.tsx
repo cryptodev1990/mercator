@@ -67,6 +67,7 @@ export interface IGeoShapeWriteContext {
   partialUpdateShape: (shape: GeoShapeUpdate) => void;
   optimisticShapeUpdates: GeoShapeCreate[];
   clearOptimisticShapeUpdates: () => void;
+  setShapeLoading: (value: boolean) => void;
   deletedShapeIdSet: Set<string>;
   updatedShapeIdSet: Set<string>;
 }
@@ -84,6 +85,7 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   updatedShape: null,
   optimisticShapeUpdates: [],
   clearOptimisticShapeUpdates: () => {},
+  setShapeLoading: () => {},
   partialUpdateShape: async () => {},
   deletedShapeIdSet: new Set(),
   updatedShapeIdSet: new Set(),
@@ -252,6 +254,10 @@ export const GeoShapeWriteContextProvider = ({
     });
   }
 
+  function setShapeLoading(value: boolean) {
+    dispatch({ type: "SET_SHAPE_LOADING", value });
+  }
+
   function clearOptimisticShapeUpdates() {
     dispatch({ type: "CLEAR_OPTIMISTIC_SHAPE_UPDATES" });
   }
@@ -272,6 +278,7 @@ export const GeoShapeWriteContextProvider = ({
         updatedShape: state.updatedShape,
         deletedShapeIds: state.deletedShapeIds,
         clearOptimisticShapeUpdates,
+        setShapeLoading,
         deletedShapeIdSet,
         updatedShapeIdSet,
       }}
