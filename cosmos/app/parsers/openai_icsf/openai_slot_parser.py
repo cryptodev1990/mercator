@@ -45,15 +45,14 @@ def openai_slot_fill(text: str, intent_function_signatures: str, examples: Optio
     try:
         # We split the result into rows
         rows = response['choices'][0]['text'].strip().split('\n')  # type: ignore
-        print(rows)
+        print("parsed", rows)
         # We split each row into columns
         rows = [row.split('||') for row in rows if row and row[0] != '']
         # We transform the result into a dict
 
         result = {row[0].strip(): row[1].strip().strip('"').strip("'").strip() for row in rows}
+        if any([v == '' for v in result.values()]):
+            raise OpenAIParseError('OpenAI parse failed with empty values')
     except Exception as e:
         raise OpenAIParseError(f'OpenAI parse failed with error {e}')
     return result
-
-
-

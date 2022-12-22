@@ -12,7 +12,8 @@ from starlette.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
 from app.db import engine
 from app.dependencies import get_conn
-from app.routes.autocomplete import router as autocomplete_router
+# TODO re-enable this, it seems to be missing a dependency and we need to figure out why
+# from app.routes.autocomplete import router as autocomplete_router
 from app.routes.osm import router as osm_router
 from app.schemas import HealthResponse, HealthStatus
 
@@ -37,7 +38,7 @@ app = FastAPI(
 )
 
 app.include_router(osm_router, prefix="/osm", tags=["osm"])
-app.include_router(autocomplete_router, prefix="/autocomplete", tags=["autocomplete"])
+# app.include_router(autocomplete_router, prefix="/autocomplete", tags=["autocomplete"])
 
 
 async def db_health_check(conn: AsyncConnection) -> None:

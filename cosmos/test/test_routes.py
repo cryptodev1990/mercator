@@ -1,9 +1,8 @@
-"""Test """
 from fastapi.testclient import TestClient
-from requests.models import Response
+import httpx
 
 
-def assert_ok(response: Response) -> None:
+def assert_ok(response: httpx.Response) -> None:
     """Check that response is OK"""
     assert response.status_code == 200
 

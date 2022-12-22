@@ -18,6 +18,8 @@ class Intent:
         self.examples = examples
         self.parse_method = parse_method
         self.execute = self.get_execute_method(name)
+        # get number of slots in the execute method
+        self.num_slots = len(inspect.signature(self.execute).parameters) - 1  # subtract 1 for conn
         self.parse = self.get_parse_method(parse_method, name)
 
     @staticmethod

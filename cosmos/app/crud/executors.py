@@ -5,14 +5,16 @@ NOTE: Currently, all functions in this file are used as executors for intents an
 
 This will change when we actually have more users
 """
+from pydoc import resolve
 from typing import Dict, List
 import jinja2
 import json
 from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy import text
 from app.core.datatypes import Feature, FeatureCollection, MultiPolygon, Polygon
+from app.crud import entity_resolve
 from app.crud.entity_resolve import resolve_entity
-from app.gateways.routes import multiple_concurrent_routes
+from app.gateways.geo_route import multiple_concurrent_routes
 from app.parsers.entity_resolvers import Time, parse_into_meters, parse_into_seconds
 from app.schemas import BufferedEntity, ExecutorResponse, ParsedEntity
 
@@ -145,7 +147,6 @@ async def area_near_constraint(
         raise ValueError("No results found")
     # Format as geojson polygon
     res = json.loads(res[0])
-    print('hey', res)
     multipolygon = MultiPolygon(type="MultiPolygon", coordinates=[res['coordinates']] if res['type'] == 'Polygon' else res['coordinates']) 
     return ExecutorResponse(
         geom=FeatureCollection(
@@ -166,29 +167,44 @@ async def area_near_constraint(
 
 
 async def raw_lookup(search_term: str, conn: AsyncConnection):
-    res = await conn.execute(text("""
-        -- build a geosjon feature collection
-        SELECT JSONB_BUILD_OBJECT(
-            'type', 'FeatureCollection',
-            'features', jsonb_agg(feature)
+    # TODO need to enable known_category lookup
+    searched_entity = resolve_entity(search_term, ["raw_lookup"])
+    query = jinja2.Template("""
+    SELECT JSON_BUILD_OBJECT(
+        'type', 'FeatureCollection',
+        'features', JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'type', 'Feature',
+                'id', osm.osm_id,
+                'geometry', ST_AsGeoJSON(geom)::JSON,
+                'properties', tags
+            )
         )
-        FROM (
-          SELECT JSONB_BUILD_OBJECT(
-              'type', 'Feature',
-              'id', osm_id,
-              'geometry', ST_AsGeoJSON(geom)::JSONB,
-              'properties', JSONB_BUILD_OBJECT(
-                  'osm_id', osm_id,
-                  'tags', tags
-              )
-          ) AS feature
-          FROM osm
-          WHERE osm_id IN (
-          )
-      ) AS features
-    """), {"search_term": search_term})
-    res = res.fetchall()
-    return res
+    ) AS feature_collection
+    FROM
+      osm
+    JOIN (
+            {% if needle.match_type != "raw_lookup" %}
+                SELECT UNNEST('{ {{ needle.matched_geo_ids | join(',') }} }'::BIGINT []) AS osm_id
+            {% else %}
+                {# Otherwise, use the raw text lookup #}
+                SELECT osm_id
+                FROM
+                    osm,
+                    plainto_tsquery( '{{ needle.lookup }}' ) query
+                WHERE 1=1
+                    AND query @@ fts
+                LIMIT 100000
+            {% endif %}
+    ) queried ON queried.osm_id = osm.osm_id
+    """).render(needle=searched_entity)
+    geojson = (await conn.execute(text(query))).scalar()
+    if geojson is None:
+        raise ValueError("No results found")
+    return ExecutorResponse(
+        geom=geojson,  # type: ignore
+        entities=[ParsedEntity(**searched_entity.__dict__)],
+    )
 
 
 async def x_within_time_or_distance_of_y(

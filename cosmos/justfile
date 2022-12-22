@@ -17,6 +17,9 @@ test +ARGS='--cov=app test':
 	{{ source_venv }}
 	pytest {{ ARGS }}
 
+dev:
+	just run
+
 run:
 	#!/bin/zsh
 	{{ source_venv }}

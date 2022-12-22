@@ -12,10 +12,11 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from app.dependencies import get_conn
 from app.crud.osm_search import eval_query
 from app.parsers.intents import OpenAIDerivedIntent, ParsedQuery
+from app.parsers.openai_icsf.openai_slot_parser import OpenAIParseError
 
 from app.schemas import OsmRawQueryResponse, OsmShapeForIdResponse, SearchResponse
 from app.parsers.openai_icsf import openai_intent_classifier, openai_slot_fill
-from app.models.intent import intents
+from app.models.intent import Intent, intents
 
 router = APIRouter(prefix="")
 
@@ -52,7 +53,9 @@ async def _get_query(
             intent = intents[arg_intent]
             print({"uuid": str(id_), "intent": intent})
             inferred_slots = intent.parse(query)
-            print({"uuid": str(id_), "slots": inferred_slots})
+            num_inferred_slots = len(inferred_slots.keys())
+            print({"uuid": str(id_), "slots": inferred_slots, "num_slots": num_inferred_slots})
+            assert num_inferred_slots >= intent.num_slots, "Parse will not match the executor"
             derived_intent = OpenAIDerivedIntent(
                 intent=intent,
                 args=inferred_slots,
@@ -61,11 +64,11 @@ async def _get_query(
                 value=derived_intent,
                 text=query
             )
-    except OpenAIError as exc:
+    except (OpenAIError, OpenAIParseError, AssertionError) as exc:
         logger.warning({"msg": "Unable to parse intents with OpenAI", "query": query,
                         "intent": intent, "query_id": id_})
         derived_intent = OpenAIDerivedIntent(
-            intent="raw_lookup",
+            intent=intents["raw_lookup"],
             args={"search_term": query},
         )
         parsed_query = ParsedQuery(

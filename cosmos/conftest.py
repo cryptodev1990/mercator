@@ -1,5 +1,7 @@
 """Pytest configuration file for the project."""
 import pytest
+from fastapi.testclient import TestClient
+
 
 import asyncio
 
@@ -7,6 +9,7 @@ import logging
 import os
 import sys
 from pathlib import Path
+from app.main import app
 
 import pytest_asyncio
 

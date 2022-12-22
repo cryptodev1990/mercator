@@ -1,6 +1,5 @@
 """Autocomplete API"""
 
-
 from app.core.config import get_settings
 from fast_autocomplete import AutoComplete
 from fastapi import APIRouter, Query

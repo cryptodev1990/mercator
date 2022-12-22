@@ -7,9 +7,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useOsmQueryGetQuery } from "src/store/search-api";
 import { addNewLayer } from "src/lib/add-new-layer";
-import TaggedSearchBar from "./tagged-search-bar";
 
-const SearchBarX = () => {
+const SearchBar = () => {
   const focusRef = useRef<HTMLInputElement>(null);
   // within-component copy of query text
   const { inputText } = useSelector(selectSearchState);
@@ -86,5 +85,4 @@ const SearchBarX = () => {
     </div>
   );
 };
-const SearchBar = TaggedSearchBar;
 export default SearchBar;
