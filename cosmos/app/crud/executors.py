@@ -103,16 +103,19 @@ async def area_near_constraint(
     WHERE 1=1
         AND osm_id IN (
             {# If the entity was resolved by the entity resolver, use the matched geo ids #}
-            {% if rec.entity.match_type != "raw_lookup" %}
+            {% if rec.entity.matched_geo_ids  %}
                 {{ rec.entity.matched_geo_ids | join(',') }}
+            {% elif rec.entity.match_type == "known_category" %}
+                {{ rec.entity.sql_snippet }}
+                LIMIT 50000
             {% else %}
-            {# Otherwise, use the raw text lookup #}
+                {# Otherwise, use the raw text lookup #}
                 SELECT osm_id
                 FROM
                     osm,
-                    WEBSEARCH_TO_TSQUERY( '{{ rec.entity.lookup }}' ) query,
-                    SIMILARITY('{{ rec.entity.lookup }}', tags_text) similarity
-                WHERE 1=1
+                    plainto_tsquery( '{{ rec.entity.lookup }}' ) query,
+                    similarity('{{ rec.entity.lookup }}', tags_text) similarity
+                WHERE TRUE
                     AND query @@ fts
                     AND similarity > 0.01
                 ORDER BY
@@ -186,7 +189,6 @@ async def raw_lookup(search_term: str, conn: AsyncConnection):
           ) AS feature
           FROM osm
           WHERE osm_id IN (
-
           )
       ) AS features
     """), {"search_term": search_term})
@@ -217,8 +219,8 @@ async def x_within_time_or_distance_of_y(
             SELECT COUNT(*) AS num_rows
             FROM
                 osm,
-                WEBSEARCH_TO_TSQUERY(:named_place_or_amenity_0) query,
-                SIMILARITY(:named_place_or_amenity_0, tags_text) similarity
+                plainto_tsquery(:named_place_or_amenity_0) query,
+                similarity(:named_place_or_amenity_0, tags_text) similarity
             WHERE 1=1
                 AND query @@ fts
                 AND similarity > 0.01
@@ -247,8 +249,8 @@ async def x_within_time_or_distance_of_y(
             ) AS feature
             FROM
                 osm,
-                WEBSEARCH_TO_TSQUERY(:named_place_or_amenity_1) query,
-                SIMILARITY(:named_place_or_amenity_1, tags_text) similarity
+                plainto_tsquery(:named_place_or_amenity_1) query,
+                similarity(:named_place_or_amenity_1, tags_text) similarity
             WHERE 1=1
                 AND query @@ fts
                 AND similarity > 0.01
@@ -271,7 +273,7 @@ async def x_within_time_or_distance_of_y(
     )
 
     geom = _extract_first_geom(geom_with_entities)
-    
+
     res = await conn.execute(text("""
     -- build a geosjon feature collection
     SELECT JSONB_BUILD_OBJECT(
@@ -290,8 +292,8 @@ async def x_within_time_or_distance_of_y(
         ) AS feature
       FROM
           osm,
-          WEBSEARCH_TO_TSQUERY(:search_term) query,
-          SIMILARITY(:search_term, tags_text) similarity
+          plainto_tsquery(:search_term) query,
+          similarity(:search_term, tags_text) similarity
       WHERE 1=1
           AND ST_Intersects(geom, ST_GeomFromGeoJSON(:geom_buff))
           AND query @@ fts
@@ -375,6 +377,10 @@ async def x_near_y(
     named_place_or_amenity_1: str,
     conn: AsyncConnection
 ):
+    """
+    Parse examples
+
+    """
     pass
 
 

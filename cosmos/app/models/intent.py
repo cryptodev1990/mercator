@@ -28,7 +28,6 @@ class Intent:
         elif parse_method == 'openai_slot_fill':
             def curried_openai(text):
                 from app.parsers.openai_icsf import openai_slot_fill
-
                 intent_function_signatures = funcs_for_openai(intent_name, module=executors)
                 examples = getattr(executors, intent_name).__doc__.split('Parse examples')[1].strip()
                 return openai_slot_fill(text, intent_function_signatures=intent_function_signatures, examples=examples)
@@ -71,7 +70,7 @@ def funcs_for_openai(intent_name: str, module) -> str:
     # assert that the result matches a regex for a python function signature
     assert re.match(r'def \w+\(.*\)', f), f'Function signature {f} does not match regex'
     # We strip out the database connection info
-    f = re.sub(r', conn: .*?AsyncConnection', '', f)    
+    f = re.sub(r', conn: .*?AsyncConnection', '', f)
     # We strip out the return type
     f = re.sub(r' -> .*$', '', f)
     return f

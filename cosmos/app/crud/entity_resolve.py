@@ -1,6 +1,8 @@
 import numpy as np
 
-from typing import Dict, List, Optional
+from app.data.presets import Preset
+from app.parsers.categories import category_lookup
+from typing import Optional
 import jinja2
 from app.core.datatypes import Point
 from app.core.graphhopper import get_graph_hopper
@@ -15,7 +17,7 @@ MAX_DISTANCE_FOR_SEARCH_KM = 5000
 
 def euclidean(lat0, lng0, lat1, lng1) -> float:
     """Calculate the distance between two lat-lon points and return result in meters
-    
+
     This is also Eucledian distance, not geodesic distance. But it's good enough for our purposes.
 
     Examples
@@ -37,7 +39,7 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
 
     This is meant to be a rough first guess. We make sure the results is within some distance of the current map centroid.
 
-    Returns a SQL snippet to be used in a WHERE clause. 
+    Returns a SQL snippet to be used in a WHERE clause.
     """
     gh = get_graph_hopper()
     response = gh.geocode(hopeful_place, limit=1)
@@ -66,31 +68,38 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
     )
 
 
-def known_category(hopeful_category: str) -> EnrichedEntity:
-    """Match a known category to its relevant OSM lookup
+class NoCategoryMatchError(Exception):
+    pass
 
-    TODO is this fast enough? Should each document already know its categories?
+from app.core.jinja_utils import squote
+
+def known_category(hopeful_category: str) -> EnrichedEntity:
+    """Match a known category to its relevant OSM lookup.
     """
-    raise NotImplementedError("This is not implemented yet")
-    # TODO - We need our lookup table from keys to our named categories called around here
-    # I'll leave this to Jeff A
-    where = jinja2.Template("""
-      AND tags->'{{ category }}' IS NOT NULL
-    """).render(category=hopeful_category)
+    categories = category_lookup(hopeful_category)
+    print(categories)
+    if not categories:
+        raise NoCategoryMatchError("No categories found")
+    tmpl = jinja2.Template("""
+            SELECT DISTINCT osm_id
+            FROM category_membership
+            WHERE category IN ({{ categories | join(", ") }})
+    """)
+    sql_snippet = tmpl.render(categories=[squote(p.key) for p in categories])
     return EnrichedEntity(
         lookup=hopeful_category,
         match_type="known_category",
         matched_geo_ids=[],
-        sql_snippet=where,
+        sql_snippet=sql_snippet,
     )
 
 
 def raw_lookup(hopeful_entity: str) -> EnrichedEntity:
-    """Return the raw lookup as a SQL snippet
+    """Return the raw lookup as a SQL snippet.
 
     This is meant to be a rough first guess. We make sure the results is within some distance of the current map centroid.
 
-    Returns a SQL snippet to be used in a WHERE clause. 
+    Returns a SQL snippet to be used in a WHERE clause.
     """
     # TODO is there a SQL injection-safe way to do this?
     sql_snippet = jinja2.Template("""
@@ -120,7 +129,7 @@ def resolve_entity(hopeful_entity: str, enabled=set(["named_place", "known_categ
 
     First, we check if the input is a named entity or a known category. If not, we pass the result through.
 
-    Returns a SQL snippet to be used in a WHERE clause. 
+    Returns a SQL snippet to be used in a WHERE clause.
     """
 
     if "named_place" in enabled:

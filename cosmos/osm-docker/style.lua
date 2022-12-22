@@ -12,7 +12,7 @@ local dtable = osm2pgsql.define_table{
     ids = { type = 'any', id_column = 'osm_id', type_column = 'osm_type' },
     columns = {
         { column = 'tags',  type = 'jsonb' },
-        { column = 'geom',  type = 'geometry', projection = srid, not_null = true}
+        { column = 'geom',  type = 'geometry', projection = srid, not_null = true},
         -- values: points, lines, polygons, boundary, or route
         -- these are the separate tables in generic.lua
         { column = 'category', type = 'text'}
