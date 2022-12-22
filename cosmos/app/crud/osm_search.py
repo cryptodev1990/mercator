@@ -5,9 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 
 from app.core.config import get_settings
 
-from app.core.datatypes import FeatureCollection
-
 from app.parsers.intents import OpenAIDerivedIntent, ParsedQuery
+from app.schemas import ExecutorResponse
 
 
 settings = get_settings()
@@ -19,7 +18,7 @@ async def eval_query(
     arg: ParsedQuery,
     *,
     conn: AsyncConnection,
-) -> FeatureCollection:
+) -> ExecutorResponse:
     """Evaluate a query"""
     expr = arg.value
     if isinstance(expr, OpenAIDerivedIntent):

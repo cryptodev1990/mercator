@@ -3,10 +3,11 @@ import yaml
 import inspect
 import re
 
-from typing import Callable, Dict
+from typing import Any, Callable, Dict
 
 
 from app.crud import executors
+from app.schemas import ExecutorResponse
 
 
 class Intent:
@@ -20,7 +21,7 @@ class Intent:
         self.parse = self.get_parse_method(parse_method, name)
 
     @staticmethod
-    def get_parse_method(parse_method: str, intent_name: str) -> Callable:
+    def get_parse_method(parse_method: str, intent_name: str) -> Callable[[str], Dict[str, str]]:
         if parse_method == '-':
             # return executors.raw_lookup
             # await the raw lookup and resolve
@@ -36,7 +37,8 @@ class Intent:
             raise ValueError(f'Parse method {parse_method} not supported')
 
     @staticmethod
-    def get_execute_method(intent_name: str) -> Callable:
+    # callable takes arbitrary arguments and returns a ExecutorResponse
+    def get_execute_method(intent_name: str) -> Callable[..., ExecutorResponse]:
         assert getattr(executors, intent_name), f'Executor {intent_name} not found'
         assert callable(getattr(executors, intent_name)), f'Executor {intent_name} not callable'
         # assert that one of the arguments is a database connection
@@ -50,7 +52,7 @@ class Intent:
         return self.__str__()
 
 
-def hydrate_intents(intents_yaml):
+def hydrate_intents(intents_yaml) -> Dict[str, Intent]:
     intents = {}
     for intent in intents_yaml['intents']:
         intents[intent['name']] = Intent(

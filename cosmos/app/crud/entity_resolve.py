@@ -32,7 +32,7 @@ def euclidean(lat0, lng0, lat1, lng1) -> float:
 
 
 def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
-    coordinates=[-98.5795, 39.8283],
+    coordinates=[-98.5795, 39.8283],  # Center of the US
     type="Point",
 ), distance_cap_km=MAX_DISTANCE_FOR_SEARCH_KM) -> EnrichedEntity:
     """Look up named place in Nominatim via GraphHopper
@@ -131,7 +131,6 @@ def resolve_entity(hopeful_entity: str, enabled=set(["named_place", "known_categ
 
     Returns a SQL snippet to be used in a WHERE clause.
     """
-
     if "named_place" in enabled:
         try:
             print({

@@ -6,16 +6,14 @@ from openai import OpenAIError
 
 import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import NonNegativeInt  # pylint: disable=no-name-in-module
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from app.core.datatypes import BBox, FeatureCollection
 from app.dependencies import get_conn
 from app.crud.osm_search import eval_query
 from app.parsers.intents import OpenAIDerivedIntent, ParsedQuery
 
-from app.schemas import OsmRawQueryResponse, OsmSearchResponse, OsmShapeForIdResponse
+from app.schemas import OsmRawQueryResponse, OsmShapeForIdResponse, SearchResponse
 from app.parsers.openai_icsf import openai_intent_classifier, openai_slot_fill
 from app.models.intent import intents
 
@@ -26,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @router.get(
     "/query",
-    response_model=OsmSearchResponse,
+    response_model=SearchResponse,
     responses={
         "400": {"description": "Unable to parse query."},
         "504": {"description": "Query timed out."},
@@ -36,39 +34,16 @@ async def _get_query(
     query: str = Query(
         ..., example="Coffee shops in San Francisco", description="Query text string."
     ),
-    bbox: BBox = Query(
-        None,
-        example=[-124.5, 32.6, -114.2, 42.1],
-        description="Bounding box to restrict the search: min_lon, min_lat, max_lon, max_lat",  # pylint: disable=line-too-long
-    ),
-    limit: NonNegativeInt = Query(100, description="Maximum number of results to return"),
-    offset: NonNegativeInt = Query(0, description="Offset into the results"),
     conn: AsyncConnection = Depends(get_conn),
-) -> OsmSearchResponse:
+) -> SearchResponse:
     """Query OSM.
 
     This endpoint accepts a natural language query and returns a list of matching features.
-
-    It currently supports the following queries:
-
-    - named places: "San Francisco"
-    - places: "Coffee shops"
-    - X in Y: "Coffee shops in San Francisco"
-    - X not in Y: "Coffee shops not in San Francisco"
-    - X near Y: "Restaurants near Lake Merritt"
-    - X not near Y: "Restaurants not near Lake Merritt"
-    - X within distance of Y: "Restaurants within 10 miles of Lake Merritt"
-    - X not within distance of Y: "Restaurants more than 10 miles from Lake Merritt"
-    - X within time of Y: "Cafes within 10 minutes of Lake Merritt"
-    - X not within time of Y: "Cafes not within 10 minutes of Lake Merritt"
-    - Buffer of time around Y: "Buffer of 10 minutes around Lake Merritt"
-    - Buffer of distance around Y: "Buffer of 10 miles around Lake Merritt"
-    - Route from X to Y: "Route from Lake Merritt to the Ferry Building"
-
     """
     # unique identifier for this query
     id_ = uuid.uuid4()
-    intent = None
+    intent, inferred_intents = None, []
+    inferred_slots = {}
     try:
             # logger.info({"uuid": id_, "query": query})
             print({"uuid": str(id_), "query": query})
@@ -101,13 +76,15 @@ async def _get_query(
         results = await eval_query(parsed_query, conn=conn)
     except sqlalchemy.exc.DBAPIError as exc:
         if "canceling statement due to statement timeout" in str(exc.orig):
+            await conn.close()
             raise HTTPException(status_code=504, detail="Query timed out.") from None
         raise exc
-    return OsmSearchResponse(
+    print({"uuid": str(id_), "results": results})
+    return SearchResponse(
         query=query,
-        label=str(parsed_query),
-        parse=parsed_query,
-        results=results,  # type: ignore
+        parse_result=results,
+        intents=inferred_intents,
+        slots=inferred_slots,
         id=id_,
     )
 

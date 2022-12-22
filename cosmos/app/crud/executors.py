@@ -6,7 +6,6 @@ NOTE: Currently, all functions in this file are used as executors for intents an
 This will change when we actually have more users
 """
 from typing import Dict, List
-from xml.sax.handler import EntityResolver
 import jinja2
 import json
 from sqlalchemy.ext.asyncio import AsyncConnection
@@ -15,7 +14,7 @@ from app.core.datatypes import Feature, FeatureCollection, MultiPolygon, Polygon
 from app.crud.entity_resolve import resolve_entity
 from app.gateways.routes import multiple_concurrent_routes
 from app.parsers.entity_resolvers import Time, parse_into_meters, parse_into_seconds
-from app.schemas import BufferedEntity, ExecutorResponse
+from app.schemas import BufferedEntity, ExecutorResponse, ParsedEntity
 
 MAX_SIMULTANEOUS_ISOCHRONES = 100
 GENERATED_SHAPE_ID = -1
@@ -165,7 +164,7 @@ async def area_near_constraint(
             ],
         ),
         entities=[
-            rec.entity for rec in records
+            ParsedEntity(**rec.entity.__dict__) for rec in records
         ],
     )
 
@@ -368,7 +367,7 @@ async def x_in_y(
     feature_collection = res.fetchone()[0]  # type: ignore
     return ExecutorResponse(
         geom=feature_collection,
-        entities=[needle, haystack],
+        entities=[ParsedEntity(**needle.__dict__), ParsedEntity(**haystack.__dict__)],
     )
 
 

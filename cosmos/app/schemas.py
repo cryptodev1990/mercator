@@ -1,5 +1,7 @@
 """FastAPI response schemes."""
 from enum import Enum
+import json
+from re import L
 from typing import Any, Dict, List, Optional
 
 from pydantic import UUID4, BaseModel, Field  # pylint: disable=no-name-in-module
@@ -30,6 +32,55 @@ OsmQueryParse = Dict[str, Any]
 The format of this dictionary is subject to change.
 """
 
+class ParsedEntity(BaseModel):
+    lookup: str
+    match_type: str
+    matched_geo_ids: List[str]
+
+
+class EnrichedEntity(ParsedEntity):
+    """An entity with additional information"""
+    lookup: str
+    # Can either be "named_place" or "known_category"
+    match_type: str
+    matched_geo_ids: List[str]
+    sql_snippet: str
+
+    def __str__(self):
+        return json.dumps({
+            "lookup": self.lookup,
+            "match_type": self.match_type,
+            "matched_geo_ids": self.matched_geo_ids,
+        })
+
+    # the following function overrides the Pydantic .json() method
+    # to return the string representation of the object
+    def json(self, *args, **kwargs):
+        return json.dumps({
+            "lookup": self.lookup,
+            "match_type": self.match_type,
+            "matched_geo_ids": self.matched_geo_ids,
+        })
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class ExecutorResponse(BaseModel):
+    """Response for executor."""
+
+    geom: FeatureCollection
+    entities: List[ParsedEntity]
+
+    class Config:
+        """Pydantic config options."""
+class SearchResponse(BaseModel):
+
+    id: UUID4 = Field(..., description="Unique ID for this query.")
+    parse_result: ExecutorResponse = Field(..., description="The result of the query.")
+    query: str = Field(..., description="The query string from the request.")
+    intents: List[str] = Field(..., description="List of intents")
+    slots: Dict[str, str] = Field(..., description="List of slots")
 
 class OsmSearchResponse(BaseModel):
     """Response for OSM search."""
@@ -129,26 +180,6 @@ class OsmRawQueryResponse(BaseModel):
         """Pydantic config options."""
 
 
-class EnrichedEntity(BaseModel):
-    """An entity with additional information"""
-    lookup: str
-    # Can either be "named_place" or "known_category"
-    match_type: str
-    matched_geo_ids: List[str]
-    sql_snippet: str
-
-    def __str__(self):
-        return f"""
-        Entity: {self.lookup}
-        Match type: {self.match_type}
-        Matched geo ids: {self.matched_geo_ids}
-        SQL snippet: {self.sql_snippet}
-        """
-
-    def __repr__(self):
-        return self.__str__()
-
-
 
 class BufferedEntity(BaseModel):
     """Argument for area_near constraint."""
@@ -156,12 +187,3 @@ class BufferedEntity(BaseModel):
     entity: EnrichedEntity
     distance_in_meters: float
 
-
-class ExecutorResponse(BaseModel):
-    """Response for executor."""
-
-    geom: FeatureCollection
-    entities: List[EnrichedEntity]
-
-    class Config:
-        """Pydantic config options."""
