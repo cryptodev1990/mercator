@@ -28,7 +28,16 @@ ENV = j2.Environment(loader=j2.PackageLoader('app', 'templates'),
 
 def squote(s: str) -> str:
     """Single quote a string"""
-    s = re.sub("'", r"\'", s)
+    s = re.sub("'", r"\'", str(s))
     return f"'{s}'"
 
 ENV.filters["squote"] = squote
+
+
+def dquote(s: str) -> str:
+    """Single quote a string"""
+    s = re.sub(r"\"", r"\"", str(s))
+    return f'"{s}"'
+
+ENV.filters["dquote"] = dquote
+

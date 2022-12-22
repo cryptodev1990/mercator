@@ -13,7 +13,6 @@ local dtable = osm2pgsql.define_table{
     columns = {
         { column = 'tags',  type = 'jsonb' },
         { column = 'geom',  type = 'geometry', projection = srid, not_null = true},
-        { column = 'id', not_null = true, index = true }
     }
 }
 

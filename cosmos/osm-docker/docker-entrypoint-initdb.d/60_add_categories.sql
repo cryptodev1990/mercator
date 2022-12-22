@@ -4,13 +4,11 @@
 
     DROP TABLE IF EXISTS category_membership;
     CREATE TABLE IF NOT EXISTS category_membership (
-        osm_id BIGINT NOT NULL, -- REFERENCES osm(osm_id, osm_type),
+        osm_id BIGINT NOT NULL,
         osm_type CHAR(1) NOT NULL,
         category TEXT NOT NULL,
         PRIMARY KEY (osm_id, osm_type, category)
     );
-
-    BEGIN;
 
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -21,7 +19,7 @@
     AND tags ? 'aerialway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -33,8 +31,8 @@
     AND tags ? 'aeroway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -46,8 +44,8 @@
     AND tags ? 'amenity'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -59,8 +57,8 @@
     AND tags ? 'attraction'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -72,7 +70,7 @@
     AND tags ? 'boundary'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -91,10 +89,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'embankment' = 'yes'
+    AND tags @> '{"embankment": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -105,7 +103,7 @@
     AND tags ? 'emergency'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -117,7 +115,7 @@
     AND tags ? 'ford'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -128,8 +126,8 @@
     AND tags ? 'highway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -141,8 +139,8 @@
     AND tags ? 'indoor'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -154,7 +152,7 @@
     AND tags ? 'landuse'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -165,8 +163,8 @@
     AND tags ? 'leisure'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -178,8 +176,8 @@
     AND tags ? 'man_made'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -191,8 +189,8 @@
     AND tags ? 'natural'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -204,8 +202,8 @@
     AND tags ? 'natural'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -217,7 +215,7 @@
     AND tags ? 'place'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -229,8 +227,8 @@
     AND tags ? 'playground'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -242,8 +240,8 @@
     AND tags ? 'power'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -255,8 +253,8 @@
     AND tags ? 'railway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -268,8 +266,8 @@
     AND tags ? 'seamark:type'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -281,8 +279,8 @@
     AND tags ? 'telecom'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -294,8 +292,8 @@
     AND tags ? 'tourism'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -307,8 +305,8 @@
     AND tags ? 'waterway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -320,7 +318,7 @@
     AND tags ? 'addr:interpolation'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -331,7 +329,7 @@
     AND tags ? 'addr:*'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -340,10 +338,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'advertising' = 'billboard'
+    AND tags @> '{"advertising": "billboard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -352,7 +350,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'advertising' = 'board'
+    AND tags @> '{"advertising": "board"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -363,10 +361,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'advertising' = 'column'
+    AND tags @> '{"advertising": "column"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -375,7 +373,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'advertising' = 'poster_box'
+    AND tags @> '{"advertising": "poster_box"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -386,7 +384,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'advertising' = 'totem'
+    AND tags @> '{"advertising": "totem"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -397,10 +395,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'cable_car'
+    AND tags @> '{"aerialway": "cable_car"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -408,10 +406,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'chair_lift'
+    AND tags @> '{"aerialway": "chair_lift"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -419,10 +417,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'drag_lift'
+    AND tags @> '{"aerialway": "drag_lift"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -430,10 +428,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'gondola'
+    AND tags @> '{"aerialway": "gondola"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -441,10 +439,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'goods'
+    AND tags @> '{"aerialway": "goods"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -452,10 +450,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'j-bar'
+    AND tags @> '{"aerialway": "j-bar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -463,10 +461,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'magic_carpet'
+    AND tags @> '{"aerialway": "magic_carpet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -474,10 +472,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'mixed_lift'
+    AND tags @> '{"aerialway": "mixed_lift"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -485,10 +483,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'platter'
+    AND tags @> '{"aerialway": "platter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -496,7 +494,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'pylon'
+    AND tags @> '{"aerialway": "pylon"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -507,10 +505,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'rope_tow'
+    AND tags @> '{"aerialway": "rope_tow"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -518,10 +516,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 't-bar'
+    AND tags @> '{"aerialway": "t-bar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -529,10 +527,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'zip_line'
+    AND tags @> '{"aerialway": "zip_line"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -540,10 +538,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'aerodrome'
+    AND tags @> '{"aeroway": "aerodrome"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -552,10 +550,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'apron'
+    AND tags @> '{"aeroway": "apron"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -563,7 +561,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'gate'
+    AND tags @> '{"aeroway": "gate"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -574,10 +572,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'hangar'
+    AND tags @> '{"aeroway": "hangar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -585,10 +583,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'helipad'
+    AND tags @> '{"aeroway": "helipad"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -597,7 +595,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'holding_position'
+    AND tags @> '{"aeroway": "holding_position"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -608,10 +606,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'jet_bridge'
+    AND tags @> '{"aeroway": "jet_bridge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -619,10 +617,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'parking_position'
+    AND tags @> '{"aeroway": "parking_position"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -631,10 +629,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'runway'
+    AND tags @> '{"aeroway": "runway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -642,10 +640,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'spaceport'
+    AND tags @> '{"aeroway": "spaceport"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -654,10 +652,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'taxiway'
+    AND tags @> '{"aeroway": "taxiway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -665,10 +663,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'terminal'
+    AND tags @> '{"aeroway": "terminal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -677,7 +675,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aeroway' = 'windsock'
+    AND tags @> '{"aeroway": "windsock"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -688,10 +686,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'allotments' = 'plot'
+    AND tags @> '{"allotments": "plot"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -699,10 +697,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bus_station'
+    AND tags @> '{"amenity": "bus_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -711,10 +709,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'coworking_space'
+    AND tags @> '{"amenity": "coworking_space"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -723,10 +721,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'embassy'
+    AND tags @> '{"amenity": "embassy"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -735,10 +733,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'ferry_terminal'
+    AND tags @> '{"amenity": "ferry_terminal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -747,10 +745,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'nursing_home'
+    AND tags @> '{"amenity": "nursing_home"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -759,10 +757,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'recycling'
+    AND tags @> '{"amenity": "recycling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -771,10 +769,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'animal_boarding'
+    AND tags @> '{"amenity": "animal_boarding"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -783,10 +781,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'animal_breeding'
+    AND tags @> '{"amenity": "animal_breeding"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -795,10 +793,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'animal_shelter'
+    AND tags @> '{"amenity": "animal_shelter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -807,10 +805,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'arts_centre'
+    AND tags @> '{"amenity": "arts_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -819,7 +817,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'atm'
+    AND tags @> '{"amenity": "atm"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -830,10 +828,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bank'
+    AND tags @> '{"amenity": "bank"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -842,10 +840,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bar'
+    AND tags @> '{"amenity": "bar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -854,11 +852,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bar'
-    AND tags ->> 'lgbtq' = 'primary'
+    AND tags @> '{"amenity": "bar"}' :: JSONB
+    AND tags @> '{"lgbtq": "primary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -867,10 +865,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bbq'
+    AND tags @> '{"amenity": "bbq"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -879,10 +877,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bench'
+    AND tags @> '{"amenity": "bench"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -891,10 +889,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bicycle_parking'
+    AND tags @> '{"amenity": "bicycle_parking"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -903,11 +901,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bicycle_parking'
-    AND tags ->> 'bicycle_parking' = 'building'
+    AND tags @> '{"amenity": "bicycle_parking"}' :: JSONB
+    AND tags @> '{"bicycle_parking": "building"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -916,11 +914,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bicycle_parking'
-    AND tags ->> 'bicycle_parking' = 'lockers'
+    AND tags @> '{"amenity": "bicycle_parking"}' :: JSONB
+    AND tags @> '{"bicycle_parking": "lockers"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -929,11 +927,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bicycle_parking'
-    AND tags ->> 'bicycle_parking' = 'shed'
+    AND tags @> '{"amenity": "bicycle_parking"}' :: JSONB
+    AND tags @> '{"bicycle_parking": "shed"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -942,10 +940,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bicycle_rental'
+    AND tags @> '{"amenity": "bicycle_rental"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -954,7 +952,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bicycle_repair_station'
+    AND tags @> '{"amenity": "bicycle_repair_station"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -965,10 +963,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'biergarten'
+    AND tags @> '{"amenity": "biergarten"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -977,7 +975,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'binoculars'
+    AND tags @> '{"amenity": "binoculars"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -988,10 +986,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'boat_rental'
+    AND tags @> '{"amenity": "boat_rental"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1000,10 +998,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'boat_storage'
+    AND tags @> '{"amenity": "boat_storage"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1012,10 +1010,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'bureau_de_change'
+    AND tags @> '{"amenity": "bureau_de_change"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1024,10 +1022,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'cafe'
+    AND tags @> '{"amenity": "cafe"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1036,11 +1034,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'cafe'
-    AND tags ->> 'cuisine' = 'bubble_tea'
+    AND tags @> '{"amenity": "cafe"}' :: JSONB
+    AND tags @> '{"cuisine": "bubble_tea"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1049,11 +1047,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'cafe'
-    AND tags ->> 'cuisine' = 'coffee_shop'
+    AND tags @> '{"amenity": "cafe"}' :: JSONB
+    AND tags @> '{"cuisine": "coffee_shop"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1062,10 +1060,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'car_pooling'
+    AND tags @> '{"amenity": "car_pooling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1074,10 +1072,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'car_rental'
+    AND tags @> '{"amenity": "car_rental"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1086,10 +1084,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'car_sharing'
+    AND tags @> '{"amenity": "car_sharing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1098,10 +1096,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'car_wash'
+    AND tags @> '{"amenity": "car_wash"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1110,10 +1108,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'casino'
+    AND tags @> '{"amenity": "casino"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1122,10 +1120,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'charging_station'
+    AND tags @> '{"amenity": "charging_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1134,10 +1132,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'childcare'
+    AND tags @> '{"amenity": "childcare"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1146,10 +1144,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'cinema'
+    AND tags @> '{"amenity": "cinema"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1158,10 +1156,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'clinic'
+    AND tags @> '{"amenity": "clinic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1170,12 +1168,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'clinic'
-    AND tags ->> 'healthcare' = 'clinic'
-    AND tags ->> 'healthcare:speciality' = 'abortion'
+    AND tags @> '{"amenity": "clinic"}' :: JSONB
+    AND tags @> '{"healthcare": "clinic"}' :: JSONB
+    AND tags @> '{"healthcare:speciality": "abortion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1184,12 +1182,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'clinic'
-    AND tags ->> 'healthcare' = 'clinic'
-    AND tags ->> 'healthcare:speciality' = 'fertility'
+    AND tags @> '{"amenity": "clinic"}' :: JSONB
+    AND tags @> '{"healthcare": "clinic"}' :: JSONB
+    AND tags @> '{"healthcare:speciality": "fertility"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1198,7 +1196,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'clock'
+    AND tags @> '{"amenity": "clock"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1209,8 +1207,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'clock'
-    AND tags ->> 'display' = 'sundial'
+    AND tags @> '{"amenity": "clock"}' :: JSONB
+    AND tags @> '{"display": "sundial"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1221,10 +1219,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'college'
+    AND tags @> '{"amenity": "college"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1233,10 +1231,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'community_centre'
+    AND tags @> '{"amenity": "community_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1245,11 +1243,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'community_centre'
-    AND tags ->> 'lgbtq' = 'primary'
+    AND tags @> '{"amenity": "community_centre"}' :: JSONB
+    AND tags @> '{"lgbtq": "primary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1258,11 +1256,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'community_centre'
-    AND tags ->> 'community_centre' = 'youth_centre'
+    AND tags @> '{"amenity": "community_centre"}' :: JSONB
+    AND tags @> '{"community_centre": "youth_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1271,10 +1269,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'compressed_air'
+    AND tags @> '{"amenity": "compressed_air"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1283,10 +1281,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'conference_centre'
+    AND tags @> '{"amenity": "conference_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1295,10 +1293,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'courthouse'
+    AND tags @> '{"amenity": "courthouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1307,10 +1305,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'crematorium'
+    AND tags @> '{"amenity": "crematorium"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1319,10 +1317,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'dentist'
+    AND tags @> '{"amenity": "dentist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1331,10 +1329,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'dive_centre'
+    AND tags @> '{"amenity": "dive_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1343,10 +1341,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'doctors'
+    AND tags @> '{"amenity": "doctors"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1355,12 +1353,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'doctors'
-    AND tags ->> 'healthcare' = 'doctor'
-    AND tags ->> 'healthcare:speciality' = 'gynaecology'
+    AND tags @> '{"amenity": "doctors"}' :: JSONB
+    AND tags @> '{"healthcare": "doctor"}' :: JSONB
+    AND tags @> '{"healthcare:speciality": "gynaecology"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1369,10 +1367,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'dojo'
+    AND tags @> '{"amenity": "dojo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1381,10 +1379,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'dressing_room'
+    AND tags @> '{"amenity": "dressing_room"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1393,7 +1391,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'drinking_water'
+    AND tags @> '{"amenity": "drinking_water"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1404,10 +1402,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'driver_training'
+    AND tags @> '{"amenity": "driver_training"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1416,10 +1414,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'driving_school'
+    AND tags @> '{"amenity": "driving_school"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1428,10 +1426,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'events_venue'
+    AND tags @> '{"amenity": "events_venue"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1440,10 +1438,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'exhibition_centre'
+    AND tags @> '{"amenity": "exhibition_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1452,10 +1450,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1464,11 +1462,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'ice_cream'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "ice_cream"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1477,11 +1475,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'burger'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "burger"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1490,11 +1488,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'fast_food' = 'cafeteria'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"fast_food": "cafeteria"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1503,11 +1501,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'chicken'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "chicken"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1516,11 +1514,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'donut'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "donut"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1529,11 +1527,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'fish_and_chips'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "fish_and_chips"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1542,11 +1540,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'hot_dog'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "hot_dog"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1555,11 +1553,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'juice'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "juice"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1568,11 +1566,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'kebab'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "kebab"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1581,11 +1579,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'mexican'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "mexican"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1594,11 +1592,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'pizza'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "pizza"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1607,11 +1605,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fast_food'
-    AND tags ->> 'cuisine' = 'sandwich'
+    AND tags @> '{"amenity": "fast_food"}' :: JSONB
+    AND tags @> '{"cuisine": "sandwich"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1620,10 +1618,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fire_station'
+    AND tags @> '{"amenity": "fire_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1632,10 +1630,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'food_court'
+    AND tags @> '{"amenity": "food_court"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1644,10 +1642,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fountain'
+    AND tags @> '{"amenity": "fountain"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1656,10 +1654,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'fuel'
+    AND tags @> '{"amenity": "fuel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1668,10 +1666,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'gambling'
+    AND tags @> '{"amenity": "gambling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1680,10 +1678,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'give_box'
+    AND tags @> '{"amenity": "give_box"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1692,10 +1690,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'grave_yard'
+    AND tags @> '{"amenity": "grave_yard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1704,7 +1702,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'grit_bin'
+    AND tags @> '{"amenity": "grit_bin"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1715,10 +1713,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'hospital'
+    AND tags @> '{"amenity": "hospital"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1727,10 +1725,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'hunting_stand'
+    AND tags @> '{"amenity": "hunting_stand"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1739,10 +1737,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'ice_cream'
+    AND tags @> '{"amenity": "ice_cream"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1751,10 +1749,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'internet_cafe'
+    AND tags @> '{"amenity": "internet_cafe"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1763,10 +1761,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'karaoke_box'
+    AND tags @> '{"amenity": "karaoke_box"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1775,10 +1773,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'kindergarten'
+    AND tags @> '{"amenity": "kindergarten"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1787,10 +1785,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'kneipp_water_cure'
+    AND tags @> '{"amenity": "kneipp_water_cure"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1799,10 +1797,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'language_school'
+    AND tags @> '{"amenity": "language_school"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1811,10 +1809,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'lavoir'
+    AND tags @> '{"amenity": "lavoir"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1823,7 +1821,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'letter_box'
+    AND tags @> '{"amenity": "letter_box"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1834,10 +1832,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'library'
+    AND tags @> '{"amenity": "library"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1846,7 +1844,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'loading_dock'
+    AND tags @> '{"amenity": "loading_dock"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1857,7 +1855,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'lounger'
+    AND tags @> '{"amenity": "lounger"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -1868,10 +1866,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'love_hotel'
+    AND tags @> '{"amenity": "love_hotel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1880,10 +1878,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'marketplace'
+    AND tags @> '{"amenity": "marketplace"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1892,10 +1890,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'monastery'
+    AND tags @> '{"amenity": "monastery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1904,10 +1902,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'money_transfer'
+    AND tags @> '{"amenity": "money_transfer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1916,10 +1914,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'mortuary'
+    AND tags @> '{"amenity": "mortuary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1928,10 +1926,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'motorcycle_parking'
+    AND tags @> '{"amenity": "motorcycle_parking"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1940,10 +1938,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'motorcycle_rental'
+    AND tags @> '{"amenity": "motorcycle_rental"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1952,10 +1950,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'music_school'
+    AND tags @> '{"amenity": "music_school"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1964,10 +1962,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'nightclub'
+    AND tags @> '{"amenity": "nightclub"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1976,11 +1974,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'nightclub'
-    AND tags ->> 'lgbtq' = 'primary'
+    AND tags @> '{"amenity": "nightclub"}' :: JSONB
+    AND tags @> '{"lgbtq": "primary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -1989,10 +1987,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parcel_locker'
+    AND tags @> '{"amenity": "parcel_locker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2001,7 +1999,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking_entrance'
+    AND tags @> '{"amenity": "parking_entrance"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -2012,10 +2010,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking_space'
+    AND tags @> '{"amenity": "parking_space"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2024,11 +2022,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking_space'
-    AND tags ->> 'parking_space' = 'disabled'
+    AND tags @> '{"amenity": "parking_space"}' :: JSONB
+    AND tags @> '{"parking_space": "disabled"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2037,10 +2035,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking'
+    AND tags @> '{"amenity": "parking"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2049,11 +2047,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking'
-    AND tags ->> 'parking' = 'multi-storey'
+    AND tags @> '{"amenity": "parking"}' :: JSONB
+    AND tags @> '{"parking": "multi-storey"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2062,11 +2060,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking'
-    AND tags ->> 'park_ride' = 'yes'
+    AND tags @> '{"amenity": "parking"}' :: JSONB
+    AND tags @> '{"park_ride": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2075,11 +2073,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking'
-    AND tags ->> 'parking' = 'street_side'
+    AND tags @> '{"amenity": "parking"}' :: JSONB
+    AND tags @> '{"parking": "street_side"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2088,11 +2086,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'parking'
-    AND tags ->> 'parking' = 'underground'
+    AND tags @> '{"amenity": "parking"}' :: JSONB
+    AND tags @> '{"parking": "underground"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2101,10 +2099,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'payment_centre'
+    AND tags @> '{"amenity": "payment_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2113,7 +2111,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'payment_terminal'
+    AND tags @> '{"amenity": "payment_terminal"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -2124,10 +2122,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'pharmacy'
+    AND tags @> '{"amenity": "pharmacy"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2136,10 +2134,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'photo_booth'
+    AND tags @> '{"amenity": "photo_booth"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2148,10 +2146,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2160,11 +2158,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'buddhist'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "buddhist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2173,11 +2171,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'christian'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "christian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2186,12 +2184,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'christian'
-    AND tags ->> 'denomination' = 'jehovahs_witness'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "christian"}' :: JSONB
+    AND tags @> '{"denomination": "jehovahs_witness"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2200,12 +2198,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'christian'
-    AND tags ->> 'denomination' = 'la_luz_del_mundo'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "christian"}' :: JSONB
+    AND tags @> '{"denomination": "la_luz_del_mundo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2214,12 +2212,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'christian'
-    AND tags ->> 'denomination' = 'quaker'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "christian"}' :: JSONB
+    AND tags @> '{"denomination": "quaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2228,11 +2226,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'hindu'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "hindu"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2241,11 +2239,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'jewish'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "jewish"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2254,11 +2252,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'muslim'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "muslim"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2267,11 +2265,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'shinto'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "shinto"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2280,11 +2278,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'sikh'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "sikh"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2293,11 +2291,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'place_of_worship'
-    AND tags ->> 'religion' = 'taoist'
+    AND tags @> '{"amenity": "place_of_worship"}' :: JSONB
+    AND tags @> '{"religion": "taoist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2306,10 +2304,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'planetarium'
+    AND tags @> '{"amenity": "planetarium"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2318,10 +2316,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'police'
+    AND tags @> '{"amenity": "police"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2330,10 +2328,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'polling_station'
+    AND tags @> '{"amenity": "polling_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2342,7 +2340,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'post_box'
+    AND tags @> '{"amenity": "post_box"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -2353,10 +2351,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'post_depot'
+    AND tags @> '{"amenity": "post_depot"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2365,10 +2363,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'post_office'
+    AND tags @> '{"amenity": "post_office"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2377,10 +2375,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'prep_school'
+    AND tags @> '{"amenity": "prep_school"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2389,10 +2387,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'prison'
+    AND tags @> '{"amenity": "prison"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2401,10 +2399,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'pub'
+    AND tags @> '{"amenity": "pub"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2413,11 +2411,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'pub'
-    AND tags ->> 'theme' = 'irish'
+    AND tags @> '{"amenity": "pub"}' :: JSONB
+    AND tags @> '{"theme": "irish"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2426,11 +2424,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'pub'
-    AND tags ->> 'lgbtq' = 'primary'
+    AND tags @> '{"amenity": "pub"}' :: JSONB
+    AND tags @> '{"lgbtq": "primary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2439,11 +2437,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'pub'
-    AND tags ->> 'microbrewery' = 'yes'
+    AND tags @> '{"amenity": "pub"}' :: JSONB
+    AND tags @> '{"microbrewery": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2452,10 +2450,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'public_bath'
+    AND tags @> '{"amenity": "public_bath"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2464,10 +2462,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'public_bookcase'
+    AND tags @> '{"amenity": "public_bookcase"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2476,10 +2474,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'ranger_station'
+    AND tags @> '{"amenity": "ranger_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2488,11 +2486,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'recycling'
-    AND tags ->> 'recycling_type' = 'centre'
+    AND tags @> '{"amenity": "recycling"}' :: JSONB
+    AND tags @> '{"recycling_type": "centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2501,11 +2499,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'recycling'
-    AND tags ->> 'recycling_type' = 'container'
+    AND tags @> '{"amenity": "recycling"}' :: JSONB
+    AND tags @> '{"recycling_type": "container"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2514,12 +2512,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'recycling'
-    AND tags ->> 'recycling_type' = 'container'
-    AND tags ->> 'recycling:electrical_items' = 'yes'
+    AND tags @> '{"amenity": "recycling"}' :: JSONB
+    AND tags @> '{"recycling_type": "container"}' :: JSONB
+    AND tags @> '{"recycling:electrical_items": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2528,12 +2526,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'recycling'
-    AND tags ->> 'recycling_type' = 'container'
-    AND tags ->> 'recycling:green_waste' = 'yes'
+    AND tags @> '{"amenity": "recycling"}' :: JSONB
+    AND tags @> '{"recycling_type": "container"}' :: JSONB
+    AND tags @> '{"recycling:green_waste": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2542,10 +2540,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'refugee_site'
+    AND tags @> '{"amenity": "refugee_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2554,10 +2552,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'research_institute'
+    AND tags @> '{"amenity": "research_institute"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2566,10 +2564,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2578,11 +2576,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'american'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "american"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2591,11 +2589,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'asian'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "asian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2604,11 +2602,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'barbeque'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "barbeque"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2617,11 +2615,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'chinese'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "chinese"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2630,11 +2628,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'french'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "french"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2643,11 +2641,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'german'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "german"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2656,11 +2654,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'greek'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "greek"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2669,11 +2667,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'indian'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "indian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2682,11 +2680,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'italian'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "italian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2695,11 +2693,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'japanese'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "japanese"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2708,11 +2706,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'mexican'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "mexican"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2721,11 +2719,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'noodle'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "noodle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2734,11 +2732,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'pizza'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "pizza"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2747,11 +2745,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'seafood'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "seafood"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2760,11 +2758,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'steak_house'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "steak_house"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2773,11 +2771,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'sushi'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "sushi"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2786,11 +2784,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'thai'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "thai"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2799,11 +2797,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'turkish'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "turkish"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2812,11 +2810,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'restaurant'
-    AND tags ->> 'cuisine' = 'vietnamese'
+    AND tags @> '{"amenity": "restaurant"}' :: JSONB
+    AND tags @> '{"cuisine": "vietnamese"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2825,10 +2823,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'sanitary_dump_station'
+    AND tags @> '{"amenity": "sanitary_dump_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2837,10 +2835,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'school'
+    AND tags @> '{"amenity": "school"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2849,10 +2847,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'shelter'
+    AND tags @> '{"amenity": "shelter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2861,11 +2859,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'shelter'
-    AND tags ->> 'shelter_type' = 'gazebo'
+    AND tags @> '{"amenity": "shelter"}' :: JSONB
+    AND tags @> '{"shelter_type": "gazebo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2874,11 +2872,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'shelter'
-    AND tags ->> 'shelter_type' = 'lean_to'
+    AND tags @> '{"amenity": "shelter"}' :: JSONB
+    AND tags @> '{"shelter_type": "lean_to"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2887,11 +2885,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'shelter'
-    AND tags ->> 'shelter_type' = 'picnic_shelter'
+    AND tags @> '{"amenity": "shelter"}' :: JSONB
+    AND tags @> '{"shelter_type": "picnic_shelter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2900,11 +2898,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'shelter'
-    AND tags ->> 'shelter_type' = 'public_transport'
+    AND tags @> '{"amenity": "shelter"}' :: JSONB
+    AND tags @> '{"shelter_type": "public_transport"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2913,10 +2911,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'shower'
+    AND tags @> '{"amenity": "shower"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2925,10 +2923,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'smoking_area'
+    AND tags @> '{"amenity": "smoking_area"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2937,10 +2935,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_centre'
+    AND tags @> '{"amenity": "social_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2949,10 +2947,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_facility'
+    AND tags @> '{"amenity": "social_facility"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2961,11 +2959,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_facility'
-    AND tags ->> 'social_facility' = 'ambulatory_care'
+    AND tags @> '{"amenity": "social_facility"}' :: JSONB
+    AND tags @> '{"social_facility": "ambulatory_care"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2974,11 +2972,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_facility'
-    AND tags ->> 'social_facility' = 'food_bank'
+    AND tags @> '{"amenity": "social_facility"}' :: JSONB
+    AND tags @> '{"social_facility": "food_bank"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -2987,12 +2985,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_facility'
-    AND tags ->> 'social_facility' = 'group_home'
-    AND tags ->> 'social_facility:for' = 'senior'
+    AND tags @> '{"amenity": "social_facility"}' :: JSONB
+    AND tags @> '{"social_facility": "group_home"}' :: JSONB
+    AND tags @> '{"social_facility:for": "senior"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3001,12 +2999,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_facility'
-    AND tags ->> 'social_facility' = 'shelter'
-    AND tags ->> 'social_facility:for' = 'homeless'
+    AND tags @> '{"amenity": "social_facility"}' :: JSONB
+    AND tags @> '{"social_facility": "shelter"}' :: JSONB
+    AND tags @> '{"social_facility:for": "homeless"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3015,12 +3013,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'social_facility'
-    AND tags ->> 'social_facility' = 'nursing_home'
-    AND tags ->> 'social_facility:for' = 'senior'
+    AND tags @> '{"amenity": "social_facility"}' :: JSONB
+    AND tags @> '{"social_facility": "nursing_home"}' :: JSONB
+    AND tags @> '{"social_facility:for": "senior"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3029,10 +3027,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'studio'
+    AND tags @> '{"amenity": "studio"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3041,11 +3039,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'studio'
-    AND tags ->> 'studio' = 'audio'
+    AND tags @> '{"amenity": "studio"}' :: JSONB
+    AND tags @> '{"studio": "audio"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3054,11 +3052,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'studio'
-    AND tags ->> 'studio' = 'radio'
+    AND tags @> '{"amenity": "studio"}' :: JSONB
+    AND tags @> '{"studio": "radio"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3067,11 +3065,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'studio'
-    AND tags ->> 'studio' = 'television'
+    AND tags @> '{"amenity": "studio"}' :: JSONB
+    AND tags @> '{"studio": "television"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3080,11 +3078,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'studio'
-    AND tags ->> 'studio' = 'video'
+    AND tags @> '{"amenity": "studio"}' :: JSONB
+    AND tags @> '{"studio": "video"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3093,10 +3091,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'taxi'
+    AND tags @> '{"amenity": "taxi"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3105,7 +3103,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'telephone'
+    AND tags @> '{"amenity": "telephone"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3116,10 +3114,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'theatre'
+    AND tags @> '{"amenity": "theatre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3128,11 +3126,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'theatre'
-    AND tags ->> 'theatre:type' = 'amphi'
+    AND tags @> '{"amenity": "theatre"}' :: JSONB
+    AND tags @> '{"theatre:type": "amphi"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3141,7 +3139,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'ticket_validator'
+    AND tags @> '{"amenity": "ticket_validator"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3152,10 +3150,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'toilets'
+    AND tags @> '{"amenity": "toilets"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3164,11 +3162,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'toilets'
-    AND tags ->> 'toilets:disposal' = 'flush'
+    AND tags @> '{"amenity": "toilets"}' :: JSONB
+    AND tags @> '{"toilets:disposal": "flush"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3177,11 +3175,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'toilets'
-    AND tags ->> 'toilets:disposal' = 'pitlatrine'
+    AND tags @> '{"amenity": "toilets"}' :: JSONB
+    AND tags @> '{"toilets:disposal": "pitlatrine"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3190,11 +3188,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'toilets'
-    AND tags ->> 'portable' = 'yes'
+    AND tags @> '{"amenity": "toilets"}' :: JSONB
+    AND tags @> '{"portable": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3203,10 +3201,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'townhall'
+    AND tags @> '{"amenity": "townhall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3215,11 +3213,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'townhall'
-    AND tags ->> 'townhall:type' = 'city'
+    AND tags @> '{"amenity": "townhall"}' :: JSONB
+    AND tags @> '{"townhall:type": "city"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3228,10 +3226,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'toy_library'
+    AND tags @> '{"amenity": "toy_library"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3240,10 +3238,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'trolley_bay'
+    AND tags @> '{"amenity": "trolley_bay"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3252,10 +3250,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'university'
+    AND tags @> '{"amenity": "university"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3264,7 +3262,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vacuum_cleaner'
+    AND tags @> '{"amenity": "vacuum_cleaner"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3275,10 +3273,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vehicle_inspection'
+    AND tags @> '{"amenity": "vehicle_inspection"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3287,7 +3285,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3298,8 +3296,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'bicycle_tube'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "bicycle_tube"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3310,8 +3308,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'bottle_return'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "bottle_return"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3322,8 +3320,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'bread'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "bread"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3334,8 +3332,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'cigarettes'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "cigarettes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3346,8 +3344,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'coffee'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "coffee"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3358,8 +3356,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'condoms'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "condoms"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3370,8 +3368,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'drinks'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "drinks"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3382,8 +3380,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'eggs'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "eggs"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3394,8 +3392,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'electronics'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "electronics"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3406,8 +3404,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'elongated_coin'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "elongated_coin"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3418,8 +3416,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'excrement_bags'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "excrement_bags"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3430,8 +3428,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'feminine_hygiene'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "feminine_hygiene"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3442,8 +3440,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'food'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "food"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3454,8 +3452,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'fuel'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "fuel"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3466,8 +3464,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'ice_cream'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "ice_cream"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3478,8 +3476,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'ice_cubes'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "ice_cubes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3490,8 +3488,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'newspapers'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "newspapers"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3502,8 +3500,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'parking_tickets'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "parking_tickets"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3514,8 +3512,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'pizza'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "pizza"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3526,8 +3524,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'public_transport_tickets'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "public_transport_tickets"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3538,8 +3536,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'stamps'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "stamps"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3550,8 +3548,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'vending_machine'
-    AND tags ->> 'vending' = 'sweets'
+    AND tags @> '{"amenity": "vending_machine"}' :: JSONB
+    AND tags @> '{"vending": "sweets"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3562,10 +3560,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'veterinary'
+    AND tags @> '{"amenity": "veterinary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3574,7 +3572,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'waste_basket'
+    AND tags @> '{"amenity": "waste_basket"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3585,10 +3583,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'waste_disposal'
+    AND tags @> '{"amenity": "waste_disposal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3597,10 +3595,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'waste_transfer_station'
+    AND tags @> '{"amenity": "waste_transfer_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3609,11 +3607,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'waste_basket'
-    AND tags ->> 'waste' = 'dog_excrement'
+    AND tags @> '{"amenity": "waste_basket"}' :: JSONB
+    AND tags @> '{"waste": "dog_excrement"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3622,10 +3620,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'water_point'
+    AND tags @> '{"amenity": "water_point"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3634,10 +3632,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'watering_place'
+    AND tags @> '{"amenity": "watering_place"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3646,10 +3644,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'amenity' = 'weighbridge'
+    AND tags @> '{"amenity": "weighbridge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3658,10 +3656,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'area' = 'yes'
+    AND tags @> '{"area": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -3669,10 +3667,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'area:highway' = 'footway'
+    AND tags @> '{"area:highway": "footway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -3683,7 +3681,7 @@
     AND tags ? 'area:highway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -3691,10 +3689,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'amusement_ride'
+    AND tags @> '{"attraction": "amusement_ride"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3703,10 +3701,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'animal'
+    AND tags @> '{"attraction": "animal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3715,7 +3713,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'big_wheel'
+    AND tags @> '{"attraction": "big_wheel"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3726,10 +3724,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'bumper_car'
+    AND tags @> '{"attraction": "bumper_car"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3738,10 +3736,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'bungee_jumping'
+    AND tags @> '{"attraction": "bungee_jumping"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3750,10 +3748,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'carousel'
+    AND tags @> '{"attraction": "carousel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3762,11 +3760,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'dark_ride'
+    AND tags @> '{"attraction": "dark_ride"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3775,10 +3773,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'drop_tower'
+    AND tags @> '{"attraction": "drop_tower"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3787,7 +3785,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'kiddie_ride'
+    AND tags @> '{"attraction": "kiddie_ride"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3798,10 +3796,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'log_flume'
+    AND tags @> '{"attraction": "log_flume"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3810,10 +3808,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'maze'
+    AND tags @> '{"attraction": "maze"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3822,7 +3820,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'pirate_ship'
+    AND tags @> '{"attraction": "pirate_ship"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3833,10 +3831,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'river_rafting'
+    AND tags @> '{"attraction": "river_rafting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3845,10 +3843,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'roller_coaster'
+    AND tags @> '{"attraction": "roller_coaster"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3857,10 +3855,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'summer_toboggan'
+    AND tags @> '{"attraction": "summer_toboggan"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -3868,10 +3866,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'swing_carousel'
+    AND tags @> '{"attraction": "swing_carousel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -3880,10 +3878,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'train'
+    AND tags @> '{"attraction": "train"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3892,10 +3890,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'attraction' = 'water_slide'
+    AND tags @> '{"attraction": "water_slide"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3907,8 +3905,8 @@
     AND tags ? 'barrier'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3917,11 +3915,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'ditch'
+    AND tags @> '{"barrier": "ditch"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -3929,7 +3927,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'entrance'
+    AND tags @> '{"barrier": "entrance"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3940,10 +3938,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'handrail'
+    AND tags @> '{"barrier": "handrail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -3951,10 +3949,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'log'
+    AND tags @> '{"barrier": "log"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3963,8 +3961,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'planter'
-    AND tags ->> 'man_made' = 'planter'
+    AND tags @> '{"barrier": "planter"}' :: JSONB
+    AND tags @> '{"man_made": "planter"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3975,11 +3973,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'yes'
+    AND tags @> '{"barrier": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -3988,7 +3986,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'block'
+    AND tags @> '{"barrier": "block"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -3999,10 +3997,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'bollard'
+    AND tags @> '{"barrier": "bollard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4010,7 +4008,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'bollard'
+    AND tags @> '{"barrier": "bollard"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4021,10 +4019,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'border_control'
+    AND tags @> '{"barrier": "border_control"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -4033,7 +4031,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'bump_gate'
+    AND tags @> '{"barrier": "bump_gate"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4044,7 +4042,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'bus_trap'
+    AND tags @> '{"barrier": "bus_trap"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4055,10 +4053,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'cable_barrier'
+    AND tags @> '{"barrier": "cable_barrier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4066,7 +4064,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'cattle_grid'
+    AND tags @> '{"barrier": "cattle_grid"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4077,10 +4075,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'chain'
+    AND tags @> '{"barrier": "chain"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4089,11 +4087,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'city_wall'
+    AND tags @> '{"barrier": "city_wall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4101,7 +4099,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'cycle_barrier'
+    AND tags @> '{"barrier": "cycle_barrier"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4112,10 +4110,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'fence'
+    AND tags @> '{"barrier": "fence"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4123,11 +4121,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'fence'
-    AND tags ->> 'fence_type' = 'railing'
+    AND tags @> '{"barrier": "fence"}' :: JSONB
+    AND tags @> '{"fence_type": "railing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4135,7 +4133,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'full-height_turnstile'
+    AND tags @> '{"barrier": "full-height_turnstile"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4146,10 +4144,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'gate'
+    AND tags @> '{"barrier": "gate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4158,10 +4156,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'guard_rail'
+    AND tags @> '{"barrier": "guard_rail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4169,7 +4167,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'hampshire_gate'
+    AND tags @> '{"barrier": "hampshire_gate"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4180,11 +4178,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'hedge'
+    AND tags @> '{"barrier": "hedge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4192,7 +4190,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'height_restrictor'
+    AND tags @> '{"barrier": "height_restrictor"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4203,10 +4201,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'jersey_barrier'
+    AND tags @> '{"barrier": "jersey_barrier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4215,10 +4213,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'kerb'
+    AND tags @> '{"barrier": "kerb"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4227,10 +4225,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'kerb' = 'flush'
+    AND tags @> '{"kerb": "flush"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4239,10 +4237,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'kerb' = 'lowered'
+    AND tags @> '{"kerb": "lowered"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4251,10 +4249,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'kerb' = 'raised'
+    AND tags @> '{"kerb": "raised"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4263,10 +4261,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'kerb' = 'rolled'
+    AND tags @> '{"kerb": "rolled"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4275,7 +4273,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'kissing_gate'
+    AND tags @> '{"barrier": "kissing_gate"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4286,10 +4284,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'lift_gate'
+    AND tags @> '{"barrier": "lift_gate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4298,7 +4296,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'motorcycle_barrier'
+    AND tags @> '{"barrier": "motorcycle_barrier"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4309,11 +4307,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'retaining_wall'
+    AND tags @> '{"barrier": "retaining_wall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4321,10 +4319,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'rope'
+    AND tags @> '{"barrier": "rope"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4333,7 +4331,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'sally_port'
+    AND tags @> '{"barrier": "sally_port"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4344,7 +4342,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'spikes'
+    AND tags @> '{"barrier": "spikes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4355,7 +4353,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'stile'
+    AND tags @> '{"barrier": "stile"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4366,7 +4364,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'swing_gate'
+    AND tags @> '{"barrier": "swing_gate"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4377,10 +4375,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'toll_booth'
+    AND tags @> '{"barrier": "toll_booth"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -4389,7 +4387,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'turnstile'
+    AND tags @> '{"barrier": "turnstile"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4400,11 +4398,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'wall'
+    AND tags @> '{"barrier": "wall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4412,12 +4410,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'wall'
-    AND tags ->> 'wall' = 'noise_barrier'
+    AND tags @> '{"barrier": "wall"}' :: JSONB
+    AND tags @> '{"wall": "noise_barrier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4425,10 +4423,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'barrier' = 'wicket_gate'
+    AND tags @> '{"barrier": "wicket_gate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -4437,10 +4435,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'boundary' = 'administrative'
+    AND tags @> '{"boundary": "administrative"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4451,7 +4449,7 @@
     AND tags ? 'bridge:support'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -4460,10 +4458,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'bridge:support' = 'pier'
+    AND tags @> '{"bridge:support": "pier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -4475,7 +4473,7 @@
     AND tags ? 'building:part'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4486,7 +4484,7 @@
     AND tags ? 'building'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4494,10 +4492,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'bunker'
+    AND tags @> '{"building": "bunker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4505,7 +4503,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'entrance'
+    AND tags @> '{"building": "entrance"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -4516,10 +4514,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'manufacture'
+    AND tags @> '{"building": "manufacture"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4527,10 +4525,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'outbuilding'
+    AND tags @> '{"building": "outbuilding"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4538,10 +4536,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'train_station'
+    AND tags @> '{"building": "train_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -4550,10 +4548,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'allotment_house'
+    AND tags @> '{"building": "allotment_house"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4561,10 +4559,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'apartments'
+    AND tags @> '{"building": "apartments"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4572,10 +4570,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'barn'
+    AND tags @> '{"building": "barn"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4583,10 +4581,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'boathouse'
+    AND tags @> '{"building": "boathouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4594,10 +4592,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'bungalow'
+    AND tags @> '{"building": "bungalow"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4605,10 +4603,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'cabin'
+    AND tags @> '{"building": "cabin"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4616,10 +4614,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'carport'
+    AND tags @> '{"building": "carport"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4627,10 +4625,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'cathedral'
+    AND tags @> '{"building": "cathedral"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4638,10 +4636,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'chapel'
+    AND tags @> '{"building": "chapel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4649,10 +4647,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'church'
+    AND tags @> '{"building": "church"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4660,10 +4658,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'civic'
+    AND tags @> '{"building": "civic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4671,10 +4669,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'college'
+    AND tags @> '{"building": "college"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4682,10 +4680,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'commercial'
+    AND tags @> '{"building": "commercial"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4693,10 +4691,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'construction'
+    AND tags @> '{"building": "construction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4704,10 +4702,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'cowshed'
+    AND tags @> '{"building": "cowshed"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4715,10 +4713,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'detached'
+    AND tags @> '{"building": "detached"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4726,10 +4724,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'dormitory'
+    AND tags @> '{"building": "dormitory"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4737,10 +4735,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'farm_auxiliary'
+    AND tags @> '{"building": "farm_auxiliary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4748,10 +4746,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'farm'
+    AND tags @> '{"building": "farm"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4759,10 +4757,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'fire_station'
+    AND tags @> '{"building": "fire_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4770,10 +4768,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'garage'
+    AND tags @> '{"building": "garage"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4781,10 +4779,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'garages'
+    AND tags @> '{"building": "garages"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4792,10 +4790,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'ger'
+    AND tags @> '{"building": "ger"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4803,10 +4801,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'grandstand'
+    AND tags @> '{"building": "grandstand"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4814,10 +4812,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'greenhouse'
+    AND tags @> '{"building": "greenhouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4825,10 +4823,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'hangar'
+    AND tags @> '{"building": "hangar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4836,10 +4834,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'hospital'
+    AND tags @> '{"building": "hospital"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4847,10 +4845,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'hotel'
+    AND tags @> '{"building": "hotel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4858,10 +4856,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'house'
+    AND tags @> '{"building": "house"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4869,10 +4867,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'houseboat'
+    AND tags @> '{"building": "houseboat"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4880,10 +4878,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'hut'
+    AND tags @> '{"building": "hut"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4891,10 +4889,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'industrial'
+    AND tags @> '{"building": "industrial"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4902,10 +4900,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'kindergarten'
+    AND tags @> '{"building": "kindergarten"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4913,10 +4911,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'mosque'
+    AND tags @> '{"building": "mosque"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4924,10 +4922,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'office'
+    AND tags @> '{"building": "office"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4935,10 +4933,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'pavilion'
+    AND tags @> '{"building": "pavilion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4946,10 +4944,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'public'
+    AND tags @> '{"building": "public"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4957,10 +4955,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'residential'
+    AND tags @> '{"building": "residential"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4968,10 +4966,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'retail'
+    AND tags @> '{"building": "retail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4979,10 +4977,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'roof'
+    AND tags @> '{"building": "roof"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -4990,10 +4988,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'ruins'
+    AND tags @> '{"building": "ruins"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5001,10 +4999,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'school'
+    AND tags @> '{"building": "school"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5012,10 +5010,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'semidetached_house'
+    AND tags @> '{"building": "semidetached_house"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5023,10 +5021,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'service'
+    AND tags @> '{"building": "service"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5034,10 +5032,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'shed'
+    AND tags @> '{"building": "shed"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5045,10 +5043,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'stable'
+    AND tags @> '{"building": "stable"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5056,10 +5054,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'stadium'
+    AND tags @> '{"building": "stadium"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5067,10 +5065,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'static_caravan'
+    AND tags @> '{"building": "static_caravan"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5078,10 +5076,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'sty'
+    AND tags @> '{"building": "sty"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5089,10 +5087,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'synagogue'
+    AND tags @> '{"building": "synagogue"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5100,10 +5098,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'temple'
+    AND tags @> '{"building": "temple"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5111,10 +5109,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'terrace'
+    AND tags @> '{"building": "terrace"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5122,10 +5120,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'transportation'
+    AND tags @> '{"building": "transportation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5133,10 +5131,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'university'
+    AND tags @> '{"building": "university"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5144,10 +5142,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'building' = 'warehouse'
+    AND tags @> '{"building": "warehouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5155,10 +5153,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'cemetery' = 'grave'
+    AND tags @> '{"cemetery": "grave"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5167,10 +5165,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'cemetery' = 'sector'
+    AND tags @> '{"cemetery": "sector"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5182,7 +5180,7 @@
     AND tags ? 'club'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5191,10 +5189,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'club' = 'sport'
+    AND tags @> '{"club": "sport"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5206,7 +5204,7 @@
     AND tags ? 'craft'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5215,10 +5213,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'locksmith'
+    AND tags @> '{"craft": "locksmith"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5227,10 +5225,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'tailor'
+    AND tags @> '{"craft": "tailor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5239,10 +5237,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'agricultural_engines'
+    AND tags @> '{"craft": "agricultural_engines"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5251,10 +5249,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'basket_maker'
+    AND tags @> '{"craft": "basket_maker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5263,10 +5261,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'beekeeper'
+    AND tags @> '{"craft": "beekeeper"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5275,10 +5273,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'blacksmith'
+    AND tags @> '{"craft": "blacksmith"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5287,10 +5285,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'boatbuilder'
+    AND tags @> '{"craft": "boatbuilder"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5299,10 +5297,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'bookbinder'
+    AND tags @> '{"craft": "bookbinder"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5311,10 +5309,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'brewery'
+    AND tags @> '{"craft": "brewery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5323,10 +5321,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'carpenter'
+    AND tags @> '{"craft": "carpenter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5335,10 +5333,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'carpet_layer'
+    AND tags @> '{"craft": "carpet_layer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5347,10 +5345,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'caterer'
+    AND tags @> '{"craft": "caterer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5359,10 +5357,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'chimney_sweeper'
+    AND tags @> '{"craft": "chimney_sweeper"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5371,10 +5369,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'cleaning'
+    AND tags @> '{"craft": "cleaning"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5383,10 +5381,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'clockmaker'
+    AND tags @> '{"craft": "clockmaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5395,10 +5393,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'confectionery'
+    AND tags @> '{"craft": "confectionery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5407,10 +5405,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'distillery'
+    AND tags @> '{"craft": "distillery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5419,10 +5417,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'dressmaker'
+    AND tags @> '{"craft": "dressmaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5431,10 +5429,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'electrician'
+    AND tags @> '{"craft": "electrician"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5443,10 +5441,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'electronics_repair'
+    AND tags @> '{"craft": "electronics_repair"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5455,10 +5453,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'floorer'
+    AND tags @> '{"craft": "floorer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5467,10 +5465,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'gardener'
+    AND tags @> '{"craft": "gardener"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5479,10 +5477,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'glaziery'
+    AND tags @> '{"craft": "glaziery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5491,10 +5489,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'handicraft'
+    AND tags @> '{"craft": "handicraft"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5503,10 +5501,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'hvac'
+    AND tags @> '{"craft": "hvac"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5515,10 +5513,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'insulation'
+    AND tags @> '{"craft": "insulation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5527,10 +5525,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'joiner'
+    AND tags @> '{"craft": "joiner"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5539,10 +5537,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'key_cutter'
+    AND tags @> '{"craft": "key_cutter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5551,10 +5549,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'metal_construction'
+    AND tags @> '{"craft": "metal_construction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5563,10 +5561,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'painter'
+    AND tags @> '{"craft": "painter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5575,10 +5573,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'parquet_layer'
+    AND tags @> '{"craft": "parquet_layer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5587,10 +5585,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'photographer'
+    AND tags @> '{"craft": "photographer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5599,10 +5597,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'photographic_laboratory'
+    AND tags @> '{"craft": "photographic_laboratory"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5611,10 +5609,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'plasterer'
+    AND tags @> '{"craft": "plasterer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5623,10 +5621,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'plumber'
+    AND tags @> '{"craft": "plumber"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5635,10 +5633,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'pottery'
+    AND tags @> '{"craft": "pottery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5647,10 +5645,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'rigger'
+    AND tags @> '{"craft": "rigger"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5659,10 +5657,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'roofer'
+    AND tags @> '{"craft": "roofer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5671,10 +5669,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'saddler'
+    AND tags @> '{"craft": "saddler"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5683,10 +5681,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'sailmaker'
+    AND tags @> '{"craft": "sailmaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5695,10 +5693,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'sawmill'
+    AND tags @> '{"craft": "sawmill"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5707,10 +5705,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'scaffolder'
+    AND tags @> '{"craft": "scaffolder"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5719,10 +5717,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'sculptor'
+    AND tags @> '{"craft": "sculptor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5731,10 +5729,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'shoemaker'
+    AND tags @> '{"craft": "shoemaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5743,10 +5741,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'signmaker'
+    AND tags @> '{"craft": "signmaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5755,10 +5753,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'stonemason'
+    AND tags @> '{"craft": "stonemason"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5767,10 +5765,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'tiler'
+    AND tags @> '{"craft": "tiler"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5779,10 +5777,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'tinsmith'
+    AND tags @> '{"craft": "tinsmith"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5791,10 +5789,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'upholsterer'
+    AND tags @> '{"craft": "upholsterer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5803,10 +5801,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'watchmaker'
+    AND tags @> '{"craft": "watchmaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5815,10 +5813,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'window_construction'
+    AND tags @> '{"craft": "window_construction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5827,10 +5825,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'craft' = 'winery'
+    AND tags @> '{"craft": "winery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5839,7 +5837,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'cycleway' = 'asl'
+    AND tags @> '{"cycleway": "asl"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -5853,7 +5851,7 @@
     AND tags ? 'demolished:building'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5861,7 +5859,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'disc_golf' = 'basket'
+    AND tags @> '{"disc_golf": "basket"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -5872,10 +5870,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'disc_golf' = 'hole'
+    AND tags @> '{"disc_golf": "hole"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5883,7 +5881,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'disc_golf' = 'tee'
+    AND tags @> '{"disc_golf": "tee"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -5897,7 +5895,7 @@
     AND tags ? 'disused:amenity'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5909,8 +5907,8 @@
     AND tags ? 'disused:railway'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -5922,7 +5920,7 @@
     AND tags ? 'disused:shop'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -5931,10 +5929,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'designated'
+    AND tags @> '{"emergency": "designated"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5942,10 +5940,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'destination'
+    AND tags @> '{"emergency": "destination"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5953,10 +5951,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'no'
+    AND tags @> '{"emergency": "no"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5964,10 +5962,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'official'
+    AND tags @> '{"emergency": "official"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5975,10 +5973,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'private'
+    AND tags @> '{"emergency": "private"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5986,10 +5984,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'yes'
+    AND tags @> '{"emergency": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -5997,10 +5995,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'ambulance_station'
+    AND tags @> '{"emergency": "ambulance_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6009,10 +6007,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'assembly_point'
+    AND tags @> '{"emergency": "assembly_point"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6021,7 +6019,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'defibrillator'
+    AND tags @> '{"emergency": "defibrillator"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6032,7 +6030,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'fire_alarm_box'
+    AND tags @> '{"emergency": "fire_alarm_box"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6043,7 +6041,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'fire_extinguisher'
+    AND tags @> '{"emergency": "fire_extinguisher"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6054,7 +6052,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'fire_hose'
+    AND tags @> '{"emergency": "fire_hose"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6065,7 +6063,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'fire_hydrant'
+    AND tags @> '{"emergency": "fire_hydrant"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6076,7 +6074,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'first_aid_kit'
+    AND tags @> '{"emergency": "first_aid_kit"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6087,10 +6085,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'landing_site'
+    AND tags @> '{"emergency": "landing_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6099,7 +6097,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'life_ring'
+    AND tags @> '{"emergency": "life_ring"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6110,10 +6108,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'lifeboat_station'
+    AND tags @> '{"emergency": "lifeboat_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6122,10 +6120,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'lifeguard'
+    AND tags @> '{"emergency": "lifeguard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6134,10 +6132,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'mountain_rescue'
+    AND tags @> '{"emergency": "mountain_rescue"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6146,7 +6144,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'phone'
+    AND tags @> '{"emergency": "phone"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6157,7 +6155,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'siren'
+    AND tags @> '{"emergency": "siren"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6168,11 +6166,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'water_tank'
-    AND tags ->> 'man_made' = 'reservoir_covered'
+    AND tags @> '{"emergency": "water_tank"}' :: JSONB
+    AND tags @> '{"man_made": "reservoir_covered"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6181,12 +6179,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'water_tank'
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'reservoir'
+    AND tags @> '{"emergency": "water_tank"}' :: JSONB
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "reservoir"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6195,11 +6193,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'water_tank'
-    AND tags ->> 'man_made' = 'storage_tank'
+    AND tags @> '{"emergency": "water_tank"}' :: JSONB
+    AND tags @> '{"man_made": "storage_tank"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6219,7 +6217,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'emergency' = 'emergency_ward_entrance'
+    AND tags @> '{"emergency": "emergency_ward_entrance"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6230,7 +6228,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'entrance' = 'emergency'
+    AND tags @> '{"entrance": "emergency"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6241,7 +6239,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'entrance' = 'main'
+    AND tags @> '{"entrance": "main"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6252,7 +6250,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'ford' = 'yes'
+    AND tags @> '{"ford": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6263,10 +6261,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'bunker'
+    AND tags @> '{"golf": "bunker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6274,10 +6272,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'cartpath'
+    AND tags @> '{"golf": "cartpath"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6285,10 +6283,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'clubhouse'
+    AND tags @> '{"golf": "clubhouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6297,10 +6295,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'driving_range'
+    AND tags @> '{"golf": "driving_range"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6308,10 +6306,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'fairway'
+    AND tags @> '{"golf": "fairway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6319,10 +6317,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'green'
+    AND tags @> '{"golf": "green"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6330,10 +6328,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'hole'
+    AND tags @> '{"golf": "hole"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6341,10 +6339,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'lateral_water_hazard'
+    AND tags @> '{"golf": "lateral_water_hazard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6352,10 +6350,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'path'
+    AND tags @> '{"golf": "path"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6363,10 +6361,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'rough'
+    AND tags @> '{"golf": "rough"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6374,10 +6372,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'tee'
+    AND tags @> '{"golf": "tee"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6386,10 +6384,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'golf' = 'water_hazard'
+    AND tags @> '{"golf": "water_hazard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6400,7 +6398,7 @@
     AND tags ? 'healthcare'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6409,10 +6407,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'yes'
+    AND tags @> '{"healthcare": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6421,10 +6419,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'alternative'
+    AND tags @> '{"healthcare": "alternative"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6433,11 +6431,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'alternative'
-    AND tags ->> 'healthcare:speciality' = 'chiropractic'
+    AND tags @> '{"healthcare": "alternative"}' :: JSONB
+    AND tags @> '{"healthcare:speciality": "chiropractic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6446,10 +6444,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'audiologist'
+    AND tags @> '{"healthcare": "audiologist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6458,10 +6456,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'birthing_centre'
+    AND tags @> '{"healthcare": "birthing_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6470,10 +6468,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'blood_donation'
+    AND tags @> '{"healthcare": "blood_donation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6482,10 +6480,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'counselling'
+    AND tags @> '{"healthcare": "counselling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6494,11 +6492,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'dentist'
-    AND tags ->> 'healthcare:speciality' = 'orthodontics'
+    AND tags @> '{"healthcare": "dentist"}' :: JSONB
+    AND tags @> '{"healthcare:speciality": "orthodontics"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6507,10 +6505,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'hospice'
+    AND tags @> '{"healthcare": "hospice"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6519,10 +6517,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'laboratory'
+    AND tags @> '{"healthcare": "laboratory"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6531,10 +6529,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'midwife'
+    AND tags @> '{"healthcare": "midwife"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6543,10 +6541,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'occupational_therapist'
+    AND tags @> '{"healthcare": "occupational_therapist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6555,10 +6553,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'optometrist'
+    AND tags @> '{"healthcare": "optometrist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6567,10 +6565,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'physiotherapist'
+    AND tags @> '{"healthcare": "physiotherapist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6579,10 +6577,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'podiatrist'
+    AND tags @> '{"healthcare": "podiatrist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6591,10 +6589,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'psychotherapist'
+    AND tags @> '{"healthcare": "psychotherapist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6603,10 +6601,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'rehabilitation'
+    AND tags @> '{"healthcare": "rehabilitation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6615,10 +6613,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'sample_collection'
+    AND tags @> '{"healthcare": "sample_collection"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6627,10 +6625,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'healthcare' = 'speech_therapist'
+    AND tags @> '{"healthcare": "speech_therapist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -6639,7 +6637,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'bus_stop'
+    AND tags @> '{"highway": "bus_stop"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6650,7 +6648,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'crossing'
+    AND tags @> '{"highway": "crossing"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6661,10 +6659,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'bridleway'
+    AND tags @> '{"highway": "bridleway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6672,10 +6670,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'bus_guideway'
+    AND tags @> '{"highway": "bus_guideway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6683,10 +6681,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'busway'
+    AND tags @> '{"highway": "busway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6694,10 +6692,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'construction'
+    AND tags @> '{"highway": "construction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6705,10 +6703,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'corridor'
+    AND tags @> '{"highway": "corridor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6716,8 +6714,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'crossing'
-    AND tags ->> 'crossing' = 'marked'
+    AND tags @> '{"highway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "marked"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6728,8 +6726,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'crossing'
-    AND tags ->> 'crossing' = 'zebra'
+    AND tags @> '{"highway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "zebra"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6740,8 +6738,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'crossing'
-    AND tags ->> 'crossing' = 'traffic_signals'
+    AND tags @> '{"highway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "traffic_signals"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6752,8 +6750,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'crossing'
-    AND tags ->> 'crossing' = 'uncontrolled'
+    AND tags @> '{"highway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "uncontrolled"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6764,8 +6762,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'crossing'
-    AND tags ->> 'crossing' = 'unmarked'
+    AND tags @> '{"highway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "unmarked"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6776,10 +6774,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6787,10 +6785,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'cycleway' = 'crossing'
+    AND tags @> '{"cycleway": "crossing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6798,11 +6796,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'foot' = 'designated'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"foot": "designated"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6810,12 +6808,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'cycleway' = 'crossing'
-    AND tags ->> 'crossing' = 'marked'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"cycleway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "marked"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6823,12 +6821,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'cycleway' = 'crossing'
-    AND tags ->> 'foot' = 'designated'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"cycleway": "crossing"}' :: JSONB
+    AND tags @> '{"foot": "designated"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6836,12 +6834,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'cycleway' = 'crossing'
-    AND tags ->> 'crossing' = 'traffic_signals'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"cycleway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "traffic_signals"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6849,12 +6847,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'cycleway' = 'crossing'
-    AND tags ->> 'crossing' = 'uncontrolled'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"cycleway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "uncontrolled"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6862,12 +6860,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'cycleway' = 'crossing'
-    AND tags ->> 'crossing' = 'unmarked'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"cycleway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "unmarked"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6875,12 +6873,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'cycleway'
-    AND tags ->> 'bicycle' = 'no'
-    AND tags ->> 'moped' = 'designated'
+    AND tags @> '{"highway": "cycleway"}' :: JSONB
+    AND tags @> '{"bicycle": "no"}' :: JSONB
+    AND tags @> '{"moped": "designated"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6888,10 +6886,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'elevator'
+    AND tags @> '{"highway": "elevator"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6899,7 +6897,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'elevator'
+    AND tags @> '{"highway": "elevator"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6910,7 +6908,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'emergency_access_point'
+    AND tags @> '{"highway": "emergency_access_point"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6921,7 +6919,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'emergency_bay'
+    AND tags @> '{"highway": "emergency_bay"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -6932,10 +6930,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'escape'
+    AND tags @> '{"highway": "escape"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6943,10 +6941,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
+    AND tags @> '{"highway": "footway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6954,11 +6952,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'crossing'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "crossing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6966,11 +6964,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'informal' = 'yes'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"informal": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6978,11 +6976,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'access_aisle'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "access_aisle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -6990,11 +6988,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
+    AND tags @> '{"highway": "footway"}' :: JSONB
     AND tags ? 'conveying'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7002,12 +7000,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'crossing'
-    AND tags ->> 'crossing' = 'marked'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "marked"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7015,12 +7013,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'crossing'
-    AND tags ->> 'crossing' = 'zebra'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "zebra"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7028,12 +7026,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'crossing'
-    AND tags ->> 'crossing' = 'traffic_signals'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "traffic_signals"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7041,12 +7039,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'crossing'
-    AND tags ->> 'crossing' = 'uncontrolled'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "uncontrolled"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7054,12 +7052,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'footway'
-    AND tags ->> 'footway' = 'crossing'
-    AND tags ->> 'crossing' = 'unmarked'
+    AND tags @> '{"highway": "footway"}' :: JSONB
+    AND tags @> '{"footway": "crossing"}' :: JSONB
+    AND tags @> '{"crossing": "unmarked"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7067,10 +7065,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'footway' = 'sidewalk'
+    AND tags @> '{"footway": "sidewalk"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7078,10 +7076,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'footway' = 'traffic_island'
+    AND tags @> '{"footway": "traffic_island"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7089,7 +7087,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'give_way'
+    AND tags @> '{"highway": "give_way"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7100,10 +7098,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'living_street'
+    AND tags @> '{"highway": "living_street"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7111,7 +7109,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'milestone'
+    AND tags @> '{"highway": "milestone"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7122,7 +7120,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'mini_roundabout'
+    AND tags @> '{"highway": "mini_roundabout"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7133,7 +7131,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'motorway_junction'
+    AND tags @> '{"highway": "motorway_junction"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7144,10 +7142,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'motorway_link'
+    AND tags @> '{"highway": "motorway_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7155,10 +7153,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'motorway_link'
+    AND tags @> '{"highway": "motorway_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7166,10 +7164,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'motorway'
+    AND tags @> '{"highway": "motorway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7177,7 +7175,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'passing_place'
+    AND tags @> '{"highway": "passing_place"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7188,10 +7186,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'path'
+    AND tags @> '{"highway": "path"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7199,11 +7197,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'path'
-    AND tags ->> 'bridge' = 'boardwalk'
+    AND tags @> '{"highway": "path"}' :: JSONB
+    AND tags @> '{"bridge": "boardwalk"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7211,11 +7209,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'path'
-    AND tags ->> 'informal' = 'yes'
+    AND tags @> '{"highway": "path"}' :: JSONB
+    AND tags @> '{"informal": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7223,10 +7221,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'pedestrian'
+    AND tags @> '{"highway": "pedestrian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7234,10 +7232,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'pedestrian'
+    AND tags @> '{"highway": "pedestrian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7245,10 +7243,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'primary_link'
+    AND tags @> '{"highway": "primary_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7256,10 +7254,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'primary_link'
+    AND tags @> '{"highway": "primary_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7267,10 +7265,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'primary'
+    AND tags @> '{"highway": "primary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7278,11 +7276,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'raceway'
+    AND tags @> '{"highway": "raceway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7290,12 +7288,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'raceway'
-    AND tags ->> 'sport' = 'karting'
+    AND tags @> '{"highway": "raceway"}' :: JSONB
+    AND tags @> '{"sport": "karting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7303,12 +7301,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'raceway'
-    AND tags ->> 'sport' = 'motocross'
+    AND tags @> '{"highway": "raceway"}' :: JSONB
+    AND tags @> '{"sport": "motocross"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7316,10 +7314,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'residential'
+    AND tags @> '{"highway": "residential"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7327,10 +7325,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'rest_area'
+    AND tags @> '{"highway": "rest_area"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7339,10 +7337,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'road'
+    AND tags @> '{"highway": "road"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7350,11 +7348,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'road'
+    AND tags @> '{"highway": "road"}' :: JSONB
     AND tags ? 'bridge'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7362,10 +7360,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'secondary_link'
+    AND tags @> '{"highway": "secondary_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7373,10 +7371,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'secondary'
+    AND tags @> '{"highway": "secondary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7384,10 +7382,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
+    AND tags @> '{"highway": "service"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7395,10 +7393,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
+    AND tags @> '{"highway": "service"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7406,11 +7404,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
-    AND tags ->> 'service' = 'alley'
+    AND tags @> '{"highway": "service"}' :: JSONB
+    AND tags @> '{"service": "alley"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7418,11 +7416,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
-    AND tags ->> 'service' = 'drive-through'
+    AND tags @> '{"highway": "service"}' :: JSONB
+    AND tags @> '{"service": "drive-through"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7430,11 +7428,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
-    AND tags ->> 'service' = 'driveway'
+    AND tags @> '{"highway": "service"}' :: JSONB
+    AND tags @> '{"service": "driveway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7442,11 +7440,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
-    AND tags ->> 'service' = 'emergency_access'
+    AND tags @> '{"highway": "service"}' :: JSONB
+    AND tags @> '{"service": "emergency_access"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7454,11 +7452,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'service'
-    AND tags ->> 'service' = 'parking_aisle'
+    AND tags @> '{"highway": "service"}' :: JSONB
+    AND tags @> '{"service": "parking_aisle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7466,10 +7464,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'services'
+    AND tags @> '{"highway": "services"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7478,7 +7476,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'speed_camera'
+    AND tags @> '{"highway": "speed_camera"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7489,7 +7487,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'speed_display'
+    AND tags @> '{"highway": "speed_display"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7500,10 +7498,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'steps'
+    AND tags @> '{"highway": "steps"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7511,11 +7509,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'steps'
+    AND tags @> '{"highway": "steps"}' :: JSONB
     AND tags ? 'conveying'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7523,7 +7521,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'stop'
+    AND tags @> '{"highway": "stop"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7534,7 +7532,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'street_lamp'
+    AND tags @> '{"highway": "street_lamp"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7545,10 +7543,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'tertiary_link'
+    AND tags @> '{"highway": "tertiary_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7556,10 +7554,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'tertiary'
+    AND tags @> '{"highway": "tertiary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7567,7 +7565,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'toll_gantry'
+    AND tags @> '{"highway": "toll_gantry"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7578,10 +7576,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'track'
+    AND tags @> '{"highway": "track"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7589,7 +7587,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'traffic_mirror'
+    AND tags @> '{"highway": "traffic_mirror"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7600,7 +7598,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'traffic_signals'
+    AND tags @> '{"highway": "traffic_signals"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7611,7 +7609,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'trailhead'
+    AND tags @> '{"highway": "trailhead"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7622,10 +7620,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'trunk_link'
+    AND tags @> '{"highway": "trunk_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7633,10 +7631,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'trunk_link'
+    AND tags @> '{"highway": "trunk_link"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7644,10 +7642,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'trunk'
+    AND tags @> '{"highway": "trunk"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7655,7 +7653,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'turning_circle'
+    AND tags @> '{"highway": "turning_circle"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7666,7 +7664,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'turning_loop'
+    AND tags @> '{"highway": "turning_loop"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7677,10 +7675,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'highway' = 'unclassified'
+    AND tags @> '{"highway": "unclassified"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7691,8 +7689,8 @@
     AND tags ? 'historic'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -7701,10 +7699,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'archaeological_site'
+    AND tags @> '{"historic": "archaeological_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7713,7 +7711,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'boundary_stone'
+    AND tags @> '{"historic": "boundary_stone"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7724,10 +7722,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'building'
+    AND tags @> '{"historic": "building"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7735,10 +7733,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'castle'
+    AND tags @> '{"historic": "castle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7747,11 +7745,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'castle'
-    AND tags ->> 'castle_type' = 'fortress'
+    AND tags @> '{"historic": "castle"}' :: JSONB
+    AND tags @> '{"castle_type": "fortress"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7760,11 +7758,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'castle'
-    AND tags ->> 'castle_type' = 'palace'
+    AND tags @> '{"historic": "castle"}' :: JSONB
+    AND tags @> '{"castle_type": "palace"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7773,11 +7771,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'castle'
-    AND tags ->> 'castle_type' = 'stately'
+    AND tags @> '{"historic": "castle"}' :: JSONB
+    AND tags @> '{"castle_type": "stately"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7786,10 +7784,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'city_gate'
+    AND tags @> '{"historic": "city_gate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7798,10 +7796,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'fort'
+    AND tags @> '{"historic": "fort"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7810,10 +7808,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'manor'
+    AND tags @> '{"historic": "manor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7822,10 +7820,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'memorial'
+    AND tags @> '{"historic": "memorial"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7834,8 +7832,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'memorial'
-    AND tags ->> 'memorial' = 'plaque'
+    AND tags @> '{"historic": "memorial"}' :: JSONB
+    AND tags @> '{"memorial": "plaque"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7846,10 +7844,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'monument'
+    AND tags @> '{"historic": "monument"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7858,10 +7856,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'pillory'
+    AND tags @> '{"historic": "pillory"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7870,10 +7868,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'ruins'
+    AND tags @> '{"historic": "ruins"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7882,10 +7880,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'tomb'
+    AND tags @> '{"historic": "tomb"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7894,10 +7892,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'wayside_cross'
+    AND tags @> '{"historic": "wayside_cross"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7906,10 +7904,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'wayside_shrine'
+    AND tags @> '{"historic": "wayside_shrine"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7918,10 +7916,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'historic' = 'wreck'
+    AND tags @> '{"historic": "wreck"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -7930,10 +7928,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'corridor'
+    AND tags @> '{"indoor": "corridor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7941,10 +7939,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'area'
+    AND tags @> '{"indoor": "area"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7952,10 +7950,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'corridor'
+    AND tags @> '{"indoor": "corridor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7963,7 +7961,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'door'
+    AND tags @> '{"indoor": "door"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -7974,11 +7972,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'room'
-    AND tags ->> 'elevator' = 'yes'
+    AND tags @> '{"indoor": "room"}' :: JSONB
+    AND tags @> '{"elevator": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7986,10 +7984,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'room'
+    AND tags @> '{"indoor": "room"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -7997,11 +7995,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'room'
-    AND tags ->> 'stairs' = 'yes'
+    AND tags @> '{"indoor": "room"}' :: JSONB
+    AND tags @> '{"stairs": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8009,10 +8007,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'indoor' = 'wall'
+    AND tags @> '{"indoor": "wall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8020,10 +8018,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'internet_access' = 'wlan'
+    AND tags @> '{"internet_access": "wlan"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8032,10 +8030,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'junction' = 'yes'
+    AND tags @> '{"junction": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8044,10 +8042,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'basin'
+    AND tags @> '{"landuse": "basin"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8055,10 +8053,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'churchyard'
+    AND tags @> '{"landuse": "churchyard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8066,10 +8064,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'farm'
+    AND tags @> '{"landuse": "farm"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8078,10 +8076,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'pond'
+    AND tags @> '{"landuse": "pond"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8089,10 +8087,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'reservoir'
+    AND tags @> '{"landuse": "reservoir"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8100,10 +8098,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'allotments'
+    AND tags @> '{"landuse": "allotments"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8111,10 +8109,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'aquaculture'
+    AND tags @> '{"landuse": "aquaculture"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8122,10 +8120,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'brownfield'
+    AND tags @> '{"landuse": "brownfield"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8133,10 +8131,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'cemetery'
+    AND tags @> '{"landuse": "cemetery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8144,10 +8142,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'commercial'
+    AND tags @> '{"landuse": "commercial"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8155,10 +8153,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'construction'
+    AND tags @> '{"landuse": "construction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8166,10 +8164,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'education'
+    AND tags @> '{"landuse": "education"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8177,10 +8175,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'farmland'
+    AND tags @> '{"landuse": "farmland"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8188,10 +8186,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'farmyard'
+    AND tags @> '{"landuse": "farmyard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8199,10 +8197,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'flowerbed'
+    AND tags @> '{"landuse": "flowerbed"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8210,10 +8208,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'forest'
+    AND tags @> '{"landuse": "forest"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8221,10 +8219,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'garages'
+    AND tags @> '{"landuse": "garages"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8232,10 +8230,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'grass'
+    AND tags @> '{"landuse": "grass"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8243,10 +8241,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'greenfield'
+    AND tags @> '{"landuse": "greenfield"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8254,10 +8252,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'greenhouse_horticulture'
+    AND tags @> '{"landuse": "greenhouse_horticulture"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8265,10 +8263,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'harbour'
+    AND tags @> '{"landuse": "harbour"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8276,10 +8274,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'industrial'
+    AND tags @> '{"landuse": "industrial"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8287,10 +8285,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'industrial' = 'brewery'
+    AND tags @> '{"industrial": "brewery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8299,10 +8297,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'industrial' = 'scrap_yard'
+    AND tags @> '{"industrial": "scrap_yard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8311,10 +8309,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'industrial' = 'slaughterhouse'
+    AND tags @> '{"industrial": "slaughterhouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8323,10 +8321,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'landfill'
+    AND tags @> '{"landuse": "landfill"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8334,10 +8332,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'meadow'
+    AND tags @> '{"landuse": "meadow"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8345,10 +8343,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'military'
+    AND tags @> '{"landuse": "military"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8356,10 +8354,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'airfield'
+    AND tags @> '{"military": "airfield"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8368,10 +8366,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'barracks'
+    AND tags @> '{"military": "barracks"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8380,10 +8378,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'base'
+    AND tags @> '{"military": "base"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8392,11 +8390,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'base'
-    AND tags ->> 'military_service' = 'navy'
+    AND tags @> '{"military": "base"}' :: JSONB
+    AND tags @> '{"military_service": "navy"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8405,10 +8403,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'danger_area'
+    AND tags @> '{"military": "danger_area"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8417,10 +8415,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'obstacle_course'
+    AND tags @> '{"military": "obstacle_course"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8429,10 +8427,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'range'
+    AND tags @> '{"military": "range"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8441,10 +8439,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'training_area'
+    AND tags @> '{"military": "training_area"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8453,10 +8451,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'orchard'
+    AND tags @> '{"landuse": "orchard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8464,10 +8462,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'plant_nursery'
+    AND tags @> '{"landuse": "plant_nursery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8475,10 +8473,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'quarry'
+    AND tags @> '{"landuse": "quarry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8487,10 +8485,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'railway'
+    AND tags @> '{"landuse": "railway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8498,10 +8496,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'recreation_ground'
+    AND tags @> '{"landuse": "recreation_ground"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8509,10 +8507,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'religious'
+    AND tags @> '{"landuse": "religious"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8520,10 +8518,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'residential'
+    AND tags @> '{"landuse": "residential"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8531,10 +8529,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'residential' = 'apartments'
+    AND tags @> '{"residential": "apartments"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8543,10 +8541,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'retail'
+    AND tags @> '{"landuse": "retail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8554,10 +8552,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'salt_pond'
+    AND tags @> '{"landuse": "salt_pond"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8565,10 +8563,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'vineyard'
+    AND tags @> '{"landuse": "vineyard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8576,10 +8574,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'landuse' = 'winter_sports'
+    AND tags @> '{"landuse": "winter_sports"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8587,10 +8585,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'adult_gaming_centre'
+    AND tags @> '{"leisure": "adult_gaming_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8599,10 +8597,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'amusement_arcade'
+    AND tags @> '{"leisure": "amusement_arcade"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8611,10 +8609,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'bandstand'
+    AND tags @> '{"leisure": "bandstand"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8623,10 +8621,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'beach_resort'
+    AND tags @> '{"leisure": "beach_resort"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8635,10 +8633,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'bird_hide'
+    AND tags @> '{"leisure": "bird_hide"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8647,10 +8645,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'bleachers'
+    AND tags @> '{"leisure": "bleachers"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -8658,10 +8656,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'bowling_alley'
+    AND tags @> '{"leisure": "bowling_alley"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8670,10 +8668,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'common'
+    AND tags @> '{"leisure": "common"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8682,10 +8680,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'dance'
+    AND tags @> '{"leisure": "dance"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8694,11 +8692,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'dance'
-    AND tags ->> 'dance:teaching' = 'yes'
+    AND tags @> '{"leisure": "dance"}' :: JSONB
+    AND tags @> '{"dance:teaching": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8707,10 +8705,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'disc_golf_course'
+    AND tags @> '{"leisure": "disc_golf_course"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8719,10 +8717,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'dog_park'
+    AND tags @> '{"leisure": "dog_park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8731,10 +8729,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'escape_game'
+    AND tags @> '{"leisure": "escape_game"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8743,10 +8741,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'firepit'
+    AND tags @> '{"leisure": "firepit"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8755,10 +8753,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fishing'
+    AND tags @> '{"leisure": "fishing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8767,10 +8765,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_centre'
+    AND tags @> '{"leisure": "fitness_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8779,11 +8777,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_centre'
-    AND tags ->> 'sport' = 'yoga'
+    AND tags @> '{"leisure": "fitness_centre"}' :: JSONB
+    AND tags @> '{"sport": "yoga"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8792,10 +8790,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8804,11 +8802,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'balance_beam'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "balance_beam"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8817,11 +8815,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'box'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "box"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8830,11 +8828,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'horizontal_bar'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "horizontal_bar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8843,11 +8841,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'horizontal_ladder'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "horizontal_ladder"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8856,11 +8854,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'hyperextension'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "hyperextension"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8869,11 +8867,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'parallel_bars'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "parallel_bars"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8882,11 +8880,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'push-up'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "push-up"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8895,11 +8893,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'rings'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "rings"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8908,11 +8906,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'sign'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "sign"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8921,11 +8919,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'sit-up'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "sit-up"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8934,11 +8932,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'fitness_station'
-    AND tags ->> 'fitness_station' = 'stairs'
+    AND tags @> '{"leisure": "fitness_station"}' :: JSONB
+    AND tags @> '{"fitness_station": "stairs"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8947,10 +8945,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'garden'
+    AND tags @> '{"leisure": "garden"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8959,11 +8957,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'garden'
-    AND tags ->> 'garden:type' = 'botanical'
+    AND tags @> '{"leisure": "garden"}' :: JSONB
+    AND tags @> '{"garden:type": "botanical"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8972,11 +8970,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'garden'
-    AND tags ->> 'garden:type' = 'community'
+    AND tags @> '{"leisure": "garden"}' :: JSONB
+    AND tags @> '{"garden:type": "community"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8985,10 +8983,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'golf_course'
+    AND tags @> '{"leisure": "golf_course"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -8997,10 +8995,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'hackerspace'
+    AND tags @> '{"leisure": "hackerspace"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9009,10 +9007,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'horse_riding'
+    AND tags @> '{"leisure": "horse_riding"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9021,10 +9019,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'ice_rink'
+    AND tags @> '{"leisure": "ice_rink"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9033,10 +9031,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'indoor_play'
+    AND tags @> '{"leisure": "indoor_play"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9045,10 +9043,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'marina'
+    AND tags @> '{"leisure": "marina"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9057,10 +9055,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'miniature_golf'
+    AND tags @> '{"leisure": "miniature_golf"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9069,10 +9067,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'nature_reserve'
+    AND tags @> '{"leisure": "nature_reserve"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9081,10 +9079,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'outdoor_seating'
+    AND tags @> '{"leisure": "outdoor_seating"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9093,10 +9091,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'park'
+    AND tags @> '{"leisure": "park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9105,7 +9103,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'picnic_table'
+    AND tags @> '{"leisure": "picnic_table"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -9116,8 +9114,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'picnic_table'
-    AND tags ->> 'sport' = 'chess'
+    AND tags @> '{"leisure": "picnic_table"}' :: JSONB
+    AND tags @> '{"sport": "chess"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -9128,10 +9126,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9140,11 +9138,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'american_football'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "american_football"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9153,11 +9151,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'american_handball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "american_handball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9166,11 +9164,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'archery'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "archery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9179,11 +9177,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'australian_football'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "australian_football"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9192,11 +9190,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'badminton'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "badminton"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9205,11 +9203,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'baseball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "baseball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9218,11 +9216,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'basketball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "basketball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9231,11 +9229,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'beachvolleyball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "beachvolleyball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9244,11 +9242,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'boules'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "boules"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9257,11 +9255,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'bowls'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "bowls"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9270,11 +9268,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'chess'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "chess"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9283,11 +9281,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'cricket'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "cricket"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9296,11 +9294,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'equestrian'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "equestrian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9309,11 +9307,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'field_hockey'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "field_hockey"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9322,11 +9320,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'four_square'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "four_square"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9335,11 +9333,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'funnel_ball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "funnel_ball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9348,11 +9346,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'futsal'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "futsal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9361,11 +9359,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'gaga'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "gaga"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9374,11 +9372,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'handball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "handball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9387,11 +9385,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'horseshoes'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "horseshoes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9400,11 +9398,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'netball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "netball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9413,11 +9411,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'padel'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "padel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9426,11 +9424,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'paintball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "paintball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9439,11 +9437,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'pickleball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "pickleball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9452,11 +9450,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'rugby_league'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "rugby_league"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9465,11 +9463,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'rugby_union'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "rugby_union"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9478,11 +9476,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'shooting'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "shooting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9491,11 +9489,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'shuffleboard'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "shuffleboard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9504,11 +9502,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'skateboard'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "skateboard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9517,11 +9515,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'soccer'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "soccer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9530,11 +9528,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'softball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "softball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9543,11 +9541,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'table_soccer'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "table_soccer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9556,11 +9554,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'table_tennis'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "table_tennis"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9569,11 +9567,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'tennis'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "tennis"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9582,11 +9580,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'tetherball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "tetherball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9595,11 +9593,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'pitch'
-    AND tags ->> 'sport' = 'volleyball'
+    AND tags @> '{"leisure": "pitch"}' :: JSONB
+    AND tags @> '{"sport": "volleyball"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9608,10 +9606,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'playground'
+    AND tags @> '{"leisure": "playground"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9620,11 +9618,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'playground'
-    AND tags ->> 'indoor' = 'yes'
+    AND tags @> '{"leisure": "playground"}' :: JSONB
+    AND tags @> '{"indoor": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9633,10 +9631,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'resort'
+    AND tags @> '{"leisure": "resort"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9645,10 +9643,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sauna'
+    AND tags @> '{"leisure": "sauna"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9657,11 +9655,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'slipway'
-    AND tags ->> 'highway' = 'service'
+    AND tags @> '{"leisure": "slipway"}' :: JSONB
+    AND tags @> '{"highway": "service"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -9669,10 +9667,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'slipway'
+    AND tags @> '{"leisure": "slipway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -9681,10 +9679,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sports_centre'
+    AND tags @> '{"leisure": "sports_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9693,11 +9691,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sports_centre'
-    AND tags ->> 'sport' = 'climbing'
+    AND tags @> '{"leisure": "sports_centre"}' :: JSONB
+    AND tags @> '{"sport": "climbing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9706,11 +9704,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sports_centre'
-    AND tags ->> 'sport' = 'horse_racing'
+    AND tags @> '{"leisure": "sports_centre"}' :: JSONB
+    AND tags @> '{"sport": "horse_racing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9719,11 +9717,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sports_centre'
-    AND tags ->> 'sport' = 'shooting'
+    AND tags @> '{"leisure": "sports_centre"}' :: JSONB
+    AND tags @> '{"sport": "shooting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9732,11 +9730,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sports_centre'
-    AND tags ->> 'sport' = 'swimming'
+    AND tags @> '{"leisure": "sports_centre"}' :: JSONB
+    AND tags @> '{"sport": "swimming"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9745,10 +9743,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'sports_hall'
+    AND tags @> '{"leisure": "sports_hall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9757,10 +9755,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'stadium'
+    AND tags @> '{"leisure": "stadium"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9769,10 +9767,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'swimming_area'
+    AND tags @> '{"leisure": "swimming_area"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -9780,10 +9778,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'swimming_pool'
+    AND tags @> '{"leisure": "swimming_pool"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9792,11 +9790,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'track'
+    AND tags @> '{"leisure": "track"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -9805,12 +9803,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'track'
-    AND tags ->> 'sport' = 'cycling'
+    AND tags @> '{"leisure": "track"}' :: JSONB
+    AND tags @> '{"sport": "cycling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -9819,12 +9817,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'track'
-    AND tags ->> 'sport' = 'horse_racing'
+    AND tags @> '{"leisure": "track"}' :: JSONB
+    AND tags @> '{"sport": "horse_racing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -9833,12 +9831,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'track'
-    AND tags ->> 'sport' = 'running'
+    AND tags @> '{"leisure": "track"}' :: JSONB
+    AND tags @> '{"sport": "running"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -9847,10 +9845,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'trampoline_park'
+    AND tags @> '{"leisure": "trampoline_park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9859,10 +9857,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'leisure' = 'water_park'
+    AND tags @> '{"leisure": "water_park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9873,7 +9871,7 @@
     TRUE
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -9881,10 +9879,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'courtyard'
+    AND tags @> '{"man_made": "courtyard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -9892,11 +9890,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'yes'
+    AND tags @> '{"man_made": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -9905,10 +9903,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'adit'
+    AND tags @> '{"man_made": "adit"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9917,7 +9915,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'antenna'
+    AND tags @> '{"man_made": "antenna"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -9928,10 +9926,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'beacon'
+    AND tags @> '{"man_made": "beacon"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9940,10 +9938,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'beehive'
+    AND tags @> '{"man_made": "beehive"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9952,11 +9950,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'breakwater'
+    AND tags @> '{"man_made": "breakwater"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -9964,10 +9962,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'bridge'
+    AND tags @> '{"man_made": "bridge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -9975,10 +9973,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'bunker_silo'
+    AND tags @> '{"man_made": "bunker_silo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9987,10 +9985,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'cairn'
+    AND tags @> '{"man_made": "cairn"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -9999,10 +9997,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'carpet_hanger'
+    AND tags @> '{"man_made": "carpet_hanger"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -10011,10 +10009,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'chimney'
+    AND tags @> '{"man_made": "chimney"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10023,10 +10021,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'clearcut'
+    AND tags @> '{"man_made": "clearcut"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10034,10 +10032,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'compass_rose'
+    AND tags @> '{"man_made": "compass_rose"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10046,11 +10044,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'crane'
+    AND tags @> '{"man_made": "crane"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -10059,11 +10057,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'crane'
-    AND tags ->> 'crane:type' = 'gantry_crane'
+    AND tags @> '{"man_made": "crane"}' :: JSONB
+    AND tags @> '{"crane:type": "gantry_crane"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10072,11 +10070,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'crane'
-    AND tags ->> 'crane:type' = 'portal_crane'
+    AND tags @> '{"man_made": "crane"}' :: JSONB
+    AND tags @> '{"crane:type": "portal_crane"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10085,7 +10083,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'cross'
+    AND tags @> '{"man_made": "cross"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10096,10 +10094,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'cutline'
+    AND tags @> '{"man_made": "cutline"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10107,10 +10105,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'dovecote'
+    AND tags @> '{"man_made": "dovecote"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10119,10 +10117,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'dyke'
+    AND tags @> '{"man_made": "dyke"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10130,10 +10128,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'embankment'
+    AND tags @> '{"man_made": "embankment"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10141,7 +10139,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'flagpole'
+    AND tags @> '{"man_made": "flagpole"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10152,10 +10150,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'gantry'
+    AND tags @> '{"man_made": "gantry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10163,10 +10161,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'gasometer'
+    AND tags @> '{"man_made": "gasometer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10175,10 +10173,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'goods_conveyor'
+    AND tags @> '{"man_made": "goods_conveyor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10186,11 +10184,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'groyne'
+    AND tags @> '{"man_made": "groyne"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10198,10 +10196,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'lighthouse'
+    AND tags @> '{"man_made": "lighthouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10210,7 +10208,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'manhole'
+    AND tags @> '{"man_made": "manhole"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10221,7 +10219,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'manhole' = 'drain'
+    AND tags @> '{"manhole": "drain"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10232,7 +10230,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'manhole' = 'gas'
+    AND tags @> '{"manhole": "gas"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10243,7 +10241,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'manhole' = 'power'
+    AND tags @> '{"manhole": "power"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10254,7 +10252,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'manhole' = 'sewer'
+    AND tags @> '{"manhole": "sewer"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10265,7 +10263,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'manhole' = 'telecom'
+    AND tags @> '{"manhole": "telecom"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10276,7 +10274,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'manhole' = 'water'
+    AND tags @> '{"manhole": "water"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10287,7 +10285,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mast'
+    AND tags @> '{"man_made": "mast"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10298,8 +10296,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mast'
-    AND tags ->> 'tower:type' = 'communication'
+    AND tags @> '{"man_made": "mast"}' :: JSONB
+    AND tags @> '{"tower:type": "communication"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10310,9 +10308,9 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mast'
-    AND tags ->> 'tower:type' = 'communication'
-    AND tags ->> 'communication:mobile_phone' = 'yes'
+    AND tags @> '{"man_made": "mast"}' :: JSONB
+    AND tags @> '{"tower:type": "communication"}' :: JSONB
+    AND tags @> '{"communication:mobile_phone": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10323,9 +10321,9 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mast'
-    AND tags ->> 'tower:type' = 'communication'
-    AND tags ->> 'communication:radio' = 'yes'
+    AND tags @> '{"man_made": "mast"}' :: JSONB
+    AND tags @> '{"tower:type": "communication"}' :: JSONB
+    AND tags @> '{"communication:radio": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10336,9 +10334,9 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mast'
-    AND tags ->> 'tower:type' = 'communication'
-    AND tags ->> 'communication:television' = 'yes'
+    AND tags @> '{"man_made": "mast"}' :: JSONB
+    AND tags @> '{"tower:type": "communication"}' :: JSONB
+    AND tags @> '{"communication:television": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10349,8 +10347,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mast'
-    AND tags ->> 'tower:type' = 'lighting'
+    AND tags @> '{"man_made": "mast"}' :: JSONB
+    AND tags @> '{"tower:type": "lighting"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10361,10 +10359,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'mineshaft'
+    AND tags @> '{"man_made": "mineshaft"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10373,10 +10371,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'monitoring_station'
+    AND tags @> '{"man_made": "monitoring_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10385,10 +10383,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'obelisk'
+    AND tags @> '{"man_made": "obelisk"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10397,10 +10395,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'observatory'
+    AND tags @> '{"man_made": "observatory"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10409,7 +10407,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'petroleum_well'
+    AND tags @> '{"man_made": "petroleum_well"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10420,11 +10418,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'pier'
+    AND tags @> '{"man_made": "pier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10432,12 +10430,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'pier'
-    AND tags ->> 'floating' = 'yes'
+    AND tags @> '{"man_made": "pier"}' :: JSONB
+    AND tags @> '{"floating": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10445,10 +10443,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'pipeline'
+    AND tags @> '{"man_made": "pipeline"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10456,11 +10454,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'pipeline'
-    AND tags ->> 'location' = 'underground'
+    AND tags @> '{"man_made": "pipeline"}' :: JSONB
+    AND tags @> '{"location": "underground"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10468,10 +10466,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'planter'
+    AND tags @> '{"man_made": "planter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10480,10 +10478,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'pumping_station'
+    AND tags @> '{"man_made": "pumping_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10492,10 +10490,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'reservoir_covered'
+    AND tags @> '{"man_made": "reservoir_covered"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10504,10 +10502,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'silo'
+    AND tags @> '{"man_made": "silo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10516,10 +10514,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'storage_tank'
+    AND tags @> '{"man_made": "storage_tank"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10528,11 +10526,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'storage_tank'
-    AND tags ->> 'content' = 'water'
+    AND tags @> '{"man_made": "storage_tank"}' :: JSONB
+    AND tags @> '{"content": "water"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10541,10 +10539,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'street_cabinet'
+    AND tags @> '{"man_made": "street_cabinet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10553,7 +10551,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'surveillance'
+    AND tags @> '{"man_made": "surveillance"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10564,8 +10562,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'surveillance'
-    AND tags ->> 'surveillance:type' = 'camera'
+    AND tags @> '{"man_made": "surveillance"}' :: JSONB
+    AND tags @> '{"surveillance:type": "camera"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10576,7 +10574,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'survey_point'
+    AND tags @> '{"man_made": "survey_point"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10587,10 +10585,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tailings_pond'
+    AND tags @> '{"man_made": "tailings_pond"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10598,10 +10596,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'torii'
+    AND tags @> '{"man_made": "torii"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -10610,10 +10608,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10622,11 +10620,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'bell_tower'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "bell_tower"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10635,11 +10633,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'communication'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "communication"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10648,11 +10646,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'cooling'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "cooling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10660,11 +10658,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'defensive'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "defensive"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10673,11 +10671,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'diving'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "diving"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10686,11 +10684,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'minaret'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "minaret"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10699,11 +10697,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'observation'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "observation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10712,11 +10710,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tower'
-    AND tags ->> 'tower:type' = 'pagoda'
+    AND tags @> '{"man_made": "tower"}' :: JSONB
+    AND tags @> '{"tower:type": "pagoda"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10725,10 +10723,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'tunnel'
+    AND tags @> '{"man_made": "tunnel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10736,7 +10734,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'utility_pole'
+    AND tags @> '{"man_made": "utility_pole"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10747,10 +10745,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'video_wall'
+    AND tags @> '{"man_made": "video_wall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -10759,10 +10757,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'wastewater_plant'
+    AND tags @> '{"man_made": "wastewater_plant"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10771,7 +10769,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'water_tap'
+    AND tags @> '{"man_made": "water_tap"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10782,10 +10780,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'water_tower'
+    AND tags @> '{"man_made": "water_tower"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10794,10 +10792,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'water_well'
+    AND tags @> '{"man_made": "water_well"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10806,10 +10804,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'water_works'
+    AND tags @> '{"man_made": "water_works"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10818,10 +10816,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'watermill'
+    AND tags @> '{"man_made": "watermill"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10830,10 +10828,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'windmill'
+    AND tags @> '{"man_made": "windmill"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10842,7 +10840,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'windpump'
+    AND tags @> '{"man_made": "windpump"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10853,10 +10851,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'works'
+    AND tags @> '{"man_made": "works"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10865,11 +10863,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'man_made' = 'works'
-    AND tags ->> 'product' = 'beer'
+    AND tags @> '{"man_made": "works"}' :: JSONB
+    AND tags @> '{"product": "beer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10902,7 +10900,7 @@
     WHERE
     TRUE
     AND tags ? 'marker'
-    AND tags ->> 'utility' = 'power'
+    AND tags @> '{"utility": "power"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -10913,10 +10911,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'bunker'
+    AND tags @> '{"military": "bunker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10925,10 +10923,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'checkpoint'
+    AND tags @> '{"military": "checkpoint"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10937,10 +10935,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'nuclear_explosion_site'
+    AND tags @> '{"military": "nuclear_explosion_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10949,10 +10947,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'office'
+    AND tags @> '{"military": "office"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -10961,10 +10959,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'military' = 'trench'
+    AND tags @> '{"military": "trench"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -10973,10 +10971,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'bare_rock'
+    AND tags @> '{"natural": "bare_rock"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -10984,11 +10982,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'bay'
+    AND tags @> '{"natural": "bay"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -10997,10 +10995,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'beach'
+    AND tags @> '{"natural": "beach"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11009,7 +11007,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'cape'
+    AND tags @> '{"natural": "cape"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11020,10 +11018,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'cave_entrance'
+    AND tags @> '{"natural": "cave_entrance"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11032,11 +11030,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'cliff'
+    AND tags @> '{"natural": "cliff"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -11045,10 +11043,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'coastline'
+    AND tags @> '{"natural": "coastline"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11056,10 +11054,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'fell'
+    AND tags @> '{"natural": "fell"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11067,7 +11065,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'geyser'
+    AND tags @> '{"natural": "geyser"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11078,10 +11076,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'glacier'
+    AND tags @> '{"natural": "glacier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11089,10 +11087,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'grassland'
+    AND tags @> '{"natural": "grassland"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11100,10 +11098,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'heath'
+    AND tags @> '{"natural": "heath"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11111,10 +11109,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'hot_spring'
+    AND tags @> '{"natural": "hot_spring"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11123,10 +11121,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'mud'
+    AND tags @> '{"natural": "mud"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11134,7 +11132,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'peak'
+    AND tags @> '{"natural": "peak"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11145,10 +11143,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'reef'
+    AND tags @> '{"natural": "reef"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11157,10 +11155,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'ridge'
+    AND tags @> '{"natural": "ridge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11168,10 +11166,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'rock'
+    AND tags @> '{"natural": "rock"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11180,7 +11178,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'saddle'
+    AND tags @> '{"natural": "saddle"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11191,10 +11189,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'sand'
+    AND tags @> '{"natural": "sand"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11202,10 +11200,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'scree'
+    AND tags @> '{"natural": "scree"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11213,10 +11211,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'scrub'
+    AND tags @> '{"natural": "scrub"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11224,10 +11222,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'shingle'
+    AND tags @> '{"natural": "shingle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11235,7 +11233,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'shrub'
+    AND tags @> '{"natural": "shrub"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11246,10 +11244,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'spring'
+    AND tags @> '{"natural": "spring"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11258,10 +11256,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'stone'
+    AND tags @> '{"natural": "stone"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11270,11 +11268,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'strait'
+    AND tags @> '{"natural": "strait"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -11283,10 +11281,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'tree_row'
+    AND tags @> '{"natural": "tree_row"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11294,10 +11292,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'tree_stump'
+    AND tags @> '{"natural": "tree_stump"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11306,7 +11304,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'tree'
+    AND tags @> '{"natural": "tree"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11317,10 +11315,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'valley'
+    AND tags @> '{"natural": "valley"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -11329,7 +11327,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'volcano'
+    AND tags @> '{"natural": "volcano"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11340,10 +11338,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
+    AND tags @> '{"natural": "water"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11351,11 +11349,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'basin'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "basin"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11363,11 +11361,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'canal'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "canal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11375,11 +11373,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'lake'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "lake"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11387,11 +11385,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'moat'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "moat"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11399,11 +11397,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'oxbow'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "oxbow"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11411,11 +11409,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'pond'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "pond"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11423,11 +11421,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'reservoir'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "reservoir"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11435,11 +11433,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'river'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "river"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11447,11 +11445,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'stream'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "stream"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11459,11 +11457,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'water'
-    AND tags ->> 'water' = 'wastewater'
+    AND tags @> '{"natural": "water"}' :: JSONB
+    AND tags @> '{"water": "wastewater"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11471,10 +11469,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11483,11 +11481,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'bog'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "bog"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11495,11 +11493,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'fen'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "fen"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11507,11 +11505,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'mangrove'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "mangrove"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11519,11 +11517,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'marsh'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "marsh"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11531,11 +11529,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'reedbed'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "reedbed"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11543,11 +11541,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'saltmarsh'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "saltmarsh"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11555,11 +11553,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'string_bog'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "string_bog"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11567,11 +11565,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'swamp'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "swamp"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11579,11 +11577,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'tidalflat'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "tidalflat"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11591,11 +11589,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wetland'
-    AND tags ->> 'wetland' = 'wet_meadow'
+    AND tags @> '{"natural": "wetland"}' :: JSONB
+    AND tags @> '{"wetland": "wet_meadow"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -11603,10 +11601,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'natural' = 'wood'
+    AND tags @> '{"natural": "wood"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11615,7 +11613,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'network:type' = 'node_network'
+    AND tags @> '{"network:type": "node_network"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11626,7 +11624,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'noexit' = 'yes'
+    AND tags @> '{"noexit": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -11640,7 +11638,7 @@
     AND tags ? 'office'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11649,10 +11647,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'administrative'
+    AND tags @> '{"office": "administrative"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11661,10 +11659,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'physician'
+    AND tags @> '{"office": "physician"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11673,10 +11671,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'travel_agent'
+    AND tags @> '{"office": "travel_agent"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11685,10 +11683,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'yes'
+    AND tags @> '{"office": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11697,10 +11695,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'accountant'
+    AND tags @> '{"office": "accountant"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11709,10 +11707,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'adoption_agency'
+    AND tags @> '{"office": "adoption_agency"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11721,10 +11719,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'advertising_agency'
+    AND tags @> '{"office": "advertising_agency"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11733,10 +11731,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'architect'
+    AND tags @> '{"office": "architect"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11745,10 +11743,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'association'
+    AND tags @> '{"office": "association"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11757,10 +11755,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'bail_bond_agent'
+    AND tags @> '{"office": "bail_bond_agent"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11769,10 +11767,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'charity'
+    AND tags @> '{"office": "charity"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11781,10 +11779,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'company'
+    AND tags @> '{"office": "company"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11793,10 +11791,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'consulting'
+    AND tags @> '{"office": "consulting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11805,10 +11803,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'coworking'
+    AND tags @> '{"office": "coworking"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11817,10 +11815,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'diplomatic'
+    AND tags @> '{"office": "diplomatic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11829,11 +11827,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'diplomatic'
-    AND tags ->> 'diplomatic' = 'consulate'
+    AND tags @> '{"office": "diplomatic"}' :: JSONB
+    AND tags @> '{"diplomatic": "consulate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11842,11 +11840,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'diplomatic'
-    AND tags ->> 'diplomatic' = 'embassy'
+    AND tags @> '{"office": "diplomatic"}' :: JSONB
+    AND tags @> '{"diplomatic": "embassy"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11855,11 +11853,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'diplomatic'
-    AND tags ->> 'diplomatic' = 'liaison'
+    AND tags @> '{"office": "diplomatic"}' :: JSONB
+    AND tags @> '{"diplomatic": "liaison"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11868,10 +11866,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'educational_institution'
+    AND tags @> '{"office": "educational_institution"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11880,10 +11878,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'employment_agency'
+    AND tags @> '{"office": "employment_agency"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11892,10 +11890,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'energy_supplier'
+    AND tags @> '{"office": "energy_supplier"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11904,10 +11902,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'estate_agent'
+    AND tags @> '{"office": "estate_agent"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11916,10 +11914,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'financial_advisor'
+    AND tags @> '{"office": "financial_advisor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11928,10 +11926,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'financial'
+    AND tags @> '{"office": "financial"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11940,10 +11938,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'forestry'
+    AND tags @> '{"office": "forestry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11952,10 +11950,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'foundation'
+    AND tags @> '{"office": "foundation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11964,10 +11962,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'government'
+    AND tags @> '{"office": "government"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11976,11 +11974,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'government'
-    AND tags ->> 'government' = 'prosecutor'
+    AND tags @> '{"office": "government"}' :: JSONB
+    AND tags @> '{"government": "prosecutor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -11989,11 +11987,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'government'
-    AND tags ->> 'government' = 'register_office'
+    AND tags @> '{"office": "government"}' :: JSONB
+    AND tags @> '{"government": "register_office"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12002,11 +12000,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'government'
-    AND tags ->> 'government' = 'tax'
+    AND tags @> '{"office": "government"}' :: JSONB
+    AND tags @> '{"government": "tax"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12015,10 +12013,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'guide'
+    AND tags @> '{"office": "guide"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12027,10 +12025,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'insurance'
+    AND tags @> '{"office": "insurance"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12039,10 +12037,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'it'
+    AND tags @> '{"office": "it"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12051,10 +12049,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'lawyer'
+    AND tags @> '{"office": "lawyer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12063,11 +12061,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'lawyer'
-    AND tags ->> 'lawyer' = 'notary'
+    AND tags @> '{"office": "lawyer"}' :: JSONB
+    AND tags @> '{"lawyer": "notary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12076,10 +12074,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'moving_company'
+    AND tags @> '{"office": "moving_company"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12088,10 +12086,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'newspaper'
+    AND tags @> '{"office": "newspaper"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12100,10 +12098,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'ngo'
+    AND tags @> '{"office": "ngo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12112,10 +12110,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'notary'
+    AND tags @> '{"office": "notary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12124,10 +12122,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'political_party'
+    AND tags @> '{"office": "political_party"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12136,10 +12134,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'private_investigator'
+    AND tags @> '{"office": "private_investigator"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12148,10 +12146,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'property_management'
+    AND tags @> '{"office": "property_management"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12160,10 +12158,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'quango'
+    AND tags @> '{"office": "quango"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12172,10 +12170,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'religion'
+    AND tags @> '{"office": "religion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12184,10 +12182,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'research'
+    AND tags @> '{"office": "research"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12196,10 +12194,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'security'
+    AND tags @> '{"office": "security"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12208,10 +12206,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'surveyor'
+    AND tags @> '{"office": "surveyor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12220,10 +12218,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'tax_advisor'
+    AND tags @> '{"office": "tax_advisor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12232,10 +12230,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'telecommunication'
+    AND tags @> '{"office": "telecommunication"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12244,10 +12242,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'therapist'
+    AND tags @> '{"office": "therapist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12256,10 +12254,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'union'
+    AND tags @> '{"office": "union"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12268,10 +12266,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'office' = 'water_utility'
+    AND tags @> '{"office": "water_utility"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12280,10 +12278,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'pipeline' = 'substation'
+    AND tags @> '{"pipeline": "substation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12292,7 +12290,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'pipeline' = 'valve'
+    AND tags @> '{"pipeline": "valve"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12303,11 +12301,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'downhill'
+    AND tags @> '{"piste:type": "downhill"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12315,12 +12313,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'downhill'
-    AND tags ->> 'man_made' = 'piste:halfpipe'
+    AND tags @> '{"piste:type": "downhill"}' :: JSONB
+    AND tags @> '{"man_made": "piste:halfpipe"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12328,11 +12326,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'hike'
+    AND tags @> '{"piste:type": "hike"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12340,11 +12338,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'ice_skate'
+    AND tags @> '{"piste:type": "ice_skate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12352,11 +12350,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'nordic'
+    AND tags @> '{"piste:type": "nordic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12367,8 +12365,8 @@
     AND tags ? 'piste:type'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12376,11 +12374,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'skitour'
+    AND tags @> '{"piste:type": "skitour"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12388,11 +12386,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'sled'
+    AND tags @> '{"piste:type": "sled"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12400,11 +12398,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'piste:type' = 'sleigh'
+    AND tags @> '{"piste:type": "sleigh"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12412,10 +12410,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'farm'
+    AND tags @> '{"place": "farm"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12424,10 +12422,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'city_block'
+    AND tags @> '{"place": "city_block"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12436,10 +12434,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'city'
+    AND tags @> '{"place": "city"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12448,10 +12446,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'hamlet'
+    AND tags @> '{"place": "hamlet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12460,10 +12458,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'island'
+    AND tags @> '{"place": "island"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12472,10 +12470,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'islet'
+    AND tags @> '{"place": "islet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12484,10 +12482,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'isolated_dwelling'
+    AND tags @> '{"place": "isolated_dwelling"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12496,10 +12494,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'locality'
+    AND tags @> '{"place": "locality"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12508,10 +12506,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'neighbourhood'
+    AND tags @> '{"place": "neighbourhood"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12520,10 +12518,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'plot'
+    AND tags @> '{"place": "plot"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12532,10 +12530,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'quarter'
+    AND tags @> '{"place": "quarter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12544,10 +12542,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'square'
+    AND tags @> '{"place": "square"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12556,10 +12554,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'suburb'
+    AND tags @> '{"place": "suburb"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12568,10 +12566,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'town'
+    AND tags @> '{"place": "town"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12580,10 +12578,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'place' = 'village'
+    AND tags @> '{"place": "village"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12592,11 +12590,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'activitypanel'
+    AND tags @> '{"playground": "activitypanel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12605,7 +12603,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'aerialrotator'
+    AND tags @> '{"playground": "aerialrotator"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12616,10 +12614,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'balancebeam'
+    AND tags @> '{"playground": "balancebeam"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12628,7 +12626,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'basketrotator'
+    AND tags @> '{"playground": "basketrotator"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12639,11 +12637,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'basketswing'
+    AND tags @> '{"playground": "basketswing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12652,11 +12650,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'bridge'
+    AND tags @> '{"playground": "bridge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12665,10 +12663,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'climbingframe'
+    AND tags @> '{"playground": "climbingframe"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12677,11 +12675,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'climbingwall'
+    AND tags @> '{"playground": "climbingwall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12690,10 +12688,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'cushion'
+    AND tags @> '{"playground": "cushion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12702,7 +12700,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'funnel_ball'
+    AND tags @> '{"playground": "funnel_ball"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12713,11 +12711,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'hopscotch'
+    AND tags @> '{"playground": "hopscotch"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12726,11 +12724,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'horizontal_bar'
+    AND tags @> '{"playground": "horizontal_bar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12739,10 +12737,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'map'
+    AND tags @> '{"playground": "map"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12751,10 +12749,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'playhouse'
+    AND tags @> '{"playground": "playhouse"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12763,10 +12761,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'roundabout'
+    AND tags @> '{"playground": "roundabout"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12775,10 +12773,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'sandpit'
+    AND tags @> '{"playground": "sandpit"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12787,11 +12785,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'seesaw'
+    AND tags @> '{"playground": "seesaw"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12800,7 +12798,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'sledding'
+    AND tags @> '{"playground": "sledding"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12811,11 +12809,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'slide'
+    AND tags @> '{"playground": "slide"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12824,10 +12822,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'splash_pad'
+    AND tags @> '{"playground": "splash_pad"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12836,7 +12834,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'springy'
+    AND tags @> '{"playground": "springy"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12847,11 +12845,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'structure'
+    AND tags @> '{"playground": "structure"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12860,11 +12858,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'swing'
+    AND tags @> '{"playground": "swing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12873,10 +12871,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'teenshelter'
+    AND tags @> '{"playground": "teenshelter"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12885,7 +12883,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'tetherball'
+    AND tags @> '{"playground": "tetherball"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -12896,10 +12894,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'trampoline'
+    AND tags @> '{"playground": "trampoline"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12908,11 +12906,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'tunnel_tube'
+    AND tags @> '{"playground": "tunnel_tube"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12921,11 +12919,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'water'
+    AND tags @> '{"playground": "water"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -12934,11 +12932,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'playground' = 'zipwire'
+    AND tags @> '{"playground": "zipwire"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12956,10 +12954,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'police' = 'checkpoint'
+    AND tags @> '{"police": "checkpoint"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12971,7 +12969,7 @@
     AND tags ? 'polling_station'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -12980,10 +12978,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'cable'
+    AND tags @> '{"power": "cable"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -12991,11 +12989,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'cable'
-    AND tags ->> 'location' = 'underground'
+    AND tags @> '{"power": "cable"}' :: JSONB
+    AND tags @> '{"location": "underground"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13003,7 +13001,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'catenary_mast'
+    AND tags @> '{"power": "catenary_mast"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13014,10 +13012,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
+    AND tags @> '{"power": "generator"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13026,11 +13024,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
-    AND tags ->> 'generator:method' = 'photovoltaic'
+    AND tags @> '{"power": "generator"}' :: JSONB
+    AND tags @> '{"generator:method": "photovoltaic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13039,12 +13037,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
-    AND tags ->> 'generator:method' = 'photovoltaic'
-    AND tags ->> 'building' = 'roof'
+    AND tags @> '{"power": "generator"}' :: JSONB
+    AND tags @> '{"generator:method": "photovoltaic"}' :: JSONB
+    AND tags @> '{"building": "roof"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13053,12 +13051,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
-    AND tags ->> 'generator:method' = 'photovoltaic'
-    AND tags ->> 'location' = 'roof'
+    AND tags @> '{"power": "generator"}' :: JSONB
+    AND tags @> '{"generator:method": "photovoltaic"}' :: JSONB
+    AND tags @> '{"location": "roof"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13067,11 +13065,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
-    AND tags ->> 'generator:source' = 'hydro'
+    AND tags @> '{"power": "generator"}' :: JSONB
+    AND tags @> '{"generator:source": "hydro"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13080,12 +13078,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
-    AND tags ->> 'generator:source' = 'nuclear'
-    AND tags ->> 'generator:method' = 'fission'
+    AND tags @> '{"power": "generator"}' :: JSONB
+    AND tags @> '{"generator:source": "nuclear"}' :: JSONB
+    AND tags @> '{"generator:method": "fission"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13094,11 +13092,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'generator'
-    AND tags ->> 'generator:source' = 'wind'
+    AND tags @> '{"power": "generator"}' :: JSONB
+    AND tags @> '{"generator:source": "wind"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13107,10 +13105,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'line'
+    AND tags @> '{"power": "line"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13118,10 +13116,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'minor_line'
+    AND tags @> '{"power": "minor_line"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13129,10 +13127,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
+    AND tags @> '{"power": "plant"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13140,11 +13138,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'coal'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "coal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13152,11 +13150,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'gas'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "gas"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13164,11 +13162,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'hydro'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "hydro"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13176,12 +13174,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'solar'
-    AND tags ->> 'plant:method' = 'photovoltaic'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "solar"}' :: JSONB
+    AND tags @> '{"plant:method": "photovoltaic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13189,11 +13187,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'nuclear'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "nuclear"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13201,11 +13199,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'oil'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "oil"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13213,11 +13211,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'solar'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "solar"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13225,11 +13223,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'waste'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "waste"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13237,11 +13235,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'plant'
-    AND tags ->> 'plant:source' = 'wind'
+    AND tags @> '{"power": "plant"}' :: JSONB
+    AND tags @> '{"plant:source": "wind"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13249,7 +13247,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'pole'
+    AND tags @> '{"power": "pole"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13260,10 +13258,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'portal'
+    AND tags @> '{"power": "portal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -13272,10 +13270,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'substation'
+    AND tags @> '{"power": "substation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13284,7 +13282,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'switch'
+    AND tags @> '{"power": "switch"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13295,7 +13293,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'tower'
+    AND tags @> '{"power": "tower"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13306,7 +13304,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'power' = 'transformer'
+    AND tags @> '{"power": "transformer"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13317,7 +13315,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13328,11 +13326,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13340,8 +13338,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'aerialway' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"aerialway": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13352,8 +13350,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'ferry' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"ferry": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13364,8 +13362,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'light_rail' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"light_rail": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13376,8 +13374,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'monorail' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"monorail": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13388,8 +13386,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'subway' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"subway": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13400,8 +13398,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'train' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"train": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13412,12 +13410,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'aerialway' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"aerialway": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13425,8 +13423,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'bus' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"bus": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13437,9 +13435,9 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'bus' = 'yes'
-    AND tags ->> 'tram' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"bus": "yes"}' :: JSONB
+    AND tags @> '{"tram": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13450,12 +13448,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'bus' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"bus": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13463,12 +13461,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'ferry' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"ferry": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13476,12 +13474,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'light_rail' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"light_rail": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13489,12 +13487,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'monorail' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"monorail": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13502,12 +13500,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'subway' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"subway": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13515,12 +13513,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'train' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"train": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13528,8 +13526,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'tram' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"tram": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13540,12 +13538,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'tram' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"tram": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13553,8 +13551,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'trolleybus' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"trolleybus": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13565,12 +13563,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'platform'
-    AND tags ->> 'trolleybus' = 'yes'
+    AND tags @> '{"public_transport": "platform"}' :: JSONB
+    AND tags @> '{"trolleybus": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13578,10 +13576,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'aerialway' = 'station'
+    AND tags @> '{"aerialway": "station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13590,11 +13588,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'bus' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"bus": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13603,11 +13601,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'ferry' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"ferry": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13616,11 +13614,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'light_rail' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"light_rail": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13629,11 +13627,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'monorail' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"monorail": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13642,11 +13640,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'subway' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"subway": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13655,12 +13653,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'train' = 'yes'
-    AND tags ->> 'railway' = 'halt'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"train": "yes"}' :: JSONB
+    AND tags @> '{"railway": "halt"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13669,11 +13667,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'train' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"train": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13682,11 +13680,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'tram' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"tram": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13695,11 +13693,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
-    AND tags ->> 'trolleybus' = 'yes'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
+    AND tags @> '{"trolleybus": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13708,10 +13706,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'station'
+    AND tags @> '{"public_transport": "station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13720,8 +13718,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'public_transport'
-    AND tags ->> 'public_transport' = 'stop_area'
+    AND tags @> '{"type": "public_transport"}' :: JSONB
+    AND tags @> '{"public_transport": "stop_area"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -13732,8 +13730,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'aerialway' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"aerialway": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13744,8 +13742,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'bus' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"bus": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13756,8 +13754,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'ferry' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"ferry": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13768,8 +13766,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'light_rail' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"light_rail": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13780,8 +13778,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'monorail' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"monorail": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13792,8 +13790,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'subway' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"subway": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13804,8 +13802,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'train' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"train": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13816,8 +13814,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'tram' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"tram": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13828,8 +13826,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
-    AND tags ->> 'trolleybus' = 'yes'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
+    AND tags @> '{"trolleybus": "yes"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13840,7 +13838,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'public_transport' = 'stop_position'
+    AND tags @> '{"public_transport": "stop_position"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13851,7 +13849,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'halt'
+    AND tags @> '{"railway": "halt"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13862,11 +13860,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'platform'
+    AND tags @> '{"railway": "platform"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13874,10 +13872,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'station'
+    AND tags @> '{"railway": "station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -13886,7 +13884,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'tram_stop'
+    AND tags @> '{"railway": "tram_stop"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13897,10 +13895,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'abandoned'
+    AND tags @> '{"railway": "abandoned"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13908,7 +13906,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'buffer_stop'
+    AND tags @> '{"railway": "buffer_stop"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13919,10 +13917,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'construction'
+    AND tags @> '{"railway": "construction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13930,7 +13928,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'crossing'
+    AND tags @> '{"railway": "crossing"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13941,7 +13939,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'derail'
+    AND tags @> '{"railway": "derail"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13952,10 +13950,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'disused'
+    AND tags @> '{"railway": "disused"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13963,10 +13961,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'funicular'
+    AND tags @> '{"railway": "funicular"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13974,7 +13972,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'level_crossing'
+    AND tags @> '{"railway": "level_crossing"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -13985,10 +13983,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'light_rail'
+    AND tags @> '{"railway": "light_rail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -13996,7 +13994,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'milestone'
+    AND tags @> '{"railway": "milestone"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14007,10 +14005,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'miniature'
+    AND tags @> '{"railway": "miniature"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14018,10 +14016,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'monorail'
+    AND tags @> '{"railway": "monorail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14029,11 +14027,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'monorail'
-    AND tags ->> 'monorail' = 'hanging'
+    AND tags @> '{"railway": "monorail"}' :: JSONB
+    AND tags @> '{"monorail": "hanging"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14041,10 +14039,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'narrow_gauge'
+    AND tags @> '{"railway": "narrow_gauge"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14053,10 +14051,10 @@
     WHERE
     TRUE
     AND tags ? 'railway'
-    AND tags ->> 'railway:preserved' = 'yes'
+    AND tags @> '{"railway:preserved": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14064,10 +14062,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'rail'
+    AND tags @> '{"railway": "rail"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14075,11 +14073,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'rail'
-    AND tags ->> 'highspeed' = 'yes'
+    AND tags @> '{"railway": "rail"}' :: JSONB
+    AND tags @> '{"highspeed": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14087,7 +14085,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'railway_crossing'
+    AND tags @> '{"railway": "railway_crossing"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14098,7 +14096,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'signal'
+    AND tags @> '{"railway": "signal"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14109,7 +14107,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'subway_entrance'
+    AND tags @> '{"railway": "subway_entrance"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14120,10 +14118,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'subway'
+    AND tags @> '{"railway": "subway"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14131,7 +14129,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'switch'
+    AND tags @> '{"railway": "switch"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14142,10 +14140,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'wash'
+    AND tags @> '{"railway": "wash"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14154,7 +14152,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'tram_crossing'
+    AND tags @> '{"railway": "tram_crossing"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14165,7 +14163,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'tram_level_crossing'
+    AND tags @> '{"railway": "tram_level_crossing"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14176,10 +14174,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'tram'
+    AND tags @> '{"railway": "tram"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14187,7 +14185,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'railway' = 'yard'
+    AND tags @> '{"railway": "yard"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14208,10 +14206,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'route' = 'ferry'
+    AND tags @> '{"route": "ferry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -14219,7 +14217,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'seamark:type' = 'beacon_isolated_danger'
+    AND tags @> '{"seamark:type": "beacon_isolated_danger"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14230,7 +14228,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'seamark:type' = 'beacon_lateral'
+    AND tags @> '{"seamark:type": "beacon_lateral"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14241,7 +14239,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'seamark:type' = 'buoy_lateral'
+    AND tags @> '{"seamark:type": "buoy_lateral"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14252,8 +14250,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'seamark:type' = 'buoy_lateral'
-    AND tags ->> 'seamark:buoy_lateral:colour' = 'green'
+    AND tags @> '{"seamark:type": "buoy_lateral"}' :: JSONB
+    AND tags @> '{"seamark:buoy_lateral:colour": "green"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14264,8 +14262,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'seamark:type' = 'buoy_lateral'
-    AND tags ->> 'seamark:buoy_lateral:colour' = 'red'
+    AND tags @> '{"seamark:type": "buoy_lateral"}' :: JSONB
+    AND tags @> '{"seamark:buoy_lateral:colour": "red"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14276,7 +14274,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'seamark:type' = 'mooring'
+    AND tags @> '{"seamark:type": "mooring"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -14290,7 +14288,7 @@
     AND tags ? 'shop'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14299,10 +14297,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'boutique'
+    AND tags @> '{"shop": "boutique"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14311,10 +14309,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'fashion'
+    AND tags @> '{"shop": "fashion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14323,10 +14321,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'vacant'
+    AND tags @> '{"shop": "vacant"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14335,10 +14333,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'yes'
+    AND tags @> '{"shop": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14347,10 +14345,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'agrarian'
+    AND tags @> '{"shop": "agrarian"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14359,10 +14357,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'alcohol'
+    AND tags @> '{"shop": "alcohol"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14371,10 +14369,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'anime'
+    AND tags @> '{"shop": "anime"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14383,10 +14381,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'antiques'
+    AND tags @> '{"shop": "antiques"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14395,10 +14393,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'appliance'
+    AND tags @> '{"shop": "appliance"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14407,10 +14405,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'art'
+    AND tags @> '{"shop": "art"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14419,10 +14417,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'baby_goods'
+    AND tags @> '{"shop": "baby_goods"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14431,10 +14429,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'bag'
+    AND tags @> '{"shop": "bag"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14443,10 +14441,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'bakery'
+    AND tags @> '{"shop": "bakery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14455,10 +14453,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'bathroom_furnishing'
+    AND tags @> '{"shop": "bathroom_furnishing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14467,10 +14465,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'beauty'
+    AND tags @> '{"shop": "beauty"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14479,11 +14477,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'beauty'
-    AND tags ->> 'beauty' = 'nails'
+    AND tags @> '{"shop": "beauty"}' :: JSONB
+    AND tags @> '{"beauty": "nails"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14492,11 +14490,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'beauty'
-    AND tags ->> 'beauty' = 'tanning'
+    AND tags @> '{"shop": "beauty"}' :: JSONB
+    AND tags @> '{"beauty": "tanning"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14505,10 +14503,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'bed'
+    AND tags @> '{"shop": "bed"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14517,10 +14515,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'beverages'
+    AND tags @> '{"shop": "beverages"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14529,10 +14527,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'bicycle'
+    AND tags @> '{"shop": "bicycle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14541,10 +14539,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'boat'
+    AND tags @> '{"shop": "boat"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14553,10 +14551,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'bookmaker'
+    AND tags @> '{"shop": "bookmaker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14565,10 +14563,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'books'
+    AND tags @> '{"shop": "books"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14577,10 +14575,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'brewing_supplies'
+    AND tags @> '{"shop": "brewing_supplies"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14589,10 +14587,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'butcher'
+    AND tags @> '{"shop": "butcher"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14601,10 +14599,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'camera'
+    AND tags @> '{"shop": "camera"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14613,10 +14611,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'candles'
+    AND tags @> '{"shop": "candles"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14625,10 +14623,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'cannabis'
+    AND tags @> '{"shop": "cannabis"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14637,10 +14635,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'car_parts'
+    AND tags @> '{"shop": "car_parts"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14649,10 +14647,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'car_repair'
+    AND tags @> '{"shop": "car_repair"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14661,10 +14659,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'car'
+    AND tags @> '{"shop": "car"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14673,11 +14671,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'car'
-    AND tags ->> 'second_hand' = 'only'
+    AND tags @> '{"shop": "car"}' :: JSONB
+    AND tags @> '{"second_hand": "only"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14686,10 +14684,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'caravan'
+    AND tags @> '{"shop": "caravan"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14698,10 +14696,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'carpet'
+    AND tags @> '{"shop": "carpet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14710,10 +14708,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'catalogue'
+    AND tags @> '{"shop": "catalogue"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14722,10 +14720,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'charity'
+    AND tags @> '{"shop": "charity"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14734,10 +14732,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'cheese'
+    AND tags @> '{"shop": "cheese"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14746,10 +14744,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'chemist'
+    AND tags @> '{"shop": "chemist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14758,10 +14756,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'chocolate'
+    AND tags @> '{"shop": "chocolate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14770,10 +14768,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'clothes'
+    AND tags @> '{"shop": "clothes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14782,11 +14780,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'clothes'
-    AND tags ->> 'second_hand' = 'only'
+    AND tags @> '{"shop": "clothes"}' :: JSONB
+    AND tags @> '{"second_hand": "only"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14795,11 +14793,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'clothes'
-    AND tags ->> 'clothes' = 'suits'
+    AND tags @> '{"shop": "clothes"}' :: JSONB
+    AND tags @> '{"clothes": "suits"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14808,11 +14806,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'clothes'
-    AND tags ->> 'clothes' = 'underwear'
+    AND tags @> '{"shop": "clothes"}' :: JSONB
+    AND tags @> '{"clothes": "underwear"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14821,11 +14819,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'clothes'
-    AND tags ->> 'clothes' = 'wedding'
+    AND tags @> '{"shop": "clothes"}' :: JSONB
+    AND tags @> '{"clothes": "wedding"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14834,11 +14832,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'clothes'
-    AND tags ->> 'clothes' = 'workwear'
+    AND tags @> '{"shop": "clothes"}' :: JSONB
+    AND tags @> '{"clothes": "workwear"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14847,10 +14845,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'coffee'
+    AND tags @> '{"shop": "coffee"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14859,10 +14857,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'collector'
+    AND tags @> '{"shop": "collector"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14871,10 +14869,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'computer'
+    AND tags @> '{"shop": "computer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14883,10 +14881,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'confectionery'
+    AND tags @> '{"shop": "confectionery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14895,10 +14893,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'convenience'
+    AND tags @> '{"shop": "convenience"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14907,10 +14905,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'copyshop'
+    AND tags @> '{"shop": "copyshop"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14919,10 +14917,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'cosmetics'
+    AND tags @> '{"shop": "cosmetics"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14931,10 +14929,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'country_store'
+    AND tags @> '{"shop": "country_store"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14943,10 +14941,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'craft'
+    AND tags @> '{"shop": "craft"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14955,10 +14953,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'curtain'
+    AND tags @> '{"shop": "curtain"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14967,10 +14965,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'dairy'
+    AND tags @> '{"shop": "dairy"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14979,10 +14977,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'deli'
+    AND tags @> '{"shop": "deli"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -14991,10 +14989,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'department_store'
+    AND tags @> '{"shop": "department_store"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15003,10 +15001,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'doityourself'
+    AND tags @> '{"shop": "doityourself"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15015,10 +15013,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'doors'
+    AND tags @> '{"shop": "doors"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15027,10 +15025,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'dry_cleaning'
+    AND tags @> '{"shop": "dry_cleaning"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15039,10 +15037,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'e-cigarette'
+    AND tags @> '{"shop": "e-cigarette"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15051,10 +15049,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'electrical'
+    AND tags @> '{"shop": "electrical"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15063,10 +15061,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'electronics'
+    AND tags @> '{"shop": "electronics"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15075,10 +15073,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'erotic'
+    AND tags @> '{"shop": "erotic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15087,11 +15085,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'erotic'
-    AND tags ->> 'lgbtq' = 'primary'
+    AND tags @> '{"shop": "erotic"}' :: JSONB
+    AND tags @> '{"lgbtq": "primary"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15100,10 +15098,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'fabric'
+    AND tags @> '{"shop": "fabric"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15112,10 +15110,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'farm'
+    AND tags @> '{"shop": "farm"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15124,10 +15122,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'fashion_accessories'
+    AND tags @> '{"shop": "fashion_accessories"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15136,10 +15134,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'fireplace'
+    AND tags @> '{"shop": "fireplace"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15148,10 +15146,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'fishing'
+    AND tags @> '{"shop": "fishing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15160,10 +15158,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'flooring'
+    AND tags @> '{"shop": "flooring"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15172,10 +15170,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'florist'
+    AND tags @> '{"shop": "florist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15184,10 +15182,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'frame'
+    AND tags @> '{"shop": "frame"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15196,10 +15194,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'frozen_food'
+    AND tags @> '{"shop": "frozen_food"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15208,10 +15206,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'fuel'
+    AND tags @> '{"shop": "fuel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15220,10 +15218,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'funeral_directors'
+    AND tags @> '{"shop": "funeral_directors"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15232,10 +15230,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'furniture'
+    AND tags @> '{"shop": "furniture"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15244,10 +15242,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'games'
+    AND tags @> '{"shop": "games"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15256,10 +15254,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'garden_centre'
+    AND tags @> '{"shop": "garden_centre"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15268,10 +15266,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'gas'
+    AND tags @> '{"shop": "gas"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15280,10 +15278,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'general'
+    AND tags @> '{"shop": "general"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15292,10 +15290,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'gift'
+    AND tags @> '{"shop": "gift"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15304,10 +15302,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'greengrocer'
+    AND tags @> '{"shop": "greengrocer"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15316,10 +15314,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hairdresser_supply'
+    AND tags @> '{"shop": "hairdresser_supply"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15328,10 +15326,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hairdresser'
+    AND tags @> '{"shop": "hairdresser"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15340,10 +15338,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hardware'
+    AND tags @> '{"shop": "hardware"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15352,10 +15350,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'health_food'
+    AND tags @> '{"shop": "health_food"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15364,10 +15362,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hearing_aids'
+    AND tags @> '{"shop": "hearing_aids"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15376,10 +15374,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'herbalist'
+    AND tags @> '{"shop": "herbalist"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15388,10 +15386,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hifi'
+    AND tags @> '{"shop": "hifi"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15400,10 +15398,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hobby'
+    AND tags @> '{"shop": "hobby"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15412,10 +15410,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'household_linen'
+    AND tags @> '{"shop": "household_linen"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15424,10 +15422,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'houseware'
+    AND tags @> '{"shop": "houseware"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15436,10 +15434,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'hunting'
+    AND tags @> '{"shop": "hunting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15448,10 +15446,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'interior_decoration'
+    AND tags @> '{"shop": "interior_decoration"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15460,10 +15458,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'jewelry'
+    AND tags @> '{"shop": "jewelry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15472,10 +15470,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'kiosk'
+    AND tags @> '{"shop": "kiosk"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15484,10 +15482,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'kitchen'
+    AND tags @> '{"shop": "kitchen"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15496,10 +15494,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'laundry'
+    AND tags @> '{"shop": "laundry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15508,11 +15506,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'laundry'
-    AND tags ->> 'self_service' = 'yes'
+    AND tags @> '{"shop": "laundry"}' :: JSONB
+    AND tags @> '{"self_service": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15521,10 +15519,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'leather'
+    AND tags @> '{"shop": "leather"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15533,10 +15531,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'lighting'
+    AND tags @> '{"shop": "lighting"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15545,10 +15543,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'locksmith'
+    AND tags @> '{"shop": "locksmith"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15557,10 +15555,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'lottery'
+    AND tags @> '{"shop": "lottery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15569,10 +15567,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'mall'
+    AND tags @> '{"shop": "mall"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15581,10 +15579,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'massage'
+    AND tags @> '{"shop": "massage"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15593,10 +15591,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'medical_supply'
+    AND tags @> '{"shop": "medical_supply"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15605,10 +15603,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'military_surplus'
+    AND tags @> '{"shop": "military_surplus"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15617,10 +15615,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'mobile_phone'
+    AND tags @> '{"shop": "mobile_phone"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15629,10 +15627,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'model'
+    AND tags @> '{"shop": "model"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15641,10 +15639,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'money_lender'
+    AND tags @> '{"shop": "money_lender"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15653,10 +15651,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'motorcycle_repair'
+    AND tags @> '{"shop": "motorcycle_repair"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15665,10 +15663,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'motorcycle'
+    AND tags @> '{"shop": "motorcycle"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15677,10 +15675,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'music'
+    AND tags @> '{"shop": "music"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15689,10 +15687,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'musical_instrument'
+    AND tags @> '{"shop": "musical_instrument"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15701,10 +15699,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'newsagent'
+    AND tags @> '{"shop": "newsagent"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15713,10 +15711,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'nutrition_supplements'
+    AND tags @> '{"shop": "nutrition_supplements"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15725,10 +15723,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'optician'
+    AND tags @> '{"shop": "optician"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15737,10 +15735,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'outdoor'
+    AND tags @> '{"shop": "outdoor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15749,10 +15747,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'outpost'
+    AND tags @> '{"shop": "outpost"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15761,10 +15759,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'paint'
+    AND tags @> '{"shop": "paint"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15773,10 +15771,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'party'
+    AND tags @> '{"shop": "party"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15785,10 +15783,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'pastry'
+    AND tags @> '{"shop": "pastry"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15797,10 +15795,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'pawnbroker'
+    AND tags @> '{"shop": "pawnbroker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15809,10 +15807,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'perfumery'
+    AND tags @> '{"shop": "perfumery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15821,10 +15819,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'pet_grooming'
+    AND tags @> '{"shop": "pet_grooming"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15833,10 +15831,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'pet'
+    AND tags @> '{"shop": "pet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15845,10 +15843,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'photo'
+    AND tags @> '{"shop": "photo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15857,10 +15855,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'pottery'
+    AND tags @> '{"shop": "pottery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15869,10 +15867,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'printer_ink'
+    AND tags @> '{"shop": "printer_ink"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15881,10 +15879,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'psychic'
+    AND tags @> '{"shop": "psychic"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15893,10 +15891,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'pyrotechnics'
+    AND tags @> '{"shop": "pyrotechnics"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15905,10 +15903,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'radiotechnics'
+    AND tags @> '{"shop": "radiotechnics"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15917,10 +15915,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'religion'
+    AND tags @> '{"shop": "religion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15929,10 +15927,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'rental'
+    AND tags @> '{"shop": "rental"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15941,10 +15939,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'repair'
+    AND tags @> '{"shop": "repair"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15953,10 +15951,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'scuba_diving'
+    AND tags @> '{"shop": "scuba_diving"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15965,10 +15963,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'seafood'
+    AND tags @> '{"shop": "seafood"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15977,10 +15975,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'second_hand'
+    AND tags @> '{"shop": "second_hand"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -15989,10 +15987,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'sewing'
+    AND tags @> '{"shop": "sewing"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16001,10 +15999,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'shoe_repair'
+    AND tags @> '{"shop": "shoe_repair"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16013,10 +16011,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'shoes'
+    AND tags @> '{"shop": "shoes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16025,10 +16023,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'spices'
+    AND tags @> '{"shop": "spices"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16037,10 +16035,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'sports'
+    AND tags @> '{"shop": "sports"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16049,10 +16047,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'stationery'
+    AND tags @> '{"shop": "stationery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16061,10 +16059,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'storage_rental'
+    AND tags @> '{"shop": "storage_rental"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16073,10 +16071,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'supermarket'
+    AND tags @> '{"shop": "supermarket"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16085,11 +16083,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'supermarket'
-    AND tags ->> 'organic' = 'only'
+    AND tags @> '{"shop": "supermarket"}' :: JSONB
+    AND tags @> '{"organic": "only"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16098,10 +16096,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'swimming_pool'
+    AND tags @> '{"shop": "swimming_pool"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16110,10 +16108,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tailor'
+    AND tags @> '{"shop": "tailor"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16122,10 +16120,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tattoo'
+    AND tags @> '{"shop": "tattoo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16134,10 +16132,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tea'
+    AND tags @> '{"shop": "tea"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16146,10 +16144,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'telecommunication'
+    AND tags @> '{"shop": "telecommunication"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16158,10 +16156,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'ticket'
+    AND tags @> '{"shop": "ticket"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16170,10 +16168,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tiles'
+    AND tags @> '{"shop": "tiles"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16182,10 +16180,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tobacco'
+    AND tags @> '{"shop": "tobacco"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16194,10 +16192,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tool_hire'
+    AND tags @> '{"shop": "tool_hire"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16206,10 +16204,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'toys'
+    AND tags @> '{"shop": "toys"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16218,10 +16216,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'trade'
+    AND tags @> '{"shop": "trade"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16230,10 +16228,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'travel_agency'
+    AND tags @> '{"shop": "travel_agency"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16242,10 +16240,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'trophy'
+    AND tags @> '{"shop": "trophy"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16254,10 +16252,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'tyres'
+    AND tags @> '{"shop": "tyres"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16266,10 +16264,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'vacuum_cleaner'
+    AND tags @> '{"shop": "vacuum_cleaner"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16278,10 +16276,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'variety_store'
+    AND tags @> '{"shop": "variety_store"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16290,10 +16288,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'video_games'
+    AND tags @> '{"shop": "video_games"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16302,10 +16300,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'video'
+    AND tags @> '{"shop": "video"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16314,10 +16312,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'watches'
+    AND tags @> '{"shop": "watches"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16326,10 +16324,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'water_sports'
+    AND tags @> '{"shop": "water_sports"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16338,10 +16336,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'water'
+    AND tags @> '{"shop": "water"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16350,10 +16348,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'weapons'
+    AND tags @> '{"shop": "weapons"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16362,10 +16360,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'wholesale'
+    AND tags @> '{"shop": "wholesale"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16374,10 +16372,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'wigs'
+    AND tags @> '{"shop": "wigs"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16386,10 +16384,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'window_blind'
+    AND tags @> '{"shop": "window_blind"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16398,10 +16396,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'shop' = 'wine'
+    AND tags @> '{"shop": "wine"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16410,10 +16408,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'telecom' = 'data_center'
+    AND tags @> '{"telecom": "data_center"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16422,10 +16420,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'telecom' = 'exchange'
+    AND tags @> '{"telecom": "exchange"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16434,10 +16432,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'alpine_hut'
+    AND tags @> '{"tourism": "alpine_hut"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16446,10 +16444,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'apartment'
+    AND tags @> '{"tourism": "apartment"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16458,10 +16456,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'aquarium'
+    AND tags @> '{"tourism": "aquarium"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16470,11 +16468,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16483,8 +16481,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
-    AND tags ->> 'artwork_type' = 'bust'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
+    AND tags @> '{"artwork_type": "bust"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16495,12 +16493,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
-    AND tags ->> 'artwork_type' = 'graffiti'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
+    AND tags @> '{"artwork_type": "graffiti"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16509,12 +16507,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
-    AND tags ->> 'artwork_type' = 'installation'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
+    AND tags @> '{"artwork_type": "installation"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16523,12 +16521,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
-    AND tags ->> 'artwork_type' = 'mural'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
+    AND tags @> '{"artwork_type": "mural"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16537,12 +16535,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
-    AND tags ->> 'artwork_type' = 'sculpture'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
+    AND tags @> '{"artwork_type": "sculpture"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16551,12 +16549,12 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'artwork'
-    AND tags ->> 'artwork_type' = 'statue'
+    AND tags @> '{"tourism": "artwork"}' :: JSONB
+    AND tags @> '{"artwork_type": "statue"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16565,11 +16563,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'attraction'
+    AND tags @> '{"tourism": "attraction"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16578,10 +16576,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'camp_pitch'
+    AND tags @> '{"tourism": "camp_pitch"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16590,10 +16588,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'camp_site'
+    AND tags @> '{"tourism": "camp_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16602,11 +16600,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'camp_site'
-    AND tags ->> 'backcountry' = 'yes'
+    AND tags @> '{"tourism": "camp_site"}' :: JSONB
+    AND tags @> '{"backcountry": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16615,11 +16613,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'camp_site'
-    AND tags ->> 'group_only' = 'yes'
+    AND tags @> '{"tourism": "camp_site"}' :: JSONB
+    AND tags @> '{"group_only": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16628,10 +16626,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'caravan_site'
+    AND tags @> '{"tourism": "caravan_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16640,10 +16638,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'chalet'
+    AND tags @> '{"tourism": "chalet"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16652,10 +16650,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'gallery'
+    AND tags @> '{"tourism": "gallery"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16664,10 +16662,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'guest_house'
+    AND tags @> '{"tourism": "guest_house"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16676,10 +16674,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'hostel'
+    AND tags @> '{"tourism": "hostel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16688,10 +16686,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'hotel'
+    AND tags @> '{"tourism": "hotel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16700,10 +16698,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
+    AND tags @> '{"tourism": "information"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16712,8 +16710,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'board'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "board"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16724,9 +16722,9 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'board'
-    AND tags ->> 'board_type' = 'welcome_sign'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "board"}' :: JSONB
+    AND tags @> '{"board_type": "welcome_sign"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16737,8 +16735,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'guidepost'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "guidepost"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16749,8 +16747,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'map'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "map"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16761,11 +16759,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'office'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "office"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16774,8 +16772,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'route_marker'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "route_marker"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16786,8 +16784,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'information'
-    AND tags ->> 'information' = 'terminal'
+    AND tags @> '{"tourism": "information"}' :: JSONB
+    AND tags @> '{"information": "terminal"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -16798,10 +16796,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'motel'
+    AND tags @> '{"tourism": "motel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16810,10 +16808,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'museum'
+    AND tags @> '{"tourism": "museum"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16822,11 +16820,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'museum'
-    AND tags ->> 'museum' = 'history'
+    AND tags @> '{"tourism": "museum"}' :: JSONB
+    AND tags @> '{"museum": "history"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16835,10 +16833,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'picnic_site'
+    AND tags @> '{"tourism": "picnic_site"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16847,10 +16845,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'theme_park'
+    AND tags @> '{"tourism": "theme_park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16859,10 +16857,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'trail_riding_station'
+    AND tags @> '{"tourism": "trail_riding_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16871,10 +16869,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'viewpoint'
+    AND tags @> '{"tourism": "viewpoint"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16883,10 +16881,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'wilderness_hut'
+    AND tags @> '{"tourism": "wilderness_hut"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16895,10 +16893,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'zoo'
+    AND tags @> '{"tourism": "zoo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16907,11 +16905,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'zoo'
-    AND tags ->> 'zoo' = 'petting_zoo'
+    AND tags @> '{"tourism": "zoo"}' :: JSONB
+    AND tags @> '{"zoo": "petting_zoo"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16920,11 +16918,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'zoo'
-    AND tags ->> 'zoo' = 'safari_park'
+    AND tags @> '{"tourism": "zoo"}' :: JSONB
+    AND tags @> '{"zoo": "safari_park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16933,11 +16931,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'tourism' = 'zoo'
-    AND tags ->> 'zoo' = 'wildlife_park'
+    AND tags @> '{"tourism": "zoo"}' :: JSONB
+    AND tags @> '{"zoo": "wildlife_park"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -16949,8 +16947,8 @@
     AND tags ? 'traffic_calming'
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16959,11 +16957,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'yes'
+    AND tags @> '{"traffic_calming": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16972,10 +16970,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'bump'
+    AND tags @> '{"traffic_calming": "bump"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16984,11 +16982,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'chicane'
+    AND tags @> '{"traffic_calming": "chicane"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -16997,11 +16995,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'choker'
+    AND tags @> '{"traffic_calming": "choker"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17010,10 +17008,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'cushion'
+    AND tags @> '{"traffic_calming": "cushion"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17022,10 +17020,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'dip'
+    AND tags @> '{"traffic_calming": "dip"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17034,10 +17032,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'hump'
+    AND tags @> '{"traffic_calming": "hump"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17046,11 +17044,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'island'
+    AND tags @> '{"traffic_calming": "island"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17059,10 +17057,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'mini_bumps'
+    AND tags @> '{"traffic_calming": "mini_bumps"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17071,10 +17069,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'rumble_strip'
+    AND tags @> '{"traffic_calming": "rumble_strip"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17083,7 +17081,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_calming' = 'table'
+    AND tags @> '{"traffic_calming": "table"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -17105,7 +17103,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_sign' = 'city_limit'
+    AND tags @> '{"traffic_sign": "city_limit"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -17116,7 +17114,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'traffic_sign' = 'maxspeed'
+    AND tags @> '{"traffic_sign": "maxspeed"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -17127,7 +17125,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'boundary'
+    AND tags @> '{"type": "boundary"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17138,8 +17136,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'boundary'
-    AND tags ->> 'boundary' = 'administrative'
+    AND tags @> '{"type": "boundary"}' :: JSONB
+    AND tags @> '{"boundary": "administrative"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17150,7 +17148,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'connectivity'
+    AND tags @> '{"type": "connectivity"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17161,7 +17159,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'destination_sign'
+    AND tags @> '{"type": "destination_sign"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17172,7 +17170,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'enforcement'
+    AND tags @> '{"type": "enforcement"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17183,8 +17181,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'enforcement'
-    AND tags ->> 'enforcement' = 'maxspeed'
+    AND tags @> '{"type": "enforcement"}' :: JSONB
+    AND tags @> '{"enforcement": "maxspeed"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17195,7 +17193,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'multipolygon'
+    AND tags @> '{"type": "multipolygon"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17206,8 +17204,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'public_transport'
-    AND tags ->> 'public_transport' = 'stop_area_group'
+    AND tags @> '{"type": "public_transport"}' :: JSONB
+    AND tags @> '{"public_transport": "stop_area_group"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17218,7 +17216,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
+    AND tags @> '{"type": "restriction"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17229,8 +17227,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'no_left_turn'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "no_left_turn"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17241,8 +17239,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'no_right_turn'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "no_right_turn"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17253,8 +17251,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'no_straight_on'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "no_straight_on"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17265,8 +17263,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'no_u_turn'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "no_u_turn"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17277,8 +17275,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'only_left_turn'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "only_left_turn"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17289,8 +17287,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'only_right_turn'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "only_right_turn"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17301,8 +17299,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'only_straight_on'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "only_straight_on"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17313,8 +17311,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'restriction'
-    AND tags ->> 'restriction' = 'only_u_turn'
+    AND tags @> '{"type": "restriction"}' :: JSONB
+    AND tags @> '{"restriction": "only_u_turn"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17325,7 +17323,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route_master'
+    AND tags @> '{"type": "route_master"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17336,7 +17334,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
+    AND tags @> '{"type": "route"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17347,8 +17345,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'aerialway'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "aerialway"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17359,8 +17357,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'bicycle'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "bicycle"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17371,8 +17369,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'bus'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "bus"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17383,8 +17381,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'detour'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "detour"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17395,8 +17393,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'ferry'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "ferry"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17407,8 +17405,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'foot'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "foot"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17419,8 +17417,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'hiking'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "hiking"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17431,8 +17429,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'horse'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "horse"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17443,8 +17441,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'light_rail'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "light_rail"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17455,8 +17453,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'monorail'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "monorail"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17467,8 +17465,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'mtb'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "mtb"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17479,8 +17477,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'pipeline'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "pipeline"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17491,8 +17489,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'piste'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "piste"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17503,8 +17501,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'power'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "power"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17515,8 +17513,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'railway'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "railway"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17527,8 +17525,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'road'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "road"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17539,8 +17537,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'subway'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "subway"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17551,8 +17549,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'train'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "train"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17563,8 +17561,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'tram'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "tram"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17575,8 +17573,8 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'route'
-    AND tags ->> 'route' = 'trolleybus'
+    AND tags @> '{"type": "route"}' :: JSONB
+    AND tags @> '{"route": "trolleybus"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17587,7 +17585,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'site'
+    AND tags @> '{"type": "site"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17598,7 +17596,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'type' = 'waterway'
+    AND tags @> '{"type": "waterway"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'R')
@@ -17609,10 +17607,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'boatyard'
+    AND tags @> '{"waterway": "boatyard"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -17621,10 +17619,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'canal'
+    AND tags @> '{"waterway": "canal"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17632,11 +17630,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'canal'
-    AND tags ->> 'lock' = 'yes'
+    AND tags @> '{"waterway": "canal"}' :: JSONB
+    AND tags @> '{"lock": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17644,11 +17642,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'dam'
+    AND tags @> '{"waterway": "dam"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17657,10 +17655,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'ditch'
+    AND tags @> '{"waterway": "ditch"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17668,10 +17666,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'dock'
+    AND tags @> '{"waterway": "dock"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -17680,10 +17678,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'drain'
+    AND tags @> '{"waterway": "drain"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17691,10 +17689,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'fish_pass'
+    AND tags @> '{"waterway": "fish_pass"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17702,10 +17700,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'fuel'
+    AND tags @> '{"waterway": "fuel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -17714,10 +17712,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'lock_gate'
+    AND tags @> '{"waterway": "lock_gate"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17726,7 +17724,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'milestone'
+    AND tags @> '{"waterway": "milestone"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -17737,10 +17735,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'river'
+    AND tags @> '{"waterway": "river"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17748,10 +17746,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'sanitary_dump_station'
+    AND tags @> '{"waterway": "sanitary_dump_station"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -17760,11 +17758,11 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'stream'
-    AND tags ->> 'intermittent' = 'yes'
+    AND tags @> '{"waterway": "stream"}' :: JSONB
+    AND tags @> '{"intermittent": "yes"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17772,10 +17770,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'stream'
+    AND tags @> '{"waterway": "stream"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17783,10 +17781,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'tidal_channel'
+    AND tags @> '{"waterway": "tidal_channel"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
     
     INSERT INTO category_membership (osm_id, osm_type, category)
@@ -17794,10 +17792,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'water_point'
+    AND tags @> '{"waterway": "water_point"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'POLYGON')
+        OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
     
@@ -17806,7 +17804,7 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'waterfall'
+    AND tags @> '{"waterway": "waterfall"}' :: JSONB
     AND (
         FALSE
         OR (osm_type = 'N')
@@ -17817,10 +17815,10 @@
     FROM osm
     WHERE
     TRUE
-    AND tags ->> 'waterway' = 'weir'
+    AND tags @> '{"waterway": "weir"}' :: JSONB
     AND (
         FALSE
-        OR (osm_type = 'W' AND GeometryType(geom) = 'LINESTRING')
+        OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
     
@@ -17828,5 +17826,4 @@
     CREATE INDEX IF NOT EXISTS category_membership_category_idx ON category_membership (category);
     CREATE INDEX IF NOT EXISTS category_membership_osm_id_osm_type_idx ON category_membership (osm_id, osm_type);
 
-    COMMIT;
     
