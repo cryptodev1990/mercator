@@ -46,7 +46,6 @@ class CategoryLookup:
         matches = set()
         for k, v in self._name_idx.items():
             d = levenshtein.distance(query, k)
-            print(d)
             if d < self.NAME_SIMILARITY_THRESHOLD:
                 matches.update(v)
         return matches
@@ -55,7 +54,6 @@ class CategoryLookup:
         matches = set()
         for k, v in self._term_idx.items():
             d = levenshtein.distance(query, k)
-            print(d)
             if d < self.TERM_SIMILARITY_THRESHOLD:
                 matches.update(v)
         return matches

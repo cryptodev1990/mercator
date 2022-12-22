@@ -1,14 +1,14 @@
+import logging
+from typing import Optional
+
+import jinja2
 import numpy as np
 
-from app.data.presets import Preset
-from app.parsers.categories import category_lookup
-from typing import Optional
-import jinja2
 from app.core.datatypes import Point
 from app.core.graphhopper import get_graph_hopper
+from app.core.jinja_utils import squote
+from app.parsers.categories import category_lookup
 from app.schemas import EnrichedEntity
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +70,6 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
 
 class NoCategoryMatchError(Exception):
     pass
-
-from app.core.jinja_utils import squote
 
 def known_category(hopeful_category: str) -> EnrichedEntity:
     """Match a known category to its relevant OSM lookup.
