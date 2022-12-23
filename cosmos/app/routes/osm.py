@@ -106,7 +106,7 @@ async def _get_query(
 async def _get_raw_query(
     query: str = Query(
         ...,
-        example="SELECT * FROM osm WHERE tags->>'name' = 'San Francisco' and category = 'boundary'",
+        example="SELECT * FROM osm WHERE tags->>'name' = 'San Francisco'",
         description="Query text string",
     ),
     conn: AsyncConnection = Depends(get_conn),
