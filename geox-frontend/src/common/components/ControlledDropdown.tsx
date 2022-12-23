@@ -22,7 +22,7 @@ const ControlledDropdown = ({
   return (
     <div>
       <div
-        className="flex border p-1 rounded items-center w-24"
+        className="flex border p-1 rounded items-center"
         onClick={handleDropdownClick}
       >
         {isDropdownOpen ? (
@@ -35,11 +35,11 @@ const ControlledDropdown = ({
             ["text-black text-sm"]: true,
           })}
         >
-          {selectedOption.label || "Select Format"}{" "}
+          {selectedOption.label || "Select Option"}{" "}
         </p>
       </div>
       {isDropdownOpen && (
-        <div className="absolute bg-white rounded-md shadow-md w-24">
+        <div className="absolute bg-white rounded-md shadow-md z-1000 w-32">
           {options.map((option: { key: string; label: string }) => (
             <div
               className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"

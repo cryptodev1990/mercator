@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { DownloadIcon } from "../../../../common/components/icons";
-import { useGetAllShapes } from "../../hooks/use-openapi-hooks";
 import { useShapes } from "../../hooks/use-shapes";
 import { useUiModals } from "../../hooks/use-ui-modals";
 import { UIModalEnum } from "../../types";
@@ -8,6 +7,8 @@ import { geoShapesToFeatureCollection } from "../../utils";
 import { ModalCard } from "./modal-card";
 import { topology } from "topojson-server";
 import ControlledDropdown from "common/components/ControlledDropdown";
+import { GeofencerService } from "client";
+import toast from "react-hot-toast";
 
 const formatOptions = [
   { key: "geojson", label: "GeoJSON" },
@@ -17,33 +18,35 @@ const formatOptions = [
 export const ExportShapesModal = () => {
   const { modal, closeModal } = useUiModals();
   const { numShapes } = useShapes();
-  const limit = useState(20)[0];
-  const offset = useState(0)[0];
-  const { data } = useGetAllShapes(limit, offset);
-  const [exportable, setExportable] = useState<any>();
   const [selectedFormat, setSelectedFormat] = useState(formatOptions[0]);
-
-  useEffect(() => {
-    if (data) {
-      setExportable(geoShapesToFeatureCollection(data));
-    }
-  }, [data]);
+  const [selectedNamespace, setSelectedNamespace] = useState({
+    key: "all",
+    label: "All Namespaces",
+    id: "all",
+  });
+  const { namespaces } = useShapes();
 
   return (
     <ModalCard
-      isLoading={exportable ? false : true}
       open={modal === UIModalEnum.ExportShapesModal}
       onClose={closeModal}
-      onSubmit={() => {
-        // export data to a json file
-        if (!data) {
-          return;
-        }
+      onSubmit={async () => {
+        closeModal();
+
+        const loadingToastID = toast.loading("Downloading Namespace...");
+        const data = await GeofencerService.getShapesGeofencerShapesGet(
+          selectedNamespace.id === "all" ? undefined : selectedNamespace.id, // namespace
+          undefined, // user
+          undefined // offset
+        );
+
+        const exportable: any = geoShapesToFeatureCollection(data);
         const exportData =
           selectedFormat.key === "geojson"
             ? exportable
             : topology({ exportable });
 
+        console.log("exportData", exportData);
         const dataStr =
             "data:text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(exportData)),
@@ -56,35 +59,48 @@ export const ExportShapesModal = () => {
         document.body.appendChild(downloadAnchorNode); // required for firefox
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
-
-        closeModal();
+        toast.dismiss(loadingToastID);
+        toast.success("Namespace downloading completed");
       }}
       icon={
         <DownloadIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
       }
       title="Download shapes"
     >
-      <div className="text-black">
+      <div className="text-black ">
         <p>
           Export your shapes to a flat file, like GeoJSON or TopoJSON. You have{" "}
           <b>{numShapes}</b> shapes defined.
         </p>
         <br />
-        <p>
-          <b>Size of exports is currently limited.</b> To export large feature
-          collections contact{" "}
-          <a className="link link-primary" href="mailto:support@mercator.tech">
-            support@mercator.tech
-          </a>{" "}
-          for developer API access.
-        </p>
-        <div className="flex pt-2">
-          <div className="text-black mr-4">Select Export Format:</div>
-          <ControlledDropdown
-            options={formatOptions}
-            handleOptionSelect={setSelectedFormat}
-            selectedOption={selectedFormat}
-          />
+
+        <div className="grid grid-cols-12 gap-2 content-start">
+          <div className="col-span-5 text-black">Select Format:</div>
+          <div className="col-span-4">
+            {" "}
+            <ControlledDropdown
+              options={formatOptions}
+              handleOptionSelect={setSelectedFormat}
+              selectedOption={selectedFormat}
+            />
+          </div>
+          <div className="col-span-3"></div>
+          <div className="col-span-5 text-black">Select Namespace:</div>
+          <div className="col-span-4">
+            <ControlledDropdown
+              options={[
+                ...namespaces.map((namespace) => ({
+                  key: namespace.slug,
+                  label: namespace.name,
+                  id: namespace.id,
+                })),
+                { key: "all", label: "All Namespaces" },
+              ]}
+              handleOptionSelect={setSelectedNamespace}
+              selectedOption={selectedNamespace}
+            />
+          </div>
+          <div className="col-span-3"></div>
         </div>
       </div>
     </ModalCard>
