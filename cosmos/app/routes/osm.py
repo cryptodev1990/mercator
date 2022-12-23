@@ -106,7 +106,7 @@ async def _get_query(
 async def _get_raw_query(
     query: str = Query(
         ...,
-        example="SELECT * FROM osm WHERE tags->>'name' = 'San Francisco'",
+        example="SELECT * FROM osm WHERE tag @> '{\"name\": \"San Francisco\"}':: JSONB",
         description="Query text string",
     ),
     conn: AsyncConnection = Depends(get_conn),
