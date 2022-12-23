@@ -9,14 +9,14 @@ template = ENV.from_string(r"""
 
     DROP TABLE IF EXISTS {{ tablename }};
     CREATE TABLE IF NOT EXISTS {{ tablename }} (
-        osm_id BIGINT NOT NULL REFERENCES osm (id),
+        osm_id TEXT NOT NULL REFERENCES osm (id),
         category TEXT NOT NULL,
         PRIMARY KEY (osm_id, category)
     );
 
-    {% for category, preset in presets.items() %}
+    {% for preset in presets %}
     INSERT INTO {{ tablename }} (osm_id, category)
-    SELECT id AS osm_id, '{{ category }}'
+    SELECT id, '{{ preset.key }}'
     FROM osm
     WHERE
     TRUE
@@ -40,8 +40,8 @@ template = ENV.from_string(r"""
     );
     {% endfor %}
 
-    CREATE INDEX IF NOT EXISTS {{ tablename }}_category_idx ON {{ tablename }} (category);
-    CREATE INDEX IF NOT EXISTS {{ tablename }}_osm_id_osm_type_idx ON {{ tablename }} (osm_id, osm_type);
+    CREATE INDEX ON {{ tablename }} (category);
+    CREATE INDEX ON {{ tablename }} (osm_id);
 
     """)
 

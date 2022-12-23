@@ -4,15 +4,14 @@
 
     DROP TABLE IF EXISTS category_membership;
     CREATE TABLE IF NOT EXISTS category_membership (
-        osm_id BIGINT NOT NULL,
-        osm_type CHAR(1) NOT NULL,
+        osm_id TEXT NOT NULL,
         category TEXT NOT NULL,
-        PRIMARY KEY (osm_id, osm_type, category)
+        PRIMARY KEY (osm_id, category)
     );
 
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway'
     FROM osm
     WHERE
     TRUE
@@ -22,9 +21,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway'
     FROM osm
     WHERE
     TRUE
@@ -35,9 +34,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity'
     FROM osm
     WHERE
     TRUE
@@ -48,9 +47,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction'
     FROM osm
     WHERE
     TRUE
@@ -61,9 +60,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'boundary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'boundary'
     FROM osm
     WHERE
     TRUE
@@ -72,9 +71,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building_point'
     FROM osm
     WHERE
     TRUE
@@ -83,9 +82,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'embankment'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'embankment'
     FROM osm
     WHERE
     TRUE
@@ -94,9 +93,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency'
     FROM osm
     WHERE
     TRUE
@@ -106,9 +105,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'ford_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'ford_line'
     FROM osm
     WHERE
     TRUE
@@ -117,9 +116,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway'
     FROM osm
     WHERE
     TRUE
@@ -130,9 +129,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor'
     FROM osm
     WHERE
     TRUE
@@ -143,9 +142,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse'
     FROM osm
     WHERE
     TRUE
@@ -154,9 +153,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure'
     FROM osm
     WHERE
     TRUE
@@ -167,9 +166,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made'
     FROM osm
     WHERE
     TRUE
@@ -180,9 +179,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural'
     FROM osm
     WHERE
     TRUE
@@ -193,9 +192,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'pipeline'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'pipeline'
     FROM osm
     WHERE
     TRUE
@@ -206,9 +205,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place'
     FROM osm
     WHERE
     TRUE
@@ -218,9 +217,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground'
     FROM osm
     WHERE
     TRUE
@@ -231,9 +230,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power'
     FROM osm
     WHERE
     TRUE
@@ -244,9 +243,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway'
     FROM osm
     WHERE
     TRUE
@@ -257,9 +256,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark'
     FROM osm
     WHERE
     TRUE
@@ -270,9 +269,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'telecom'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'telecom'
     FROM osm
     WHERE
     TRUE
@@ -283,9 +282,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism'
     FROM osm
     WHERE
     TRUE
@@ -296,9 +295,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway'
     FROM osm
     WHERE
     TRUE
@@ -309,9 +308,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'addr/interpolation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'addr/interpolation'
     FROM osm
     WHERE
     TRUE
@@ -320,9 +319,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'address'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'address'
     FROM osm
     WHERE
     TRUE
@@ -332,9 +331,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'advertising/billboard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'advertising/billboard'
     FROM osm
     WHERE
     TRUE
@@ -344,9 +343,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'advertising/board'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'advertising/board'
     FROM osm
     WHERE
     TRUE
@@ -355,9 +354,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'advertising/column'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'advertising/column'
     FROM osm
     WHERE
     TRUE
@@ -367,9 +366,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'advertising/poster_box'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'advertising/poster_box'
     FROM osm
     WHERE
     TRUE
@@ -378,9 +377,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'advertising/totem'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'advertising/totem'
     FROM osm
     WHERE
     TRUE
@@ -389,9 +388,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/cable_car'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/cable_car'
     FROM osm
     WHERE
     TRUE
@@ -400,9 +399,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/chair_lift'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/chair_lift'
     FROM osm
     WHERE
     TRUE
@@ -411,9 +410,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/drag_lift'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/drag_lift'
     FROM osm
     WHERE
     TRUE
@@ -422,9 +421,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/gondola'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/gondola'
     FROM osm
     WHERE
     TRUE
@@ -433,9 +432,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/goods'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/goods'
     FROM osm
     WHERE
     TRUE
@@ -444,9 +443,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/j-bar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/j-bar'
     FROM osm
     WHERE
     TRUE
@@ -455,9 +454,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/magic_carpet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/magic_carpet'
     FROM osm
     WHERE
     TRUE
@@ -466,9 +465,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/mixed_lift'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/mixed_lift'
     FROM osm
     WHERE
     TRUE
@@ -477,9 +476,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/platter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/platter'
     FROM osm
     WHERE
     TRUE
@@ -488,9 +487,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/pylon'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/pylon'
     FROM osm
     WHERE
     TRUE
@@ -499,9 +498,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/rope_tow'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/rope_tow'
     FROM osm
     WHERE
     TRUE
@@ -510,9 +509,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/t-bar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/t-bar'
     FROM osm
     WHERE
     TRUE
@@ -521,9 +520,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aerialway/zip_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aerialway/zip_line'
     FROM osm
     WHERE
     TRUE
@@ -532,9 +531,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/aerodrome'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/aerodrome'
     FROM osm
     WHERE
     TRUE
@@ -544,9 +543,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/apron'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/apron'
     FROM osm
     WHERE
     TRUE
@@ -555,9 +554,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/gate'
     FROM osm
     WHERE
     TRUE
@@ -566,9 +565,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/hangar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/hangar'
     FROM osm
     WHERE
     TRUE
@@ -577,9 +576,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/helipad'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/helipad'
     FROM osm
     WHERE
     TRUE
@@ -589,9 +588,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/holding_position'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/holding_position'
     FROM osm
     WHERE
     TRUE
@@ -600,9 +599,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/jet_bridge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/jet_bridge'
     FROM osm
     WHERE
     TRUE
@@ -611,9 +610,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/parking_position'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/parking_position'
     FROM osm
     WHERE
     TRUE
@@ -623,9 +622,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/runway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/runway'
     FROM osm
     WHERE
     TRUE
@@ -634,9 +633,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/spaceport'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/spaceport'
     FROM osm
     WHERE
     TRUE
@@ -646,9 +645,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/taxiway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/taxiway'
     FROM osm
     WHERE
     TRUE
@@ -657,9 +656,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/terminal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/terminal'
     FROM osm
     WHERE
     TRUE
@@ -669,9 +668,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'aeroway/windsock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'aeroway/windsock'
     FROM osm
     WHERE
     TRUE
@@ -680,9 +679,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'allotments/plot'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'allotments/plot'
     FROM osm
     WHERE
     TRUE
@@ -691,9 +690,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bus_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bus_station'
     FROM osm
     WHERE
     TRUE
@@ -703,9 +702,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/coworking_space'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/coworking_space'
     FROM osm
     WHERE
     TRUE
@@ -715,9 +714,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/embassy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/embassy'
     FROM osm
     WHERE
     TRUE
@@ -727,9 +726,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/ferry_terminal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/ferry_terminal'
     FROM osm
     WHERE
     TRUE
@@ -739,9 +738,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/nursing_home'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/nursing_home'
     FROM osm
     WHERE
     TRUE
@@ -751,9 +750,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/recycling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/recycling'
     FROM osm
     WHERE
     TRUE
@@ -763,9 +762,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/animal_boarding'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/animal_boarding'
     FROM osm
     WHERE
     TRUE
@@ -775,9 +774,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/animal_breeding'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/animal_breeding'
     FROM osm
     WHERE
     TRUE
@@ -787,9 +786,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/animal_shelter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/animal_shelter'
     FROM osm
     WHERE
     TRUE
@@ -799,9 +798,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/arts_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/arts_centre'
     FROM osm
     WHERE
     TRUE
@@ -811,9 +810,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/atm'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/atm'
     FROM osm
     WHERE
     TRUE
@@ -822,9 +821,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bank'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bank'
     FROM osm
     WHERE
     TRUE
@@ -834,9 +833,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bar'
     FROM osm
     WHERE
     TRUE
@@ -846,9 +845,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bar/lgbtq'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bar/lgbtq'
     FROM osm
     WHERE
     TRUE
@@ -859,9 +858,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bbq'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bbq'
     FROM osm
     WHERE
     TRUE
@@ -871,9 +870,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bench'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bench'
     FROM osm
     WHERE
     TRUE
@@ -883,9 +882,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bicycle_parking'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bicycle_parking'
     FROM osm
     WHERE
     TRUE
@@ -895,9 +894,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bicycle_parking/building'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bicycle_parking/building'
     FROM osm
     WHERE
     TRUE
@@ -908,9 +907,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bicycle_parking/lockers'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bicycle_parking/lockers'
     FROM osm
     WHERE
     TRUE
@@ -921,9 +920,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bicycle_parking/shed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bicycle_parking/shed'
     FROM osm
     WHERE
     TRUE
@@ -934,9 +933,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bicycle_rental'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bicycle_rental'
     FROM osm
     WHERE
     TRUE
@@ -946,9 +945,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bicycle_repair_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bicycle_repair_station'
     FROM osm
     WHERE
     TRUE
@@ -957,9 +956,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/biergarten'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/biergarten'
     FROM osm
     WHERE
     TRUE
@@ -969,9 +968,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/binoculars'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/binoculars'
     FROM osm
     WHERE
     TRUE
@@ -980,9 +979,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/boat_rental'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/boat_rental'
     FROM osm
     WHERE
     TRUE
@@ -992,9 +991,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/boat_storage'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/boat_storage'
     FROM osm
     WHERE
     TRUE
@@ -1004,9 +1003,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/bureau_de_change'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/bureau_de_change'
     FROM osm
     WHERE
     TRUE
@@ -1016,9 +1015,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/cafe'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/cafe'
     FROM osm
     WHERE
     TRUE
@@ -1028,9 +1027,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/cafe/bubble_tea'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/cafe/bubble_tea'
     FROM osm
     WHERE
     TRUE
@@ -1041,9 +1040,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/cafe/coffee_shop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/cafe/coffee_shop'
     FROM osm
     WHERE
     TRUE
@@ -1054,9 +1053,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/car_pooling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/car_pooling'
     FROM osm
     WHERE
     TRUE
@@ -1066,9 +1065,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/car_rental'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/car_rental'
     FROM osm
     WHERE
     TRUE
@@ -1078,9 +1077,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/car_sharing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/car_sharing'
     FROM osm
     WHERE
     TRUE
@@ -1090,9 +1089,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/car_wash'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/car_wash'
     FROM osm
     WHERE
     TRUE
@@ -1102,9 +1101,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/casino'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/casino'
     FROM osm
     WHERE
     TRUE
@@ -1114,9 +1113,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/charging_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/charging_station'
     FROM osm
     WHERE
     TRUE
@@ -1126,9 +1125,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/childcare'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/childcare'
     FROM osm
     WHERE
     TRUE
@@ -1138,9 +1137,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/cinema'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/cinema'
     FROM osm
     WHERE
     TRUE
@@ -1150,9 +1149,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/clinic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/clinic'
     FROM osm
     WHERE
     TRUE
@@ -1162,9 +1161,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/clinic/abortion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/clinic/abortion'
     FROM osm
     WHERE
     TRUE
@@ -1176,9 +1175,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/clinic/fertility'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/clinic/fertility'
     FROM osm
     WHERE
     TRUE
@@ -1190,9 +1189,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/clock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/clock'
     FROM osm
     WHERE
     TRUE
@@ -1201,9 +1200,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/clock/sundial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/clock/sundial'
     FROM osm
     WHERE
     TRUE
@@ -1213,9 +1212,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/college'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/college'
     FROM osm
     WHERE
     TRUE
@@ -1225,9 +1224,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/community_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/community_centre'
     FROM osm
     WHERE
     TRUE
@@ -1237,9 +1236,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/community_centre/lgbtq'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/community_centre/lgbtq'
     FROM osm
     WHERE
     TRUE
@@ -1250,9 +1249,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/community_centre/youth_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/community_centre/youth_centre'
     FROM osm
     WHERE
     TRUE
@@ -1263,9 +1262,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/compressed_air'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/compressed_air'
     FROM osm
     WHERE
     TRUE
@@ -1275,9 +1274,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/conference_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/conference_centre'
     FROM osm
     WHERE
     TRUE
@@ -1287,9 +1286,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/courthouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/courthouse'
     FROM osm
     WHERE
     TRUE
@@ -1299,9 +1298,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/crematorium'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/crematorium'
     FROM osm
     WHERE
     TRUE
@@ -1311,9 +1310,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/dentist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/dentist'
     FROM osm
     WHERE
     TRUE
@@ -1323,9 +1322,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/dive_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/dive_centre'
     FROM osm
     WHERE
     TRUE
@@ -1335,9 +1334,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/doctors'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/doctors'
     FROM osm
     WHERE
     TRUE
@@ -1347,9 +1346,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/doctors/gynaecology'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/doctors/gynaecology'
     FROM osm
     WHERE
     TRUE
@@ -1361,9 +1360,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/dojo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/dojo'
     FROM osm
     WHERE
     TRUE
@@ -1373,9 +1372,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/dressing_room'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/dressing_room'
     FROM osm
     WHERE
     TRUE
@@ -1385,9 +1384,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/drinking_water'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/drinking_water'
     FROM osm
     WHERE
     TRUE
@@ -1396,9 +1395,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/driver_training'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/driver_training'
     FROM osm
     WHERE
     TRUE
@@ -1408,9 +1407,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/driving_school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/driving_school'
     FROM osm
     WHERE
     TRUE
@@ -1420,9 +1419,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/events_venue'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/events_venue'
     FROM osm
     WHERE
     TRUE
@@ -1432,9 +1431,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/exhibition_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/exhibition_centre'
     FROM osm
     WHERE
     TRUE
@@ -1444,9 +1443,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food'
     FROM osm
     WHERE
     TRUE
@@ -1456,9 +1455,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/ice_cream'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/ice_cream'
     FROM osm
     WHERE
     TRUE
@@ -1469,9 +1468,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/burger'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/burger'
     FROM osm
     WHERE
     TRUE
@@ -1482,9 +1481,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/cafeteria'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/cafeteria'
     FROM osm
     WHERE
     TRUE
@@ -1495,9 +1494,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/chicken'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/chicken'
     FROM osm
     WHERE
     TRUE
@@ -1508,9 +1507,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/donut'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/donut'
     FROM osm
     WHERE
     TRUE
@@ -1521,9 +1520,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/fish_and_chips'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/fish_and_chips'
     FROM osm
     WHERE
     TRUE
@@ -1534,9 +1533,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/hot_dog'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/hot_dog'
     FROM osm
     WHERE
     TRUE
@@ -1547,9 +1546,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/juice'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/juice'
     FROM osm
     WHERE
     TRUE
@@ -1560,9 +1559,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/kebab'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/kebab'
     FROM osm
     WHERE
     TRUE
@@ -1573,9 +1572,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/mexican'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/mexican'
     FROM osm
     WHERE
     TRUE
@@ -1586,9 +1585,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/pizza'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/pizza'
     FROM osm
     WHERE
     TRUE
@@ -1599,9 +1598,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fast_food/sandwich'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fast_food/sandwich'
     FROM osm
     WHERE
     TRUE
@@ -1612,9 +1611,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fire_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fire_station'
     FROM osm
     WHERE
     TRUE
@@ -1624,9 +1623,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/food_court'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/food_court'
     FROM osm
     WHERE
     TRUE
@@ -1636,9 +1635,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fountain'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fountain'
     FROM osm
     WHERE
     TRUE
@@ -1648,9 +1647,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/fuel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/fuel'
     FROM osm
     WHERE
     TRUE
@@ -1660,9 +1659,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/gambling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/gambling'
     FROM osm
     WHERE
     TRUE
@@ -1672,9 +1671,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/give_box'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/give_box'
     FROM osm
     WHERE
     TRUE
@@ -1684,9 +1683,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/grave_yard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/grave_yard'
     FROM osm
     WHERE
     TRUE
@@ -1696,9 +1695,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/grit_bin'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/grit_bin'
     FROM osm
     WHERE
     TRUE
@@ -1707,9 +1706,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/hospital'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/hospital'
     FROM osm
     WHERE
     TRUE
@@ -1719,9 +1718,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/hunting_stand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/hunting_stand'
     FROM osm
     WHERE
     TRUE
@@ -1731,9 +1730,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/ice_cream'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/ice_cream'
     FROM osm
     WHERE
     TRUE
@@ -1743,9 +1742,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/internet_cafe'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/internet_cafe'
     FROM osm
     WHERE
     TRUE
@@ -1755,9 +1754,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/karaoke_box'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/karaoke_box'
     FROM osm
     WHERE
     TRUE
@@ -1767,9 +1766,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/kindergarten'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/kindergarten'
     FROM osm
     WHERE
     TRUE
@@ -1779,9 +1778,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/kneipp_water_cure'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/kneipp_water_cure'
     FROM osm
     WHERE
     TRUE
@@ -1791,9 +1790,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/language_school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/language_school'
     FROM osm
     WHERE
     TRUE
@@ -1803,9 +1802,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/lavoir'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/lavoir'
     FROM osm
     WHERE
     TRUE
@@ -1815,9 +1814,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/letter_box'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/letter_box'
     FROM osm
     WHERE
     TRUE
@@ -1826,9 +1825,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/library'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/library'
     FROM osm
     WHERE
     TRUE
@@ -1838,9 +1837,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/loading_dock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/loading_dock'
     FROM osm
     WHERE
     TRUE
@@ -1849,9 +1848,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/lounger'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/lounger'
     FROM osm
     WHERE
     TRUE
@@ -1860,9 +1859,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/love_hotel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/love_hotel'
     FROM osm
     WHERE
     TRUE
@@ -1872,9 +1871,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/marketplace'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/marketplace'
     FROM osm
     WHERE
     TRUE
@@ -1884,9 +1883,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/monastery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/monastery'
     FROM osm
     WHERE
     TRUE
@@ -1896,9 +1895,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/money_transfer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/money_transfer'
     FROM osm
     WHERE
     TRUE
@@ -1908,9 +1907,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/mortuary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/mortuary'
     FROM osm
     WHERE
     TRUE
@@ -1920,9 +1919,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/motorcycle_parking'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/motorcycle_parking'
     FROM osm
     WHERE
     TRUE
@@ -1932,9 +1931,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/motorcycle_rental'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/motorcycle_rental'
     FROM osm
     WHERE
     TRUE
@@ -1944,9 +1943,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/music_school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/music_school'
     FROM osm
     WHERE
     TRUE
@@ -1956,9 +1955,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/nightclub'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/nightclub'
     FROM osm
     WHERE
     TRUE
@@ -1968,9 +1967,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/nightclub/lgbtq'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/nightclub/lgbtq'
     FROM osm
     WHERE
     TRUE
@@ -1981,9 +1980,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parcel_locker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parcel_locker'
     FROM osm
     WHERE
     TRUE
@@ -1993,9 +1992,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking_entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking_entrance'
     FROM osm
     WHERE
     TRUE
@@ -2004,9 +2003,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking_space'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking_space'
     FROM osm
     WHERE
     TRUE
@@ -2016,9 +2015,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking_space/disabled'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking_space/disabled'
     FROM osm
     WHERE
     TRUE
@@ -2029,9 +2028,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking'
     FROM osm
     WHERE
     TRUE
@@ -2041,9 +2040,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking/multi-storey'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking/multi-storey'
     FROM osm
     WHERE
     TRUE
@@ -2054,9 +2053,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking/park_ride'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking/park_ride'
     FROM osm
     WHERE
     TRUE
@@ -2067,9 +2066,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking/street-side'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking/street-side'
     FROM osm
     WHERE
     TRUE
@@ -2080,9 +2079,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/parking/underground'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/parking/underground'
     FROM osm
     WHERE
     TRUE
@@ -2093,9 +2092,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/payment_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/payment_centre'
     FROM osm
     WHERE
     TRUE
@@ -2105,9 +2104,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/payment_terminal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/payment_terminal'
     FROM osm
     WHERE
     TRUE
@@ -2116,9 +2115,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/pharmacy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/pharmacy'
     FROM osm
     WHERE
     TRUE
@@ -2128,9 +2127,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/photo_booth'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/photo_booth'
     FROM osm
     WHERE
     TRUE
@@ -2140,9 +2139,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship'
     FROM osm
     WHERE
     TRUE
@@ -2152,9 +2151,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/buddhist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/buddhist'
     FROM osm
     WHERE
     TRUE
@@ -2165,9 +2164,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/christian'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/christian'
     FROM osm
     WHERE
     TRUE
@@ -2178,9 +2177,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/christian/jehovahs_witness'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/christian/jehovahs_witness'
     FROM osm
     WHERE
     TRUE
@@ -2192,9 +2191,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/christian/la_luz_del_mundo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/christian/la_luz_del_mundo'
     FROM osm
     WHERE
     TRUE
@@ -2206,9 +2205,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/christian/quaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/christian/quaker'
     FROM osm
     WHERE
     TRUE
@@ -2220,9 +2219,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/hindu'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/hindu'
     FROM osm
     WHERE
     TRUE
@@ -2233,9 +2232,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/jewish'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/jewish'
     FROM osm
     WHERE
     TRUE
@@ -2246,9 +2245,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/muslim'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/muslim'
     FROM osm
     WHERE
     TRUE
@@ -2259,9 +2258,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/shinto'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/shinto'
     FROM osm
     WHERE
     TRUE
@@ -2272,9 +2271,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/sikh'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/sikh'
     FROM osm
     WHERE
     TRUE
@@ -2285,9 +2284,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/place_of_worship/taoist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/place_of_worship/taoist'
     FROM osm
     WHERE
     TRUE
@@ -2298,9 +2297,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/planetarium'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/planetarium'
     FROM osm
     WHERE
     TRUE
@@ -2310,9 +2309,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/police'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/police'
     FROM osm
     WHERE
     TRUE
@@ -2322,9 +2321,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/polling_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/polling_station'
     FROM osm
     WHERE
     TRUE
@@ -2334,9 +2333,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/post_box'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/post_box'
     FROM osm
     WHERE
     TRUE
@@ -2345,9 +2344,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/post_depot'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/post_depot'
     FROM osm
     WHERE
     TRUE
@@ -2357,9 +2356,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/post_office'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/post_office'
     FROM osm
     WHERE
     TRUE
@@ -2369,9 +2368,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/prep_school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/prep_school'
     FROM osm
     WHERE
     TRUE
@@ -2381,9 +2380,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/prison'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/prison'
     FROM osm
     WHERE
     TRUE
@@ -2393,9 +2392,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/pub'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/pub'
     FROM osm
     WHERE
     TRUE
@@ -2405,9 +2404,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/pub/irish'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/pub/irish'
     FROM osm
     WHERE
     TRUE
@@ -2418,9 +2417,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/pub/lgbtq'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/pub/lgbtq'
     FROM osm
     WHERE
     TRUE
@@ -2431,9 +2430,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/pub/microbrewery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/pub/microbrewery'
     FROM osm
     WHERE
     TRUE
@@ -2444,9 +2443,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/public_bath'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/public_bath'
     FROM osm
     WHERE
     TRUE
@@ -2456,9 +2455,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/public_bookcase'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/public_bookcase'
     FROM osm
     WHERE
     TRUE
@@ -2468,9 +2467,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/ranger_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/ranger_station'
     FROM osm
     WHERE
     TRUE
@@ -2480,9 +2479,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/recycling_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/recycling_centre'
     FROM osm
     WHERE
     TRUE
@@ -2493,9 +2492,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/recycling_container'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/recycling_container'
     FROM osm
     WHERE
     TRUE
@@ -2506,9 +2505,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/recycling/container/electrical_items'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/recycling/container/electrical_items'
     FROM osm
     WHERE
     TRUE
@@ -2520,9 +2519,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/recycling/container/green_waste'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/recycling/container/green_waste'
     FROM osm
     WHERE
     TRUE
@@ -2534,9 +2533,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/refugee_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/refugee_site'
     FROM osm
     WHERE
     TRUE
@@ -2546,9 +2545,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/research_institute'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/research_institute'
     FROM osm
     WHERE
     TRUE
@@ -2558,9 +2557,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant'
     FROM osm
     WHERE
     TRUE
@@ -2570,9 +2569,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/american'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/american'
     FROM osm
     WHERE
     TRUE
@@ -2583,9 +2582,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/asian'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/asian'
     FROM osm
     WHERE
     TRUE
@@ -2596,9 +2595,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/barbeque'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/barbeque'
     FROM osm
     WHERE
     TRUE
@@ -2609,9 +2608,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/chinese'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/chinese'
     FROM osm
     WHERE
     TRUE
@@ -2622,9 +2621,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/french'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/french'
     FROM osm
     WHERE
     TRUE
@@ -2635,9 +2634,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/german'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/german'
     FROM osm
     WHERE
     TRUE
@@ -2648,9 +2647,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/greek'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/greek'
     FROM osm
     WHERE
     TRUE
@@ -2661,9 +2660,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/indian'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/indian'
     FROM osm
     WHERE
     TRUE
@@ -2674,9 +2673,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/italian'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/italian'
     FROM osm
     WHERE
     TRUE
@@ -2687,9 +2686,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/japanese'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/japanese'
     FROM osm
     WHERE
     TRUE
@@ -2700,9 +2699,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/mexican'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/mexican'
     FROM osm
     WHERE
     TRUE
@@ -2713,9 +2712,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/noodle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/noodle'
     FROM osm
     WHERE
     TRUE
@@ -2726,9 +2725,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/pizza'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/pizza'
     FROM osm
     WHERE
     TRUE
@@ -2739,9 +2738,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/seafood'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/seafood'
     FROM osm
     WHERE
     TRUE
@@ -2752,9 +2751,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/steakhouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/steakhouse'
     FROM osm
     WHERE
     TRUE
@@ -2765,9 +2764,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/sushi'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/sushi'
     FROM osm
     WHERE
     TRUE
@@ -2778,9 +2777,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/thai'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/thai'
     FROM osm
     WHERE
     TRUE
@@ -2791,9 +2790,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/turkish'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/turkish'
     FROM osm
     WHERE
     TRUE
@@ -2804,9 +2803,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/restaurant/vietnamese'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/restaurant/vietnamese'
     FROM osm
     WHERE
     TRUE
@@ -2817,9 +2816,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/sanitary_dump_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/sanitary_dump_station'
     FROM osm
     WHERE
     TRUE
@@ -2829,9 +2828,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/school'
     FROM osm
     WHERE
     TRUE
@@ -2841,9 +2840,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/shelter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/shelter'
     FROM osm
     WHERE
     TRUE
@@ -2853,9 +2852,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/shelter/gazebo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/shelter/gazebo'
     FROM osm
     WHERE
     TRUE
@@ -2866,9 +2865,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/shelter/lean_to'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/shelter/lean_to'
     FROM osm
     WHERE
     TRUE
@@ -2879,9 +2878,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/shelter/picnic_shelter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/shelter/picnic_shelter'
     FROM osm
     WHERE
     TRUE
@@ -2892,9 +2891,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/shelter/public_transport'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/shelter/public_transport'
     FROM osm
     WHERE
     TRUE
@@ -2905,9 +2904,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/shower'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/shower'
     FROM osm
     WHERE
     TRUE
@@ -2917,9 +2916,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/smoking_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/smoking_area'
     FROM osm
     WHERE
     TRUE
@@ -2929,9 +2928,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_centre'
     FROM osm
     WHERE
     TRUE
@@ -2941,9 +2940,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_facility'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_facility'
     FROM osm
     WHERE
     TRUE
@@ -2953,9 +2952,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_facility/ambulatory_care'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_facility/ambulatory_care'
     FROM osm
     WHERE
     TRUE
@@ -2966,9 +2965,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_facility/food_bank'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_facility/food_bank'
     FROM osm
     WHERE
     TRUE
@@ -2979,9 +2978,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_facility/group_home'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_facility/group_home'
     FROM osm
     WHERE
     TRUE
@@ -2993,9 +2992,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_facility/homeless_shelter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_facility/homeless_shelter'
     FROM osm
     WHERE
     TRUE
@@ -3007,9 +3006,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/social_facility/nursing_home'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/social_facility/nursing_home'
     FROM osm
     WHERE
     TRUE
@@ -3021,9 +3020,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/studio'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/studio'
     FROM osm
     WHERE
     TRUE
@@ -3033,9 +3032,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/studio/audio'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/studio/audio'
     FROM osm
     WHERE
     TRUE
@@ -3046,9 +3045,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/studio/radio'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/studio/radio'
     FROM osm
     WHERE
     TRUE
@@ -3059,9 +3058,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/studio/television'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/studio/television'
     FROM osm
     WHERE
     TRUE
@@ -3072,9 +3071,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/studio/video'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/studio/video'
     FROM osm
     WHERE
     TRUE
@@ -3085,9 +3084,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/taxi'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/taxi'
     FROM osm
     WHERE
     TRUE
@@ -3097,9 +3096,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/telephone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/telephone'
     FROM osm
     WHERE
     TRUE
@@ -3108,9 +3107,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/theatre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/theatre'
     FROM osm
     WHERE
     TRUE
@@ -3120,9 +3119,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/theatre/type/amphi'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/theatre/type/amphi'
     FROM osm
     WHERE
     TRUE
@@ -3133,9 +3132,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/ticket_validator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/ticket_validator'
     FROM osm
     WHERE
     TRUE
@@ -3144,9 +3143,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/toilets'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/toilets'
     FROM osm
     WHERE
     TRUE
@@ -3156,9 +3155,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/toilets/disposal/flush'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/toilets/disposal/flush'
     FROM osm
     WHERE
     TRUE
@@ -3169,9 +3168,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/toilets/disposal/pitlatrine'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/toilets/disposal/pitlatrine'
     FROM osm
     WHERE
     TRUE
@@ -3182,9 +3181,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/toilets/portable'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/toilets/portable'
     FROM osm
     WHERE
     TRUE
@@ -3195,9 +3194,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/townhall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/townhall'
     FROM osm
     WHERE
     TRUE
@@ -3207,9 +3206,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/townhall/city'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/townhall/city'
     FROM osm
     WHERE
     TRUE
@@ -3220,9 +3219,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/toy_library'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/toy_library'
     FROM osm
     WHERE
     TRUE
@@ -3232,9 +3231,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/trolley_bay'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/trolley_bay'
     FROM osm
     WHERE
     TRUE
@@ -3244,9 +3243,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/university'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/university'
     FROM osm
     WHERE
     TRUE
@@ -3256,9 +3255,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vacuum_cleaner'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vacuum_cleaner'
     FROM osm
     WHERE
     TRUE
@@ -3267,9 +3266,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vehicle_inspection'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vehicle_inspection'
     FROM osm
     WHERE
     TRUE
@@ -3279,9 +3278,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine'
     FROM osm
     WHERE
     TRUE
@@ -3290,9 +3289,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/bicycle_tube'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/bicycle_tube'
     FROM osm
     WHERE
     TRUE
@@ -3302,9 +3301,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/bottle_return'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/bottle_return'
     FROM osm
     WHERE
     TRUE
@@ -3314,9 +3313,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/bread'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/bread'
     FROM osm
     WHERE
     TRUE
@@ -3326,9 +3325,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/cigarettes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/cigarettes'
     FROM osm
     WHERE
     TRUE
@@ -3338,9 +3337,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/coffee'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/coffee'
     FROM osm
     WHERE
     TRUE
@@ -3350,9 +3349,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/condoms'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/condoms'
     FROM osm
     WHERE
     TRUE
@@ -3362,9 +3361,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/drinks'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/drinks'
     FROM osm
     WHERE
     TRUE
@@ -3374,9 +3373,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/eggs'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/eggs'
     FROM osm
     WHERE
     TRUE
@@ -3386,9 +3385,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/electronics'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/electronics'
     FROM osm
     WHERE
     TRUE
@@ -3398,9 +3397,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/elongated_coin'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/elongated_coin'
     FROM osm
     WHERE
     TRUE
@@ -3410,9 +3409,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/excrement_bags'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/excrement_bags'
     FROM osm
     WHERE
     TRUE
@@ -3422,9 +3421,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/feminine_hygiene'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/feminine_hygiene'
     FROM osm
     WHERE
     TRUE
@@ -3434,9 +3433,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/food'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/food'
     FROM osm
     WHERE
     TRUE
@@ -3446,9 +3445,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/fuel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/fuel'
     FROM osm
     WHERE
     TRUE
@@ -3458,9 +3457,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/ice_cream'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/ice_cream'
     FROM osm
     WHERE
     TRUE
@@ -3470,9 +3469,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/ice_cubes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/ice_cubes'
     FROM osm
     WHERE
     TRUE
@@ -3482,9 +3481,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/newspapers'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/newspapers'
     FROM osm
     WHERE
     TRUE
@@ -3494,9 +3493,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/parking_tickets'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/parking_tickets'
     FROM osm
     WHERE
     TRUE
@@ -3506,9 +3505,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/pizza'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/pizza'
     FROM osm
     WHERE
     TRUE
@@ -3518,9 +3517,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/public_transport_tickets'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/public_transport_tickets'
     FROM osm
     WHERE
     TRUE
@@ -3530,9 +3529,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/stamps'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/stamps'
     FROM osm
     WHERE
     TRUE
@@ -3542,9 +3541,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/vending_machine/sweets'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/vending_machine/sweets'
     FROM osm
     WHERE
     TRUE
@@ -3554,9 +3553,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/veterinary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/veterinary'
     FROM osm
     WHERE
     TRUE
@@ -3566,9 +3565,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/waste_basket'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/waste_basket'
     FROM osm
     WHERE
     TRUE
@@ -3577,9 +3576,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/waste_disposal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/waste_disposal'
     FROM osm
     WHERE
     TRUE
@@ -3589,9 +3588,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/waste_transfer_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/waste_transfer_station'
     FROM osm
     WHERE
     TRUE
@@ -3601,9 +3600,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/waste/dog_excrement'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/waste/dog_excrement'
     FROM osm
     WHERE
     TRUE
@@ -3614,9 +3613,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/water_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/water_point'
     FROM osm
     WHERE
     TRUE
@@ -3626,9 +3625,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/watering_place'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/watering_place'
     FROM osm
     WHERE
     TRUE
@@ -3638,9 +3637,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'amenity/weighbridge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'amenity/weighbridge'
     FROM osm
     WHERE
     TRUE
@@ -3650,9 +3649,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'area'
     FROM osm
     WHERE
     TRUE
@@ -3661,9 +3660,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'area/footway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'area/footway'
     FROM osm
     WHERE
     TRUE
@@ -3672,9 +3671,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'area/highway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'area/highway'
     FROM osm
     WHERE
     TRUE
@@ -3683,9 +3682,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/amusement_ride'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/amusement_ride'
     FROM osm
     WHERE
     TRUE
@@ -3695,9 +3694,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/animal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/animal'
     FROM osm
     WHERE
     TRUE
@@ -3707,9 +3706,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/big_wheel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/big_wheel'
     FROM osm
     WHERE
     TRUE
@@ -3718,9 +3717,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/bumper_car'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/bumper_car'
     FROM osm
     WHERE
     TRUE
@@ -3730,9 +3729,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/bungee_jumping'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/bungee_jumping'
     FROM osm
     WHERE
     TRUE
@@ -3742,9 +3741,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/carousel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/carousel'
     FROM osm
     WHERE
     TRUE
@@ -3754,9 +3753,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/dark_ride'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/dark_ride'
     FROM osm
     WHERE
     TRUE
@@ -3767,9 +3766,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/drop_tower'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/drop_tower'
     FROM osm
     WHERE
     TRUE
@@ -3779,9 +3778,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/kiddie_ride'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/kiddie_ride'
     FROM osm
     WHERE
     TRUE
@@ -3790,9 +3789,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/log_flume'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/log_flume'
     FROM osm
     WHERE
     TRUE
@@ -3802,9 +3801,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/maze'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/maze'
     FROM osm
     WHERE
     TRUE
@@ -3814,9 +3813,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/pirate_ship'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/pirate_ship'
     FROM osm
     WHERE
     TRUE
@@ -3825,9 +3824,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/river_rafting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/river_rafting'
     FROM osm
     WHERE
     TRUE
@@ -3837,9 +3836,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/roller_coaster'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/roller_coaster'
     FROM osm
     WHERE
     TRUE
@@ -3849,9 +3848,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/summer_toboggan'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/summer_toboggan'
     FROM osm
     WHERE
     TRUE
@@ -3860,9 +3859,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/swing_carousel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/swing_carousel'
     FROM osm
     WHERE
     TRUE
@@ -3872,9 +3871,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/train'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/train'
     FROM osm
     WHERE
     TRUE
@@ -3884,9 +3883,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'attraction/water_slide'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'attraction/water_slide'
     FROM osm
     WHERE
     TRUE
@@ -3896,9 +3895,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier'
     FROM osm
     WHERE
     TRUE
@@ -3909,9 +3908,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/ditch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/ditch'
     FROM osm
     WHERE
     TRUE
@@ -3921,9 +3920,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/entrance'
     FROM osm
     WHERE
     TRUE
@@ -3932,9 +3931,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/handrail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/handrail'
     FROM osm
     WHERE
     TRUE
@@ -3943,9 +3942,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/log'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/log'
     FROM osm
     WHERE
     TRUE
@@ -3955,9 +3954,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/planter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/planter'
     FROM osm
     WHERE
     TRUE
@@ -3967,9 +3966,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/yes'
     FROM osm
     WHERE
     TRUE
@@ -3980,9 +3979,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/block'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/block'
     FROM osm
     WHERE
     TRUE
@@ -3991,9 +3990,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/bollard_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/bollard_line'
     FROM osm
     WHERE
     TRUE
@@ -4002,9 +4001,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/bollard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/bollard'
     FROM osm
     WHERE
     TRUE
@@ -4013,9 +4012,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/border_control'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/border_control'
     FROM osm
     WHERE
     TRUE
@@ -4025,9 +4024,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/bump_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/bump_gate'
     FROM osm
     WHERE
     TRUE
@@ -4036,9 +4035,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/bus_trap'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/bus_trap'
     FROM osm
     WHERE
     TRUE
@@ -4047,9 +4046,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/cable_barrier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/cable_barrier'
     FROM osm
     WHERE
     TRUE
@@ -4058,9 +4057,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/cattle_grid'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/cattle_grid'
     FROM osm
     WHERE
     TRUE
@@ -4069,9 +4068,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/chain'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/chain'
     FROM osm
     WHERE
     TRUE
@@ -4081,9 +4080,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/city_wall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/city_wall'
     FROM osm
     WHERE
     TRUE
@@ -4093,9 +4092,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/cycle_barrier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/cycle_barrier'
     FROM osm
     WHERE
     TRUE
@@ -4104,9 +4103,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/fence'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/fence'
     FROM osm
     WHERE
     TRUE
@@ -4115,9 +4114,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/fence/railing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/fence/railing'
     FROM osm
     WHERE
     TRUE
@@ -4127,9 +4126,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/full-height_turnstile'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/full-height_turnstile'
     FROM osm
     WHERE
     TRUE
@@ -4138,9 +4137,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/gate'
     FROM osm
     WHERE
     TRUE
@@ -4150,9 +4149,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/guard_rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/guard_rail'
     FROM osm
     WHERE
     TRUE
@@ -4161,9 +4160,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/hampshire_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/hampshire_gate'
     FROM osm
     WHERE
     TRUE
@@ -4172,9 +4171,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/hedge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/hedge'
     FROM osm
     WHERE
     TRUE
@@ -4184,9 +4183,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/height_restrictor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/height_restrictor'
     FROM osm
     WHERE
     TRUE
@@ -4195,9 +4194,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/jersey_barrier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/jersey_barrier'
     FROM osm
     WHERE
     TRUE
@@ -4207,9 +4206,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/kerb'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/kerb'
     FROM osm
     WHERE
     TRUE
@@ -4219,9 +4218,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/kerb/flush'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/kerb/flush'
     FROM osm
     WHERE
     TRUE
@@ -4231,9 +4230,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/kerb/lowered'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/kerb/lowered'
     FROM osm
     WHERE
     TRUE
@@ -4243,9 +4242,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/kerb/raised'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/kerb/raised'
     FROM osm
     WHERE
     TRUE
@@ -4255,9 +4254,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/kerb/rolled'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/kerb/rolled'
     FROM osm
     WHERE
     TRUE
@@ -4267,9 +4266,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/kissing_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/kissing_gate'
     FROM osm
     WHERE
     TRUE
@@ -4278,9 +4277,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/lift_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/lift_gate'
     FROM osm
     WHERE
     TRUE
@@ -4290,9 +4289,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/motorcycle_barrier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/motorcycle_barrier'
     FROM osm
     WHERE
     TRUE
@@ -4301,9 +4300,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/retaining_wall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/retaining_wall'
     FROM osm
     WHERE
     TRUE
@@ -4313,9 +4312,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/rope'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/rope'
     FROM osm
     WHERE
     TRUE
@@ -4325,9 +4324,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/sally_port'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/sally_port'
     FROM osm
     WHERE
     TRUE
@@ -4336,9 +4335,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/spikes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/spikes'
     FROM osm
     WHERE
     TRUE
@@ -4347,9 +4346,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/stile'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/stile'
     FROM osm
     WHERE
     TRUE
@@ -4358,9 +4357,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/swing_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/swing_gate'
     FROM osm
     WHERE
     TRUE
@@ -4369,9 +4368,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/toll_booth'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/toll_booth'
     FROM osm
     WHERE
     TRUE
@@ -4381,9 +4380,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/turnstile'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/turnstile'
     FROM osm
     WHERE
     TRUE
@@ -4392,9 +4391,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/wall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/wall'
     FROM osm
     WHERE
     TRUE
@@ -4404,9 +4403,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/wall/noise_barrier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/wall/noise_barrier'
     FROM osm
     WHERE
     TRUE
@@ -4417,9 +4416,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'barrier/wicket_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'barrier/wicket_gate'
     FROM osm
     WHERE
     TRUE
@@ -4429,9 +4428,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'boundary/administrative'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'boundary/administrative'
     FROM osm
     WHERE
     TRUE
@@ -4440,9 +4439,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'bridge/support'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'bridge/support'
     FROM osm
     WHERE
     TRUE
@@ -4452,9 +4451,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'bridge/support/pier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'bridge/support/pier'
     FROM osm
     WHERE
     TRUE
@@ -4464,9 +4463,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building_part'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building_part'
     FROM osm
     WHERE
     TRUE
@@ -4475,9 +4474,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building'
     FROM osm
     WHERE
     TRUE
@@ -4486,9 +4485,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/bunker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/bunker'
     FROM osm
     WHERE
     TRUE
@@ -4497,9 +4496,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/entrance'
     FROM osm
     WHERE
     TRUE
@@ -4508,9 +4507,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/manufacture'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/manufacture'
     FROM osm
     WHERE
     TRUE
@@ -4519,9 +4518,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/outbuilding'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/outbuilding'
     FROM osm
     WHERE
     TRUE
@@ -4530,9 +4529,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/train_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/train_station'
     FROM osm
     WHERE
     TRUE
@@ -4542,9 +4541,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/allotment_house'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/allotment_house'
     FROM osm
     WHERE
     TRUE
@@ -4553,9 +4552,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/apartments'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/apartments'
     FROM osm
     WHERE
     TRUE
@@ -4564,9 +4563,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/barn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/barn'
     FROM osm
     WHERE
     TRUE
@@ -4575,9 +4574,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/boathouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/boathouse'
     FROM osm
     WHERE
     TRUE
@@ -4586,9 +4585,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/bungalow'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/bungalow'
     FROM osm
     WHERE
     TRUE
@@ -4597,9 +4596,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/cabin'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/cabin'
     FROM osm
     WHERE
     TRUE
@@ -4608,9 +4607,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/carport'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/carport'
     FROM osm
     WHERE
     TRUE
@@ -4619,9 +4618,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/cathedral'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/cathedral'
     FROM osm
     WHERE
     TRUE
@@ -4630,9 +4629,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/chapel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/chapel'
     FROM osm
     WHERE
     TRUE
@@ -4641,9 +4640,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/church'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/church'
     FROM osm
     WHERE
     TRUE
@@ -4652,9 +4651,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/civic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/civic'
     FROM osm
     WHERE
     TRUE
@@ -4663,9 +4662,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/college'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/college'
     FROM osm
     WHERE
     TRUE
@@ -4674,9 +4673,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/commercial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/commercial'
     FROM osm
     WHERE
     TRUE
@@ -4685,9 +4684,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/construction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/construction'
     FROM osm
     WHERE
     TRUE
@@ -4696,9 +4695,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/cowshed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/cowshed'
     FROM osm
     WHERE
     TRUE
@@ -4707,9 +4706,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/detached'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/detached'
     FROM osm
     WHERE
     TRUE
@@ -4718,9 +4717,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/dormitory'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/dormitory'
     FROM osm
     WHERE
     TRUE
@@ -4729,9 +4728,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/farm_auxiliary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/farm_auxiliary'
     FROM osm
     WHERE
     TRUE
@@ -4740,9 +4739,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/farm'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/farm'
     FROM osm
     WHERE
     TRUE
@@ -4751,9 +4750,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/fire_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/fire_station'
     FROM osm
     WHERE
     TRUE
@@ -4762,9 +4761,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/garage'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/garage'
     FROM osm
     WHERE
     TRUE
@@ -4773,9 +4772,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/garages'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/garages'
     FROM osm
     WHERE
     TRUE
@@ -4784,9 +4783,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/ger'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/ger'
     FROM osm
     WHERE
     TRUE
@@ -4795,9 +4794,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/grandstand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/grandstand'
     FROM osm
     WHERE
     TRUE
@@ -4806,9 +4805,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/greenhouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/greenhouse'
     FROM osm
     WHERE
     TRUE
@@ -4817,9 +4816,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/hangar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/hangar'
     FROM osm
     WHERE
     TRUE
@@ -4828,9 +4827,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/hospital'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/hospital'
     FROM osm
     WHERE
     TRUE
@@ -4839,9 +4838,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/hotel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/hotel'
     FROM osm
     WHERE
     TRUE
@@ -4850,9 +4849,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/house'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/house'
     FROM osm
     WHERE
     TRUE
@@ -4861,9 +4860,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/houseboat'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/houseboat'
     FROM osm
     WHERE
     TRUE
@@ -4872,9 +4871,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/hut'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/hut'
     FROM osm
     WHERE
     TRUE
@@ -4883,9 +4882,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/industrial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/industrial'
     FROM osm
     WHERE
     TRUE
@@ -4894,9 +4893,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/kindergarten'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/kindergarten'
     FROM osm
     WHERE
     TRUE
@@ -4905,9 +4904,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/mosque'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/mosque'
     FROM osm
     WHERE
     TRUE
@@ -4916,9 +4915,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/office'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/office'
     FROM osm
     WHERE
     TRUE
@@ -4927,9 +4926,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/pavilion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/pavilion'
     FROM osm
     WHERE
     TRUE
@@ -4938,9 +4937,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/public'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/public'
     FROM osm
     WHERE
     TRUE
@@ -4949,9 +4948,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/residential'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/residential'
     FROM osm
     WHERE
     TRUE
@@ -4960,9 +4959,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/retail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/retail'
     FROM osm
     WHERE
     TRUE
@@ -4971,9 +4970,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/roof'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/roof'
     FROM osm
     WHERE
     TRUE
@@ -4982,9 +4981,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/ruins'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/ruins'
     FROM osm
     WHERE
     TRUE
@@ -4993,9 +4992,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/school'
     FROM osm
     WHERE
     TRUE
@@ -5004,9 +5003,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/semidetached_house'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/semidetached_house'
     FROM osm
     WHERE
     TRUE
@@ -5015,9 +5014,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/service'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/service'
     FROM osm
     WHERE
     TRUE
@@ -5026,9 +5025,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/shed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/shed'
     FROM osm
     WHERE
     TRUE
@@ -5037,9 +5036,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/stable'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/stable'
     FROM osm
     WHERE
     TRUE
@@ -5048,9 +5047,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/stadium'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/stadium'
     FROM osm
     WHERE
     TRUE
@@ -5059,9 +5058,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/static_caravan'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/static_caravan'
     FROM osm
     WHERE
     TRUE
@@ -5070,9 +5069,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/sty'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/sty'
     FROM osm
     WHERE
     TRUE
@@ -5081,9 +5080,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/synagogue'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/synagogue'
     FROM osm
     WHERE
     TRUE
@@ -5092,9 +5091,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/temple'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/temple'
     FROM osm
     WHERE
     TRUE
@@ -5103,9 +5102,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/terrace'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/terrace'
     FROM osm
     WHERE
     TRUE
@@ -5114,9 +5113,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/transportation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/transportation'
     FROM osm
     WHERE
     TRUE
@@ -5125,9 +5124,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/university'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/university'
     FROM osm
     WHERE
     TRUE
@@ -5136,9 +5135,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'building/warehouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'building/warehouse'
     FROM osm
     WHERE
     TRUE
@@ -5147,9 +5146,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'cemetery/grave'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'cemetery/grave'
     FROM osm
     WHERE
     TRUE
@@ -5159,9 +5158,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'cemetery/sector'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'cemetery/sector'
     FROM osm
     WHERE
     TRUE
@@ -5171,9 +5170,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'club'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'club'
     FROM osm
     WHERE
     TRUE
@@ -5183,9 +5182,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'club/sport'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'club/sport'
     FROM osm
     WHERE
     TRUE
@@ -5195,9 +5194,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft'
     FROM osm
     WHERE
     TRUE
@@ -5207,9 +5206,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/locksmith'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/locksmith'
     FROM osm
     WHERE
     TRUE
@@ -5219,9 +5218,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/tailor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/tailor'
     FROM osm
     WHERE
     TRUE
@@ -5231,9 +5230,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/agricultural_engines'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/agricultural_engines'
     FROM osm
     WHERE
     TRUE
@@ -5243,9 +5242,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/basket_maker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/basket_maker'
     FROM osm
     WHERE
     TRUE
@@ -5255,9 +5254,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/beekeeper'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/beekeeper'
     FROM osm
     WHERE
     TRUE
@@ -5267,9 +5266,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/blacksmith'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/blacksmith'
     FROM osm
     WHERE
     TRUE
@@ -5279,9 +5278,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/boatbuilder'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/boatbuilder'
     FROM osm
     WHERE
     TRUE
@@ -5291,9 +5290,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/bookbinder'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/bookbinder'
     FROM osm
     WHERE
     TRUE
@@ -5303,9 +5302,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/brewery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/brewery'
     FROM osm
     WHERE
     TRUE
@@ -5315,9 +5314,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/carpenter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/carpenter'
     FROM osm
     WHERE
     TRUE
@@ -5327,9 +5326,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/carpet_layer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/carpet_layer'
     FROM osm
     WHERE
     TRUE
@@ -5339,9 +5338,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/caterer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/caterer'
     FROM osm
     WHERE
     TRUE
@@ -5351,9 +5350,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/chimney_sweeper'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/chimney_sweeper'
     FROM osm
     WHERE
     TRUE
@@ -5363,9 +5362,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/cleaning'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/cleaning'
     FROM osm
     WHERE
     TRUE
@@ -5375,9 +5374,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/clockmaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/clockmaker'
     FROM osm
     WHERE
     TRUE
@@ -5387,9 +5386,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/confectionery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/confectionery'
     FROM osm
     WHERE
     TRUE
@@ -5399,9 +5398,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/distillery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/distillery'
     FROM osm
     WHERE
     TRUE
@@ -5411,9 +5410,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/dressmaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/dressmaker'
     FROM osm
     WHERE
     TRUE
@@ -5423,9 +5422,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/electrician'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/electrician'
     FROM osm
     WHERE
     TRUE
@@ -5435,9 +5434,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/electronics_repair'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/electronics_repair'
     FROM osm
     WHERE
     TRUE
@@ -5447,9 +5446,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/floorer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/floorer'
     FROM osm
     WHERE
     TRUE
@@ -5459,9 +5458,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/gardener'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/gardener'
     FROM osm
     WHERE
     TRUE
@@ -5471,9 +5470,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/glaziery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/glaziery'
     FROM osm
     WHERE
     TRUE
@@ -5483,9 +5482,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/handicraft'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/handicraft'
     FROM osm
     WHERE
     TRUE
@@ -5495,9 +5494,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/hvac'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/hvac'
     FROM osm
     WHERE
     TRUE
@@ -5507,9 +5506,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/insulator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/insulator'
     FROM osm
     WHERE
     TRUE
@@ -5519,9 +5518,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/joiner'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/joiner'
     FROM osm
     WHERE
     TRUE
@@ -5531,9 +5530,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/key_cutter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/key_cutter'
     FROM osm
     WHERE
     TRUE
@@ -5543,9 +5542,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/metal_construction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/metal_construction'
     FROM osm
     WHERE
     TRUE
@@ -5555,9 +5554,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/painter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/painter'
     FROM osm
     WHERE
     TRUE
@@ -5567,9 +5566,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/parquet_layer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/parquet_layer'
     FROM osm
     WHERE
     TRUE
@@ -5579,9 +5578,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/photographer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/photographer'
     FROM osm
     WHERE
     TRUE
@@ -5591,9 +5590,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/photographic_laboratory'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/photographic_laboratory'
     FROM osm
     WHERE
     TRUE
@@ -5603,9 +5602,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/plasterer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/plasterer'
     FROM osm
     WHERE
     TRUE
@@ -5615,9 +5614,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/plumber'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/plumber'
     FROM osm
     WHERE
     TRUE
@@ -5627,9 +5626,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/pottery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/pottery'
     FROM osm
     WHERE
     TRUE
@@ -5639,9 +5638,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/rigger'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/rigger'
     FROM osm
     WHERE
     TRUE
@@ -5651,9 +5650,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/roofer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/roofer'
     FROM osm
     WHERE
     TRUE
@@ -5663,9 +5662,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/saddler'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/saddler'
     FROM osm
     WHERE
     TRUE
@@ -5675,9 +5674,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/sailmaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/sailmaker'
     FROM osm
     WHERE
     TRUE
@@ -5687,9 +5686,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/sawmill'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/sawmill'
     FROM osm
     WHERE
     TRUE
@@ -5699,9 +5698,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/scaffolder'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/scaffolder'
     FROM osm
     WHERE
     TRUE
@@ -5711,9 +5710,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/sculptor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/sculptor'
     FROM osm
     WHERE
     TRUE
@@ -5723,9 +5722,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/shoemaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/shoemaker'
     FROM osm
     WHERE
     TRUE
@@ -5735,9 +5734,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/signmaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/signmaker'
     FROM osm
     WHERE
     TRUE
@@ -5747,9 +5746,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/stonemason'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/stonemason'
     FROM osm
     WHERE
     TRUE
@@ -5759,9 +5758,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/tiler'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/tiler'
     FROM osm
     WHERE
     TRUE
@@ -5771,9 +5770,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/tinsmith'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/tinsmith'
     FROM osm
     WHERE
     TRUE
@@ -5783,9 +5782,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/upholsterer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/upholsterer'
     FROM osm
     WHERE
     TRUE
@@ -5795,9 +5794,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/watchmaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/watchmaker'
     FROM osm
     WHERE
     TRUE
@@ -5807,9 +5806,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/window_construction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/window_construction'
     FROM osm
     WHERE
     TRUE
@@ -5819,9 +5818,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'craft/winery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'craft/winery'
     FROM osm
     WHERE
     TRUE
@@ -5831,9 +5830,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'cycleway/asl'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'cycleway/asl'
     FROM osm
     WHERE
     TRUE
@@ -5842,9 +5841,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'demolished/building'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'demolished/building'
     FROM osm
     WHERE
     TRUE
@@ -5853,9 +5852,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'disc_golf/basket'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'disc_golf/basket'
     FROM osm
     WHERE
     TRUE
@@ -5864,9 +5863,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'disc_golf/hole'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'disc_golf/hole'
     FROM osm
     WHERE
     TRUE
@@ -5875,9 +5874,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'disc_golf/tee'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'disc_golf/tee'
     FROM osm
     WHERE
     TRUE
@@ -5886,9 +5885,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'disused/amenity'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'disused/amenity'
     FROM osm
     WHERE
     TRUE
@@ -5898,9 +5897,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'disused/railway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'disused/railway'
     FROM osm
     WHERE
     TRUE
@@ -5911,9 +5910,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'disused/shop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'disused/shop'
     FROM osm
     WHERE
     TRUE
@@ -5923,9 +5922,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/designated'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/designated'
     FROM osm
     WHERE
     TRUE
@@ -5934,9 +5933,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/destination'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/destination'
     FROM osm
     WHERE
     TRUE
@@ -5945,9 +5944,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/no'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/no'
     FROM osm
     WHERE
     TRUE
@@ -5956,9 +5955,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/official'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/official'
     FROM osm
     WHERE
     TRUE
@@ -5967,9 +5966,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/private'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/private'
     FROM osm
     WHERE
     TRUE
@@ -5978,9 +5977,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/yes'
     FROM osm
     WHERE
     TRUE
@@ -5989,9 +5988,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/ambulance_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/ambulance_station'
     FROM osm
     WHERE
     TRUE
@@ -6001,9 +6000,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/assembly_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/assembly_point'
     FROM osm
     WHERE
     TRUE
@@ -6013,9 +6012,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/defibrillator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/defibrillator'
     FROM osm
     WHERE
     TRUE
@@ -6024,9 +6023,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/fire_alarm'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/fire_alarm'
     FROM osm
     WHERE
     TRUE
@@ -6035,9 +6034,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/fire_extinguisher'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/fire_extinguisher'
     FROM osm
     WHERE
     TRUE
@@ -6046,9 +6045,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/fire_hose'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/fire_hose'
     FROM osm
     WHERE
     TRUE
@@ -6057,9 +6056,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/fire_hydrant'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/fire_hydrant'
     FROM osm
     WHERE
     TRUE
@@ -6068,9 +6067,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/first_aid_kit'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/first_aid_kit'
     FROM osm
     WHERE
     TRUE
@@ -6079,9 +6078,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/landing_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/landing_site'
     FROM osm
     WHERE
     TRUE
@@ -6091,9 +6090,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/life_ring'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/life_ring'
     FROM osm
     WHERE
     TRUE
@@ -6102,9 +6101,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/lifeboat_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/lifeboat_station'
     FROM osm
     WHERE
     TRUE
@@ -6114,9 +6113,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/lifeguard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/lifeguard'
     FROM osm
     WHERE
     TRUE
@@ -6126,9 +6125,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/mountain_rescue'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/mountain_rescue'
     FROM osm
     WHERE
     TRUE
@@ -6138,9 +6137,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/phone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/phone'
     FROM osm
     WHERE
     TRUE
@@ -6149,9 +6148,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/siren'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/siren'
     FROM osm
     WHERE
     TRUE
@@ -6160,9 +6159,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/water_reservoir_covered'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/water_reservoir_covered'
     FROM osm
     WHERE
     TRUE
@@ -6173,9 +6172,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/water_reservoir'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/water_reservoir'
     FROM osm
     WHERE
     TRUE
@@ -6187,9 +6186,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'emergency/water_tank'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'emergency/water_tank'
     FROM osm
     WHERE
     TRUE
@@ -6200,9 +6199,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'entrance'
     FROM osm
     WHERE
     TRUE
@@ -6211,9 +6210,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'entrance/emergency_ward_entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'entrance/emergency_ward_entrance'
     FROM osm
     WHERE
     TRUE
@@ -6222,9 +6221,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'entrance/emergency'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'entrance/emergency'
     FROM osm
     WHERE
     TRUE
@@ -6233,9 +6232,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'entrance/main'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'entrance/main'
     FROM osm
     WHERE
     TRUE
@@ -6244,9 +6243,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'ford'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'ford'
     FROM osm
     WHERE
     TRUE
@@ -6255,9 +6254,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/bunker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/bunker'
     FROM osm
     WHERE
     TRUE
@@ -6266,9 +6265,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/cartpath'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/cartpath'
     FROM osm
     WHERE
     TRUE
@@ -6277,9 +6276,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/clubhouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/clubhouse'
     FROM osm
     WHERE
     TRUE
@@ -6289,9 +6288,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/driving_range'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/driving_range'
     FROM osm
     WHERE
     TRUE
@@ -6300,9 +6299,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/fairway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/fairway'
     FROM osm
     WHERE
     TRUE
@@ -6311,9 +6310,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/green'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/green'
     FROM osm
     WHERE
     TRUE
@@ -6322,9 +6321,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/hole'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/hole'
     FROM osm
     WHERE
     TRUE
@@ -6333,9 +6332,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/lateral_water_hazard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/lateral_water_hazard'
     FROM osm
     WHERE
     TRUE
@@ -6344,9 +6343,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/path'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/path'
     FROM osm
     WHERE
     TRUE
@@ -6355,9 +6354,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/rough'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/rough'
     FROM osm
     WHERE
     TRUE
@@ -6366,9 +6365,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/tee'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/tee'
     FROM osm
     WHERE
     TRUE
@@ -6378,9 +6377,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'golf/water_hazard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'golf/water_hazard'
     FROM osm
     WHERE
     TRUE
@@ -6389,9 +6388,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare'
     FROM osm
     WHERE
     TRUE
@@ -6401,9 +6400,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/yes'
     FROM osm
     WHERE
     TRUE
@@ -6413,9 +6412,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/alternative'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/alternative'
     FROM osm
     WHERE
     TRUE
@@ -6425,9 +6424,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/alternative/chiropractic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/alternative/chiropractic'
     FROM osm
     WHERE
     TRUE
@@ -6438,9 +6437,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/audiologist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/audiologist'
     FROM osm
     WHERE
     TRUE
@@ -6450,9 +6449,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/birthing_center'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/birthing_center'
     FROM osm
     WHERE
     TRUE
@@ -6462,9 +6461,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/blood_donation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/blood_donation'
     FROM osm
     WHERE
     TRUE
@@ -6474,9 +6473,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/counselling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/counselling'
     FROM osm
     WHERE
     TRUE
@@ -6486,9 +6485,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/dentist/orthodontics'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/dentist/orthodontics'
     FROM osm
     WHERE
     TRUE
@@ -6499,9 +6498,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/hospice'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/hospice'
     FROM osm
     WHERE
     TRUE
@@ -6511,9 +6510,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/laboratory'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/laboratory'
     FROM osm
     WHERE
     TRUE
@@ -6523,9 +6522,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/midwife'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/midwife'
     FROM osm
     WHERE
     TRUE
@@ -6535,9 +6534,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/occupational_therapist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/occupational_therapist'
     FROM osm
     WHERE
     TRUE
@@ -6547,9 +6546,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/optometrist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/optometrist'
     FROM osm
     WHERE
     TRUE
@@ -6559,9 +6558,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/physiotherapist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/physiotherapist'
     FROM osm
     WHERE
     TRUE
@@ -6571,9 +6570,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/podiatrist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/podiatrist'
     FROM osm
     WHERE
     TRUE
@@ -6583,9 +6582,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/psychotherapist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/psychotherapist'
     FROM osm
     WHERE
     TRUE
@@ -6595,9 +6594,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/rehabilitation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/rehabilitation'
     FROM osm
     WHERE
     TRUE
@@ -6607,9 +6606,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/sample_collection'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/sample_collection'
     FROM osm
     WHERE
     TRUE
@@ -6619,9 +6618,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'healthcare/speech_therapist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'healthcare/speech_therapist'
     FROM osm
     WHERE
     TRUE
@@ -6631,9 +6630,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/bus_stop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/bus_stop'
     FROM osm
     WHERE
     TRUE
@@ -6642,9 +6641,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/crossing'
     FROM osm
     WHERE
     TRUE
@@ -6653,9 +6652,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/bridleway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/bridleway'
     FROM osm
     WHERE
     TRUE
@@ -6664,9 +6663,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/bus_guideway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/bus_guideway'
     FROM osm
     WHERE
     TRUE
@@ -6675,9 +6674,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/busway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/busway'
     FROM osm
     WHERE
     TRUE
@@ -6686,9 +6685,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/construction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/construction'
     FROM osm
     WHERE
     TRUE
@@ -6697,9 +6696,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/corridor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/corridor'
     FROM osm
     WHERE
     TRUE
@@ -6708,9 +6707,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/crossing/marked'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/crossing/marked'
     FROM osm
     WHERE
     TRUE
@@ -6720,9 +6719,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/crossing/zebra'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/crossing/zebra'
     FROM osm
     WHERE
     TRUE
@@ -6732,9 +6731,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/crossing/traffic_signals'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/crossing/traffic_signals'
     FROM osm
     WHERE
     TRUE
@@ -6744,9 +6743,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/crossing/uncontrolled'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/crossing/uncontrolled'
     FROM osm
     WHERE
     TRUE
@@ -6756,9 +6755,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/crossing/unmarked'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/crossing/unmarked'
     FROM osm
     WHERE
     TRUE
@@ -6768,9 +6767,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway'
     FROM osm
     WHERE
     TRUE
@@ -6779,9 +6778,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/crossing'
     FROM osm
     WHERE
     TRUE
@@ -6790,9 +6789,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/bicycle_foot'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/bicycle_foot'
     FROM osm
     WHERE
     TRUE
@@ -6802,9 +6801,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/crossing/marked'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/crossing/marked'
     FROM osm
     WHERE
     TRUE
@@ -6815,9 +6814,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/crossing/bicycle_foot'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/crossing/bicycle_foot'
     FROM osm
     WHERE
     TRUE
@@ -6828,9 +6827,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/crossing/traffic_signals'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/crossing/traffic_signals'
     FROM osm
     WHERE
     TRUE
@@ -6841,9 +6840,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/crossing/uncontrolled'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/crossing/uncontrolled'
     FROM osm
     WHERE
     TRUE
@@ -6854,9 +6853,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/crossing/unmarked'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/crossing/unmarked'
     FROM osm
     WHERE
     TRUE
@@ -6867,9 +6866,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/cycleway/moped_link-NL'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/cycleway/moped_link-NL'
     FROM osm
     WHERE
     TRUE
@@ -6880,9 +6879,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/elevator_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/elevator_line'
     FROM osm
     WHERE
     TRUE
@@ -6891,9 +6890,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/elevator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/elevator'
     FROM osm
     WHERE
     TRUE
@@ -6902,9 +6901,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/emergency_access_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/emergency_access_point'
     FROM osm
     WHERE
     TRUE
@@ -6913,9 +6912,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/emergency_bay'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/emergency_bay'
     FROM osm
     WHERE
     TRUE
@@ -6924,9 +6923,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/escape'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/escape'
     FROM osm
     WHERE
     TRUE
@@ -6935,9 +6934,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway'
     FROM osm
     WHERE
     TRUE
@@ -6946,9 +6945,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/crossing'
     FROM osm
     WHERE
     TRUE
@@ -6958,9 +6957,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/informal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/informal'
     FROM osm
     WHERE
     TRUE
@@ -6970,9 +6969,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/access_aisle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/access_aisle'
     FROM osm
     WHERE
     TRUE
@@ -6982,9 +6981,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/conveying'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/conveying'
     FROM osm
     WHERE
     TRUE
@@ -6994,9 +6993,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/crossing/marked'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/crossing/marked'
     FROM osm
     WHERE
     TRUE
@@ -7007,9 +7006,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/crossing/zebra'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/crossing/zebra'
     FROM osm
     WHERE
     TRUE
@@ -7020,9 +7019,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/crossing/traffic_signals'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/crossing/traffic_signals'
     FROM osm
     WHERE
     TRUE
@@ -7033,9 +7032,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/crossing/uncontrolled'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/crossing/uncontrolled'
     FROM osm
     WHERE
     TRUE
@@ -7046,9 +7045,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/crossing/unmarked'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/crossing/unmarked'
     FROM osm
     WHERE
     TRUE
@@ -7059,9 +7058,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/sidewalk'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/sidewalk'
     FROM osm
     WHERE
     TRUE
@@ -7070,9 +7069,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/footway/traffic_island'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/footway/traffic_island'
     FROM osm
     WHERE
     TRUE
@@ -7081,9 +7080,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/give_way'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/give_way'
     FROM osm
     WHERE
     TRUE
@@ -7092,9 +7091,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/living_street'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/living_street'
     FROM osm
     WHERE
     TRUE
@@ -7103,9 +7102,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/milestone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/milestone'
     FROM osm
     WHERE
     TRUE
@@ -7114,9 +7113,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/mini_roundabout'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/mini_roundabout'
     FROM osm
     WHERE
     TRUE
@@ -7125,9 +7124,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/motorway_junction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/motorway_junction'
     FROM osm
     WHERE
     TRUE
@@ -7136,9 +7135,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/motorway_link-US-CA'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/motorway_link-US-CA'
     FROM osm
     WHERE
     TRUE
@@ -7147,9 +7146,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/motorway_link'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/motorway_link'
     FROM osm
     WHERE
     TRUE
@@ -7158,9 +7157,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/motorway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/motorway'
     FROM osm
     WHERE
     TRUE
@@ -7169,9 +7168,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/passing_place'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/passing_place'
     FROM osm
     WHERE
     TRUE
@@ -7180,9 +7179,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/path'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/path'
     FROM osm
     WHERE
     TRUE
@@ -7191,9 +7190,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/path/boardwalk'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/path/boardwalk'
     FROM osm
     WHERE
     TRUE
@@ -7203,9 +7202,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/path/informal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/path/informal'
     FROM osm
     WHERE
     TRUE
@@ -7215,9 +7214,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/pedestrian_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/pedestrian_area'
     FROM osm
     WHERE
     TRUE
@@ -7226,9 +7225,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/pedestrian_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/pedestrian_line'
     FROM osm
     WHERE
     TRUE
@@ -7237,9 +7236,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/primary_link-US-CA'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/primary_link-US-CA'
     FROM osm
     WHERE
     TRUE
@@ -7248,9 +7247,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/primary_link'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/primary_link'
     FROM osm
     WHERE
     TRUE
@@ -7259,9 +7258,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/primary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/primary'
     FROM osm
     WHERE
     TRUE
@@ -7270,9 +7269,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/raceway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/raceway'
     FROM osm
     WHERE
     TRUE
@@ -7282,9 +7281,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/raceway/karting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/raceway/karting'
     FROM osm
     WHERE
     TRUE
@@ -7295,9 +7294,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/raceway/motocross'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/raceway/motocross'
     FROM osm
     WHERE
     TRUE
@@ -7308,9 +7307,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/residential'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/residential'
     FROM osm
     WHERE
     TRUE
@@ -7319,9 +7318,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/rest_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/rest_area'
     FROM osm
     WHERE
     TRUE
@@ -7331,9 +7330,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/road'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/road'
     FROM osm
     WHERE
     TRUE
@@ -7342,9 +7341,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/road/bridge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/road/bridge'
     FROM osm
     WHERE
     TRUE
@@ -7354,9 +7353,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/secondary_link'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/secondary_link'
     FROM osm
     WHERE
     TRUE
@@ -7365,9 +7364,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/secondary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/secondary'
     FROM osm
     WHERE
     TRUE
@@ -7376,9 +7375,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service_area'
     FROM osm
     WHERE
     TRUE
@@ -7387,9 +7386,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service'
     FROM osm
     WHERE
     TRUE
@@ -7398,9 +7397,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service/alley'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service/alley'
     FROM osm
     WHERE
     TRUE
@@ -7410,9 +7409,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service/drive-through'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service/drive-through'
     FROM osm
     WHERE
     TRUE
@@ -7422,9 +7421,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service/driveway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service/driveway'
     FROM osm
     WHERE
     TRUE
@@ -7434,9 +7433,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service/emergency_access'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service/emergency_access'
     FROM osm
     WHERE
     TRUE
@@ -7446,9 +7445,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/service/parking_aisle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/service/parking_aisle'
     FROM osm
     WHERE
     TRUE
@@ -7458,9 +7457,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/services'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/services'
     FROM osm
     WHERE
     TRUE
@@ -7470,9 +7469,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/speed_camera'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/speed_camera'
     FROM osm
     WHERE
     TRUE
@@ -7481,9 +7480,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/speed_display'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/speed_display'
     FROM osm
     WHERE
     TRUE
@@ -7492,9 +7491,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/steps'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/steps'
     FROM osm
     WHERE
     TRUE
@@ -7503,9 +7502,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/steps/conveying'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/steps/conveying'
     FROM osm
     WHERE
     TRUE
@@ -7515,9 +7514,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/stop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/stop'
     FROM osm
     WHERE
     TRUE
@@ -7526,9 +7525,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/street_lamp'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/street_lamp'
     FROM osm
     WHERE
     TRUE
@@ -7537,9 +7536,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/tertiary_link'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/tertiary_link'
     FROM osm
     WHERE
     TRUE
@@ -7548,9 +7547,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/tertiary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/tertiary'
     FROM osm
     WHERE
     TRUE
@@ -7559,9 +7558,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/toll_gantry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/toll_gantry'
     FROM osm
     WHERE
     TRUE
@@ -7570,9 +7569,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/track'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/track'
     FROM osm
     WHERE
     TRUE
@@ -7581,9 +7580,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/traffic_mirror'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/traffic_mirror'
     FROM osm
     WHERE
     TRUE
@@ -7592,9 +7591,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/traffic_signals'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/traffic_signals'
     FROM osm
     WHERE
     TRUE
@@ -7603,9 +7602,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/trailhead'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/trailhead'
     FROM osm
     WHERE
     TRUE
@@ -7614,9 +7613,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/trunk_link-US-CA'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/trunk_link-US-CA'
     FROM osm
     WHERE
     TRUE
@@ -7625,9 +7624,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/trunk_link'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/trunk_link'
     FROM osm
     WHERE
     TRUE
@@ -7636,9 +7635,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/trunk'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/trunk'
     FROM osm
     WHERE
     TRUE
@@ -7647,9 +7646,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/turning_circle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/turning_circle'
     FROM osm
     WHERE
     TRUE
@@ -7658,9 +7657,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/turning_loop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/turning_loop'
     FROM osm
     WHERE
     TRUE
@@ -7669,9 +7668,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'highway/unclassified'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'highway/unclassified'
     FROM osm
     WHERE
     TRUE
@@ -7680,9 +7679,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic'
     FROM osm
     WHERE
     TRUE
@@ -7693,9 +7692,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/archaeological_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/archaeological_site'
     FROM osm
     WHERE
     TRUE
@@ -7705,9 +7704,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/boundary_stone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/boundary_stone'
     FROM osm
     WHERE
     TRUE
@@ -7716,9 +7715,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/building'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/building'
     FROM osm
     WHERE
     TRUE
@@ -7727,9 +7726,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/castle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/castle'
     FROM osm
     WHERE
     TRUE
@@ -7739,9 +7738,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/castle/fortress'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/castle/fortress'
     FROM osm
     WHERE
     TRUE
@@ -7752,9 +7751,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/castle/palace'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/castle/palace'
     FROM osm
     WHERE
     TRUE
@@ -7765,9 +7764,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/castle/stately'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/castle/stately'
     FROM osm
     WHERE
     TRUE
@@ -7778,9 +7777,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/city_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/city_gate'
     FROM osm
     WHERE
     TRUE
@@ -7790,9 +7789,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/fort'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/fort'
     FROM osm
     WHERE
     TRUE
@@ -7802,9 +7801,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/manor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/manor'
     FROM osm
     WHERE
     TRUE
@@ -7814,9 +7813,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/memorial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/memorial'
     FROM osm
     WHERE
     TRUE
@@ -7826,9 +7825,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/memorial/plaque'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/memorial/plaque'
     FROM osm
     WHERE
     TRUE
@@ -7838,9 +7837,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/monument'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/monument'
     FROM osm
     WHERE
     TRUE
@@ -7850,9 +7849,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/pillory'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/pillory'
     FROM osm
     WHERE
     TRUE
@@ -7862,9 +7861,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/ruins'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/ruins'
     FROM osm
     WHERE
     TRUE
@@ -7874,9 +7873,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/tomb'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/tomb'
     FROM osm
     WHERE
     TRUE
@@ -7886,9 +7885,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/wayside_cross'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/wayside_cross'
     FROM osm
     WHERE
     TRUE
@@ -7898,9 +7897,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/wayside_shrine'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/wayside_shrine'
     FROM osm
     WHERE
     TRUE
@@ -7910,9 +7909,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'historic/wreck'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'historic/wreck'
     FROM osm
     WHERE
     TRUE
@@ -7922,9 +7921,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/corridor_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/corridor_line'
     FROM osm
     WHERE
     TRUE
@@ -7933,9 +7932,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/area'
     FROM osm
     WHERE
     TRUE
@@ -7944,9 +7943,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/corridor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/corridor'
     FROM osm
     WHERE
     TRUE
@@ -7955,9 +7954,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/door'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/door'
     FROM osm
     WHERE
     TRUE
@@ -7966,9 +7965,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/elevator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/elevator'
     FROM osm
     WHERE
     TRUE
@@ -7978,9 +7977,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/room'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/room'
     FROM osm
     WHERE
     TRUE
@@ -7989,9 +7988,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/stairs'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/stairs'
     FROM osm
     WHERE
     TRUE
@@ -8001,9 +8000,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'indoor/wall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'indoor/wall'
     FROM osm
     WHERE
     TRUE
@@ -8012,9 +8011,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'internet_access/wlan'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'internet_access/wlan'
     FROM osm
     WHERE
     TRUE
@@ -8024,9 +8023,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'junction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'junction'
     FROM osm
     WHERE
     TRUE
@@ -8036,9 +8035,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/basin'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/basin'
     FROM osm
     WHERE
     TRUE
@@ -8047,9 +8046,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/churchyard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/churchyard'
     FROM osm
     WHERE
     TRUE
@@ -8058,9 +8057,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/farm'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/farm'
     FROM osm
     WHERE
     TRUE
@@ -8070,9 +8069,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/pond'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/pond'
     FROM osm
     WHERE
     TRUE
@@ -8081,9 +8080,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/reservoir'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/reservoir'
     FROM osm
     WHERE
     TRUE
@@ -8092,9 +8091,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/allotments'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/allotments'
     FROM osm
     WHERE
     TRUE
@@ -8103,9 +8102,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/aquaculture'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/aquaculture'
     FROM osm
     WHERE
     TRUE
@@ -8114,9 +8113,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/brownfield'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/brownfield'
     FROM osm
     WHERE
     TRUE
@@ -8125,9 +8124,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/cemetery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/cemetery'
     FROM osm
     WHERE
     TRUE
@@ -8136,9 +8135,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/commercial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/commercial'
     FROM osm
     WHERE
     TRUE
@@ -8147,9 +8146,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/construction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/construction'
     FROM osm
     WHERE
     TRUE
@@ -8158,9 +8157,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/education'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/education'
     FROM osm
     WHERE
     TRUE
@@ -8169,9 +8168,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/farmland'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/farmland'
     FROM osm
     WHERE
     TRUE
@@ -8180,9 +8179,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/farmyard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/farmyard'
     FROM osm
     WHERE
     TRUE
@@ -8191,9 +8190,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/flowerbed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/flowerbed'
     FROM osm
     WHERE
     TRUE
@@ -8202,9 +8201,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/forest'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/forest'
     FROM osm
     WHERE
     TRUE
@@ -8213,9 +8212,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/garages'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/garages'
     FROM osm
     WHERE
     TRUE
@@ -8224,9 +8223,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/grass'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/grass'
     FROM osm
     WHERE
     TRUE
@@ -8235,9 +8234,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/greenfield'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/greenfield'
     FROM osm
     WHERE
     TRUE
@@ -8246,9 +8245,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/greenhouse_horticulture'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/greenhouse_horticulture'
     FROM osm
     WHERE
     TRUE
@@ -8257,9 +8256,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/harbour'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/harbour'
     FROM osm
     WHERE
     TRUE
@@ -8268,9 +8267,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/industrial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/industrial'
     FROM osm
     WHERE
     TRUE
@@ -8279,9 +8278,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/industrial/brewery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/industrial/brewery'
     FROM osm
     WHERE
     TRUE
@@ -8291,9 +8290,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/industrial/scrap_yard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/industrial/scrap_yard'
     FROM osm
     WHERE
     TRUE
@@ -8303,9 +8302,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/industrial/slaughterhouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/industrial/slaughterhouse'
     FROM osm
     WHERE
     TRUE
@@ -8315,9 +8314,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/landfill'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/landfill'
     FROM osm
     WHERE
     TRUE
@@ -8326,9 +8325,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/meadow'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/meadow'
     FROM osm
     WHERE
     TRUE
@@ -8337,9 +8336,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military'
     FROM osm
     WHERE
     TRUE
@@ -8348,9 +8347,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/airfield'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/airfield'
     FROM osm
     WHERE
     TRUE
@@ -8360,9 +8359,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/barracks'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/barracks'
     FROM osm
     WHERE
     TRUE
@@ -8372,9 +8371,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/base'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/base'
     FROM osm
     WHERE
     TRUE
@@ -8384,9 +8383,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/base/navy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/base/navy'
     FROM osm
     WHERE
     TRUE
@@ -8397,9 +8396,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/danger_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/danger_area'
     FROM osm
     WHERE
     TRUE
@@ -8409,9 +8408,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/obstacle_course'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/obstacle_course'
     FROM osm
     WHERE
     TRUE
@@ -8421,9 +8420,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/range'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/range'
     FROM osm
     WHERE
     TRUE
@@ -8433,9 +8432,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/military/training_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/military/training_area'
     FROM osm
     WHERE
     TRUE
@@ -8445,9 +8444,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/orchard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/orchard'
     FROM osm
     WHERE
     TRUE
@@ -8456,9 +8455,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/plant_nursery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/plant_nursery'
     FROM osm
     WHERE
     TRUE
@@ -8467,9 +8466,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/quarry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/quarry'
     FROM osm
     WHERE
     TRUE
@@ -8479,9 +8478,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/railway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/railway'
     FROM osm
     WHERE
     TRUE
@@ -8490,9 +8489,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/recreation_ground'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/recreation_ground'
     FROM osm
     WHERE
     TRUE
@@ -8501,9 +8500,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/religious'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/religious'
     FROM osm
     WHERE
     TRUE
@@ -8512,9 +8511,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/residential'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/residential'
     FROM osm
     WHERE
     TRUE
@@ -8523,9 +8522,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/residential/apartments'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/residential/apartments'
     FROM osm
     WHERE
     TRUE
@@ -8535,9 +8534,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/retail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/retail'
     FROM osm
     WHERE
     TRUE
@@ -8546,9 +8545,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/salt_pond'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/salt_pond'
     FROM osm
     WHERE
     TRUE
@@ -8557,9 +8556,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/vineyard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/vineyard'
     FROM osm
     WHERE
     TRUE
@@ -8568,9 +8567,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'landuse/winter_sports'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'landuse/winter_sports'
     FROM osm
     WHERE
     TRUE
@@ -8579,9 +8578,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/adult_gaming_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/adult_gaming_centre'
     FROM osm
     WHERE
     TRUE
@@ -8591,9 +8590,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/amusement_arcade'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/amusement_arcade'
     FROM osm
     WHERE
     TRUE
@@ -8603,9 +8602,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/bandstand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/bandstand'
     FROM osm
     WHERE
     TRUE
@@ -8615,9 +8614,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/beach_resort'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/beach_resort'
     FROM osm
     WHERE
     TRUE
@@ -8627,9 +8626,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/bird_hide'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/bird_hide'
     FROM osm
     WHERE
     TRUE
@@ -8639,9 +8638,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/bleachers'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/bleachers'
     FROM osm
     WHERE
     TRUE
@@ -8650,9 +8649,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/bowling_alley'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/bowling_alley'
     FROM osm
     WHERE
     TRUE
@@ -8662,9 +8661,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/common'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/common'
     FROM osm
     WHERE
     TRUE
@@ -8674,9 +8673,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/dance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/dance'
     FROM osm
     WHERE
     TRUE
@@ -8686,9 +8685,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/dancing_school'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/dancing_school'
     FROM osm
     WHERE
     TRUE
@@ -8699,9 +8698,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/disc_golf_course'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/disc_golf_course'
     FROM osm
     WHERE
     TRUE
@@ -8711,9 +8710,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/dog_park'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/dog_park'
     FROM osm
     WHERE
     TRUE
@@ -8723,9 +8722,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/escape_game'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/escape_game'
     FROM osm
     WHERE
     TRUE
@@ -8735,9 +8734,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/firepit'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/firepit'
     FROM osm
     WHERE
     TRUE
@@ -8747,9 +8746,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fishing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fishing'
     FROM osm
     WHERE
     TRUE
@@ -8759,9 +8758,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_centre'
     FROM osm
     WHERE
     TRUE
@@ -8771,9 +8770,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_centre/yoga'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_centre/yoga'
     FROM osm
     WHERE
     TRUE
@@ -8784,9 +8783,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station'
     FROM osm
     WHERE
     TRUE
@@ -8796,9 +8795,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/balance_beam'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/balance_beam'
     FROM osm
     WHERE
     TRUE
@@ -8809,9 +8808,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/box'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/box'
     FROM osm
     WHERE
     TRUE
@@ -8822,9 +8821,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/horizontal_bar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/horizontal_bar'
     FROM osm
     WHERE
     TRUE
@@ -8835,9 +8834,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/horizontal_ladder'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/horizontal_ladder'
     FROM osm
     WHERE
     TRUE
@@ -8848,9 +8847,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/hyperextension'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/hyperextension'
     FROM osm
     WHERE
     TRUE
@@ -8861,9 +8860,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/parallel_bars'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/parallel_bars'
     FROM osm
     WHERE
     TRUE
@@ -8874,9 +8873,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/push-up'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/push-up'
     FROM osm
     WHERE
     TRUE
@@ -8887,9 +8886,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/rings'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/rings'
     FROM osm
     WHERE
     TRUE
@@ -8900,9 +8899,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/sign'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/sign'
     FROM osm
     WHERE
     TRUE
@@ -8913,9 +8912,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/sit-up'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/sit-up'
     FROM osm
     WHERE
     TRUE
@@ -8926,9 +8925,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/fitness_station/stairs'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/fitness_station/stairs'
     FROM osm
     WHERE
     TRUE
@@ -8939,9 +8938,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/garden'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/garden'
     FROM osm
     WHERE
     TRUE
@@ -8951,9 +8950,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/garden/botanical'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/garden/botanical'
     FROM osm
     WHERE
     TRUE
@@ -8964,9 +8963,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/garden/community'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/garden/community'
     FROM osm
     WHERE
     TRUE
@@ -8977,9 +8976,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/golf_course'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/golf_course'
     FROM osm
     WHERE
     TRUE
@@ -8989,9 +8988,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/hackerspace'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/hackerspace'
     FROM osm
     WHERE
     TRUE
@@ -9001,9 +9000,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/horse_riding'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/horse_riding'
     FROM osm
     WHERE
     TRUE
@@ -9013,9 +9012,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/ice_rink'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/ice_rink'
     FROM osm
     WHERE
     TRUE
@@ -9025,9 +9024,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/indoor_play'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/indoor_play'
     FROM osm
     WHERE
     TRUE
@@ -9037,9 +9036,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/marina'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/marina'
     FROM osm
     WHERE
     TRUE
@@ -9049,9 +9048,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/miniature_golf'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/miniature_golf'
     FROM osm
     WHERE
     TRUE
@@ -9061,9 +9060,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/nature_reserve'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/nature_reserve'
     FROM osm
     WHERE
     TRUE
@@ -9073,9 +9072,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/outdoor_seating'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/outdoor_seating'
     FROM osm
     WHERE
     TRUE
@@ -9085,9 +9084,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/park'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/park'
     FROM osm
     WHERE
     TRUE
@@ -9097,9 +9096,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/picnic_table'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/picnic_table'
     FROM osm
     WHERE
     TRUE
@@ -9108,9 +9107,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/picnic_table/chess'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/picnic_table/chess'
     FROM osm
     WHERE
     TRUE
@@ -9120,9 +9119,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch'
     FROM osm
     WHERE
     TRUE
@@ -9132,9 +9131,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/american_football'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/american_football'
     FROM osm
     WHERE
     TRUE
@@ -9145,9 +9144,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/american_handball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/american_handball'
     FROM osm
     WHERE
     TRUE
@@ -9158,9 +9157,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/archery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/archery'
     FROM osm
     WHERE
     TRUE
@@ -9171,9 +9170,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/australian_football'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/australian_football'
     FROM osm
     WHERE
     TRUE
@@ -9184,9 +9183,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/badminton'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/badminton'
     FROM osm
     WHERE
     TRUE
@@ -9197,9 +9196,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/baseball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/baseball'
     FROM osm
     WHERE
     TRUE
@@ -9210,9 +9209,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/basketball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/basketball'
     FROM osm
     WHERE
     TRUE
@@ -9223,9 +9222,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/beachvolleyball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/beachvolleyball'
     FROM osm
     WHERE
     TRUE
@@ -9236,9 +9235,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/boules'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/boules'
     FROM osm
     WHERE
     TRUE
@@ -9249,9 +9248,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/bowls'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/bowls'
     FROM osm
     WHERE
     TRUE
@@ -9262,9 +9261,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/chess'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/chess'
     FROM osm
     WHERE
     TRUE
@@ -9275,9 +9274,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/cricket'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/cricket'
     FROM osm
     WHERE
     TRUE
@@ -9288,9 +9287,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/equestrian'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/equestrian'
     FROM osm
     WHERE
     TRUE
@@ -9301,9 +9300,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/field_hockey'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/field_hockey'
     FROM osm
     WHERE
     TRUE
@@ -9314,9 +9313,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/four_square'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/four_square'
     FROM osm
     WHERE
     TRUE
@@ -9327,9 +9326,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/funnel_ball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/funnel_ball'
     FROM osm
     WHERE
     TRUE
@@ -9340,9 +9339,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/futsal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/futsal'
     FROM osm
     WHERE
     TRUE
@@ -9353,9 +9352,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/gaga'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/gaga'
     FROM osm
     WHERE
     TRUE
@@ -9366,9 +9365,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/handball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/handball'
     FROM osm
     WHERE
     TRUE
@@ -9379,9 +9378,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/horseshoes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/horseshoes'
     FROM osm
     WHERE
     TRUE
@@ -9392,9 +9391,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/netball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/netball'
     FROM osm
     WHERE
     TRUE
@@ -9405,9 +9404,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/padel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/padel'
     FROM osm
     WHERE
     TRUE
@@ -9418,9 +9417,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/paintball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/paintball'
     FROM osm
     WHERE
     TRUE
@@ -9431,9 +9430,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/pickleball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/pickleball'
     FROM osm
     WHERE
     TRUE
@@ -9444,9 +9443,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/rugby_league'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/rugby_league'
     FROM osm
     WHERE
     TRUE
@@ -9457,9 +9456,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/rugby_union'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/rugby_union'
     FROM osm
     WHERE
     TRUE
@@ -9470,9 +9469,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/shooting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/shooting'
     FROM osm
     WHERE
     TRUE
@@ -9483,9 +9482,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/shuffleboard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/shuffleboard'
     FROM osm
     WHERE
     TRUE
@@ -9496,9 +9495,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/skateboard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/skateboard'
     FROM osm
     WHERE
     TRUE
@@ -9509,9 +9508,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/soccer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/soccer'
     FROM osm
     WHERE
     TRUE
@@ -9522,9 +9521,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/softball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/softball'
     FROM osm
     WHERE
     TRUE
@@ -9535,9 +9534,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/table_soccer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/table_soccer'
     FROM osm
     WHERE
     TRUE
@@ -9548,9 +9547,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/table_tennis'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/table_tennis'
     FROM osm
     WHERE
     TRUE
@@ -9561,9 +9560,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/tennis'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/tennis'
     FROM osm
     WHERE
     TRUE
@@ -9574,9 +9573,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/tetherball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/tetherball'
     FROM osm
     WHERE
     TRUE
@@ -9587,9 +9586,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/pitch/volleyball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/pitch/volleyball'
     FROM osm
     WHERE
     TRUE
@@ -9600,9 +9599,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/playground'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/playground'
     FROM osm
     WHERE
     TRUE
@@ -9612,9 +9611,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/playground/indoor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/playground/indoor'
     FROM osm
     WHERE
     TRUE
@@ -9625,9 +9624,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/resort'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/resort'
     FROM osm
     WHERE
     TRUE
@@ -9637,9 +9636,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sauna'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sauna'
     FROM osm
     WHERE
     TRUE
@@ -9649,9 +9648,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/slipway_drivable'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/slipway_drivable'
     FROM osm
     WHERE
     TRUE
@@ -9661,9 +9660,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/slipway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/slipway'
     FROM osm
     WHERE
     TRUE
@@ -9673,9 +9672,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sports_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sports_centre'
     FROM osm
     WHERE
     TRUE
@@ -9685,9 +9684,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sports_centre/climbing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sports_centre/climbing'
     FROM osm
     WHERE
     TRUE
@@ -9698,9 +9697,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sports_centre/horse_racing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sports_centre/horse_racing'
     FROM osm
     WHERE
     TRUE
@@ -9711,9 +9710,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sports_centre/shooting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sports_centre/shooting'
     FROM osm
     WHERE
     TRUE
@@ -9724,9 +9723,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sports_centre/swimming'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sports_centre/swimming'
     FROM osm
     WHERE
     TRUE
@@ -9737,9 +9736,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/sports_hall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/sports_hall'
     FROM osm
     WHERE
     TRUE
@@ -9749,9 +9748,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/stadium'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/stadium'
     FROM osm
     WHERE
     TRUE
@@ -9761,9 +9760,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/swimming_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/swimming_area'
     FROM osm
     WHERE
     TRUE
@@ -9772,9 +9771,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/swimming_pool'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/swimming_pool'
     FROM osm
     WHERE
     TRUE
@@ -9784,9 +9783,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/track'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/track'
     FROM osm
     WHERE
     TRUE
@@ -9797,9 +9796,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/track/cycling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/track/cycling'
     FROM osm
     WHERE
     TRUE
@@ -9811,9 +9810,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/track/horse_racing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/track/horse_racing'
     FROM osm
     WHERE
     TRUE
@@ -9825,9 +9824,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/track/running'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/track/running'
     FROM osm
     WHERE
     TRUE
@@ -9839,9 +9838,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/trampoline_park'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/trampoline_park'
     FROM osm
     WHERE
     TRUE
@@ -9851,9 +9850,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'leisure/water_park'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'leisure/water_park'
     FROM osm
     WHERE
     TRUE
@@ -9863,9 +9862,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'line'
     FROM osm
     WHERE
     TRUE
@@ -9873,9 +9872,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/courtyard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/courtyard'
     FROM osm
     WHERE
     TRUE
@@ -9884,9 +9883,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/yes'
     FROM osm
     WHERE
     TRUE
@@ -9897,9 +9896,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/adit'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/adit'
     FROM osm
     WHERE
     TRUE
@@ -9909,9 +9908,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/antenna'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/antenna'
     FROM osm
     WHERE
     TRUE
@@ -9920,9 +9919,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/beacon'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/beacon'
     FROM osm
     WHERE
     TRUE
@@ -9932,9 +9931,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/beehive'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/beehive'
     FROM osm
     WHERE
     TRUE
@@ -9944,9 +9943,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/breakwater'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/breakwater'
     FROM osm
     WHERE
     TRUE
@@ -9956,9 +9955,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/bridge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/bridge'
     FROM osm
     WHERE
     TRUE
@@ -9967,9 +9966,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/bunker_silo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/bunker_silo'
     FROM osm
     WHERE
     TRUE
@@ -9979,9 +9978,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/cairn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/cairn'
     FROM osm
     WHERE
     TRUE
@@ -9991,9 +9990,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/carpet_hanger'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/carpet_hanger'
     FROM osm
     WHERE
     TRUE
@@ -10003,9 +10002,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/chimney'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/chimney'
     FROM osm
     WHERE
     TRUE
@@ -10015,9 +10014,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/clearcut'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/clearcut'
     FROM osm
     WHERE
     TRUE
@@ -10026,9 +10025,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/compass_rose'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/compass_rose'
     FROM osm
     WHERE
     TRUE
@@ -10038,9 +10037,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/crane'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/crane'
     FROM osm
     WHERE
     TRUE
@@ -10051,9 +10050,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/crane/gantry_crane'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/crane/gantry_crane'
     FROM osm
     WHERE
     TRUE
@@ -10064,9 +10063,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/crane/portal_crane'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/crane/portal_crane'
     FROM osm
     WHERE
     TRUE
@@ -10077,9 +10076,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/cross'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/cross'
     FROM osm
     WHERE
     TRUE
@@ -10088,9 +10087,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/cutline'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/cutline'
     FROM osm
     WHERE
     TRUE
@@ -10099,9 +10098,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/dovecote'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/dovecote'
     FROM osm
     WHERE
     TRUE
@@ -10111,9 +10110,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/dyke'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/dyke'
     FROM osm
     WHERE
     TRUE
@@ -10122,9 +10121,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/embankment'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/embankment'
     FROM osm
     WHERE
     TRUE
@@ -10133,9 +10132,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/flagpole'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/flagpole'
     FROM osm
     WHERE
     TRUE
@@ -10144,9 +10143,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/gantry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/gantry'
     FROM osm
     WHERE
     TRUE
@@ -10155,9 +10154,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/gasometer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/gasometer'
     FROM osm
     WHERE
     TRUE
@@ -10167,9 +10166,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/goods_conveyor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/goods_conveyor'
     FROM osm
     WHERE
     TRUE
@@ -10178,9 +10177,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/groyne'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/groyne'
     FROM osm
     WHERE
     TRUE
@@ -10190,9 +10189,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/lighthouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/lighthouse'
     FROM osm
     WHERE
     TRUE
@@ -10202,9 +10201,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole'
     FROM osm
     WHERE
     TRUE
@@ -10213,9 +10212,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole/drain'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole/drain'
     FROM osm
     WHERE
     TRUE
@@ -10224,9 +10223,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole/gas'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole/gas'
     FROM osm
     WHERE
     TRUE
@@ -10235,9 +10234,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole/power'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole/power'
     FROM osm
     WHERE
     TRUE
@@ -10246,9 +10245,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole/sewer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole/sewer'
     FROM osm
     WHERE
     TRUE
@@ -10257,9 +10256,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole/telecom'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole/telecom'
     FROM osm
     WHERE
     TRUE
@@ -10268,9 +10267,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/manhole/water'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/manhole/water'
     FROM osm
     WHERE
     TRUE
@@ -10279,9 +10278,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mast'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mast'
     FROM osm
     WHERE
     TRUE
@@ -10290,9 +10289,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mast/communication'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mast/communication'
     FROM osm
     WHERE
     TRUE
@@ -10302,9 +10301,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mast/communication/mobile_phone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mast/communication/mobile_phone'
     FROM osm
     WHERE
     TRUE
@@ -10315,9 +10314,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mast/communication/radio'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mast/communication/radio'
     FROM osm
     WHERE
     TRUE
@@ -10328,9 +10327,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mast/communication/television'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mast/communication/television'
     FROM osm
     WHERE
     TRUE
@@ -10341,9 +10340,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mast/lighting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mast/lighting'
     FROM osm
     WHERE
     TRUE
@@ -10353,9 +10352,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/mineshaft'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/mineshaft'
     FROM osm
     WHERE
     TRUE
@@ -10365,9 +10364,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/monitoring_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/monitoring_station'
     FROM osm
     WHERE
     TRUE
@@ -10377,9 +10376,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/obelisk'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/obelisk'
     FROM osm
     WHERE
     TRUE
@@ -10389,9 +10388,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/observatory'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/observatory'
     FROM osm
     WHERE
     TRUE
@@ -10401,9 +10400,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/petroleum_well'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/petroleum_well'
     FROM osm
     WHERE
     TRUE
@@ -10412,9 +10411,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/pier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/pier'
     FROM osm
     WHERE
     TRUE
@@ -10424,9 +10423,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/pier/floating'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/pier/floating'
     FROM osm
     WHERE
     TRUE
@@ -10437,9 +10436,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/pipeline'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/pipeline'
     FROM osm
     WHERE
     TRUE
@@ -10448,9 +10447,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/pipeline/underground'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/pipeline/underground'
     FROM osm
     WHERE
     TRUE
@@ -10460,9 +10459,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/planter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/planter'
     FROM osm
     WHERE
     TRUE
@@ -10472,9 +10471,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/pumping_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/pumping_station'
     FROM osm
     WHERE
     TRUE
@@ -10484,9 +10483,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/reservoir_covered'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/reservoir_covered'
     FROM osm
     WHERE
     TRUE
@@ -10496,9 +10495,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/silo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/silo'
     FROM osm
     WHERE
     TRUE
@@ -10508,9 +10507,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/storage_tank'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/storage_tank'
     FROM osm
     WHERE
     TRUE
@@ -10520,9 +10519,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/storage_tank/water'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/storage_tank/water'
     FROM osm
     WHERE
     TRUE
@@ -10533,9 +10532,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/street_cabinet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/street_cabinet'
     FROM osm
     WHERE
     TRUE
@@ -10545,9 +10544,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/surveillance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/surveillance'
     FROM osm
     WHERE
     TRUE
@@ -10556,9 +10555,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/surveillance/camera'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/surveillance/camera'
     FROM osm
     WHERE
     TRUE
@@ -10568,9 +10567,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/survey_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/survey_point'
     FROM osm
     WHERE
     TRUE
@@ -10579,9 +10578,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tailings_pond'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tailings_pond'
     FROM osm
     WHERE
     TRUE
@@ -10590,9 +10589,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/torii'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/torii'
     FROM osm
     WHERE
     TRUE
@@ -10602,9 +10601,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower'
     FROM osm
     WHERE
     TRUE
@@ -10614,9 +10613,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/bell_tower'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/bell_tower'
     FROM osm
     WHERE
     TRUE
@@ -10627,9 +10626,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/communication'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/communication'
     FROM osm
     WHERE
     TRUE
@@ -10640,9 +10639,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/cooling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/cooling'
     FROM osm
     WHERE
     TRUE
@@ -10652,9 +10651,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/defensive'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/defensive'
     FROM osm
     WHERE
     TRUE
@@ -10665,9 +10664,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/diving'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/diving'
     FROM osm
     WHERE
     TRUE
@@ -10678,9 +10677,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/minaret'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/minaret'
     FROM osm
     WHERE
     TRUE
@@ -10691,9 +10690,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/observation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/observation'
     FROM osm
     WHERE
     TRUE
@@ -10704,9 +10703,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tower/pagoda'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tower/pagoda'
     FROM osm
     WHERE
     TRUE
@@ -10717,9 +10716,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/tunnel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/tunnel'
     FROM osm
     WHERE
     TRUE
@@ -10728,9 +10727,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/utility_pole'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/utility_pole'
     FROM osm
     WHERE
     TRUE
@@ -10739,9 +10738,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/video_wall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/video_wall'
     FROM osm
     WHERE
     TRUE
@@ -10751,9 +10750,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/wastewater_plant'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/wastewater_plant'
     FROM osm
     WHERE
     TRUE
@@ -10763,9 +10762,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/water_tap'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/water_tap'
     FROM osm
     WHERE
     TRUE
@@ -10774,9 +10773,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/water_tower'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/water_tower'
     FROM osm
     WHERE
     TRUE
@@ -10786,9 +10785,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/water_well'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/water_well'
     FROM osm
     WHERE
     TRUE
@@ -10798,9 +10797,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/water_works'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/water_works'
     FROM osm
     WHERE
     TRUE
@@ -10810,9 +10809,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/watermill'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/watermill'
     FROM osm
     WHERE
     TRUE
@@ -10822,9 +10821,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/windmill'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/windmill'
     FROM osm
     WHERE
     TRUE
@@ -10834,9 +10833,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/windpump'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/windpump'
     FROM osm
     WHERE
     TRUE
@@ -10845,9 +10844,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/works'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/works'
     FROM osm
     WHERE
     TRUE
@@ -10857,9 +10856,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'man_made/works/brewery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'man_made/works/brewery'
     FROM osm
     WHERE
     TRUE
@@ -10870,9 +10869,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'marker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'marker'
     FROM osm
     WHERE
     TRUE
@@ -10881,9 +10880,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'marker/utility'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'marker/utility'
     FROM osm
     WHERE
     TRUE
@@ -10893,9 +10892,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'marker/utility/power'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'marker/utility/power'
     FROM osm
     WHERE
     TRUE
@@ -10905,9 +10904,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'military/bunker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'military/bunker'
     FROM osm
     WHERE
     TRUE
@@ -10917,9 +10916,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'military/checkpoint'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'military/checkpoint'
     FROM osm
     WHERE
     TRUE
@@ -10929,9 +10928,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'military/nuclear_explosion_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'military/nuclear_explosion_site'
     FROM osm
     WHERE
     TRUE
@@ -10941,9 +10940,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'military/office'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'military/office'
     FROM osm
     WHERE
     TRUE
@@ -10953,9 +10952,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'military/trench'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'military/trench'
     FROM osm
     WHERE
     TRUE
@@ -10965,9 +10964,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/bare_rock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/bare_rock'
     FROM osm
     WHERE
     TRUE
@@ -10976,9 +10975,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/bay'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/bay'
     FROM osm
     WHERE
     TRUE
@@ -10989,9 +10988,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/beach'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/beach'
     FROM osm
     WHERE
     TRUE
@@ -11001,9 +11000,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/cape'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/cape'
     FROM osm
     WHERE
     TRUE
@@ -11012,9 +11011,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/cave_entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/cave_entrance'
     FROM osm
     WHERE
     TRUE
@@ -11024,9 +11023,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/cliff'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/cliff'
     FROM osm
     WHERE
     TRUE
@@ -11037,9 +11036,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/coastline'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/coastline'
     FROM osm
     WHERE
     TRUE
@@ -11048,9 +11047,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/fell'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/fell'
     FROM osm
     WHERE
     TRUE
@@ -11059,9 +11058,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/geyser'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/geyser'
     FROM osm
     WHERE
     TRUE
@@ -11070,9 +11069,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/glacier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/glacier'
     FROM osm
     WHERE
     TRUE
@@ -11081,9 +11080,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/grassland'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/grassland'
     FROM osm
     WHERE
     TRUE
@@ -11092,9 +11091,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/heath'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/heath'
     FROM osm
     WHERE
     TRUE
@@ -11103,9 +11102,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/hot_spring'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/hot_spring'
     FROM osm
     WHERE
     TRUE
@@ -11115,9 +11114,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/mud'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/mud'
     FROM osm
     WHERE
     TRUE
@@ -11126,9 +11125,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/peak'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/peak'
     FROM osm
     WHERE
     TRUE
@@ -11137,9 +11136,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/reef'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/reef'
     FROM osm
     WHERE
     TRUE
@@ -11149,9 +11148,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/ridge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/ridge'
     FROM osm
     WHERE
     TRUE
@@ -11160,9 +11159,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/rock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/rock'
     FROM osm
     WHERE
     TRUE
@@ -11172,9 +11171,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/saddle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/saddle'
     FROM osm
     WHERE
     TRUE
@@ -11183,9 +11182,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/sand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/sand'
     FROM osm
     WHERE
     TRUE
@@ -11194,9 +11193,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/scree'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/scree'
     FROM osm
     WHERE
     TRUE
@@ -11205,9 +11204,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/scrub'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/scrub'
     FROM osm
     WHERE
     TRUE
@@ -11216,9 +11215,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/shingle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/shingle'
     FROM osm
     WHERE
     TRUE
@@ -11227,9 +11226,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/shrub'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/shrub'
     FROM osm
     WHERE
     TRUE
@@ -11238,9 +11237,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/spring'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/spring'
     FROM osm
     WHERE
     TRUE
@@ -11250,9 +11249,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/stone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/stone'
     FROM osm
     WHERE
     TRUE
@@ -11262,9 +11261,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/strait'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/strait'
     FROM osm
     WHERE
     TRUE
@@ -11275,9 +11274,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/tree_row'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/tree_row'
     FROM osm
     WHERE
     TRUE
@@ -11286,9 +11285,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/tree_stump'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/tree_stump'
     FROM osm
     WHERE
     TRUE
@@ -11298,9 +11297,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/tree'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/tree'
     FROM osm
     WHERE
     TRUE
@@ -11309,9 +11308,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/valley'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/valley'
     FROM osm
     WHERE
     TRUE
@@ -11321,9 +11320,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/volcano'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/volcano'
     FROM osm
     WHERE
     TRUE
@@ -11332,9 +11331,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water'
     FROM osm
     WHERE
     TRUE
@@ -11343,9 +11342,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/basin'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/basin'
     FROM osm
     WHERE
     TRUE
@@ -11355,9 +11354,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/canal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/canal'
     FROM osm
     WHERE
     TRUE
@@ -11367,9 +11366,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/lake'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/lake'
     FROM osm
     WHERE
     TRUE
@@ -11379,9 +11378,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/moat'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/moat'
     FROM osm
     WHERE
     TRUE
@@ -11391,9 +11390,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/oxbow'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/oxbow'
     FROM osm
     WHERE
     TRUE
@@ -11403,9 +11402,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/pond'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/pond'
     FROM osm
     WHERE
     TRUE
@@ -11415,9 +11414,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/reservoir'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/reservoir'
     FROM osm
     WHERE
     TRUE
@@ -11427,9 +11426,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/river'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/river'
     FROM osm
     WHERE
     TRUE
@@ -11439,9 +11438,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/stream'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/stream'
     FROM osm
     WHERE
     TRUE
@@ -11451,9 +11450,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/water/wastewater'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/water/wastewater'
     FROM osm
     WHERE
     TRUE
@@ -11463,9 +11462,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland'
     FROM osm
     WHERE
     TRUE
@@ -11475,9 +11474,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/bog'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/bog'
     FROM osm
     WHERE
     TRUE
@@ -11487,9 +11486,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/fen'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/fen'
     FROM osm
     WHERE
     TRUE
@@ -11499,9 +11498,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/mangrove'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/mangrove'
     FROM osm
     WHERE
     TRUE
@@ -11511,9 +11510,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/marsh'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/marsh'
     FROM osm
     WHERE
     TRUE
@@ -11523,9 +11522,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/reedbed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/reedbed'
     FROM osm
     WHERE
     TRUE
@@ -11535,9 +11534,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/saltmarsh'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/saltmarsh'
     FROM osm
     WHERE
     TRUE
@@ -11547,9 +11546,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/string_bog'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/string_bog'
     FROM osm
     WHERE
     TRUE
@@ -11559,9 +11558,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/swamp'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/swamp'
     FROM osm
     WHERE
     TRUE
@@ -11571,9 +11570,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/tidalflat'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/tidalflat'
     FROM osm
     WHERE
     TRUE
@@ -11583,9 +11582,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wetland/wet_meadow'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wetland/wet_meadow'
     FROM osm
     WHERE
     TRUE
@@ -11595,9 +11594,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'natural/wood'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'natural/wood'
     FROM osm
     WHERE
     TRUE
@@ -11607,9 +11606,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'network/type/node_network-DE-NL-BE-LU'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'network/type/node_network-DE-NL-BE-LU'
     FROM osm
     WHERE
     TRUE
@@ -11618,9 +11617,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'noexit/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'noexit/yes'
     FROM osm
     WHERE
     TRUE
@@ -11629,9 +11628,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office'
     FROM osm
     WHERE
     TRUE
@@ -11641,9 +11640,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/administrative'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/administrative'
     FROM osm
     WHERE
     TRUE
@@ -11653,9 +11652,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/physician'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/physician'
     FROM osm
     WHERE
     TRUE
@@ -11665,9 +11664,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/travel_agent'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/travel_agent'
     FROM osm
     WHERE
     TRUE
@@ -11677,9 +11676,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/yes'
     FROM osm
     WHERE
     TRUE
@@ -11689,9 +11688,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/accountant'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/accountant'
     FROM osm
     WHERE
     TRUE
@@ -11701,9 +11700,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/adoption_agency'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/adoption_agency'
     FROM osm
     WHERE
     TRUE
@@ -11713,9 +11712,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/advertising_agency'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/advertising_agency'
     FROM osm
     WHERE
     TRUE
@@ -11725,9 +11724,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/architect'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/architect'
     FROM osm
     WHERE
     TRUE
@@ -11737,9 +11736,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/association'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/association'
     FROM osm
     WHERE
     TRUE
@@ -11749,9 +11748,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/bail_bond_agent-US-PH'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/bail_bond_agent-US-PH'
     FROM osm
     WHERE
     TRUE
@@ -11761,9 +11760,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/charity'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/charity'
     FROM osm
     WHERE
     TRUE
@@ -11773,9 +11772,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/company'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/company'
     FROM osm
     WHERE
     TRUE
@@ -11785,9 +11784,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/consulting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/consulting'
     FROM osm
     WHERE
     TRUE
@@ -11797,9 +11796,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/coworking'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/coworking'
     FROM osm
     WHERE
     TRUE
@@ -11809,9 +11808,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/diplomatic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/diplomatic'
     FROM osm
     WHERE
     TRUE
@@ -11821,9 +11820,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/diplomatic/consulate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/diplomatic/consulate'
     FROM osm
     WHERE
     TRUE
@@ -11834,9 +11833,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/diplomatic/embassy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/diplomatic/embassy'
     FROM osm
     WHERE
     TRUE
@@ -11847,9 +11846,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/diplomatic/liaison'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/diplomatic/liaison'
     FROM osm
     WHERE
     TRUE
@@ -11860,9 +11859,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/educational_institution'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/educational_institution'
     FROM osm
     WHERE
     TRUE
@@ -11872,9 +11871,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/employment_agency'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/employment_agency'
     FROM osm
     WHERE
     TRUE
@@ -11884,9 +11883,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/energy_supplier'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/energy_supplier'
     FROM osm
     WHERE
     TRUE
@@ -11896,9 +11895,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/estate_agent'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/estate_agent'
     FROM osm
     WHERE
     TRUE
@@ -11908,9 +11907,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/financial_advisor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/financial_advisor'
     FROM osm
     WHERE
     TRUE
@@ -11920,9 +11919,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/financial'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/financial'
     FROM osm
     WHERE
     TRUE
@@ -11932,9 +11931,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/forestry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/forestry'
     FROM osm
     WHERE
     TRUE
@@ -11944,9 +11943,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/foundation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/foundation'
     FROM osm
     WHERE
     TRUE
@@ -11956,9 +11955,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/government'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/government'
     FROM osm
     WHERE
     TRUE
@@ -11968,9 +11967,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/government/prosecutor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/government/prosecutor'
     FROM osm
     WHERE
     TRUE
@@ -11981,9 +11980,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/government/register_office'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/government/register_office'
     FROM osm
     WHERE
     TRUE
@@ -11994,9 +11993,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/government/tax'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/government/tax'
     FROM osm
     WHERE
     TRUE
@@ -12007,9 +12006,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/guide'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/guide'
     FROM osm
     WHERE
     TRUE
@@ -12019,9 +12018,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/insurance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/insurance'
     FROM osm
     WHERE
     TRUE
@@ -12031,9 +12030,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/it'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/it'
     FROM osm
     WHERE
     TRUE
@@ -12043,9 +12042,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/lawyer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/lawyer'
     FROM osm
     WHERE
     TRUE
@@ -12055,9 +12054,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/lawyer/notary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/lawyer/notary'
     FROM osm
     WHERE
     TRUE
@@ -12068,9 +12067,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/moving_company'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/moving_company'
     FROM osm
     WHERE
     TRUE
@@ -12080,9 +12079,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/newspaper'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/newspaper'
     FROM osm
     WHERE
     TRUE
@@ -12092,9 +12091,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/ngo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/ngo'
     FROM osm
     WHERE
     TRUE
@@ -12104,9 +12103,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/notary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/notary'
     FROM osm
     WHERE
     TRUE
@@ -12116,9 +12115,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/political_party'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/political_party'
     FROM osm
     WHERE
     TRUE
@@ -12128,9 +12127,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/private_investigator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/private_investigator'
     FROM osm
     WHERE
     TRUE
@@ -12140,9 +12139,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/property_management'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/property_management'
     FROM osm
     WHERE
     TRUE
@@ -12152,9 +12151,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/quango'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/quango'
     FROM osm
     WHERE
     TRUE
@@ -12164,9 +12163,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/religion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/religion'
     FROM osm
     WHERE
     TRUE
@@ -12176,9 +12175,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/research'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/research'
     FROM osm
     WHERE
     TRUE
@@ -12188,9 +12187,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/security'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/security'
     FROM osm
     WHERE
     TRUE
@@ -12200,9 +12199,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/surveyor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/surveyor'
     FROM osm
     WHERE
     TRUE
@@ -12212,9 +12211,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/tax_advisor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/tax_advisor'
     FROM osm
     WHERE
     TRUE
@@ -12224,9 +12223,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/telecommunication'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/telecommunication'
     FROM osm
     WHERE
     TRUE
@@ -12236,9 +12235,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/therapist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/therapist'
     FROM osm
     WHERE
     TRUE
@@ -12248,9 +12247,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/union'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/union'
     FROM osm
     WHERE
     TRUE
@@ -12260,9 +12259,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'office/water_utility'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'office/water_utility'
     FROM osm
     WHERE
     TRUE
@@ -12272,9 +12271,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'pipeline/substation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'pipeline/substation'
     FROM osm
     WHERE
     TRUE
@@ -12284,9 +12283,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'pipeline/valve'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'pipeline/valve'
     FROM osm
     WHERE
     TRUE
@@ -12295,9 +12294,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/downhill'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/downhill'
     FROM osm
     WHERE
     TRUE
@@ -12307,9 +12306,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/downhill/halfpipe'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/downhill/halfpipe'
     FROM osm
     WHERE
     TRUE
@@ -12320,9 +12319,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/hike'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/hike'
     FROM osm
     WHERE
     TRUE
@@ -12332,9 +12331,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/ice_skate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/ice_skate'
     FROM osm
     WHERE
     TRUE
@@ -12344,9 +12343,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/nordic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/nordic'
     FROM osm
     WHERE
     TRUE
@@ -12356,9 +12355,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/piste'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/piste'
     FROM osm
     WHERE
     TRUE
@@ -12368,9 +12367,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/skitour'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/skitour'
     FROM osm
     WHERE
     TRUE
@@ -12380,9 +12379,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/sled'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/sled'
     FROM osm
     WHERE
     TRUE
@@ -12392,9 +12391,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'piste/sleigh'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'piste/sleigh'
     FROM osm
     WHERE
     TRUE
@@ -12404,9 +12403,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/farm'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/farm'
     FROM osm
     WHERE
     TRUE
@@ -12416,9 +12415,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/city_block'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/city_block'
     FROM osm
     WHERE
     TRUE
@@ -12428,9 +12427,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/city'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/city'
     FROM osm
     WHERE
     TRUE
@@ -12440,9 +12439,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/hamlet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/hamlet'
     FROM osm
     WHERE
     TRUE
@@ -12452,9 +12451,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/island'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/island'
     FROM osm
     WHERE
     TRUE
@@ -12464,9 +12463,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/islet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/islet'
     FROM osm
     WHERE
     TRUE
@@ -12476,9 +12475,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/isolated_dwelling'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/isolated_dwelling'
     FROM osm
     WHERE
     TRUE
@@ -12488,9 +12487,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/locality'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/locality'
     FROM osm
     WHERE
     TRUE
@@ -12500,9 +12499,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/neighbourhood'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/neighbourhood'
     FROM osm
     WHERE
     TRUE
@@ -12512,9 +12511,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/plot'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/plot'
     FROM osm
     WHERE
     TRUE
@@ -12524,9 +12523,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/quarter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/quarter'
     FROM osm
     WHERE
     TRUE
@@ -12536,9 +12535,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/square'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/square'
     FROM osm
     WHERE
     TRUE
@@ -12548,9 +12547,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/suburb'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/suburb'
     FROM osm
     WHERE
     TRUE
@@ -12560,9 +12559,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/town'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/town'
     FROM osm
     WHERE
     TRUE
@@ -12572,9 +12571,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'place/village'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'place/village'
     FROM osm
     WHERE
     TRUE
@@ -12584,9 +12583,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/activitypanel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/activitypanel'
     FROM osm
     WHERE
     TRUE
@@ -12597,9 +12596,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/aerialrotator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/aerialrotator'
     FROM osm
     WHERE
     TRUE
@@ -12608,9 +12607,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/balancebeam'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/balancebeam'
     FROM osm
     WHERE
     TRUE
@@ -12620,9 +12619,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/basketrotator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/basketrotator'
     FROM osm
     WHERE
     TRUE
@@ -12631,9 +12630,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/basketswing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/basketswing'
     FROM osm
     WHERE
     TRUE
@@ -12644,9 +12643,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/bridge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/bridge'
     FROM osm
     WHERE
     TRUE
@@ -12657,9 +12656,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/climbingframe'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/climbingframe'
     FROM osm
     WHERE
     TRUE
@@ -12669,9 +12668,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/climbingwall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/climbingwall'
     FROM osm
     WHERE
     TRUE
@@ -12682,9 +12681,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/cushion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/cushion'
     FROM osm
     WHERE
     TRUE
@@ -12694,9 +12693,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/funnel_ball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/funnel_ball'
     FROM osm
     WHERE
     TRUE
@@ -12705,9 +12704,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/hopscotch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/hopscotch'
     FROM osm
     WHERE
     TRUE
@@ -12718,9 +12717,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/horizontal_bar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/horizontal_bar'
     FROM osm
     WHERE
     TRUE
@@ -12731,9 +12730,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/map'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/map'
     FROM osm
     WHERE
     TRUE
@@ -12743,9 +12742,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/playhouse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/playhouse'
     FROM osm
     WHERE
     TRUE
@@ -12755,9 +12754,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/roundabout'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/roundabout'
     FROM osm
     WHERE
     TRUE
@@ -12767,9 +12766,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/sandpit'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/sandpit'
     FROM osm
     WHERE
     TRUE
@@ -12779,9 +12778,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/seesaw'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/seesaw'
     FROM osm
     WHERE
     TRUE
@@ -12792,9 +12791,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/sledding'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/sledding'
     FROM osm
     WHERE
     TRUE
@@ -12803,9 +12802,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/slide'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/slide'
     FROM osm
     WHERE
     TRUE
@@ -12816,9 +12815,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/splash_pad'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/splash_pad'
     FROM osm
     WHERE
     TRUE
@@ -12828,9 +12827,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/springy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/springy'
     FROM osm
     WHERE
     TRUE
@@ -12839,9 +12838,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/structure'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/structure'
     FROM osm
     WHERE
     TRUE
@@ -12852,9 +12851,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/swing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/swing'
     FROM osm
     WHERE
     TRUE
@@ -12865,9 +12864,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/teenshelter'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/teenshelter'
     FROM osm
     WHERE
     TRUE
@@ -12877,9 +12876,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/tetherball'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/tetherball'
     FROM osm
     WHERE
     TRUE
@@ -12888,9 +12887,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/trampoline'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/trampoline'
     FROM osm
     WHERE
     TRUE
@@ -12900,9 +12899,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/tunnel_tube'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/tunnel_tube'
     FROM osm
     WHERE
     TRUE
@@ -12913,9 +12912,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/water'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/water'
     FROM osm
     WHERE
     TRUE
@@ -12926,9 +12925,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'playground/zipwire'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'playground/zipwire'
     FROM osm
     WHERE
     TRUE
@@ -12938,9 +12937,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'point'
     FROM osm
     WHERE
     TRUE
@@ -12948,9 +12947,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'police/checkpoint'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'police/checkpoint'
     FROM osm
     WHERE
     TRUE
@@ -12960,9 +12959,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'polling_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'polling_station'
     FROM osm
     WHERE
     TRUE
@@ -12972,9 +12971,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/cable'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/cable'
     FROM osm
     WHERE
     TRUE
@@ -12983,9 +12982,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/cable/underground'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/cable/underground'
     FROM osm
     WHERE
     TRUE
@@ -12995,9 +12994,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/catenary_mast'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/catenary_mast'
     FROM osm
     WHERE
     TRUE
@@ -13006,9 +13005,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator'
     FROM osm
     WHERE
     TRUE
@@ -13018,9 +13017,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator/method/photovoltaic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator/method/photovoltaic'
     FROM osm
     WHERE
     TRUE
@@ -13031,9 +13030,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator/method/photovoltaic/building/roof'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator/method/photovoltaic/building/roof'
     FROM osm
     WHERE
     TRUE
@@ -13045,9 +13044,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator/method/photovoltaic/location/roof'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator/method/photovoltaic/location/roof'
     FROM osm
     WHERE
     TRUE
@@ -13059,9 +13058,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator/source/hydro'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator/source/hydro'
     FROM osm
     WHERE
     TRUE
@@ -13072,9 +13071,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator/source/nuclear'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator/source/nuclear'
     FROM osm
     WHERE
     TRUE
@@ -13086,9 +13085,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/generator/source/wind'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/generator/source/wind'
     FROM osm
     WHERE
     TRUE
@@ -13099,9 +13098,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/line'
     FROM osm
     WHERE
     TRUE
@@ -13110,9 +13109,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/minor_line'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/minor_line'
     FROM osm
     WHERE
     TRUE
@@ -13121,9 +13120,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant'
     FROM osm
     WHERE
     TRUE
@@ -13132,9 +13131,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/coal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/coal'
     FROM osm
     WHERE
     TRUE
@@ -13144,9 +13143,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/gas'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/gas'
     FROM osm
     WHERE
     TRUE
@@ -13156,9 +13155,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/hydro'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/hydro'
     FROM osm
     WHERE
     TRUE
@@ -13168,9 +13167,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/method/photovoltaic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/method/photovoltaic'
     FROM osm
     WHERE
     TRUE
@@ -13181,9 +13180,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/nuclear'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/nuclear'
     FROM osm
     WHERE
     TRUE
@@ -13193,9 +13192,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/oil'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/oil'
     FROM osm
     WHERE
     TRUE
@@ -13205,9 +13204,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/solar'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/solar'
     FROM osm
     WHERE
     TRUE
@@ -13217,9 +13216,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/waste'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/waste'
     FROM osm
     WHERE
     TRUE
@@ -13229,9 +13228,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/plant/source/wind'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/plant/source/wind'
     FROM osm
     WHERE
     TRUE
@@ -13241,9 +13240,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/pole'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/pole'
     FROM osm
     WHERE
     TRUE
@@ -13252,9 +13251,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/portal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/portal'
     FROM osm
     WHERE
     TRUE
@@ -13264,9 +13263,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/substation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/substation'
     FROM osm
     WHERE
     TRUE
@@ -13276,9 +13275,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/switch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/switch'
     FROM osm
     WHERE
     TRUE
@@ -13287,9 +13286,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/tower'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/tower'
     FROM osm
     WHERE
     TRUE
@@ -13298,9 +13297,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'power/transformer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'power/transformer'
     FROM osm
     WHERE
     TRUE
@@ -13309,9 +13308,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform_point'
     FROM osm
     WHERE
     TRUE
@@ -13320,9 +13319,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform'
     FROM osm
     WHERE
     TRUE
@@ -13332,9 +13331,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/aerialway_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/aerialway_point'
     FROM osm
     WHERE
     TRUE
@@ -13344,9 +13343,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/ferry_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/ferry_point'
     FROM osm
     WHERE
     TRUE
@@ -13356,9 +13355,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/light_rail_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/light_rail_point'
     FROM osm
     WHERE
     TRUE
@@ -13368,9 +13367,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/monorail_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/monorail_point'
     FROM osm
     WHERE
     TRUE
@@ -13380,9 +13379,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/subway_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/subway_point'
     FROM osm
     WHERE
     TRUE
@@ -13392,9 +13391,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/train_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/train_point'
     FROM osm
     WHERE
     TRUE
@@ -13404,9 +13403,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/aerialway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/aerialway'
     FROM osm
     WHERE
     TRUE
@@ -13417,9 +13416,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/bus_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/bus_point'
     FROM osm
     WHERE
     TRUE
@@ -13429,9 +13428,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/bus_tram_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/bus_tram_point'
     FROM osm
     WHERE
     TRUE
@@ -13442,9 +13441,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/bus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/bus'
     FROM osm
     WHERE
     TRUE
@@ -13455,9 +13454,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/ferry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/ferry'
     FROM osm
     WHERE
     TRUE
@@ -13468,9 +13467,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/light_rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/light_rail'
     FROM osm
     WHERE
     TRUE
@@ -13481,9 +13480,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/monorail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/monorail'
     FROM osm
     WHERE
     TRUE
@@ -13494,9 +13493,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/subway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/subway'
     FROM osm
     WHERE
     TRUE
@@ -13507,9 +13506,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/train'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/train'
     FROM osm
     WHERE
     TRUE
@@ -13520,9 +13519,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/tram_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/tram_point'
     FROM osm
     WHERE
     TRUE
@@ -13532,9 +13531,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/tram'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/tram'
     FROM osm
     WHERE
     TRUE
@@ -13545,9 +13544,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/trolleybus_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/trolleybus_point'
     FROM osm
     WHERE
     TRUE
@@ -13557,9 +13556,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/platform/trolleybus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/platform/trolleybus'
     FROM osm
     WHERE
     TRUE
@@ -13570,9 +13569,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_aerialway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_aerialway'
     FROM osm
     WHERE
     TRUE
@@ -13582,9 +13581,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_bus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_bus'
     FROM osm
     WHERE
     TRUE
@@ -13595,9 +13594,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_ferry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_ferry'
     FROM osm
     WHERE
     TRUE
@@ -13608,9 +13607,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_light_rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_light_rail'
     FROM osm
     WHERE
     TRUE
@@ -13621,9 +13620,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_monorail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_monorail'
     FROM osm
     WHERE
     TRUE
@@ -13634,9 +13633,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_subway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_subway'
     FROM osm
     WHERE
     TRUE
@@ -13647,9 +13646,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_train_halt'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_train_halt'
     FROM osm
     WHERE
     TRUE
@@ -13661,9 +13660,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_train'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_train'
     FROM osm
     WHERE
     TRUE
@@ -13674,9 +13673,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_tram'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_tram'
     FROM osm
     WHERE
     TRUE
@@ -13687,9 +13686,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station_trolleybus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station_trolleybus'
     FROM osm
     WHERE
     TRUE
@@ -13700,9 +13699,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/station'
     FROM osm
     WHERE
     TRUE
@@ -13712,9 +13711,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_area'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_area'
     FROM osm
     WHERE
     TRUE
@@ -13724,9 +13723,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_aerialway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_aerialway'
     FROM osm
     WHERE
     TRUE
@@ -13736,9 +13735,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_bus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_bus'
     FROM osm
     WHERE
     TRUE
@@ -13748,9 +13747,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_ferry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_ferry'
     FROM osm
     WHERE
     TRUE
@@ -13760,9 +13759,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_light_rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_light_rail'
     FROM osm
     WHERE
     TRUE
@@ -13772,9 +13771,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_monorail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_monorail'
     FROM osm
     WHERE
     TRUE
@@ -13784,9 +13783,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_subway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_subway'
     FROM osm
     WHERE
     TRUE
@@ -13796,9 +13795,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_train'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_train'
     FROM osm
     WHERE
     TRUE
@@ -13808,9 +13807,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_tram'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_tram'
     FROM osm
     WHERE
     TRUE
@@ -13820,9 +13819,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position_trolleybus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position_trolleybus'
     FROM osm
     WHERE
     TRUE
@@ -13832,9 +13831,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'public_transport/stop_position'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'public_transport/stop_position'
     FROM osm
     WHERE
     TRUE
@@ -13843,9 +13842,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/halt'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/halt'
     FROM osm
     WHERE
     TRUE
@@ -13854,9 +13853,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/platform'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/platform'
     FROM osm
     WHERE
     TRUE
@@ -13866,9 +13865,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/station'
     FROM osm
     WHERE
     TRUE
@@ -13878,9 +13877,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/tram_stop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/tram_stop'
     FROM osm
     WHERE
     TRUE
@@ -13889,9 +13888,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/abandoned'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/abandoned'
     FROM osm
     WHERE
     TRUE
@@ -13900,9 +13899,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/buffer_stop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/buffer_stop'
     FROM osm
     WHERE
     TRUE
@@ -13911,9 +13910,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/construction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/construction'
     FROM osm
     WHERE
     TRUE
@@ -13922,9 +13921,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/crossing'
     FROM osm
     WHERE
     TRUE
@@ -13933,9 +13932,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/derail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/derail'
     FROM osm
     WHERE
     TRUE
@@ -13944,9 +13943,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/disused'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/disused'
     FROM osm
     WHERE
     TRUE
@@ -13955,9 +13954,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/funicular'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/funicular'
     FROM osm
     WHERE
     TRUE
@@ -13966,9 +13965,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/level_crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/level_crossing'
     FROM osm
     WHERE
     TRUE
@@ -13977,9 +13976,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/light_rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/light_rail'
     FROM osm
     WHERE
     TRUE
@@ -13988,9 +13987,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/milestone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/milestone'
     FROM osm
     WHERE
     TRUE
@@ -13999,9 +13998,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/miniature'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/miniature'
     FROM osm
     WHERE
     TRUE
@@ -14010,9 +14009,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/monorail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/monorail'
     FROM osm
     WHERE
     TRUE
@@ -14021,9 +14020,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/monorail/hanging'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/monorail/hanging'
     FROM osm
     WHERE
     TRUE
@@ -14033,9 +14032,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/narrow_gauge'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/narrow_gauge'
     FROM osm
     WHERE
     TRUE
@@ -14044,9 +14043,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/preserved'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/preserved'
     FROM osm
     WHERE
     TRUE
@@ -14056,9 +14055,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/rail'
     FROM osm
     WHERE
     TRUE
@@ -14067,9 +14066,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/rail/highspeed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/rail/highspeed'
     FROM osm
     WHERE
     TRUE
@@ -14079,9 +14078,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/railway_crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/railway_crossing'
     FROM osm
     WHERE
     TRUE
@@ -14090,9 +14089,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/signal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/signal'
     FROM osm
     WHERE
     TRUE
@@ -14101,9 +14100,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/subway_entrance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/subway_entrance'
     FROM osm
     WHERE
     TRUE
@@ -14112,9 +14111,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/subway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/subway'
     FROM osm
     WHERE
     TRUE
@@ -14123,9 +14122,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/switch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/switch'
     FROM osm
     WHERE
     TRUE
@@ -14134,9 +14133,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/train_wash'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/train_wash'
     FROM osm
     WHERE
     TRUE
@@ -14146,9 +14145,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/tram_crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/tram_crossing'
     FROM osm
     WHERE
     TRUE
@@ -14157,9 +14156,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/tram_level_crossing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/tram_level_crossing'
     FROM osm
     WHERE
     TRUE
@@ -14168,9 +14167,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/tram'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/tram'
     FROM osm
     WHERE
     TRUE
@@ -14179,9 +14178,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'railway/yard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'railway/yard'
     FROM osm
     WHERE
     TRUE
@@ -14190,9 +14189,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'relation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'relation'
     FROM osm
     WHERE
     TRUE
@@ -14200,9 +14199,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'route/ferry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'route/ferry'
     FROM osm
     WHERE
     TRUE
@@ -14211,9 +14210,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark/beacon_isolated_danger'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark/beacon_isolated_danger'
     FROM osm
     WHERE
     TRUE
@@ -14222,9 +14221,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark/beacon_lateral'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark/beacon_lateral'
     FROM osm
     WHERE
     TRUE
@@ -14233,9 +14232,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark/buoy_lateral'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark/buoy_lateral'
     FROM osm
     WHERE
     TRUE
@@ -14244,9 +14243,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark/buoy_lateral/green'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark/buoy_lateral/green'
     FROM osm
     WHERE
     TRUE
@@ -14256,9 +14255,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark/buoy_lateral/red'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark/buoy_lateral/red'
     FROM osm
     WHERE
     TRUE
@@ -14268,9 +14267,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'seamark/mooring'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'seamark/mooring'
     FROM osm
     WHERE
     TRUE
@@ -14279,9 +14278,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop'
     FROM osm
     WHERE
     TRUE
@@ -14291,9 +14290,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/boutique'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/boutique'
     FROM osm
     WHERE
     TRUE
@@ -14303,9 +14302,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/fashion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/fashion'
     FROM osm
     WHERE
     TRUE
@@ -14315,9 +14314,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/vacant'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/vacant'
     FROM osm
     WHERE
     TRUE
@@ -14327,9 +14326,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/yes'
     FROM osm
     WHERE
     TRUE
@@ -14339,9 +14338,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/agrarian'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/agrarian'
     FROM osm
     WHERE
     TRUE
@@ -14351,9 +14350,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/alcohol'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/alcohol'
     FROM osm
     WHERE
     TRUE
@@ -14363,9 +14362,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/anime'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/anime'
     FROM osm
     WHERE
     TRUE
@@ -14375,9 +14374,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/antiques'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/antiques'
     FROM osm
     WHERE
     TRUE
@@ -14387,9 +14386,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/appliance'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/appliance'
     FROM osm
     WHERE
     TRUE
@@ -14399,9 +14398,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/art'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/art'
     FROM osm
     WHERE
     TRUE
@@ -14411,9 +14410,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/baby_goods'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/baby_goods'
     FROM osm
     WHERE
     TRUE
@@ -14423,9 +14422,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/bag'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/bag'
     FROM osm
     WHERE
     TRUE
@@ -14435,9 +14434,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/bakery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/bakery'
     FROM osm
     WHERE
     TRUE
@@ -14447,9 +14446,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/bathroom_furnishing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/bathroom_furnishing'
     FROM osm
     WHERE
     TRUE
@@ -14459,9 +14458,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/beauty'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/beauty'
     FROM osm
     WHERE
     TRUE
@@ -14471,9 +14470,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/beauty/nails'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/beauty/nails'
     FROM osm
     WHERE
     TRUE
@@ -14484,9 +14483,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/beauty/tanning'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/beauty/tanning'
     FROM osm
     WHERE
     TRUE
@@ -14497,9 +14496,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/bed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/bed'
     FROM osm
     WHERE
     TRUE
@@ -14509,9 +14508,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/beverages'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/beverages'
     FROM osm
     WHERE
     TRUE
@@ -14521,9 +14520,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/bicycle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/bicycle'
     FROM osm
     WHERE
     TRUE
@@ -14533,9 +14532,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/boat'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/boat'
     FROM osm
     WHERE
     TRUE
@@ -14545,9 +14544,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/bookmaker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/bookmaker'
     FROM osm
     WHERE
     TRUE
@@ -14557,9 +14556,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/books'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/books'
     FROM osm
     WHERE
     TRUE
@@ -14569,9 +14568,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/brewing_supplies'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/brewing_supplies'
     FROM osm
     WHERE
     TRUE
@@ -14581,9 +14580,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/butcher'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/butcher'
     FROM osm
     WHERE
     TRUE
@@ -14593,9 +14592,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/camera'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/camera'
     FROM osm
     WHERE
     TRUE
@@ -14605,9 +14604,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/candles'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/candles'
     FROM osm
     WHERE
     TRUE
@@ -14617,9 +14616,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/cannabis'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/cannabis'
     FROM osm
     WHERE
     TRUE
@@ -14629,9 +14628,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/car_parts'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/car_parts'
     FROM osm
     WHERE
     TRUE
@@ -14641,9 +14640,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/car_repair'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/car_repair'
     FROM osm
     WHERE
     TRUE
@@ -14653,9 +14652,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/car'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/car'
     FROM osm
     WHERE
     TRUE
@@ -14665,9 +14664,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/car/second_hand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/car/second_hand'
     FROM osm
     WHERE
     TRUE
@@ -14678,9 +14677,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/caravan'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/caravan'
     FROM osm
     WHERE
     TRUE
@@ -14690,9 +14689,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/carpet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/carpet'
     FROM osm
     WHERE
     TRUE
@@ -14702,9 +14701,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/catalogue'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/catalogue'
     FROM osm
     WHERE
     TRUE
@@ -14714,9 +14713,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/charity'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/charity'
     FROM osm
     WHERE
     TRUE
@@ -14726,9 +14725,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/cheese'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/cheese'
     FROM osm
     WHERE
     TRUE
@@ -14738,9 +14737,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/chemist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/chemist'
     FROM osm
     WHERE
     TRUE
@@ -14750,9 +14749,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/chocolate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/chocolate'
     FROM osm
     WHERE
     TRUE
@@ -14762,9 +14761,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/clothes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/clothes'
     FROM osm
     WHERE
     TRUE
@@ -14774,9 +14773,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/clothes/second_hand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/clothes/second_hand'
     FROM osm
     WHERE
     TRUE
@@ -14787,9 +14786,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/clothes/suits'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/clothes/suits'
     FROM osm
     WHERE
     TRUE
@@ -14800,9 +14799,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/clothes/underwear'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/clothes/underwear'
     FROM osm
     WHERE
     TRUE
@@ -14813,9 +14812,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/clothes/wedding'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/clothes/wedding'
     FROM osm
     WHERE
     TRUE
@@ -14826,9 +14825,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/clothes/workwear'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/clothes/workwear'
     FROM osm
     WHERE
     TRUE
@@ -14839,9 +14838,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/coffee'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/coffee'
     FROM osm
     WHERE
     TRUE
@@ -14851,9 +14850,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/collector'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/collector'
     FROM osm
     WHERE
     TRUE
@@ -14863,9 +14862,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/computer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/computer'
     FROM osm
     WHERE
     TRUE
@@ -14875,9 +14874,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/confectionery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/confectionery'
     FROM osm
     WHERE
     TRUE
@@ -14887,9 +14886,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/convenience'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/convenience'
     FROM osm
     WHERE
     TRUE
@@ -14899,9 +14898,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/copyshop'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/copyshop'
     FROM osm
     WHERE
     TRUE
@@ -14911,9 +14910,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/cosmetics'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/cosmetics'
     FROM osm
     WHERE
     TRUE
@@ -14923,9 +14922,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/country_store'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/country_store'
     FROM osm
     WHERE
     TRUE
@@ -14935,9 +14934,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/craft'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/craft'
     FROM osm
     WHERE
     TRUE
@@ -14947,9 +14946,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/curtain'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/curtain'
     FROM osm
     WHERE
     TRUE
@@ -14959,9 +14958,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/dairy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/dairy'
     FROM osm
     WHERE
     TRUE
@@ -14971,9 +14970,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/deli'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/deli'
     FROM osm
     WHERE
     TRUE
@@ -14983,9 +14982,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/department_store'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/department_store'
     FROM osm
     WHERE
     TRUE
@@ -14995,9 +14994,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/doityourself'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/doityourself'
     FROM osm
     WHERE
     TRUE
@@ -15007,9 +15006,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/doors'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/doors'
     FROM osm
     WHERE
     TRUE
@@ -15019,9 +15018,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/dry_cleaning'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/dry_cleaning'
     FROM osm
     WHERE
     TRUE
@@ -15031,9 +15030,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/e-cigarette'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/e-cigarette'
     FROM osm
     WHERE
     TRUE
@@ -15043,9 +15042,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/electrical'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/electrical'
     FROM osm
     WHERE
     TRUE
@@ -15055,9 +15054,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/electronics'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/electronics'
     FROM osm
     WHERE
     TRUE
@@ -15067,9 +15066,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/erotic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/erotic'
     FROM osm
     WHERE
     TRUE
@@ -15079,9 +15078,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/erotic/lgbtq'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/erotic/lgbtq'
     FROM osm
     WHERE
     TRUE
@@ -15092,9 +15091,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/fabric'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/fabric'
     FROM osm
     WHERE
     TRUE
@@ -15104,9 +15103,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/farm'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/farm'
     FROM osm
     WHERE
     TRUE
@@ -15116,9 +15115,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/fashion_accessories'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/fashion_accessories'
     FROM osm
     WHERE
     TRUE
@@ -15128,9 +15127,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/fireplace'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/fireplace'
     FROM osm
     WHERE
     TRUE
@@ -15140,9 +15139,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/fishing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/fishing'
     FROM osm
     WHERE
     TRUE
@@ -15152,9 +15151,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/flooring'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/flooring'
     FROM osm
     WHERE
     TRUE
@@ -15164,9 +15163,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/florist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/florist'
     FROM osm
     WHERE
     TRUE
@@ -15176,9 +15175,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/frame'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/frame'
     FROM osm
     WHERE
     TRUE
@@ -15188,9 +15187,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/frozen_food'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/frozen_food'
     FROM osm
     WHERE
     TRUE
@@ -15200,9 +15199,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/fuel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/fuel'
     FROM osm
     WHERE
     TRUE
@@ -15212,9 +15211,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/funeral_directors'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/funeral_directors'
     FROM osm
     WHERE
     TRUE
@@ -15224,9 +15223,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/furniture'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/furniture'
     FROM osm
     WHERE
     TRUE
@@ -15236,9 +15235,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/games'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/games'
     FROM osm
     WHERE
     TRUE
@@ -15248,9 +15247,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/garden_centre'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/garden_centre'
     FROM osm
     WHERE
     TRUE
@@ -15260,9 +15259,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/gas'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/gas'
     FROM osm
     WHERE
     TRUE
@@ -15272,9 +15271,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/general'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/general'
     FROM osm
     WHERE
     TRUE
@@ -15284,9 +15283,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/gift'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/gift'
     FROM osm
     WHERE
     TRUE
@@ -15296,9 +15295,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/greengrocer'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/greengrocer'
     FROM osm
     WHERE
     TRUE
@@ -15308,9 +15307,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hairdresser_supply'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hairdresser_supply'
     FROM osm
     WHERE
     TRUE
@@ -15320,9 +15319,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hairdresser'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hairdresser'
     FROM osm
     WHERE
     TRUE
@@ -15332,9 +15331,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hardware'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hardware'
     FROM osm
     WHERE
     TRUE
@@ -15344,9 +15343,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/health_food'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/health_food'
     FROM osm
     WHERE
     TRUE
@@ -15356,9 +15355,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hearing_aids'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hearing_aids'
     FROM osm
     WHERE
     TRUE
@@ -15368,9 +15367,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/herbalist'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/herbalist'
     FROM osm
     WHERE
     TRUE
@@ -15380,9 +15379,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hifi'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hifi'
     FROM osm
     WHERE
     TRUE
@@ -15392,9 +15391,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hobby'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hobby'
     FROM osm
     WHERE
     TRUE
@@ -15404,9 +15403,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/household_linen'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/household_linen'
     FROM osm
     WHERE
     TRUE
@@ -15416,9 +15415,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/houseware'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/houseware'
     FROM osm
     WHERE
     TRUE
@@ -15428,9 +15427,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/hunting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/hunting'
     FROM osm
     WHERE
     TRUE
@@ -15440,9 +15439,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/interior_decoration'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/interior_decoration'
     FROM osm
     WHERE
     TRUE
@@ -15452,9 +15451,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/jewelry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/jewelry'
     FROM osm
     WHERE
     TRUE
@@ -15464,9 +15463,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/kiosk'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/kiosk'
     FROM osm
     WHERE
     TRUE
@@ -15476,9 +15475,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/kitchen'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/kitchen'
     FROM osm
     WHERE
     TRUE
@@ -15488,9 +15487,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/laundry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/laundry'
     FROM osm
     WHERE
     TRUE
@@ -15500,9 +15499,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/laundry/self_service'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/laundry/self_service'
     FROM osm
     WHERE
     TRUE
@@ -15513,9 +15512,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/leather'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/leather'
     FROM osm
     WHERE
     TRUE
@@ -15525,9 +15524,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/lighting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/lighting'
     FROM osm
     WHERE
     TRUE
@@ -15537,9 +15536,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/locksmith'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/locksmith'
     FROM osm
     WHERE
     TRUE
@@ -15549,9 +15548,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/lottery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/lottery'
     FROM osm
     WHERE
     TRUE
@@ -15561,9 +15560,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/mall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/mall'
     FROM osm
     WHERE
     TRUE
@@ -15573,9 +15572,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/massage'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/massage'
     FROM osm
     WHERE
     TRUE
@@ -15585,9 +15584,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/medical_supply'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/medical_supply'
     FROM osm
     WHERE
     TRUE
@@ -15597,9 +15596,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/military_surplus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/military_surplus'
     FROM osm
     WHERE
     TRUE
@@ -15609,9 +15608,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/mobile_phone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/mobile_phone'
     FROM osm
     WHERE
     TRUE
@@ -15621,9 +15620,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/model'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/model'
     FROM osm
     WHERE
     TRUE
@@ -15633,9 +15632,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/money_lender'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/money_lender'
     FROM osm
     WHERE
     TRUE
@@ -15645,9 +15644,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/motorcycle_repair'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/motorcycle_repair'
     FROM osm
     WHERE
     TRUE
@@ -15657,9 +15656,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/motorcycle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/motorcycle'
     FROM osm
     WHERE
     TRUE
@@ -15669,9 +15668,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/music'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/music'
     FROM osm
     WHERE
     TRUE
@@ -15681,9 +15680,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/musical_instrument'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/musical_instrument'
     FROM osm
     WHERE
     TRUE
@@ -15693,9 +15692,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/newsagent'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/newsagent'
     FROM osm
     WHERE
     TRUE
@@ -15705,9 +15704,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/nutrition_supplements'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/nutrition_supplements'
     FROM osm
     WHERE
     TRUE
@@ -15717,9 +15716,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/optician'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/optician'
     FROM osm
     WHERE
     TRUE
@@ -15729,9 +15728,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/outdoor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/outdoor'
     FROM osm
     WHERE
     TRUE
@@ -15741,9 +15740,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/outpost'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/outpost'
     FROM osm
     WHERE
     TRUE
@@ -15753,9 +15752,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/paint'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/paint'
     FROM osm
     WHERE
     TRUE
@@ -15765,9 +15764,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/party'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/party'
     FROM osm
     WHERE
     TRUE
@@ -15777,9 +15776,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/pastry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/pastry'
     FROM osm
     WHERE
     TRUE
@@ -15789,9 +15788,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/pawnbroker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/pawnbroker'
     FROM osm
     WHERE
     TRUE
@@ -15801,9 +15800,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/perfumery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/perfumery'
     FROM osm
     WHERE
     TRUE
@@ -15813,9 +15812,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/pet_grooming'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/pet_grooming'
     FROM osm
     WHERE
     TRUE
@@ -15825,9 +15824,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/pet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/pet'
     FROM osm
     WHERE
     TRUE
@@ -15837,9 +15836,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/photo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/photo'
     FROM osm
     WHERE
     TRUE
@@ -15849,9 +15848,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/pottery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/pottery'
     FROM osm
     WHERE
     TRUE
@@ -15861,9 +15860,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/printer_ink'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/printer_ink'
     FROM osm
     WHERE
     TRUE
@@ -15873,9 +15872,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/psychic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/psychic'
     FROM osm
     WHERE
     TRUE
@@ -15885,9 +15884,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/pyrotechnics'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/pyrotechnics'
     FROM osm
     WHERE
     TRUE
@@ -15897,9 +15896,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/radiotechnics'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/radiotechnics'
     FROM osm
     WHERE
     TRUE
@@ -15909,9 +15908,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/religion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/religion'
     FROM osm
     WHERE
     TRUE
@@ -15921,9 +15920,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/rental'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/rental'
     FROM osm
     WHERE
     TRUE
@@ -15933,9 +15932,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/repair'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/repair'
     FROM osm
     WHERE
     TRUE
@@ -15945,9 +15944,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/scuba_diving'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/scuba_diving'
     FROM osm
     WHERE
     TRUE
@@ -15957,9 +15956,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/seafood'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/seafood'
     FROM osm
     WHERE
     TRUE
@@ -15969,9 +15968,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/second_hand'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/second_hand'
     FROM osm
     WHERE
     TRUE
@@ -15981,9 +15980,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/sewing'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/sewing'
     FROM osm
     WHERE
     TRUE
@@ -15993,9 +15992,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/shoe_repair'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/shoe_repair'
     FROM osm
     WHERE
     TRUE
@@ -16005,9 +16004,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/shoes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/shoes'
     FROM osm
     WHERE
     TRUE
@@ -16017,9 +16016,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/spices'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/spices'
     FROM osm
     WHERE
     TRUE
@@ -16029,9 +16028,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/sports'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/sports'
     FROM osm
     WHERE
     TRUE
@@ -16041,9 +16040,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/stationery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/stationery'
     FROM osm
     WHERE
     TRUE
@@ -16053,9 +16052,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/storage_rental'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/storage_rental'
     FROM osm
     WHERE
     TRUE
@@ -16065,9 +16064,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/supermarket'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/supermarket'
     FROM osm
     WHERE
     TRUE
@@ -16077,9 +16076,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/supermarket/organic'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/supermarket/organic'
     FROM osm
     WHERE
     TRUE
@@ -16090,9 +16089,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/swimming_pool'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/swimming_pool'
     FROM osm
     WHERE
     TRUE
@@ -16102,9 +16101,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tailor'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tailor'
     FROM osm
     WHERE
     TRUE
@@ -16114,9 +16113,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tattoo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tattoo'
     FROM osm
     WHERE
     TRUE
@@ -16126,9 +16125,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tea'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tea'
     FROM osm
     WHERE
     TRUE
@@ -16138,9 +16137,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/telecommunication'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/telecommunication'
     FROM osm
     WHERE
     TRUE
@@ -16150,9 +16149,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/ticket'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/ticket'
     FROM osm
     WHERE
     TRUE
@@ -16162,9 +16161,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tiles'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tiles'
     FROM osm
     WHERE
     TRUE
@@ -16174,9 +16173,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tobacco'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tobacco'
     FROM osm
     WHERE
     TRUE
@@ -16186,9 +16185,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tool_hire'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tool_hire'
     FROM osm
     WHERE
     TRUE
@@ -16198,9 +16197,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/toys'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/toys'
     FROM osm
     WHERE
     TRUE
@@ -16210,9 +16209,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/trade'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/trade'
     FROM osm
     WHERE
     TRUE
@@ -16222,9 +16221,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/travel_agency'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/travel_agency'
     FROM osm
     WHERE
     TRUE
@@ -16234,9 +16233,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/trophy'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/trophy'
     FROM osm
     WHERE
     TRUE
@@ -16246,9 +16245,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/tyres'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/tyres'
     FROM osm
     WHERE
     TRUE
@@ -16258,9 +16257,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/vacuum_cleaner'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/vacuum_cleaner'
     FROM osm
     WHERE
     TRUE
@@ -16270,9 +16269,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/variety_store'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/variety_store'
     FROM osm
     WHERE
     TRUE
@@ -16282,9 +16281,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/video_games'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/video_games'
     FROM osm
     WHERE
     TRUE
@@ -16294,9 +16293,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/video'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/video'
     FROM osm
     WHERE
     TRUE
@@ -16306,9 +16305,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/watches'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/watches'
     FROM osm
     WHERE
     TRUE
@@ -16318,9 +16317,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/water_sports'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/water_sports'
     FROM osm
     WHERE
     TRUE
@@ -16330,9 +16329,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/water'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/water'
     FROM osm
     WHERE
     TRUE
@@ -16342,9 +16341,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/weapons'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/weapons'
     FROM osm
     WHERE
     TRUE
@@ -16354,9 +16353,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/wholesale'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/wholesale'
     FROM osm
     WHERE
     TRUE
@@ -16366,9 +16365,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/wigs'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/wigs'
     FROM osm
     WHERE
     TRUE
@@ -16378,9 +16377,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/window_blind'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/window_blind'
     FROM osm
     WHERE
     TRUE
@@ -16390,9 +16389,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'shop/wine'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'shop/wine'
     FROM osm
     WHERE
     TRUE
@@ -16402,9 +16401,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'telecom/data_center'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'telecom/data_center'
     FROM osm
     WHERE
     TRUE
@@ -16414,9 +16413,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'telecom/exchange'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'telecom/exchange'
     FROM osm
     WHERE
     TRUE
@@ -16426,9 +16425,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/alpine_hut'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/alpine_hut'
     FROM osm
     WHERE
     TRUE
@@ -16438,9 +16437,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/apartment'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/apartment'
     FROM osm
     WHERE
     TRUE
@@ -16450,9 +16449,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/aquarium'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/aquarium'
     FROM osm
     WHERE
     TRUE
@@ -16462,9 +16461,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork'
     FROM osm
     WHERE
     TRUE
@@ -16475,9 +16474,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork/bust'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork/bust'
     FROM osm
     WHERE
     TRUE
@@ -16487,9 +16486,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork/graffiti'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork/graffiti'
     FROM osm
     WHERE
     TRUE
@@ -16501,9 +16500,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork/installation'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork/installation'
     FROM osm
     WHERE
     TRUE
@@ -16515,9 +16514,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork/mural'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork/mural'
     FROM osm
     WHERE
     TRUE
@@ -16529,9 +16528,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork/sculpture'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork/sculpture'
     FROM osm
     WHERE
     TRUE
@@ -16543,9 +16542,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/artwork/statue'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/artwork/statue'
     FROM osm
     WHERE
     TRUE
@@ -16557,9 +16556,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/attraction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/attraction'
     FROM osm
     WHERE
     TRUE
@@ -16570,9 +16569,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/camp_pitch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/camp_pitch'
     FROM osm
     WHERE
     TRUE
@@ -16582,9 +16581,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/camp_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/camp_site'
     FROM osm
     WHERE
     TRUE
@@ -16594,9 +16593,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/camp_site/backcountry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/camp_site/backcountry'
     FROM osm
     WHERE
     TRUE
@@ -16607,9 +16606,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/camp_site/group_only'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/camp_site/group_only'
     FROM osm
     WHERE
     TRUE
@@ -16620,9 +16619,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/caravan_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/caravan_site'
     FROM osm
     WHERE
     TRUE
@@ -16632,9 +16631,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/chalet'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/chalet'
     FROM osm
     WHERE
     TRUE
@@ -16644,9 +16643,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/gallery'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/gallery'
     FROM osm
     WHERE
     TRUE
@@ -16656,9 +16655,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/guest_house'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/guest_house'
     FROM osm
     WHERE
     TRUE
@@ -16668,9 +16667,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/hostel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/hostel'
     FROM osm
     WHERE
     TRUE
@@ -16680,9 +16679,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/hotel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/hotel'
     FROM osm
     WHERE
     TRUE
@@ -16692,9 +16691,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information'
     FROM osm
     WHERE
     TRUE
@@ -16704,9 +16703,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/board'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/board'
     FROM osm
     WHERE
     TRUE
@@ -16716,9 +16715,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/board/welcome_sign'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/board/welcome_sign'
     FROM osm
     WHERE
     TRUE
@@ -16729,9 +16728,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/guidepost'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/guidepost'
     FROM osm
     WHERE
     TRUE
@@ -16741,9 +16740,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/map'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/map'
     FROM osm
     WHERE
     TRUE
@@ -16753,9 +16752,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/office'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/office'
     FROM osm
     WHERE
     TRUE
@@ -16766,9 +16765,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/route_marker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/route_marker'
     FROM osm
     WHERE
     TRUE
@@ -16778,9 +16777,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/information/terminal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/information/terminal'
     FROM osm
     WHERE
     TRUE
@@ -16790,9 +16789,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/motel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/motel'
     FROM osm
     WHERE
     TRUE
@@ -16802,9 +16801,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/museum'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/museum'
     FROM osm
     WHERE
     TRUE
@@ -16814,9 +16813,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/museum/history'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/museum/history'
     FROM osm
     WHERE
     TRUE
@@ -16827,9 +16826,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/picnic_site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/picnic_site'
     FROM osm
     WHERE
     TRUE
@@ -16839,9 +16838,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/theme_park'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/theme_park'
     FROM osm
     WHERE
     TRUE
@@ -16851,9 +16850,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/trail_riding_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/trail_riding_station'
     FROM osm
     WHERE
     TRUE
@@ -16863,9 +16862,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/viewpoint'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/viewpoint'
     FROM osm
     WHERE
     TRUE
@@ -16875,9 +16874,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/wilderness_hut'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/wilderness_hut'
     FROM osm
     WHERE
     TRUE
@@ -16887,9 +16886,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/zoo'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/zoo'
     FROM osm
     WHERE
     TRUE
@@ -16899,9 +16898,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/zoo/petting'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/zoo/petting'
     FROM osm
     WHERE
     TRUE
@@ -16912,9 +16911,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/zoo/safari'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/zoo/safari'
     FROM osm
     WHERE
     TRUE
@@ -16925,9 +16924,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'tourism/zoo/wildlife'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'tourism/zoo/wildlife'
     FROM osm
     WHERE
     TRUE
@@ -16938,9 +16937,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming'
     FROM osm
     WHERE
     TRUE
@@ -16951,9 +16950,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/yes'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/yes'
     FROM osm
     WHERE
     TRUE
@@ -16964,9 +16963,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/bump'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/bump'
     FROM osm
     WHERE
     TRUE
@@ -16976,9 +16975,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/chicane'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/chicane'
     FROM osm
     WHERE
     TRUE
@@ -16989,9 +16988,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/choker'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/choker'
     FROM osm
     WHERE
     TRUE
@@ -17002,9 +17001,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/cushion'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/cushion'
     FROM osm
     WHERE
     TRUE
@@ -17014,9 +17013,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/dip'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/dip'
     FROM osm
     WHERE
     TRUE
@@ -17026,9 +17025,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/hump'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/hump'
     FROM osm
     WHERE
     TRUE
@@ -17038,9 +17037,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/island'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/island'
     FROM osm
     WHERE
     TRUE
@@ -17051,9 +17050,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/mini_bumps'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/mini_bumps'
     FROM osm
     WHERE
     TRUE
@@ -17063,9 +17062,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/rumble_strip'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/rumble_strip'
     FROM osm
     WHERE
     TRUE
@@ -17075,9 +17074,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_calming/table'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_calming/table'
     FROM osm
     WHERE
     TRUE
@@ -17086,9 +17085,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_sign'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_sign'
     FROM osm
     WHERE
     TRUE
@@ -17097,9 +17096,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_sign/city_limit'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_sign/city_limit'
     FROM osm
     WHERE
     TRUE
@@ -17108,9 +17107,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'traffic_sign/maxspeed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'traffic_sign/maxspeed'
     FROM osm
     WHERE
     TRUE
@@ -17119,9 +17118,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/boundary'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/boundary'
     FROM osm
     WHERE
     TRUE
@@ -17130,9 +17129,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/boundary/administrative'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/boundary/administrative'
     FROM osm
     WHERE
     TRUE
@@ -17142,9 +17141,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/connectivity'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/connectivity'
     FROM osm
     WHERE
     TRUE
@@ -17153,9 +17152,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/destination_sign'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/destination_sign'
     FROM osm
     WHERE
     TRUE
@@ -17164,9 +17163,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/enforcement'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/enforcement'
     FROM osm
     WHERE
     TRUE
@@ -17175,9 +17174,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/enforcement/maxspeed'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/enforcement/maxspeed'
     FROM osm
     WHERE
     TRUE
@@ -17187,9 +17186,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/multipolygon'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/multipolygon'
     FROM osm
     WHERE
     TRUE
@@ -17198,9 +17197,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/public_transport/stop_area_group'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/public_transport/stop_area_group'
     FROM osm
     WHERE
     TRUE
@@ -17210,9 +17209,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction'
     FROM osm
     WHERE
     TRUE
@@ -17221,9 +17220,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/no_left_turn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/no_left_turn'
     FROM osm
     WHERE
     TRUE
@@ -17233,9 +17232,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/no_right_turn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/no_right_turn'
     FROM osm
     WHERE
     TRUE
@@ -17245,9 +17244,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/no_straight_on'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/no_straight_on'
     FROM osm
     WHERE
     TRUE
@@ -17257,9 +17256,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/no_u_turn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/no_u_turn'
     FROM osm
     WHERE
     TRUE
@@ -17269,9 +17268,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/only_left_turn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/only_left_turn'
     FROM osm
     WHERE
     TRUE
@@ -17281,9 +17280,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/only_right_turn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/only_right_turn'
     FROM osm
     WHERE
     TRUE
@@ -17293,9 +17292,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/only_straight_on'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/only_straight_on'
     FROM osm
     WHERE
     TRUE
@@ -17305,9 +17304,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/restriction/only_u_turn'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/restriction/only_u_turn'
     FROM osm
     WHERE
     TRUE
@@ -17317,9 +17316,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route_master'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route_master'
     FROM osm
     WHERE
     TRUE
@@ -17328,9 +17327,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route'
     FROM osm
     WHERE
     TRUE
@@ -17339,9 +17338,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/aerialway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/aerialway'
     FROM osm
     WHERE
     TRUE
@@ -17351,9 +17350,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/bicycle'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/bicycle'
     FROM osm
     WHERE
     TRUE
@@ -17363,9 +17362,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/bus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/bus'
     FROM osm
     WHERE
     TRUE
@@ -17375,9 +17374,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/detour'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/detour'
     FROM osm
     WHERE
     TRUE
@@ -17387,9 +17386,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/ferry'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/ferry'
     FROM osm
     WHERE
     TRUE
@@ -17399,9 +17398,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/foot'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/foot'
     FROM osm
     WHERE
     TRUE
@@ -17411,9 +17410,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/hiking'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/hiking'
     FROM osm
     WHERE
     TRUE
@@ -17423,9 +17422,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/horse'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/horse'
     FROM osm
     WHERE
     TRUE
@@ -17435,9 +17434,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/light_rail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/light_rail'
     FROM osm
     WHERE
     TRUE
@@ -17447,9 +17446,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/monorail'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/monorail'
     FROM osm
     WHERE
     TRUE
@@ -17459,9 +17458,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/mtb'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/mtb'
     FROM osm
     WHERE
     TRUE
@@ -17471,9 +17470,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/pipeline'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/pipeline'
     FROM osm
     WHERE
     TRUE
@@ -17483,9 +17482,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/piste'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/piste'
     FROM osm
     WHERE
     TRUE
@@ -17495,9 +17494,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/power'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/power'
     FROM osm
     WHERE
     TRUE
@@ -17507,9 +17506,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/railway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/railway'
     FROM osm
     WHERE
     TRUE
@@ -17519,9 +17518,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/road'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/road'
     FROM osm
     WHERE
     TRUE
@@ -17531,9 +17530,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/subway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/subway'
     FROM osm
     WHERE
     TRUE
@@ -17543,9 +17542,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/train'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/train'
     FROM osm
     WHERE
     TRUE
@@ -17555,9 +17554,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/tram'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/tram'
     FROM osm
     WHERE
     TRUE
@@ -17567,9 +17566,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/route/trolleybus'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/route/trolleybus'
     FROM osm
     WHERE
     TRUE
@@ -17579,9 +17578,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/site'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/site'
     FROM osm
     WHERE
     TRUE
@@ -17590,9 +17589,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'type/waterway'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'type/waterway'
     FROM osm
     WHERE
     TRUE
@@ -17601,9 +17600,9 @@
         FALSE
         OR (osm_type = 'R')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/boatyard'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/boatyard'
     FROM osm
     WHERE
     TRUE
@@ -17613,9 +17612,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/canal'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/canal'
     FROM osm
     WHERE
     TRUE
@@ -17624,9 +17623,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/canal/lock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/canal/lock'
     FROM osm
     WHERE
     TRUE
@@ -17636,9 +17635,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/dam'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/dam'
     FROM osm
     WHERE
     TRUE
@@ -17649,9 +17648,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/ditch'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/ditch'
     FROM osm
     WHERE
     TRUE
@@ -17660,9 +17659,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/dock'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/dock'
     FROM osm
     WHERE
     TRUE
@@ -17672,9 +17671,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/drain'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/drain'
     FROM osm
     WHERE
     TRUE
@@ -17683,9 +17682,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/fish_pass'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/fish_pass'
     FROM osm
     WHERE
     TRUE
@@ -17694,9 +17693,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/fuel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/fuel'
     FROM osm
     WHERE
     TRUE
@@ -17706,9 +17705,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/lock_gate'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/lock_gate'
     FROM osm
     WHERE
     TRUE
@@ -17718,9 +17717,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/milestone'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/milestone'
     FROM osm
     WHERE
     TRUE
@@ -17729,9 +17728,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/river'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/river'
     FROM osm
     WHERE
     TRUE
@@ -17740,9 +17739,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/sanitary_dump_station'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/sanitary_dump_station'
     FROM osm
     WHERE
     TRUE
@@ -17752,9 +17751,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/stream_intermittent'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/stream_intermittent'
     FROM osm
     WHERE
     TRUE
@@ -17764,9 +17763,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/stream'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/stream'
     FROM osm
     WHERE
     TRUE
@@ -17775,9 +17774,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/tidal_channel'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/tidal_channel'
     FROM osm
     WHERE
     TRUE
@@ -17786,9 +17785,9 @@
         FALSE
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/water_point'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/water_point'
     FROM osm
     WHERE
     TRUE
@@ -17798,9 +17797,9 @@
         OR (osm_type = 'W' AND geometry_type = 'POLYGON')
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/waterfall'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/waterfall'
     FROM osm
     WHERE
     TRUE
@@ -17809,9 +17808,9 @@
         FALSE
         OR (osm_type = 'N')
     );
-    
-    INSERT INTO category_membership (osm_id, osm_type, category)
-    SELECT osm_id, osm_type, 'waterway/weir'
+
+    INSERT INTO category_membership (osm_id, category)
+    SELECT id, 'waterway/weir'
     FROM osm
     WHERE
     TRUE
@@ -17821,9 +17820,9 @@
         OR (osm_type = 'W' AND geometry_type = 'LINESTRING')
         OR (osm_type = 'N')
     );
-    
 
-    CREATE INDEX IF NOT EXISTS category_membership_category_idx ON category_membership (category);
-    CREATE INDEX IF NOT EXISTS category_membership_osm_id_osm_type_idx ON category_membership (osm_id, osm_type);
 
-    
+    CREATE INDEX IF NOT EXISTS ON category_membership (category);
+    CREATE INDEX IF NOT EXISTS ON category_membership (osm_id);
+
+

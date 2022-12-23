@@ -1,16 +1,15 @@
--- Create indexes on tables
+-- Create indexes
+CREATE INDEX ON osm (id);
 CREATE INDEX ON osm (osm_type);
+CREATE INDEX ON osm (osm_id);
 
--- indexes only the existence of tags
+-- GIN will index operations on the tags column: ?, ?|, ?&, @>, @@, @?
 CREATE INDEX ON osm USING GIN (tags);
 
--- Full txt search table
-ALTER TABLE osm
-
-ADD COLUMN fts tsvector GENERATED ALWAYS AS (TO_TSVECTOR('english', tags)) STORED;
-CREATE INDEX ON osm (osm_id);
+ALTER TABLE osm ADD COLUMN fts tsvector GENERATED ALWAYS AS (to_tsvector('english', tags )) STORED;
 CREATE INDEX ON osm USING GIN (fts);
 
-CREATE INDEX ON osm USING GIN (tags);
+-- index geometry types
 ALTER TABLE osm ADD COLUMN geometry_type TEXT GENERATED ALWAYS AS (GeometryType(geom)) STORED;
 CREATE INDEX ON osm (geometry_type);
+

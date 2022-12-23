@@ -13,6 +13,7 @@ local dtable = osm2pgsql.define_table{
     columns = {
         { column = 'tags',  type = 'jsonb' },
         { column = 'geom',  type = 'geometry', projection = srid, not_null = true},
+        { column = 'id', type = 'text', not_null = true}
     }
 }
 
@@ -240,7 +241,7 @@ function osm2pgsql.process_node(object)
         return
     end
 
-    id = "N" .. object.id,
+    local id = "N" .. object.id
 
     dtable:insert({
         tags = object.tags,
