@@ -17821,8 +17821,5 @@
         OR (osm_type = 'N')
     );
 
-
-    CREATE INDEX IF NOT EXISTS ON category_membership (category);
-    CREATE INDEX IF NOT EXISTS ON category_membership (osm_id);
-
-
+    CREATE INDEX ON category_membership (category);
+    CREATE INDEX ON category_membership (osm_id);

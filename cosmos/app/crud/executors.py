@@ -147,7 +147,7 @@ async def area_near_constraint(
         raise ValueError("No results found")
     # Format as geojson polygon
     res = json.loads(res[0])
-    multipolygon = MultiPolygon(type="MultiPolygon", coordinates=[res['coordinates']] if res['type'] == 'Polygon' else res['coordinates']) 
+    multipolygon = MultiPolygon(type="MultiPolygon", coordinates=[res['coordinates']] if res['type'] == 'Polygon' else res['coordinates'])
     return ExecutorResponse(
         geom=FeatureCollection(
             type="FeatureCollection",
@@ -366,7 +366,7 @@ async def x_in_y(
                   FROM
                     osm
                   WHERE 1=1
-                    AND (tags->>'place' IS NOT NULL OR tags ->>'boundary' IS NOT NULL)
+                    AND (tags ? 'place' OR tags ? 'boundary')
                     AND osm_id IN (
                         {{ haystack.matched_geo_ids | join(",")}}
                     )

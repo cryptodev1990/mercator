@@ -209,7 +209,8 @@ const GeofenceMap = () => {
 
           if (
             e.leftButton &&
-            cursorMode === EditorMode.ViewMode &&
+            (cursorMode === EditorMode.ViewMode ||
+              cursorMode === EditorMode.ModifyMode) &&
             !isSelected(uuid) &&
             !e.changedPointers[0].metaKey
           ) {

@@ -128,7 +128,7 @@ export class GeofencerService {
     namespace?: string,
     user?: boolean,
     offset?: number,
-    limit: number = 300,
+    limit: number = 1000,
     shapeIds?: Array<string>,
     bbox?: Array<number>
   ): CancelablePromise<Array<GeoShape>> {

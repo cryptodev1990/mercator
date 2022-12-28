@@ -13,3 +13,6 @@ CREATE INDEX ON osm USING GIN (fts);
 ALTER TABLE osm ADD COLUMN geometry_type TEXT GENERATED ALWAYS AS (GeometryType(geom)) STORED;
 CREATE INDEX ON osm (geometry_type);
 
+-- Need GIN for ?, ?|, ?&, @>, @@, @? ops
+CREATE INDEX on osm USING GIN (tags);
+-- CREATE INDEX on osm USING GIST (tags);

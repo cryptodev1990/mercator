@@ -172,8 +172,7 @@ export const useGetAllShapes = (limit: number, offset: number) => {
       return GeofencerService.getShapesGeofencerShapesGet(
         undefined, // namespace
         undefined, // user
-        offset, // offset
-        limit // limit
+        offset // offset
       );
     },
     {
