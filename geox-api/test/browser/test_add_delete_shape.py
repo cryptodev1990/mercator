@@ -5,6 +5,7 @@ E2E test for adding a shape.
 import pytest
 import time
 import os
+# import navigator
 from playwright.sync_api import expect
 
 username = os.getenv('PLAYWRIGHT_USERNAME')
@@ -76,7 +77,17 @@ def test_index_page_title(page):
     # expect(metadata_locator).to_contain_text("New Key 1")
     page.keyboard.down('Escape')
 
-    # Copy the GeoJSON
+    # Shape edit
+    # Copy GeoJSON
+    print()
+    page.mouse.click(450, 450, button='right')
+    time.sleep(1)
+    page.mouse.click(475,480)
+    # shape_1 = navigator.clipboard.read_text()
+    # Paste into the command bar
+    # page.keyboard.press('Control+Shift+P')
+    # page.keyboard.press('Meta+V')
+    # time.sleep(10)
     # Click twice to enter  edit mode
     page.mouse.click(450, 450)
     time.sleep(1)
