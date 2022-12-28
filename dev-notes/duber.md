@@ -1290,3 +1290,16 @@ E.g.
 type in `coffee shops in san francisco`
 get back `[[coffee shops | noun class] in [san francisco | named place] | [x in y]]`
 clicking on a result card populates the search bar with this info
+
+## 12-28-22
+
+- [ ] /search and /intent endpoints
+  - [ ] /search - Endpoint that lets you search by a specific modality
+  - [ ] /intent - Endpoint that allows you to just execute one of our executors
+
+- [ ] Intent switcher
+  - [ ] Write UI component
+    - This is going to be a row with a few rounded text boxes that each contain an intent name
+    - Clicking on a bubble changes the selected intent and recomputes the intent
+  - [ ] Add intent candidates and selected intent to state
+  - [ ] Add slots candidates and filled slots to the state

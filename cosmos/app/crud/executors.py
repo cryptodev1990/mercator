@@ -347,17 +347,17 @@ async def x_in_y(
         FROM (
           SELECT JSONB_BUILD_OBJECT(
               'type', 'Feature',
-              'id', osm_id,
+              'id', id,
               'geometry', ST_AsGeoJSON(geom)::JSONB,
               'properties', JSONB_BUILD_OBJECT(
-                  'osm_id', osm_id,
+                  'id', id,
                   'tags', tags
               )
           ) AS feature
           FROM
               osm
           WHERE 1=1
-              AND osm_id IN (
+              AND id IN (
                 {{ needle.sql_snippet }}
               )
               AND ST_Intersects(geom,
