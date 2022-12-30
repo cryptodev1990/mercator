@@ -12,7 +12,7 @@ def parse_into_meters(
         return default_m
     matched = re.match(DIST_REGEX, text)
     if matched:
-        return Distance(text).distance_in_meters
+        return Distance(text).m
     raise ValueError(f'Could not parse {text} as a distance')
 
 
@@ -34,7 +34,7 @@ class Distance:
         if matched:
             self.distance = float(matched.group('distance'))
             self.unit = str(matched.group('unit'))
-            self.distance_in_meters = self.convert_to_meters()
+            self.m = self.convert_to_meters()
         else:
             raise ValueError(f'Could not parse {text} as a distance')
     

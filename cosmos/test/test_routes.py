@@ -40,3 +40,76 @@ def test_osm_query(client: TestClient) -> None:
     assert response.json()["parse_result"]["geom"]["features"][0]["properties"]["name"] == "Alamo Square"
     assert response.json()["parse_result"]["geom"]["features"][0]["geometry"]["type"] == "Polygon"
 
+@pytest.mark.asyncio
+def test_explicit_search(client: TestClient) -> None:
+    """Test explicit search."""
+    response = client.get("/search?query=alamo+square+park&type=named_place")
+    assert_ok(response)
+    assert response.json()["parse_result"]["entities"][0]["lookup"] == "alamo square park"
+    assert response.json()["parse_result"]["geom"]["features"][0]["properties"]["name"] == "Alamo Square"
+    assert response.json()["parse_result"]["geom"]["features"][0]["geometry"]["type"] == "Polygon"
+
+    response = client.get("/search?query=irish+pubs&type=category")
+    assert_ok(response)
+    assert response.json()["parse_result"]["entities"][0]["lookup"] == "alamo square park"
+    assert response.json()["parse_result"]["geom"]["features"][0]["properties"]["name"] == "Alamo Square"
+    assert response.json()["parse_result"]["geom"]["features"][0]["geometry"]["type"] == "Polygon"
+
+    response = client.get("/search?query=alamo&type=fuzzy")
+    assert_ok(response)
+    assert response.json()["parse_result"]["entities"][0]["lookup"] == "alamo square park"
+    assert response.json()["parse_result"]["geom"]["features"][0]["properties"]["name"] == "Alamo Square"
+    assert response.json()["parse_result"]["geom"]["features"][0]["geometry"]["type"] == "Polygon"
+
+
+@pytest.mark.asyncio
+def test_osm_execute__x_in_y(client: TestClient) -> None:
+    """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
+    test_payload = {
+        "name": "x_in_y",
+        "args": {
+            "needle_place_or_amenity": {
+                "lookup": "coffee shops",
+                "match_type": "fuzzy",
+            },
+            "haystack_place_or_amenity": {
+                "lookup": "San Francisco",
+                "match_type": "named_place",
+            }
+        }
+    }
+    response = client.post(
+        "/osm/execute",
+        json=test_payload
+    )
+    assert response.status_code == 200, "Encountered" + response.text
+    assert response.json()["parse_result"]["entities"][0]["lookup"] == "coffee shops"
+    assert response.json()["parse_result"]["geom"]["features"][0]["properties"]['tags']['name'] == "Robin's Cafe"
+    
+
+def test_osm_execute__x_between_y_and_z(client: TestClient) -> None:
+    """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
+    test_payload = {
+        "name": "x_between_y_and_z",
+        "args": {
+            "named_place_or_amenity_0": {
+                "lookup": "gas stations",
+                "match_type": "fuzzy",
+            },
+            "named_place_or_amenity_1": {
+                "lookup": "Union Square San Francisco",
+                "match_type": "named_place",
+            },
+            "named_place_or_amenity_2": {
+                "lookup": "Ocean Beach San Francisco",
+                "match_type": "named_place",
+            },
+        }
+    }
+    response = client.post(
+        "/osm/execute",
+        json=test_payload
+    )
+    assert response.status_code == 200, "Encountered" + response.text
+    assert response.json()["parse_result"]["entities"][0]["lookup"] == "gas stations"
+    assert response.json()["parse_result"]["geom"]["features"][0]["properties"]['tags']['name'] == "Station K"

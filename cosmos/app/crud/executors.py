@@ -5,18 +5,20 @@ NOTE: Currently, all functions in this file are used as executors for intents an
 
 This will change when we actually have more users
 """
-from pydoc import resolve
 from typing import Dict, List
 import jinja2
 import json
 from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy import text
-from app.core.datatypes import Feature, FeatureCollection, MultiPolygon, Polygon
-from app.crud import entity_resolve
-from app.crud.entity_resolve import resolve_entity
-from app.gateways.geo_route import multiple_concurrent_routes
+from app.core.datatypes import Feature, FeatureCollection, MultiPolygon
+from app.crud.entity_resolve import named_place, resolve_entity
+from app.gateways.geo_route import get_route, multiple_concurrent_routes, route
 from app.parsers.entity_resolvers import Time, parse_into_meters, parse_into_seconds
-from app.schemas import BufferedEntity, ExecutorResponse, ParsedEntity
+from app.schemas import ExecutorResponse, NamedPlaceParsedEntity, ParsedEntity
+
+def surround_by_quote(a_list):
+    return ['"%s"' % an_element for an_element in a_list]
+
 
 MAX_SIMULTANEOUS_ISOCHRONES = 100
 GENERATED_SHAPE_ID = -1
@@ -27,7 +29,7 @@ def _extract_first_geom(er: ExecutorResponse) -> Feature:
         raise ValueError("No features found")
     return feature_collection.features[0]
 
-def _prepare_args_for_area_near_constraint(collective_dict: Dict) -> List[BufferedEntity]:
+def _prepare_args_for_area_near_constraint(collective_dict: Dict) -> List[ParsedEntity]:
     for k, v in collective_dict.items():
         if k.startswith('distance_or_time_'):
             try:
@@ -60,9 +62,12 @@ def _prepare_args_for_area_near_constraint(collective_dict: Dict) -> List[Buffer
     records = []
     items = [x for x in collective_dict.values()]
     for i in range(0, len(items), 2):
-        records.append(BufferedEntity(
-            entity=resolve_entity(items[i]),
-            distance_in_meters=items[i + 1]
+        res_ent = resolve_entity(items[i])
+        records.append(ParsedEntity(
+            lookup=res_ent.lookup,
+            match_type=res_ent.match_type,
+            geoids=res_ent.geoids,
+            m=items[i + 1]
         ))
     return records
 
@@ -104,22 +109,19 @@ async def area_near_constraint(
       osm
     JOIN (
             {# If the entity was resolved by the entity resolver, use the matched geo ids #}
-            {% if rec.entity.match_type != "raw_lookup" %}
-                SELECT UNNEST('{ {{ rec.entity.matched_geo_ids | join(',') }} }'::BIGINT []) AS osm_id
-            {% else %}
+            {% if rec.entity.match_type == "named_place" %}
+                SELECT UNNEST('{ {{ rec.entity.geoids | join(',') }} }'::BIGINT []) AS osm_id
+            {% elif rec.entity.match_type == "fuzzy" %}
                 {# Otherwise, use the raw text lookup #}
-                SELECT osm_id
+                SELECT id
                 FROM
                     osm,
-                    plainto_tsquery( '{{ rec.entity.lookup }}' ) query,
-                    similarity('{{ rec.entity.lookup }}', tags_text) similarity
-                WHERE TRUE
-                    WEBSEARCH_TO_TSQUERY( '{{ rec.entity.lookup }}' ) query
+                    plainto_tsquery( '{{ rec.entity.lookup }}' ) query
                 WHERE 1=1
                     AND query @@ fts
                 LIMIT 100000
             {% endif %}
-    ) queried ON queried.osm_id = osm.osm_id
+    ) queried ON queried.id = osm.id
     WHERE 1=1
         {# Stack the results set #}
         {% if not loop.last %}UNION ALL{% endif %}
@@ -161,14 +163,13 @@ async def area_near_constraint(
             ],
         ),
         entities=[
-            ParsedEntity(**rec.entity.__dict__) for rec in records
+            ParsedEntity(**rec.__dict__) for rec in records
         ],
     )
 
 
-async def raw_lookup(search_term: str, conn: AsyncConnection):
-    # TODO need to enable known_category lookup
-    searched_entity = resolve_entity(search_term, ["raw_lookup"])
+async def raw_lookup(search_term: str, conn: AsyncConnection) -> ExecutorResponse:
+    searched_entity = resolve_entity(search_term, ["fuzzy"])
     query = jinja2.Template("""
     SELECT JSON_BUILD_OBJECT(
         'type', 'FeatureCollection',
@@ -184,8 +185,8 @@ async def raw_lookup(search_term: str, conn: AsyncConnection):
     FROM
       osm
     JOIN (
-            {% if needle.match_type != "raw_lookup" %}
-                SELECT UNNEST('{ {{ needle.matched_geo_ids | join(',') }} }'::BIGINT []) AS osm_id
+            {% if needle.match_type != "fuzzy" %}
+                SELECT UNNEST('{ {{ needle.geoids | join(',') }} }'::BIGINT []) AS osm_id
             {% else %}
                 {# Otherwise, use the raw text lookup #}
                 SELECT osm_id
@@ -204,6 +205,36 @@ async def raw_lookup(search_term: str, conn: AsyncConnection):
     return ExecutorResponse(
         geom=geojson,  # type: ignore
         entities=[ParsedEntity(**searched_entity.__dict__)],
+    )
+
+
+async def category_lookup(categories: List[str], conn: AsyncConnection) -> ExecutorResponse:
+    query = jinja2.Template("""
+    SELECT JSON_BUILD_OBJECT(
+        'type', 'FeatureCollection',
+        'features', JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'type', 'Feature',
+                'id', osm.osm_id,
+                'geometry', ST_AsGeoJSON(geom)::JSON,
+                'properties', tags
+            )
+        )
+    ) AS feature_collection
+    FROM
+      osm
+    JOIN (
+        SELECT DISTINCT osm_id AS id
+        FROM category_membership
+        WHERE category IN (:categories)
+    ) queried ON queried.id = osm.id
+    """).render(categories=categories)
+    geojson = (await conn.execute(text(query))).scalar()
+    if geojson is None:
+        raise ValueError("No results found")
+    return ExecutorResponse(
+        geom=geojson,  # type: ignore
+        entities=[],
     )
 
 
@@ -337,7 +368,7 @@ async def x_in_y(
     shopping in Honolulu HI -> x_in_y("shopping", "Honolulu HI")
     food deserts in the 512 area code -> x_in_y("food deserts", "512 area code")
     """
-    needle = resolve_entity(needle_place_or_amenity, enabled=["known_category", "raw_lookup"])
+    needle = resolve_entity(needle_place_or_amenity, enabled=["known_category", "fuzzy"])
     haystack = resolve_entity(haystack_place_or_amenity, enabled=["named_place"])  # Make sure it's a named place
     res = await conn.execute(text(jinja2.Template("""
         SELECT JSONB_BUILD_OBJECT(
@@ -367,15 +398,15 @@ async def x_in_y(
                     osm
                   WHERE 1=1
                     AND (tags ? 'place' OR tags ? 'boundary')
-                    AND osm_id IN (
-                        {{ haystack.matched_geo_ids | join(",")}}
+                    AND id IN (
+                        {{ geoids }}
                     )
                   GROUP BY 1
                   ORDER BY ST_Area(geom) DESC
                   LIMIT 1
                ))
         ) AS features
-    """).render({"needle": needle, "haystack": haystack})))
+    """).render({"needle": needle, "haystack": haystack, "geoids": ','.join(['\'%s\'' % x for x in haystack.geoids])})))
     feature_collection = res.fetchone()[0]  # type: ignore
     return ExecutorResponse(
         geom=feature_collection,
@@ -397,10 +428,10 @@ async def x_near_y(
 
 async def x_between_y_and_z(
     named_place_or_amenity_0: str,
-    named_place_or_amenity_1: str,
-    named_place_or_amenity_2: str,
+    named_place_or_amenity_1: str | NamedPlaceParsedEntity,
+    named_place_or_amenity_2: str | NamedPlaceParsedEntity,
     conn: AsyncConnection
-):
+) -> ExecutorResponse:
     """
     Parse examples
 
@@ -413,71 +444,22 @@ async def x_between_y_and_z(
     Find the rest stops between Exit 3 and Exit 40 on I-80 -> x_between_y_and_z("rest stops", "Exit 3", "Exit 40")
     """
     # Get the locations of all three places
-    res = await conn.execute(text("""
-        WITH a AS (
-        SELECT
-            ST_Centroid(geom) AS center_geom
-            , osm_id
-        FROM
-            osm,
-            WEBSEARCH_TO_TSQUERY(:anterior) query,
-            SIMILARITY(:anterior, tags_text) similarity
-        WHERE 1=1
-            AND query @@ fts
-            AND similarity > 0.01
-            AND geom IS NOT NULL
-            LIMIT 5
-        )
-        , p AS (
-        SELECT
-            ST_Centroid(geom) AS center_geom
-            , osm_id
-        FROM
-            osm,
-            WEBSEARCH_TO_TSQUERY(:posterior) query,
-            SIMILARITY(:posterior, tags_text) similarity
-        WHERE 1=1
-            AND query @@ fts
-            AND similarity > 0.01
-            AND geom IS NOT NULL
-            LIMIT 5
-        )
-        SELECT ST_X(a.center_geom) AS anterior_x
-        , ST_Y(a.center_geom) AS anterior_y
-        , ST_X(p.center_geom) AS posterior_x
-        , ST_Y(p.center_geom) AS posterior_y
-        , a.osm_id AS anterior_osm_id
-        , p.osm_id AS posterior_osm_id
-        FROM a
-        CROSS JOIN p
-    """), {"anterior": named_place_or_amenity_1, "posterior": named_place_or_amenity_2})
-    if not res:
-        return []
-    rows = res.fetchall()  # type: ignore
-    if not rows:
-        return []
-    routes_list = []
-    for row in rows:  # type: ignore
-        assert row[0] is not None, "anterior_x is None when it should have a value"
-        routes_list.append([
-            row[0],
-            row[1],
-            row[2],
-            row[3],
-        ])
-    routes = await multiple_concurrent_routes(routes_list)
-    for i, route in enumerate(routes):
-        route['anterior_osm_id'] = rows[i][4]  # type: ignore
-        route['posterior_osm_id'] = rows[i][5]  # type: ignore
-    res = await conn.execute(text(jinja2.Template("""
+    anterior_locale = named_place(named_place_or_amenity_1 if isinstance(named_place_or_amenity_1, str) else named_place_or_amenity_1.lookup)
+    posterior_locale = named_place(named_place_or_amenity_2 if isinstance(named_place_or_amenity_2, str) else named_place_or_amenity_2.lookup)
+    if anterior_locale.pt is None or posterior_locale.pt is None:
+        raise ValueError("anterior_locale or posterior_locale is None")
+    routes = route(anterior_locale.pt.lng, anterior_locale.pt.lat, posterior_locale.pt.lng, posterior_locale.pt.lat, num_routes=3)
+    print({
+        "routes": routes
+    })
+
+    if not routes:
+        raise ValueError("No routes found")
+
+    templ = jinja2.Template("""
     WITH decoded_routes AS (
-        {% for route in routes %}
-        {% if route.get('paths') and route.get('paths')[0].get('points') %}
-        SELECT
-        {{ route.get('anterior_osm_id') }} AS anterior_osm_id
-        , {{ route.get('posterior_osm_id') }} AS posterior_osm_id
-        , ST_Buffer(ST_LineFromEncodedPolyline('{{ route.get('paths')[0].get('points') }}')::GEOGRAPHY, 200)::GEOMETRY AS geom
-        {% endif %}
+        {% for path in paths %}
+        SELECT ST_Buffer(ST_LineFromEncodedPolyline('{{ path['points'] }}')::GEOGRAPHY, 200)::GEOMETRY AS geom
         {% if not loop.last %} UNION ALL {% endif %}
         {% endfor %}
     )
@@ -494,8 +476,19 @@ async def x_between_y_and_z(
     FROM
         osm
     JOIN unioned_routes ON ST_Intersects(geom, unioned_geom)
-    WHERE 1=1
-        AND WEBSEARCH_TO_TSQUERY(:interior) @@ fts
+    {% if interior.match_type == 'category' %}
+    JOIN osm_categories ON osm_categories.osm_id = osm.osm_id AND osm_categories.category = '{{ interior.lookup }}'
+    {% elif interior.match_type == 'fuzzy' %}
+    JOIN (
+        SELECT id
+        FROM
+            osm,
+            plainto_tsquery( '{{ interior.lookup }}' ) query
+        WHERE 1=1
+            AND query @@ fts
+        LIMIT 100000
+    ) AS fuzzy_matches ON fuzzy_matches.id = osm.id
+    {% endif %}
     )
     SELECT JSONB_BUILD_OBJECT(
         'type', 'FeatureCollection',
@@ -516,10 +509,14 @@ async def x_between_y_and_z(
         UNION ALL
         SELECT geom
         , -1 AS osm_id
-        , JSONB_BUILD_OBJECT('anterior_osm_id', anterior_osm_id, 'posterior_osm_id', posterior_osm_id) AS tags
+        , NULL AS tags
         FROM decoded_routes
       ) AS subfeatures
     ) features;
-    """).render(routes=routes)), {"interior": named_place_or_amenity_0})
-    geoms = res.fetchone()[0] if res else []  # type: ignore
-    return geoms
+    """).render(paths=routes.get('paths', []), interior=named_place_or_amenity_0)
+    res = await conn.execute(text(templ))
+    geom = res.scalar()
+    return ExecutorResponse(
+        geom=geom,  # type: ignore
+        entities=[ParsedEntity(**named_place_or_amenity_0.__dict__), ParsedEntity(**named_place_or_amenity_1.__dict__), ParsedEntity(**named_place_or_amenity_2.__dict__)],
+    )

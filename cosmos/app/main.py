@@ -4,7 +4,8 @@ import re
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.routing import APIRoute
-from sqlalchemy import text
+from fastapi.responses import JSONResponse
+from sqlalchemy import JSON, text
 from sqlalchemy.ext.asyncio import AsyncConnection  # type: ignore
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
@@ -121,3 +122,15 @@ def _use_route_names_as_operation_ids(application: FastAPI) -> None:
 
 
 _use_route_names_as_operation_ids(app)
+
+
+# Create a general purpose 500 error handler
+# When the app is in development mode, actually return the error message
+# Otherwise, return the text "Something went wrong. If this persists, please contact support@mercator.tech."
+@app.exception_handler(Exception)
+async def _exception_handler(request, exc):
+    exception_detail = {"detail": str(exc), "type": type(exc).__name__, "args": str(exc.args), "mode": settings.env}
+    if settings.env == "DEV":
+        return JSONResponse(exception_detail)
+    print(exception_detail)
+    return JSONResponse({"detail": "Something went wrong. If this persists, please contact support@mercator.tech"})

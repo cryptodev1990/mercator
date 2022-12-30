@@ -21,7 +21,7 @@ class _LocalModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class OpenAIDerivedIntent(_LocalModel):
+class DerivedIntent(_LocalModel):
     intent: Any  # TODO how to get the intent class here?
     args: Dict[str, Any]
 
@@ -32,7 +32,7 @@ class OpenAIDerivedIntent(_LocalModel):
 class ParsedQuery(_LocalModel):
     """Parse of a query."""
 
-    value: OpenAIDerivedIntent = Field(..., description="Query intent")
+    value: DerivedIntent = Field(..., description="Query intent")
     text: str
 
     def __str__(self) -> str:

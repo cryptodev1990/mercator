@@ -3,7 +3,7 @@ import yaml
 import inspect
 import re
 
-from typing import Any, Callable, Dict
+from typing import Any, Awaitable, Callable, Dict
 
 
 from app.crud import executors
@@ -40,7 +40,7 @@ class Intent:
 
     @staticmethod
     # callable takes arbitrary arguments and returns a ExecutorResponse
-    def get_execute_method(intent_name: str) -> Callable[..., ExecutorResponse]:
+    def get_execute_method(intent_name: str) -> Callable[..., Awaitable[ExecutorResponse]]:
         assert getattr(executors, intent_name), f'Executor {intent_name} not found'
         assert callable(getattr(executors, intent_name)), f'Executor {intent_name} not callable'
         # assert that one of the arguments is a database connection
@@ -98,3 +98,10 @@ def _validate_intents(intents_yaml):
 here = os.path.dirname(os.path.abspath(__file__))
 intents = yaml.safe_load(open(os.path.join(here, './intents.yaml')))
 intents = hydrate_intents(intents)
+intent_names = [intent.name for intent in intents.values()]
+
+def create_intent_from_name(intent_name: str) -> Intent:
+    """Create an intent object from a name and text"""
+    assert intent_name in intent_names, f'Intent {intent_name} not found'
+    intent = intents[intent_name]
+    return intent

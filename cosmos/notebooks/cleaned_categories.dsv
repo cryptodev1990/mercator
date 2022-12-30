@@ -1,0 +1,1436 @@
+category_slug|human_readable_name
+amenity/motorcycle_parking|Motorcycle Parking
+leisure/marina|Marina
+leisure/slipway_drivable|Drivable Slipway
+shop/motorcycle|Motorcycle Store
+office/financial|Financial Office
+attraction/big_wheel|Big Wheel
+natural/sand|Sand
+barrier/planter|Planter
+office/government/prosecutor|Prosecutor Office
+man_made/manhole/drain|Drain Manhole
+amenity/school|School
+power/generator/method/photovoltaic|Photovoltaic Power Generator
+golf/rough|Golf Rough
+man_made/pumping_station|Pumping Station
+man_made/bridge|Bridge
+healthcare/sample_collection|Sample Collection Healthcare
+amenity/studio/audio|Audio Studio
+amenity/restaurant/seafood|Seafood Restaurant
+amenity/restaurant/american|American Restaurant
+craft/carpenter|Carpenter
+amenity/motorcycle_rental|Motorcycle Rental
+aeroway/parking_position|Parking Position
+shop/pastry|Pastry Shop
+leisure/fitness_station/sit-up|Sit-up Fitness Station
+shop/tool_hire|Tool Hire Shop
+amenity/place_of_worship/sikh|Sikh Place of Worship
+amenity/restaurant/greek|Greek Restaurant
+waterway/boatyard|Boatyard
+shop/hairdresser|Hairdresser
+amenity/bicycle_parking/building|Building Bicycle Parking
+amenity/fast_food/kebab|Kebab Fast Food
+building/garages|Garages
+amenity/car_wash|Car Wash
+aerialway/drag_lift|Drag Lift
+office/political_party|Political Party Office
+craft/gardener|Gardener
+building|Building
+public_transport/station_monorail|Monorail Station
+amenity/vending_machine/coffee|Coffee Vending Machine
+power/plant/source/solar|Solar Power Plant
+highway/tertiary|Tertiary Highway
+amenity/studio/audio|Audio Studio
+amenity/fast_food/cafeteria|Cafeteria Fast Food
+public_transport/station|Station
+leisure/firepit|Fire Pit
+railway/tram_crossing|Tram Crossing
+highway/raceway|Raceway
+shop/anime|Anime Shop
+natural/peak|Peak
+natural/spring|Spring
+building/commercial|Commercial Building
+public_transport/station_light_rail|Light Rail Station
+amenity/language_school|Language School
+shop/variety_store|Variety Store
+shop/psychic|Psychic Shop
+shop/musical_instrument|Musical Instrument Store
+amenity/parking/street-side|Street-side Parking
+amenity/university|University
+highway/speed_camera|Speed Camera
+landuse/aquaculture|Aquaculture
+golf/bunker|Golf Bunker
+amenity/lounger|Lounger
+natural/tree_row|Tree Row
+craft/watchmaker|Watchmaker
+craft/plasterer|Plasterer
+amenity/restaurant/asian|Asian Restaurant
+amenity/fast_food/burger|Burger Fast Food
+leisure/ice_rink|Ice Rink
+shop/jewelry|Jewelry Shop
+man_made/adit|Adit
+leisure/fitness_station/balance_beam|Balance Beam Fitness Station
+type/route|Route
+shop/car/second_hand|Second Hand Car Shop
+power/switch|Switch
+leisure/fitness_station/rings|Rings Fitness Station
+craft/electronics_repair|Electronics Repair
+shop/motorcycle_repair|Motorcycle Repair Shop
+shop/hairdresser_supply|Hairdresser Supply Shop
+man_made/tower/defensive|Defensive Tower
+attraction/river_rafting|River Rafting Attraction
+man_made/mast|Mast
+building/entrance|Entrance
+barrier/height_restrictor|Height Restrictor
+amenity/parking/park_ride|Park & Ride
+amenity/language_school|Language School
+shop/e-cigarette|E-Cigarette Shop
+building/carport|Carport
+leisure/pitch/archery|Archery Pitch
+craft/joiner|Joiner
+amenity/fast_food/cafeteria|Cafeteria Fast Food
+highway/elevator|Elevator
+barrier/entrance|Entrance Barrier
+amenity/food_court|Food Court
+shop/variety_store|Variety Store
+shop/psychic|Psychic Shop
+shop/musical_instrument|Musical Instrument Store
+amenity/parking/street-side|Street-side Parking
+amenity/university|University
+highway/speed_camera|Speed Camera
+landuse/aquaculture|Aquaculture
+golf/bunker|Golf Bunker
+amenity/lounger|Lounger
+natural/tree_row|Tree Row
+craft/watchmaker|Watchmaker
+craft/clockmaker|Clockmaker
+amenity/restaurant/asian|Asian Restaurant
+amenity/fast_food/burger|Burger Fast Food
+leisure/ice_rink|Ice Rink
+shop/jewelry|Jewelry Shop
+man_made/adit|Adit
+leisure/fitness_station/balance_beam|Balance Beam Fitness Station
+type/route|Route
+shop/car/second_hand|Second-Hand Car Shop
+power/switch|Switch
+leisure/fitness_station/rings|Rings Fitness Station
+craft/electronics_repair|Electronics Repair Shop
+shop/motorcycle_repair|Motorcycle Repair Shop
+shop/hairdresser_supply|Hairdresser Supply Shop
+man_made/tower/defensive|Defensive Tower
+attraction/river_rafting|River Rafting Attraction
+man_made/mast|Mast
+healthcare/optometrist|Optometrist
+natural/tree|Tree
+healthcare/midwife|Midwife
+railway/railway_crossing|Railway Crossing
+railway/narrow_gauge|Narrow Gauge Railway
+shop/photo|Photo Shop
+tourism/information/map|Map Information
+man_made/beacon|Beacon
+type/restriction/no_u_turn|No U-Turn Restriction
+natural/fell|Fell
+amenity/social_facility|Social Facility
+amenity/mortuary|Mortuary
+craft/key_cutter|Key Cutter
+attraction/maze|Maze Attraction
+building/service|Service Building
+building/semidetached_house|Semidetached House
+leisure/pitch/beachvolleyball|Beach Volleyball Pitch
+emergency/ambulance_station|Ambulance Station
+tourism/zoo/wildlife|Wildlife Zoo
+tourism/camp_site|Camp Site
+amenity/casino|Casino
+man_made/planter|Planter
+landuse/greenfield|Greenfield
+leisure/pitch/shuffleboard|Shuffleboard Pitch
+shop/interior_decoration|Interior Decoration Shop
+military/office|Military Office
+amenity/events_venue|Events Venue
+office/religion|Religious Office
+aeroway/holding_position|Holding Position
+emergency/lifeguard|Lifeguard
+leisure/fishing|Fishing
+waterway/tidal_channel|Tidal Channel
+shop/farm|Farm Shop
+amenity/smoking_area|Smoking Area
+shop/water|Water Shop
+emergency/water_tank|Water Tank
+amenity/bicycle_parking|Bicycle Parking
+tourism/information/office|Tourist Information Office
+barrier/bump_gate|Bump Gate
+traffic_calming/mini_bumps|Mini Bumps
+craft/signmaker|Signmaker
+shop/hifi|Hi-Fi Shop
+advertising/billboard|Billboard
+highway/emergency_bay|Emergency Bay
+landuse/religious|Religious Landuse
+craft/hvac|HVAC Craft
+attraction/log_flume|Log Flume Attraction
+public_transport/platform|Public Transport Platform
+traffic_calming/hump|Traffic Calming Hump
+office/surveyor|Surveyor Office
+office/telecommunication|Telecommunication Office
+highway/raceway/karting|Karting Raceway
+cycleway/asl|ASL Cycleway
+amenity/vending_machine/food|Food Vending Machine
+man_made|Man-Made
+type/route/piste|Piste Route
+amenity/place_of_worship/shinto|Shinto Place of Worship
+amenity/car_rental|Car Rental Amenity
+aeroway/runway|Runway
+pipeline/valve|Valve Pipeline
+leisure/fitness_station/stairs|Stairs Fitness Station
+highway/service/drive-through|Drive-Through Service Highway
+playground/basketrotator|Basketrotator Playground
+tourism/information/board/welcome_sign|Welcome Sign Information Board
+amenity/restaurant/noodle|Noodle Restaurant
+shop/window_blind|Window Blind Shop
+leisure/dancing_school|Dancing School
+man_made/courtyard|Courtyard
+healthcare/alternative/chiropractic|Chiropractic Healthcare
+shop/stationery|Stationery Shop
+landuse/garages|Garages
+waterway|Waterway
+playground/splash_pad|Splash Pad Playground
+man_made/silo|Silo
+barrier/cattle_grid|Cattle Grid
+shop/hardware|Hardware Shop
+natural/coastline|Coastline
+public_transport/station_trolleybus|Trolleybus Station
+landuse/recreation_ground|Recreation Ground
+railway/tram|Tram Railway
+shop/art|Art Shop
+office/water_utility|Water Utility Office
+playground/seesaw|Seesaw Playground
+amenity/studio/radio|Radio Studio
+playground/map|Map Playground
+golf/clubhouse|Golf Clubhouse
+amenity/bicycle_parking/shed|Bicycle Parking Shed
+landuse/construction|Construction Landuse
+man_made/crane|Crane
+building/ruins|Ruins
+shop/wholesale|Wholesale Shop
+public_transport/stop_position_subway|Subway Stop Position
+leisure/sauna|Sauna
+shop/yes|Yes Shop
+highway/secondary_link|Secondary Link Highway
+highway/primary_link|Primary Link Highway
+emergency/no|No Emergency
+shop/pet_grooming|Pet Grooming Shop
+shop/appliance|Appliance Shop
+historic/wayside_cross|Wayside Cross
+craft/agricultural_engines|Agricultural Engines Craft
+amenity/bank|Bank
+leisure/track/running|Running Track
+amenity/restaurant/barbeque|Barbecue Restaurant
+office/quango|Quango Office
+piste/sled|Sled Piste
+Golf/Hole|Golf Hole
+Emergency/Life_Ring|Life Ring
+Barrier/Hedge|Hedge
+Barrier/Fence|Fence
+Amenity/Loading_Dock|Loading Dock
+Shop/Scuba_Diving|Scuba Diving Shop
+Amenity/Social_Facility/Ambulatory_Care|Ambulatory Care Social Facility
+Shop/Copyshop|Copy Shop
+Shop/Bed|Bed Shop
+Emergency/Designated|Designated Emergency
+Tourism/Zoo|Zoo
+Public_Transport/Stop_Position_Trolleybus|Trolleybus Stop Position
+Emergency/Fire_Hose|Fire Hose
+Office/Union|Union Office
+Building/Civic|Civic Building
+Office/Notary|Notary Office
+Highway/Living_Street|Living Street
+Public_Transport/Platform/Bus_Point|Bus Point Platform
+Power|Power
+Landuse/Farmyard|Farmyard
+Advertising/Totem|Totem
+Shop/Weapons|Weapons Shop
+Tourism/Artwork/Mural|Mural Artwork
+Natural/Wetland/Wet_Meadow|Wet Meadow Wetland
+Tourism/Information|Tourism Information
+Building/Residential|Residential Building
+Place/City|City
+Landuse/Military/Base|Military Base
+Man_Made/Beehive|Beehive
+Amenity/Dressing_Room|Dressing Room
+Shop/Garden_Centre|Garden Centre Shop
+Tourism/Picnic_Site|Picnic Site
+Building/Stable|Stable Building
+Amenity/Fast_Food|Fast Food
+Leisure/Swimming_Area|Swimming Area
+Highway/Trunk_Link|Trunk Link Highway
+Office/Adoption_Agency|Adoption Agency Office
+Man_Made/Mast/Communication|Communication Mast
+Highway/Services|Services Highway
+Seamark/Mooring|Mooring Seamark
+Historic/Ruins|Ruins
+Shop/Camera|Camera Shop
+Building/Greenhouse|Greenhouse Building
+Historic/Castle|Castle
+Amenity/Compressed_Air|Compressed Air
+Aerialway/Chair_Lift|Chair Lift Aerialway
+Highway/Footway/Sidewalk|Sidewalk Footway
+Man_Made/Tailings_Pond|Tailings Pond
+Waterway/Drain|Drain Waterway
+Railway/Miniature|Miniature Railway
+Amenity/Waste_Disposal|Waste Disposal
+Shop/Kiosk|Kiosk Shop
+Healthcare/Speech_Therapist|Speech Therapist Healthcare
+Type/Restriction/Only_Straight_On|Only Straight On Restriction
+Amenity/Fast_Food/Mexican|Mexican Fast Food
+Place/Plot|Plot Place
+Amenity/Fast_Food/Donut|Fast Food Donut Shop
+Amenity/Internet_Cafe|Internet Cafe
+Building/Office|Office Building
+Man_Made/Observatory|Observatory
+Leisure/Sports_Centre/Horse_Racing|Horse Racing Sports Centre
+Amenity/Toilets/Disposal/Pitlatrine|Pitlatrine Toilet
+Natural/Saddle|Saddle
+Building/Pavilion|Pavilion Building
+Leisure/Swimming_Pool|Swimming Pool
+Amenity/Community_Centre|Community Centre
+Leisure/Pitch/Futsal|Futsal Pitch
+Railway/Tram_Stop|Tram Stop Railway
+Public_Transport/Platform_Point|Platform Point Public Transport
+Office/Administrative|Administrative Office
+Landuse/Quarry|Quarry
+Office/Insurance|Insurance Office
+Amenity/Music_School|Music School
+Leisure/Pitch/Rugby_Union|Rugby Union Pitch
+Leisure/Miniature_Golf|Miniature Golf
+Tourism/Camp_Site/Group_Only|Group-Only Camp Site
+Shop/Beauty/Nails|Nail Beauty Shop
+Playground/Climbingwall|Climbing Wall
+Man_Made/Obelisk|Obelisk
+Addr/Interpolation|Interpolated Address
+Waterway/Fish_Pass|Fish Pass
+Healthcare/Laboratory|Healthcare Laboratory
+Craft/Shoemaker|Shoemaker
+Shop/Kitchen|Kitchen Shop
+Man_Made/Embankment|Embankment
+Amenity/Animal_Boarding|Animal Boarding
+Railway/Construction|Railway Construction
+Craft/Winery|Winery
+Leisure/Pitch/Australian_Football|Australian Football Pitch
+Man_Made/Tower/Diving|Diving Tower
+Amenity/Vending_Machine/Bread|Bread Vending Machine
+Office/Estate_Agent|Estate Agent Office
+Amenity/Restaurant/Steakhouse|Steakhouse Restaurant
+Amenity/Clinic|Clinic
+Landuse|Land use
+Shop/Car|Car Shop
+Emergency/First_Aid_Kit|First Aid Kit Emergency
+Shop/Fishing|Fishing Shop
+Building/Bunker|Bunker Building
+Barrier/Block|Barrier
+Tourism/Attraction|Tourist Attraction
+Highway/Footway/Informal|Informal Footway
+Building/House|House
+Barrier/Toll_Booth|Toll Booth
+Leisure/Sports_Hall|Sports Hall
+Leisure/Sports_Centre/Shooting|Sports Centre (Shooting)
+Craft/Plumber|Plumbing
+Leisure/Track|Track
+Highway/Footway/Crossing/Unmarked|Unmarked Crossing
+Man_made/Works|Man-made Works
+Craft/Handicraft|Handicraft
+Waterway/Waterfall|Waterfall
+Office/Energy_Supplier|Energy Supplier
+Area/Footway|Footway Area
+Highway/Cycleway/Crossing|Cycleway Crossing
+Amenity/Waste/Dog_Excrement|Dog Excrement
+Amenity/Boat_Storage|Boat Storage
+Shop/Games|Games Shop
+Emergency/Official|Official Emergency
+Shop/Dry_Cleaning|Dry Cleaning Shop
+Leisure/Pitch/Softball|Softball Pitch
+Building/Farm|Farm
+Amenity/Shelter|Shelter
+Amenity/Courthouse|Courthouse
+Leisure/Slipway|Slipway
+Internet_Access/Wlan|Wi-Fi Access Point
+Playground/Tetherball|Tetherball Playground
+Tourism/Guest_House|Guest House
+Amenity/Ranger_Station|Ranger Station
+Amenity/Childcare|Childcare Amenity
+Amenity/Letter_Box|Letter Box
+Disc_Golf/Tee|Disc Golf Tee
+Amenity/Library|Library
+Shop/Toys|Toy Shop
+Barrier/Spikes|Spikes
+Craft/Upholsterer|Upholsterer
+Waterway/Stream_Intermittent|Intermittent Stream
+Highway/Track|Track
+Leisure/Fitness_Centre|Fitness Centre
+Public_Transport/Platform/Train_Point|Train Platform
+Amenity/Place_Of_Worship/Buddhist|Buddhist Place of Worship
+Office/Forestry|Forestry Office
+Shop/Laundry|Laundry Shop
+Type/Restriction/No_Straight_On|No Straight On Restriction
+Highway/Bus_Guideway|Bus Guideway
+Office/Diplomatic/Consulate|Consulate
+Barrier/Kerb/Rolled|Rolled Kerb
+Pipeline|Pipeline
+Amenity/Vending_Machine/Newspapers|Newspaper Vending Machine
+Natural/Water/Stream|Stream
+Building/Retail|Retail Building
+Shop/Books|Book Shop
+Natural/Wetland/Bog|Bog
+Attraction/Carousel|Carousel
+Amenity/Fast_Food/Sandwich|Sandwich Fast Food
+Tourism/Aquarium|Aquarium
+Landuse/Farm|Farmland
+Emergency/Fire_Hydrant|Fire Hydrant
+Railway/Rail/Highspeed|High Speed Rail
+Amenity/Public_Bookcase|Public Bookcase
+Shop/Hunting|Hunting Shop
+Amenity/Clinic/Fertility|Fertility Clinic
+Tourism/Artwork|Artwork
+Public_Transport/Platform/Light_Rail|Light Rail Platform
+Shop/Sports|Sports Shop
+Natural/Beach|Beach
+Shop/Furniture|Furniture Shop
+Shop/Baby_Goods|Baby Goods Shop
+Type/Route/Road|Road Route
+Craft/Stonemason|Stonemason
+Amenity/Marketplace|Marketplace
+Man_made/Mineshaft|Mineshaft
+Entrance/Main|Main Entrance
+Barrier/Gate|Gate
+Playground/Sandpit|Sandpit
+Highway/Raceway/Motocross|Motocross Raceway
+Craft/Locksmith|Locksmith
+Landuse/Industrial|Industrial Land
+Playground/Roundabout|Roundabout
+Barrier/Motorcycle_Barrier|Motorcycle Barrier
+Highway/Service/Parking_Aisle|Parking Aisle
+Office/Architect|Architect Office
+Highway/Pedestrian_Line|Pedestrian Line
+Leisure/Pitch/Four_Square|Four Square Pitch
+Landuse/Salt_Pond|Salt Pond
+Man_made/Watermill|Watermill
+Shop/Tea|Tea Shop
+Natural/Scrub|Scrubland
+Building/Farm_Auxiliary|Farm Auxiliary Building
+Natural/Grassland|Grassland
+Craft/Saddler|Saddler
+Building/Kindergarten|Kindergarten
+Leisure/Track/Cycling|Cycling Track
+Man_made/Video_Wall|Video Wall
+Craft/Confectionery|Confectionery
+Waterway/Weir|Weir
+Tourism/Motel|Motel
+Landuse/Industrial/Scrap_Yard|Scrap Yard
+Shop/Bag|Bag Shop
+Amenity/Ferry Terminal|Ferry Terminal
+Leisure/Disc Golf Course|Disc Golf Course
+Area|Area
+Man Made/Surveillance|Surveillance
+Shop/Pawnbroker|Pawnbroker
+Office/NGO|Non-Governmental Organization (NGO)
+Landuse/Commercial|Commercial Land
+Amenity/Community Centre/Youth Centre|Youth Centre
+Leisure/Fitness Station/HyperExtension|Fitness Station
+Building/Cabin|Cabin
+Natural/Water/Basin|Water Basin
+Amenity/Gambling|Gambling
+Barrier/Sally Port|Sally Port
+Office/Research|Research Office
+Landuse/Farmland|Farmland
+Shop/Supermarket|Supermarket
+Leisure/Stadium|Stadium
+Historic/City Gate|City Gate
+Shop/Repair|Repair Shop
+Healthcare/Hospice|Hospice
+Man Made/Groyne|Groyne
+Building/Industrial|Industrial Building
+Shop/Dairy|Dairy Shop
+Building/Shed|Shed
+Amenity/Biergarten|Biergarten
+Power/Plant/Source/Hydro|Hydro Power Plant
+Highway/Motorway Link|Motorway Link
+Waterway/Lock Gate|Lock Gate
+Shop/Hearing Aids|Hearing Aid Shop
+Traffic Sign/City Limit|City Limit Sign
+Shop/Car Parts|Car Parts Shop
+Natural/Water/Lake|Lake
+Type/Site|Site
+Shop/Party|Party Shop
+Man Made/Antenna|Antenna
+Office/Moving Company|Moving Company
+Man Made/Water Works|Water Works
+Bridge/Support|Bridge Support
+Leisure/Picnic Table|Picnic Table
+Historic/Building|Historic Building
+Public Transport/Platform/Train|Train Platform
+Shop/Wine|Wine Shop
+Leisure/Pitch/Skateboard|Skateboard Pitch
+Man Made/Flagpole|Flagpole
+Entrance/Emergency Ward Entrance|Emergency Ward Entrance
+Waterway/Sanitary Dump Station|Sanitary Dump Station
+Craft/Photographic Laboratory|Photographic Laboratory
+Healthcare/Podiatrist|Podiatrist
+Seamark/Beacon Isolated Danger|Beacon Isolated Danger
+Man Made/Tunnel|Tunnel
+Shop/Mobile Phone|Mobile Phone Shop
+Aerialway/T-Bar|T-Bar
+Office/Lawyer|Lawyer's Office
+Healthcare/Occupational Therapist|Occupational Therapist
+Natural/Cave Entrance|Cave Entrance
+Landuse/Meadow|Meadow
+Place/Neighbourhood|Neighbourhood
+Power/Portal|Portal
+Place/Square|Square
+Leisure/Golf Course|Golf Course
+Type/Connectivity|Connectivity
+Power/Plant/Source/Nuclear|Nuclear Power Plant
+Type/Enforcement|Enforcement
+Shop/Telecommunication|Telecommunication Shop
+Shop/Butcher|Butcher Shop
+Leisure/Pitch/Basketball|Basketball Pitch
+Highway/Speed Display|Speed Display
+Shop/Seafood|Seafood Shop
+Landuse/Plant Nursery|Plant Nursery
+Natural/Valley|Valley
+Natural/Hot Spring|Hot Spring
+Office/Company|Company Office
+Amenity/Sanitary Dump Station|Sanitary Dump Station
+Shop/Charity|Charity Shop
+Man Made/Yes|Yes
+Shop/Carpet|Carpet Shop
+Highway/Cycleway/Crossing/Traffic Signals|Cycleway Crossing Traffic Signals
+Aeroway/Apron|Apron
+Leisure/Common|Common
+Landuse/Military/Danger Area|Danger Area
+Emergency/Siren|Siren
+Seamark/Buoy Lateral/Green|Green Buoy Lateral
+Man Made/Pier|Pier
+Man Made/Mast/Communication/Television|Television Mast
+Office/Tax Advisor|Tax Advisor
+Shop/Shoes|Shoe Shop
+Traffic Calming/Island|Traffic Calming Island
+Public Transport/Station Subway|Subway Station
+Natural/Wetland/Fen|Fen Wetland
+Leisure/Dance|Dance Leisure
+Power/Line|Power Line
+Golf/Fairway|Golf Fairway
+Man Made/Windpump|Windpump
+Amenity/Nightclub/LGBTQ|LGBTQ Nightclub
+Tourism/Camp Site/Backcountry|Backcountry Camp Site
+Playground/Structure|Playground Structure
+Craft/Sculptor|Sculptor
+Historic/Fort|Fort
+Club/Sport|Sport Club
+Building/Detached|Detached Building
+leisure/bleachers|Bleachers
+playground/climbingframe|Climbing Frame
+disused/shop|Disused Shop
+traffic_calming/yes|Traffic Calming 
+amenity/shelter/lean_to|Lean To Shelter
+amenity/kindergarten|Kindergarten
+pipeline/substation|Substation
+historic|Historic Site
+office/diplomatic|Diplomatic Office
+type/waterway|Waterway
+natural/heath|Heath
+aerialway/zip_line|Zip Line
+public_transport/stop_position_bus|Bus Stop Position
+man_made/goods_conveyor|Goods Conveyor
+disc_golf/basket|Disc Golf Basket
+indoor/door|Indoor Door
+amenity/vending_machine/parking_tickets|Parking Ticket Vending Machine
+amenity/weighbridge|Weighbridge
+public_transport/platform/tram_point|Tram Platform
+highway/crossing/uncontrolled|Uncontrolled Crossing
+amenity/fountain|Fountain
+man_made/pier/floating|Floating Pier
+shop/locksmith|Locksmith
+man_made/monitoring_station|Monitoring Station
+man_made/street_cabinet|Street Cabinet
+amenity/place_of_worship/hindu|Hindu Place of Worship
+amenity/college|College
+traffic_calming/table|Traffic Calming Table
+amenity/photo_booth|Photo Booth
+healthcare/dentist/orthodontics|Orthodontic Dentist
+amenity/fast_food/fish_and_chips|Fish and Chips Fast Food
+place/hamlet|Hamlet
+marker/utility|Utility Marker
+highway/footway/crossing/traffic_signals|Traffic Signals Crossing Footway
+shop/candles|Candle Shop
+healthcare/alternative|Alternative Healthcare
+type/restriction/only_u_turn|U-Turn Only Restriction
+man_made/gantry|Gantry
+man_made/water_well|Water Well
+shop/rental|Rental Shop
+shop/water_sports|Water Sports Shop
+seamark/buoy_lateral/red|Red Lateral Buoy
+amenity/studio/video|Video Studio
+shop/religion|Religious Shop
+shop/electronics|Electronics Shop
+type/route/monorail|Monorail Route
+amenity/parking_space|Parking Space
+leisure|Leisure Site
+traffic_sign|Traffic Sign
+aeroway/hangar|Hangar
+shop/lottery|Lottery Shop
+craft/pottery|Pottery Shop
+office/consulting|Consulting Office
+natural/bay|Bay
+attraction/bumper_car|Bumper Car Attraction
+amenity/post_office|Post Office
+amenity/shelter/public_transport|Public Transport Shelter
+place/village|Village
+man_made/manhole/sewer|Sewer Manhole
+building/static_caravan|Static Caravan
+railway/abandoned|Abandoned Railway
+leisure/pitch/american_football|American Football Pitch
+amenity/payment_centre|Payment Centre
+amenity/nightclub|Nightclub
+power/generator/source/hydro|Hydro Generator
+tourism/museum|Museum
+amenity/fast_food/juice|Juice Fast Food
+office/government/register_office|Register Office
+type/route/power|Power Route
+building/public|Public Building
+shop/brewing_supplies|Brewing Supplies Shop
+leisure/picnic_table/chess|Chess Picnic Table
+barrier/stile|Stile Barrier
+natural/strait|Strait
+man_made/mast/lighting|Lighting Mast
+place/island|Island
+leisure/fitness_station|Fitness Station
+golf/lateral_water_hazard|Lateral Water Hazard
+disc_golf/hole|Disc Golf Hole
+natural/scree|Scree
+public_transport/station_train|Train Station
+shop/clothes/workwear|Workwear Clothes Shop
+man_made/tower/communication|Communication Tower
+power/plant/source/gas|Gas Plant
+amenity/love_hotel|Love Hotel
+craft/tailor|Tailor
+tourism/trail_riding_station|Trail Riding Station
+highway/passing_place|Passing Place
+building_part|Building Part
+aerialway/gondola|Gondola
+shop/tattoo|Tattoo Shop
+amenity/theatre|Theatre
+amenity/place_of_worship/christian/jehovahs_witness|Jehovah's Witness Place of Worship
+landuse/harbour|Harbour
+indoor/stairs|Indoor Stairs
+natural/cape|Cape
+shop/perfumery|Perfumery Shop
+barrier/ditch|Ditch Barrier
+club|Club
+public_transport/platform/tram|Tram Platform
+man_made/reservoir_covered|Reservoir
+shop/shoe_repair|Shoe Repair Shop
+highway/footway/crossing/zebra|Zebra Crossing
+amenity/hunting_stand|Hunting Stand
+healthcare/audiologist|Audiologist
+building/barn|Barn
+amenity/restaurant/mexican|Mexican Restaurant
+building/terrace|Terrace
+type/route/tram|Tram Route
+shop/optician|Optician
+leisure/track/horse_racing|Horse Racing Track
+amenity/doctors/gynaecology|Gynaecologist
+man_made/manhole/telecom|Telecom Manhole
+highway/bridleway|Bridleway
+healthcare/psychotherapist|Psychotherapist
+emergency/defibrillator|Defibrillator
+amenity/taxi|Taxi Stand
+historic/castle/stately|Stately Castle
+highway/footway|Footway
+amenity/parking/multi-storey|Multi-Storey Parking
+highway/primary|Primary Highway
+amenity/crematorium|Crematorium
+aeroway|Aeroway
+amenity/binoculars|Binoculars
+shop/mall|Mall
+man_made/manhole|Manhole
+aeroway/terminal|Airport Terminal
+shop/electrical|Electrical Shop
+natural/wetland/marsh|Marsh
+leisure/fitness_station/push-up|Push-Up Fitness Station
+shop/clothes/second_hand|Second Hand Clothes Shop
+amenity/boat_rental|Boat Rental
+area/highway|Highway Area
+leisure/pitch/american_handball|American Handball Pitch
+shop/leather|Leather Shop
+golf/path|Golf Path
+aerialway/goods|Goods Aerialway
+man_made/torii|Torii
+landuse/brownfield|Brownfield
+playground/hopscotch|Hopscotch Playground
+man_made/lighthouse|Lighthouse
+natural/mud|Mud
+shop/computer|Computer Shop
+shop/lighting|Lighting Shop
+landuse/reservoir|Reservoir Landuse
+leisure/resort|Resort
+emergency/mountain_rescue|Mountain Rescue Station
+entrance/emergency|Emergency Entrance
+shop/funeral_directors|Funeral Directors
+barrier/turnstile|Turnstile
+amenity/restaurant/french|French Restaurant
+office/financial_advisor|Financial Advisor
+amenity/polling_station|Polling Station
+leisure/bowling_alley|Bowling Alley
+building/stadium|Stadium
+place/isolated_dwelling|Isolated Dwelling
+office/government|Government Office
+tourism/gallery|Gallery
+shop/gas|Gas Station
+piste/nordic|Nordic Piste
+man_made/mast/communication/radio|Radio Communication Mast
+tourism/artwork/bust|Bust Sculpture
+shop/printer_ink|Printer Ink Shop
+highway/crossing/zebra|Zebra Crossing
+shop/doors|Doors Shop
+highway/cycleway/crossing/bicycle_foot|Bicycle and Foot Crossing
+amenity/charging_station|Charging Station
+amenity/pub/irish|Irish Pub
+leisure/horse_riding|Horse Riding
+shop/car_repair|Car Repair Shop
+public_transport/platform/trolleybus_point|Trolleybus Platform
+amenity/restaurant|Restaurant
+highway/trunk|Trunk Highway
+shop/bicycle|Bicycle Shop
+power/plant/source/oil|Oil Power Plant
+amenity/shelter/gazebo|Gazebo Shelter
+amenity/watering_place|Watering Place
+point|Point
+amenity/fast_food/ice_cream|Ice Cream Fast Food
+craft/floorer|Floorer
+highway/service_area|Service Area
+building/hut|Hut
+public_transport/platform/bus_tram_point|Bus and Tram Platform
+healthcare/blood_donation|Blood Donation Centre
+building/manufacture|Manufacture Building
+barrier/wall/noise_barrier|Noise Barrier Wall
+man_made/tower/observation|Observation Tower
+police/checkpoint|Police Checkpoint
+attraction/water_slide|Water Slide
+building/construction|Construction Site
+type/route/bicycle|Bicycle Route
+craft/painter|Painter
+place/locality|Locality
+historic/wreck|Wreck
+man_made/cross|Cross
+cemetery/grave|Grave
+landuse/military/training_area|Military Training Area
+highway/cycleway/bicycle_foot|Bicycle and Foot Cycleway
+tourism/information/guidepost|Guidepost
+amenity/restaurant|Restaurant
+highway/trunk|Trunk Highway
+shop/bicycle|Bicycle Shop
+power/plant/source/oil|Oil Power Plant
+amenity/shelter/gazebo|Gazebo Shelter
+amenity/watering_place|Watering Place
+point|Point
+amenity/fast_food/ice_cream|Ice Cream Fast Food
+craft/floorer|Floorer
+highway/service_area|Service Area
+building/hut|Hut
+public_transport/platform/bus_tram_point|Bus and Tram Platform
+healthcare/blood_donation|Blood Donation Centre
+building/manufacture|Manufacture Building
+barrier/wall/noise_barrier|Noise Barrier Wall
+man_made/tower/observation|Observation Tower
+police/checkpoint|Police Checkpoint
+attraction/water_slide|Water Slide
+building/construction|Construction Site
+type/route/bicycle|Bicycle Route
+craft/painter|Painter
+place/locality|Locality
+historic/wreck|Wreckage Site
+man_made/cross|Cross
+cemetery/grave|Grave
+landuse/military/training_area|Military Training Area
+highway/cycleway/bicycle_foot|Bicycle and Foot Cycleway
+tourism/information/guidepost|Guidepost
+amenity/restaurant/sushi|Sushi
+Highway/Construction|Construction Site
+Building/School|School
+Leisure/Garden|Garden
+Place|Place
+Natural/Shrub|Shrub
+Amenity/Vending_Machine/Ice_Cream|Ice Cream Vending Machine
+Man_Made/Bunker_Silo|Bunker Silo
+Amenity/Toilets/Portable|Portable Toilet
+Type/Route/Foot|Foot Route
+Shop/Curtain|Curtain Shop
+Landuse/Residential/Apartments|Apartment Complex
+Amenity/Car_Sharing|Car Sharing
+Shop/Cannabis|Cannabis Shop
+Waterway/Canal/Lock|Canal Lock
+Barrier/Wicket_Gate|Wicket Gate
+Highway/Primary_Link-US-CA|US-CA Primary Link
+Aeroway/Gate|Airport Gate
+Barrier/Swing_Gate|Swing Gate
+Railway/Level_Crossing|Level Crossing
+Barrier/Guard_Rail|Guard Rail
+Amenity/Restaurant/German|German Restaurant
+Landuse/Landfill|Landfill
+Natural/Shingle|Shingle
+Shop/Outdoor|Outdoor Shop
+Building/Dormitory|Dormitory
+Amenity/Bar|Bar
+Tourism/Information/Board|Tourist Information Board
+Man_Made/Manhole/Water|Water Manhole
+Amenity/Restaurant/Italian|Italian Restaurant
+Shop/Swimming_Pool|Swimming Pool Shop
+Tourism/Theme_Park|Theme Park
+Shop/Department_Store|Department Store
+Public_Transport/Stop_Position|Public Transport Stop
+Amenity/Cafe|Cafe
+Attraction/Amusement_Ride|Amusement Ride
+Amenity/Bicycle_Repair_Station|Bicycle Repair Station
+Shop/Agrarian|Agrarian Shop
+Shop/Pottery|Pottery Shop
+Building/Transportation|Transportation Building
+Leisure/Pitch/Table_Soccer|Table Soccer Pitch
+Railway/Switch|Railway Switch
+Highway/Milestone|Milestone
+Amenity/Waste_Transfer_Station|Waste Transfer Station
+Shop/Tobacco|Tobacco Shop
+Attraction/Swing_Carousel|Swing Carousel
+Amenity/Grit_Bin|Grit Bin
+Building/University|University
+Landuse/Forest|Forest
+Tourism/Zoo/Safari|Safari Zoo
+Barrier/Fence/Railing|Fence Railing
+Shop/Vacant|Vacant Shop
+Shop/Ticket|Ticket Shop
+Shop/Travel_Agency|Travel Agency
+Public_Transport/Station_Tram|Tram Station
+Amenity/Vending_Machine|Vending Machine
+Barrier/Bollard_Line|Bollard Line
+Waterway/Dam|Dam
+Public_Transport/Station_Aerialway|Aerialway Station
+Amenity/Toilets|Toilets
+Barrier/Cycle_Barrier|Cycle Barrier
+Leisure/Playground|Playground
+Amenity/Shower|Shower
+Amenity/Recycling|Recycling
+Shop/Clothes|Clothes Shop
+Building/Synagogue|Synagogue
+Type/Route/Light_Rail|Light Rail Route
+Type/Multipolygon|Multipolygon
+Amenity/Studio|Studio
+Barrier/Bollard_Line|Bollard Line
+Waterway/Dam|Dam
+Public_Transport/Station_Aerialway|Aerialway Station
+Amenity/Toilets|Toilets
+Barrier/Cycle_Barrier|Cycle Barrier
+Leisure/Pitch/Horseshoes|Horseshoes Pitch
+Highway/Toll_Gantry|Toll Gantry
+Type/Route/Horse|Horse Route
+Attraction/Bungee_Jumping|Bungee Jumping
+Amenity/Place_Of_Worship/Jewish|Jewish Place of Worship
+Highway/Cycleway/Crossing/Uncontrolled|Uncontrolled Cycleway Crossing
+Leisure/Pitch/Gaga|Gaga Pitch
+Barrier/Yes|Barrier
+Amenity/Community_Centre/Lgbtq|LGBTQ Community Centre
+Amenity/Restaurant/Indian|Indian Restaurant
+Amenity/Clock/Sundial|Sundial
+Attraction/Summer_Toboggan|Summer Toboggan
+Shop/Convenience|Convenience Shop
+Amenity/Fuel|Fuel Station
+Shop|Shop
+Barrier/Wall|Wall
+Aeroway/Helipad|Helipad
+Shop/Florist|Florist
+Highway/Cycleway|Cycleway
+Cemetery/Sector|Cemetery Sector
+Shop/Craft|Craft Shop
+Leisure/Pitch/Padel|Padel Pitch
+Building/Roof|Roof
+Amenity/Place_Of_Worship|Place of Worship
+Leisure/Pitch/Paintball|Paintball Pitch
+Leisure/Garden/Botanical|Botanical Garden
+Amenity/Karaoke_Box|Karaoke Box
+Telecom/Data_Center|Data Center
+Marker|Marker
+Man_Made/Surveillance/Camera|Surveillance Camera
+Leisure/Bird_Hide|Bird Hide
+Man_Made/Tower/Cooling|Cooling Tower
+Shop/Pyrotechnics|Pyrotechnics Shop
+Ford|Ford
+Boundary/Administrative|Administrative Boundary
+Tourism/Museum/History|History Museum
+Shop/Caravan|Caravan Shop
+Junction|Junction
+Building/Hospital|Hospital
+Aeroway/Aerodrome|Aerodrome
+Highway/Motorway_Link-US-CA|US-CA Motorway Link
+Power/Cable|Cable Power
+Natural/Stone|Stone
+Highway/Trailhead|Trailhead
+Traffic_Calming/Cushion|Traffic Calming Cushion
+Amenity/Vacuum_Cleaner|Vacuum Cleaner
+Tourism/Artwork/Sculpture|Sculpture
+Building/Apartments|Apartments
+Amenity/Trolley_Bay|Trolley Bay
+Railway/Buffer_Stop|Buffer Stop
+Landuse/Churchyard|Churchyard
+Highway/Residential|Residential Highway
+highway/cycleway/crossing/marked|Marked Bicycle Crossing
+highway/unclassified|Unclassified Highway
+aeroway/jet_bridge|Jet Bridge
+playground/funnel_ball|Funnel Ball Playground
+place/islet|Islet
+route/ferry|Ferry Route
+amenity/atm|ATM
+tourism/alpine_hut|Alpine Hut
+waterway/fuel|Fuel Waterway
+amenity/fast_food/pizza|Pizza Fast Food
+advertising/board|Advertising Board
+office/charity|Charity Office
+man_made/manhole/gas|Gas Manhole
+highway/emergency_access_point|Emergency Access Point
+natural/water/pond|Pond
+aerialway/pylon|Pylon
+traffic_calming/bump|Traffic Calming Bump
+amenity/give_box|Give Box
+barrier/kerb/flush|Flush Kerb Barrier
+amenity/social_facility/group_home|Group Home Social Facility
+amenity/prep_school|Prep School
+barrier/kissing_gate|Kissing Gate
+leisure/adult_gaming_centre|Adult Gaming Centre
+office/employment_agency|Employment Agency
+leisure/nature_reserve|Nature Reserve
+type/restriction/only_left_turn|Only Left Turn Restriction
+highway/motorway_junction|Motorway Junction
+railway/subway_entrance|Subway Entrance
+shop/nutrition_supplements|Nutrition Supplements Shop
+leisure/playground/indoor|Indoor Playground
+boundary|Boundary
+shop/paint|Paint Shop
+type/route/mtb|Mountain Bike Route
+shop/bookmaker|Bookmaker Shop
+railway/derail|Derail Railway
+type/route/subway|Subway Route
+landuse/orchard|Orchard
+amenity/restaurant/chinese|Chinese Restaurant
+amenity/pub|Pub
+natural/ridge|Ridge
+amenity/dentist|Dentist
+aerialway/platter|Platter Aerialway
+landuse/cemetery|Cemetery
+highway/path|Highway Path
+shop/collector|Collector Shop
+attraction/drop_tower|Drop Tower
+amenity/vehicle_inspection|Vehicle Inspection
+tourism/caravan_site|Caravan Site
+amenity/waste_basket|Waste Basket
+craft/tiler|Tiler
+building/sty|Sty Building
+place/city_block|City Block
+railway/signal|Railway Signal
+shop/laundry/self_service|Self Service Laundry Shop
+man_made/wastewater_plant|Wastewater Plant
+tourism/camp_pitch|Camp Pitch
+shop/frozen_food|Frozen Food Shop
+craft/dressmaker|Dressmaker
+man_made/chimney|Chimney
+shop/fuel|Fuel Shop
+public_transport/platform/monorail|Monorail Platform
+amenity/parking_space/disabled|Disabled Parking Space
+historic/wayside_shrine|Wayside Shrine
+shop/supermarket/organic|Organic Supermarket
+highway/escape|Escape Highway
+shop/houseware|Houseware Shop
+building/church|Church Building
+waterway/canal|Canal
+railway/platform|Railway Platform
+amenity/exhibition_centre|Exhibition Centre
+shop/wigs|Wigs Shop
+office/bail_bond_agent-US-PH|Bail Bond Agent Office
+barrier/city_wall|City Wall Barrier
+landuse/winter_sports|Winter Sports Landuse
+shop/deli|Deli Shop
+amenity/shelter/picnic_shelter|Picnic Shelter
+amenity/planetarium|Planetarium
+type/route/train|Train Route
+public_transport/stop_position_light_rail|Light Rail Stop Position
+natural/bare_rock|Bare Rock
+amenity/dive_centre|Dive Centre
+emergency/landing_site|Landing Site
+office/accountant|Accountant Office
+highway/busway|Busway
+public_transport/stop_area|Stop Area
+landuse/retail|Retail Landuse
+natural/wetland/swamp|Swamp Wetland
+amenity/parking|Parking Amenity
+barrier/kerb/raised|Raised Kerb Barrier
+power/cable/underground|Underground Cable
+craft/metal_construction|Metal Construction
+leisure/pitch/badminton|Badminton Pitch
+building/cowshed|Cowshed Building
+leisure/pitch/shooting|Shooting Pitch
+highway/give_way|Give Way Highway
+type/boundary/administrative|Administrative Boundary
+shop/fashion_accessories|Fashion Accessories Shop
+seamark/buoy_lateral|Lateral Buoy Seamark
+highway/footway/access_aisle|Footway Access Aisle
+leisure/pitch/funnel_ball|Funnel Ball Pitch
+playground/balancebeam|Balance Beam Playground
+craft/photographer|Photographer
+ford_line|Ford Line
+power/plant/source/method/photovoltaic|Photovoltaic Plant
+shop/model|Model Shop
+leisure/fitness_centre/yoga|Yoga Fitness Centre
+amenity/fast_food/chicken|Chicken Fast Food
+leisure/fitness_station/parallel_bars|Parallel Bars Fitness Station
+building/hangar|Hangar Building
+landuse/military/airfield|Airfield Military Landuse
+railway/funicular|Funicular Railway
+shop/fabric|Fabric Shop
+tourism/artwork/installation|Installation Artwork
+craft/carpet_layer|Carpet Layer
+piste/downhill|Downhill Piste
+type/restriction/only_right_turn|Only Right Turn Restriction
+public_transport/stop_position_tram|Tram Stop Position
+historic/manor|Manor
+shop/clothes/underwear|Underwear Clothes Shop
+leisure/pitch/netball|Netball Pitch
+amenity/restaurant/pizza|Pizza Restaurant
+shop/confectionery|Confectionery Shop
+highway/bus_stop|Bus Stop
+public_transport/station_train_halt|Train Halt Station
+traffic_sign/maxspeed|Maxspeed Traffic Sign
+leisure/amusement_arcade|Amusement Arcade
+playground/basketswing|Basket Swing Playground
+barrier/hampshire_gate|Hampshire Gate Barrier
+leisure/pitch/boules|Boules Pitch
+amenity/ticket_validator|Ticket Validator
+amenity/recycling/container/electrical_items|Electrical Items Recycling Container
+amenity|Amenity
+historic/boundary_stone|Boundary Stone
+piste/downhill/halfpipe|Halfpipe Downhill Piste
+historic/castle/palace|Palace Castle
+waterway/stream|Stream
+waterway/ditch|Ditch
+man_made/crane/gantry_crane|Gantry Crane
+playground/trampoline|Trampoline Playground
+office/physician|Physician Office
+golf/cartpath|Cartpath
+building/cathedral|Cathedral Building
+leisure/pitch|Pitch
+amenity/theatre/type/amphi|Amphi Theatre
+amenity/social_facility/homeless_shelter|Homeless Shelter Social Facility
+power/generator/method/photovoltaic/building/roof|Photovoltaic Generator Roof Building
+advertising/column|Advertising Column
+amenity/social_facility/food_bank|Food Bank Social Facility
+place/suburb|Suburb
+healthcare/yes|Healthcare
+man_made/dyke|Water Control Barrier
+craft/blacksmith|Blacksmith Shop
+shop/storage_rental|Storage Rental Shop
+shop/cheese|Cheese Shop
+leisure/pitch/field_hockey|Field Hockey Pitch
+building/ger|GER Building
+type/restriction/no_right_turn|No Right Turn Restriction
+aerialway/mixed_lift|Mixed Lift
+shop/frame|Frame Shop
+natural/wetland|Wetland
+railway/tram_level_crossing|Tram Level Crossing
+historic/memorial|Memorial
+leisure/pitch/volleyball|Volleyball Pitch
+amenity/place_of_worship/christian|Christian Place of Worship
+attraction/pirate_ship|Pirate Ship Attraction
+railway/light_rail|Light Rail
+highway/service/emergency_access|Emergency Access Service Highway
+landuse/residential|Residential Land Use
+landuse/education|Education Land Use
+natural/water/wastewater|Wastewater
+bridge/support/pier|Pier Support Bridge
+railway/halt|Railway Halt
+place/farm|Farm
+amenity/bbq|BBQ Amenity
+craft/chimney_sweeper|Chimney Sweeper Craft
+man_made/storage_tank/water|Water Storage Tank
+office/therapist|Therapist Office
+amenity/pharmacy|Pharmacy Amenity
+natural/wetland/saltmarsh|Saltmarsh Wetland
+amenity/pub/lgbtq|LGBTQ Pub Amenity
+highway/traffic_mirror|Traffic Mirror Highway
+building/bungalow|Bungalow Building
+tourism/viewpoint|Viewpoint Tourism
+shop/medical_supply|Medical Supply Shop
+amenity/cafe/coffee_shop|Coffee Shop Cafe Amenity
+tourism/information/terminal|Information Terminal Tourism
+man_made/petroleum_well|Petroleum Well
+landuse/allotments|Allotments Land Use
+playground|Playground
+tourism/zoo/petting|Petting Zoo Tourism
+type/route/bus|Bus Route
+golf/green|Golf Green
+type/route/pipeline|Pipeline Route
+power/plant/source/coal|Coal Power Plant
+leisure/pitch/tennis|Tennis Pitch
+shop/second_hand|Second Hand Shop
+shop/bathroom_furnishing|Bathroom Furnishing Shop
+amenity/bicycle_rental|Bicycle Rental Amenity
+leisure/trampoline_park|Trampoline Park Leisure
+amenity/coworking_space|Coworking Space Amenity
+barrier/jersey_barrier|Jersey Barrier
+barrier/chain|Chain Barrier
+barrier|Barrier
+natural/water/canal|Canal
+amenity/vending_machine/electronics|Electronics Vending Machine Amenity
+leisure/pitch/handball|Handball Pitch
+highway/traffic_signals|Traffic Signals Highway
+amenity/animal_breeding|Animal Breeding Amenity
+craft/window_construction|Window Construction Craft
+amenity/studio/television|Television Studio Amenity
+highway/footway/crossing/uncontrolled|Uncontrolled Footway Crossing Highway
+man_made/cutline|Cutline
+shop/antiques|Antiques Shop
+railway/station|Railway Station
+highway/service/driveway|Driveway Service Highway
+amenity/arts_centre|Arts Centre Amenity
+aerialway/magic_carpet|Magic Carpet Aerialway
+highway/crossing|Crossing Highway
+natural/tree_stump|Tree Stump
+craft/caterer|Caterer Craft
+leisure/water_park|Water Park Leisure
+natural/water/oxbow|Oxbow Water
+man_made/storage_tank|Storage Tank
+landuse/military/barracks|Military Barracks Land Use
+amenity/parking/underground|Underground Parking Amenity
+building/allotment_house|Allotment House Building
+amenity/research_institute|Research Institute Amenity
+shop/bakery|Bakery Shop
+historic/tomb|Tomb
+place/town|Town
+building/garage|Garage Building
+highway/steps|Steps Highway
+man_made/breakwater|Breakwater
+demolished/building|Demolished Building
+leisure/garden/community|Community Garden Leisure
+disused/amenity|Disused Amenity
+amenity/vending_machine/ice_cubes|Ice Cubes Vending Machine Amenity
+shop/watches|Watches Shop
+military/checkpoint|Checkpoint
+craft/beekeeper|Beekeeper Craft
+tourism|Tourism
+amenity/cafe/bubble_tea|Bubble Tea Cafe Amenity
+landuse/military|Military Land Use
+amenity/restaurant/thai|Thai Restaurant Amenity
+indoor/elevator|Elevator Indoor
+amenity/payment_terminal|Payment Terminal Amenity
+highway/footway/crossing|Footway Crossing Highway
+man_made/water_tap|Water Tap
+shop/health_food|Health Food Shop
+office/security|Security Office
+natural/wetland/tidalflat|Tidalflat Wetland
+tourism/hostel|Hostel Tourism
+piste/skitour|Skitour Piste
+building/warehouse|Warehouse Building
+landuse/vineyard|Vineyard Land Use
+craft/roofer|Roofer Craft
+barrier/log|Log Barrier
+attraction/dark_ride|Dark Ride Attraction
+leisure/pitch/cricket|Cricket Pitch
+amenity/drinking_water|Drinking Water Amenity
+office/advertising_agency|Advertising Agency Office
+amenity/money_transfer|Money Transfer Amenity
+shop/fireplace|Fireplace Shop
+leisure/pitch/chess|Chess Pitch
+building/college|College Building
+seamark/beacon_lateral|Beacon Lateral Seamark
+man_made/tower/minaret|Minaret Tower
+highway/footway/crossing|Footway Crossing Highway
+shop/cosmetics|Cosmetics Shop
+natural/cliff|Cliff
+barrier/lift_gate|Lift Gate Barrier
+shop/spices|Spices Shop
+playground/water|Water Playground
+type/restriction/no_left_turn|No Left Turn Restriction
+amenity/conference_centre|Conference Centre Amenity
+amenity/driving_school|Driving School Amenity
+office/government/tax|Tax Government Office
+type/restriction|Restriction Type
+building/grandstand|Grandstand Building
+power/minor_line|Minor Line Power
+natural/water/reservoir|Reservoir
+leisure/beach_resort|Beach Resort Leisure
+healthcare/physiotherapist|Physiotherapist Healthcare
+leisure/pitch/soccer|Soccer Pitch
+healthcare|Healthcare
+amenity/hospital|Hospital Amenity
+amenity/bench|Bench Amenity
+landuse/flowerbed|Flowerbed Land Use
+highway/elevator_line|Elevator Line Highway
+leisure/pitch/bowls|Bowls Pitch
+aeroway/spaceport|Spaceport Aeroway
+shop/household_linen|Household Linen Shop
+highway/footway/conveying|Conveying Footway Highway
+tourism/hotel|Hotel Tourism
+railway/crossing|Crossing Railway
+building/temple|Temple Building
+traffic_calming|Traffic Calming
+public_transport/station_ferry|Ferry Station Public Transport
+playground/playhouse|Playhouse Playground
+craft/boatbuilder|Boatbuilder Craft
+barrier/retaining_wall|Retaining Wall
+office/it|IT Office
+allotments/plot|Allotment Plot
+amenity/fire_station|Fire Station
+landuse/grass|Grassland
+shop/military_surplus|Military Surplus Shop
+shop/massage|Massage Shop
+highway/pedestrian_area|Pedestrian Area
+craft/brewery|Brewery
+polling_station|Polling Station
+highway/turning_loop|Turning Loop
+amenity/social_centre|Social Centre
+amenity/restaurant/vietnamese|Vietnamese Restaurant
+highway/service/alley|Service Alley
+amenity/post_depot|Post Depot
+place/quarter|Quarter
+shop/flooring|Flooring Shop
+indoor/corridor_line|Indoor Corridor Line
+emergency/fire_extinguisher|Fire Extinguisher
+amenity/place_of_worship/muslim|Muslim Place of Worship
+type/public_transport/stop_area_group|Public Transport Stop Area Group
+public_transport/station_bus|Bus Station
+type/route/ferry|Ferry Route
+man_made/water_tower|Water Tower
+playground/swing|Swing Playground
+shop/beauty/tanning|Tanning Shop
+amenity/vending_machine/drinks|Drinks Vending Machine
+shop/video_games|Video Games Shop
+shop/doityourself|DIY Shop
+amenity/vending_machine/fuel|Fuel Vending Machine
+amenity/grave_yard|Graveyard
+highway/road/bridge|Bridge
+power/generator/method/photovoltaic/location/roof|Roof Photovoltaic Generator
+embankment|Embankment
+public_transport/platform/bus|Bus Platform
+building/fire_station|Fire Station Building
+amenity/post_box|Post Box
+natural/geyser|Geyser
+tourism/artwork/statue|Statue
+office/travel_agent|Travel Agent Office
+aerialway|Aerialway
+amenity/public_bath|Public Bath
+aerialway/rope_tow|Rope Tow
+public_transport/platform/subway|Subway Platform
+man_made/manhole/power|Power Manhole
+highway/footway/traffic_island|Footway Traffic Island
+office/foundation|Foundation Office
+line|Line
+landuse/basin|Basin
+highway/stop|Stop
+barrier/full-height_turnstile|Full-Height Turnstile
+office/property_management|Property Management Office
+office/yes|Yes Office
+amenity/vending_machine/sweets|Sweets Vending Machine
+emergency|Emergency
+leisure/dog_park|Dog Park
+shop/beverages|Beverages Shop
+leisure/pitch/table_tennis|Table Tennis Pitch
+leisure/pitch/equestrian|Equestrian Pitch
+piste/hike|Hiking Piste
+traffic_calming/choker|Choker
+historic/memorial/plaque|Memorial Plaque
+type/boundary|Boundary
+telecom/exchange|Telecom Exchange
+landuse/railway|Railway Land
+barrier/kerb/lowered|Lowered Kerb
+highway/path/boardwalk|Boardwalk
+emergency/fire_alarm|Fire Alarm
+shop/country_store|Country Store
+amenity/animal_shelter|Animal Shelter
+attraction/roller_coaster|Roller Coaster
+natural/rock|Rock
+man_made/tower/bell_tower|Bell Tower
+type/route_master|Route Master
+shop/greengrocer|Greengrocer
+piste/piste|Piste
+amenity/townhall/city|City Town Hall
+golf/water_hazard|Water Hazard
+public_transport/stop_position_train|Train Stop Position
+tourism/wilderness_hut|Wilderness Hut
+craft/insulator|Insulator Craft
+indoor|Indoor
+attraction/train|Train Attraction
+highway/service|Service Highway
+leisure/pitch/tetherball|Tetherball Pitch
+playground/activitypanel|Activity Panel Playground
+amenity/pub/microbrewery|Microbrewery Pub
+traffic_calming/dip|Dip
+shop/pet|Pet Shop
+shop/clothes/suits|Suits Clothes Shop
+shop/boutique|Boutique
+highway/crossing/traffic_signals|Traffic Signals Crossing
+attraction|Attraction
+type/route/railway|Railway Route
+landuse/military/obstacle_course|Military Obstacle Course
+leisure/indoor_play|Indoor Play
+public_transport/platform/light_rail_point|Light Rail Point Platform
+amenity/place_of_worship/taoist|Taoist Place of Worship
+amenity/nursing_home|Nursing Home
+building/houseboat|Houseboat Building
+shop/trade|Trade Shop
+shop/boat|Boat Shop
+railway/rail|Rail Railway
+highway|Highway
+highway/cycleway/crossing/unmarked|Unmarked Cycleway Crossing
+power/plant|Power Plant
+amenity/recycling_centre|Recycling Centre
+natural/glacier|Glacier
+amenity/toilets/disposal/flush|Flush Toilet Disposal
+traffic_calming/rumble_strip|Rumble Strip
+healthcare/rehabilitation|Rehabilitation Centre
+amenity/vending_machine/elongated_coin|Elongated Coin Vending Machine
+amenity/fast_food/hot_dog|Hot Dog Fast Food
+shop/chemist|Chemist Shop
+highway/footway/crossing/marked|Marked Footway Crossing
+attraction/animal|Animal Attraction
+amenity/townhall|Town Hall
+landuse/military/range|Military Range
+landuse/industrial/brewery|Brewery Industrial Land
+disused/railway|Disused Railway
+tourism/chalet|Chalet
+railway/monorail|Monorail
+amenity/vending_machine/excrement_bags|Excrement Bags Vending Machine
+tourism/artwork/graffiti|Graffiti Artwork
+indoor/area|Indoor Area
+natural/water/river|River
+amenity/recycling/container/green_waste|Green Waste Recycling Container
+tourism/apartment|Apartment
+office/educational_institution|Educational Institution Office
+leisure/escape_game|Escape Game
+power/substation|Substation
+seamark|Seamark
+shop/outpost|Outpost Shop
+waterway/water_point|Water Point
+military/bunker|Bunker
+shop/chocolate|Chocolate Shop
+telecom|Telecom
+amenity/doctors|Doctors
+traffic_calming/chicane|Chicane
+highway/mini_roundabout|Mini Roundabout
+Leisure/park|Park
+Shop/vacuum_cleaner|Vacuum Cleaner Shop
+Noexit/yes|No Exit
+Man_made/utility_pole|Utility Pole
+Public_transport/platform/ferry|Ferry Platform
+Craft/bookbinder|Bookbinder
+Type/route/trolleybus|Trolleybus Route
+Building/mosque|Mosque
+Amenity/veterinary|Veterinary Clinic
+Aeroway/windsock|Windsock
+Highway/secondary|Secondary Highway
+Man_made/windmill|Windmill
+Public_transport/stop_position_ferry|Ferry Stop Position
+Highway/street_lamp|Street Lamp
+Shop/general|General Shop
+Leisure/fitness_station/horizontal_ladder|Horizontal Ladder Fitness Station
+Aerialway/cable_car|Cable Car
+Public_transport/stop_position_monorail|Monorail Stop Position
+Shop/clothes/wedding|Wedding Clothes Shop
+Leisure/fitness_station/sign|Fitness Station Sign
+Type/destination_sign|Destination Sign
+Railway/subway|Subway
+Power/generator/source/wind|Wind Powered Generator
+Amenity/telephone|Telephone
+Amenity/place_of_worship/christian/quaker|Quaker Place of Worship
+Power/generator|Generator
+Playground/springy|Springy Playground
+Office/coworking|Coworking Office
+Man_made/mast/communication/mobile_phone|Mobile Phone Communication Mast
+Shop/money_lender|Money Lender Shop
+Man_made/cairn|Cairn
+Indoor/corridor|Corridor
+Power/pole|Power Pole
+Amenity/cinema|Cinema
+Emergency/phone|Emergency Phone
+Railway|Railway
+Shop/trophy|Trophy Shop
+Shop/erotic|Erotic Shop
+Amenity/ice_cream|Ice Cream Shop
+Building/hotel|Hotel
+Leisure/pitch/pickleball|Pickleball Pitch
+Shop/coffee|Coffee Shop
+Waterway/dock|Dock
+Building/train_station|Train Station
+Leisure/pitch/baseball|Baseball Pitch
+Barrier/cable_barrier|Cable Barrier
+Barrier/border_control|Border Control
+Highway/road|Road
+Amenity/monastery|Monastery
+Building/boathouse|Boathouse
+Leisure/sports_centre/swimming|Swimming Sports Centre
+Barrier/handrail|Handrail
+Craft/electrician|Electrician
+Shop/tailor|Tailor Shop
+Office|Office
+Amenity/restaurant/japanese|Japanese Restaurant
+Amenity/water_point|Water Point
+Natural/water/moat|Moat
+Leisure/bandstand|Bandstand
+Tourism/information/route_marker|Route Marker Information Point
+Office/guide|Guide Office
+Indoor/wall|Wall
+Leisure/outdoor_seating|Outdoor Seating
+Shop/herbalist|Herbalist Shop
+Highway/corridor|Highway Corridor
+Natural/reef|Reef
+Amenity/clock|Clock
+Highway/trunk_link-US-CA|US-CA Trunk Link Highway
+Shop/sewing|Sewing Shop
+Historic/archaeological_site|Archaeological Site
+Shop/erotic/lgbtq|LGBTQ Erotic Shop
+Highway/crossing/marked|Marked Crossing
+Emergency/water_reservoir|Water Reservoir
+Natural/wood|Woodland
+Shop/beauty|Beauty Shop
+Barrier/bollard|Bollard
+Historic/monument|Monument
+Emergency/water_reservoir_covered|Covered Water Reservoir
+Barrier/kerb|Kerb
+Craft|Craft
+Natural|Natural Area
+Amenity/prison|Prison
+Office/association|Association Office
+Amenity/police|Police Station
+Healthcare/counselling|Counselling Healthcare
+Power/catenary_mast|Catenary Mast
+Craft/sawmill|Sawmill
+Landuse/military/base/navy|Navy Base
+Craft/glaziery|Glaziery
+Man_made/compass_rose|Compass Rose
+Emergency/yes|Emergency
+Shop/gift|Gift Shop
+Amenity/recycling_container|Recycling Container
+Type/route/hiking|Hiking Route
+Shop/fashion|Fashion Shop
+Man_made/works/brewery|Brewery
+Man_made/tower|Tower
+Amenity/dojo|Dojo
+Entrance|Entrance
+Railway/yard|Railway Yard
+Natural/wetland/reedbed|Reedbed Wetland
+Man_made/survey_point|Survey Point
+Golf/tee|Golf Tee
+Railway/preserved|Preserved Railway
+Man_made/crane/portal_crane|Portal Crane
+Office/newspaper|Newspaper Office
+Shop/video|Video Shop
+Shop/tyres|Tyre Shop
+Power/tower|Power Tower
+Amenity/bureau_de_change|Bureau de Change
+Shop/alcohol|Alcohol Shop
+Relation|Relation
+Highway/motorway|Motorway
+Natural/volcano|Volcano
+Golf/driving_range|Driving Range
+Barrier/rope|Rope Barrier

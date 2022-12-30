@@ -148,7 +148,7 @@ export type FeatureCollection = {
 export type ParsedEntity = {
   lookup: string;
   match_type: string;
-  matched_geo_ids: string[];
+  geoids: string[];
 };
 export type ExecutorResponse = {
   geom: FeatureCollection;

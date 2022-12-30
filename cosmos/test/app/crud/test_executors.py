@@ -14,10 +14,10 @@ def test__prepare_args_for_area_near_constraint():
     }
     res = _prepare_args_for_area_near_constraint(args)
     assert len(res) == 2
-    assert res[0].entity.lookup == 'San Francisco'
-    assert res[0].distance_in_meters == 500
-    assert res[1].entity.lookup == 'Sacre Coeur'
-    assert res[1].distance_in_meters == 250
+    assert res[0].lookup == 'San Francisco'
+    assert res[0].m == 500
+    assert res[1].lookup == 'Sacre Coeur'
+    assert res[1].m == 250
 
     # Test kwargs
     args = {
@@ -30,8 +30,8 @@ def test__prepare_args_for_area_near_constraint():
     }
     res = _prepare_args_for_area_near_constraint(args)
     assert len(res) == 3
-    assert res[2].entity.lookup == 'Sacre Coeur'
-    assert res[2].distance_in_meters == 250
+    assert res[2].lookup == 'Sacre Coeur'
+    assert res[2].m == 250
 
 
 def test__prepare_args_for_area_near_constraint_bad_inputs():
@@ -99,11 +99,11 @@ async def test_area_near_constaint_named_places():
             conn=conn
         )
         assert happy_case.entities[0].lookup == 'San Francisco'
-        assert happy_case.entities[0].matched_geo_ids == ['111968']
+        assert happy_case.entities[0].geoids == ['111968']
         assert happy_case.entities[1].lookup == 'Antioch CA'
-        assert happy_case.entities[1].matched_geo_ids == ['3705567']
+        assert happy_case.entities[1].geoids == ['3705567']
         assert happy_case.entities[2].lookup == 'San Jose CA'
-        assert happy_case.entities[2].matched_geo_ids == ['112143']
+        assert happy_case.entities[2].geoids == ['112143']
 
         OVERLAP = {'type': 'Polygon', 'coordinates': [[[-122.244965542, 37.787081058], [-122.237297836, 37.790296028], [-122.237032931, 37.790397755], [-122.207963557, 37.800581681], [-122.207690407, 37.800668454], [-122.177573078, 37.80927286], [-122.177292903, 37.809344171], [-122.146729143, 37.816199084], [-122.146443266, 37.816254726], [-122.115148613, 37.821428185], [-122.114858559, 37.821467754], [-122.10450138, 37.822673825], [-122.104520998, 37.822778523], [-122.094628541, 37.823944428], [-122.085920228, 37.824902258], [-122.08537976, 37.824957486], [-122.053652585, 37.827306884], [-122.053108454, 37.827331968], [-122.042895838, 37.827517833], [-122.033235718, 37.828389292], [-122.033126793, 37.828396017], [-122.001481041, 37.829472449], [-122.001371911, 37.829473145], [-121.985927503, 37.8291461], [-121.958275663, 37.831606261], [-121.958053586, 37.831611168], [-121.882085468, 37.828241328], [-121.881865337, 37.828216796], [-121.850054716, 37.822472438], [-121.840249685, 37.801853888], [-121.825752362, 37.729045948], [-121.830101885, 37.655414286], [-121.853063931, 37.583999064], [-121.864517744, 37.565296675], [-121.871902976, 37.565910244], [-121.878314092, 37.566973426], [-121.979573439, 37.593880558], [-121.986972905, 37.596645878], [-121.991870198, 37.598383726], [-121.996477444, 37.600455183], [-122.024482053, 37.609557715], [-122.027868398, 37.61089725], [-122.099235893, 37.645944793], [-122.16139686, 37.690762723], [-122.212250965, 37.743850047], [-122.219971839, 37.756022536], [-122.231095534, 37.766699917], [-122.244965542, 37.787081058]]]}
         assert json.dumps(happy_case.geom.features[0].geometry.coordinates[0]) == json.dumps(OVERLAP['coordinates'])

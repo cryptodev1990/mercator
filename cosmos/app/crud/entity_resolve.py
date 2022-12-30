@@ -8,7 +8,7 @@ from app.core.datatypes import Point
 from app.core.graphhopper import get_graph_hopper
 from app.core.jinja_utils import squote
 from app.parsers.categories import category_lookup
-from app.schemas import EnrichedEntity
+from app.schemas import EnrichedEntity, ParsedEntity
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
     # Center of the US 
     coordinates=[-98.5795, 39.8283],  # type: ignore
     type="Point",
-), distance_cap_km=MAX_DISTANCE_FOR_SEARCH_KM) -> EnrichedEntity:
+), distance_cap_km=MAX_DISTANCE_FOR_SEARCH_KM, num_results=1) -> EnrichedEntity:
     """Look up named place in Nominatim via GraphHopper
 
     This is meant to be a rough first guess. We make sure the results is within some distance of the current map centroid.
@@ -44,16 +44,19 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
     """
     gh = get_graph_hopper()
     response = gh.geocode(hopeful_place, limit=1)
-    print(response)
+    print({
+        'msg': 'received response from graphhopper',
+        'response': response
+    })
     if not response:
         raise Exception("No results from GraphHopper")
     real_place = response["hits"][0]
     # Get the OSM ID
-    osm_id = real_place["osm_id"]
+    composite_osm_id = f'{real_place["osm_type"]}{real_place["osm_id"]}'
     pt = real_place["point"]
     where = jinja2.Template("""
-      AND osm_id = {{ osm_id }}
-    """).render(osm_id=osm_id)
+      AND id = {{ composite_osm_id }}
+    """).render(composite_osm_id=composite_osm_id)
     if map_centroid and euclidean(pt['lat'], pt['lng'], map_centroid.coordinates[1], map_centroid.coordinates[0]) > distance_cap_km * 1000:
         logger.info({
             "message": "Named place is too far from map centroid",
@@ -61,11 +64,14 @@ def named_place(hopeful_place: str, map_centroid: Optional[Point] = Point(
             "distance": euclidean(pt['lat'], pt['lng'], map_centroid.coordinates[1], map_centroid.coordinates[0]),
         })
         raise Exception("Named place is too far from map centroid")
+
+
     return EnrichedEntity(
         lookup=hopeful_place,
         match_type="named_place",
-        matched_geo_ids=[osm_id],
+        geoids=[composite_osm_id],
         sql_snippet=where,
+        pt=pt,
     )
 
 
@@ -88,12 +94,12 @@ def known_category(hopeful_category: str) -> EnrichedEntity:
     return EnrichedEntity(
         lookup=hopeful_category,
         match_type="known_category",
-        matched_geo_ids=[],
+        geoids=[],
         sql_snippet=sql_snippet,
     )
 
 
-def raw_lookup(hopeful_entity: str) -> EnrichedEntity:
+def fuzzy(hopeful_entity: str) -> EnrichedEntity:
     """Return the raw lookup as a SQL snippet.
 
     This is meant to be a rough first guess. We make sure the results is within some distance of the current map centroid.
@@ -102,7 +108,7 @@ def raw_lookup(hopeful_entity: str) -> EnrichedEntity:
     """
     # TODO is there a SQL injection-safe way to do this?
     sql_snippet = jinja2.Template("""
-    SELECT osm_id
+    SELECT id
     FROM
       osm,
       WEBSEARCH_TO_TSQUERY('{{search_term}}') query,
@@ -117,19 +123,27 @@ def raw_lookup(hopeful_entity: str) -> EnrichedEntity:
     """).render(search_term=hopeful_entity)
     return EnrichedEntity(
         lookup=hopeful_entity,
-        match_type="raw_lookup",
-        matched_geo_ids=[],
+        match_type="fuzzy",
+        geoids=[],
         sql_snippet=sql_snippet,
     )
 
 
-def resolve_entity(hopeful_entity: str, enabled=set(["named_place", "known_category", "raw_lookup"])) -> EnrichedEntity:
+def resolve_entity(hopeful_entity: str | ParsedEntity, enabled=set(["named_place", "known_category", "fuzzy"])) -> EnrichedEntity:
     """Resolve an entity to a SQL snippet
 
     First, we check if the input is a named entity or a known category. If not, we pass the result through.
 
     Returns a SQL snippet to be used in a WHERE clause.
     """
+    # check that the input is a ParsedEntity
+    if isinstance(hopeful_entity, ParsedEntity):
+        enabled = set([hopeful_entity.match_type])
+        hopeful_entity = hopeful_entity.lookup
+
+    if not isinstance(hopeful_entity, str):
+        raise ValueError("Expected string for hopeful_entity at this point")
+
     if "named_place" in enabled:
         try:
             print({
@@ -148,10 +162,14 @@ def resolve_entity(hopeful_entity: str, enabled=set(["named_place", "known_categ
             return known_category(hopeful_entity)
         except Exception as e:
             print("Failed with exception", e)
+    if "fuzzy" in enabled:
+        print({
+            "message": "Trying to resolve entity as a fuzzy match",
+            "entity": hopeful_entity,
+        })
+        return fuzzy(hopeful_entity)
     print({
         "message": "Could not resolve entity",
         "entity": hopeful_entity,
     })
-    if "raw_lookup" in enabled:
-        return raw_lookup(hopeful_entity)
-    raise Exception(f"Entity {hopeful_entity} could not be resolved as a " + ", ".join(enabled))
+    raise Exception(f"Entity {hopeful_entity} could not be resolved as a " + " or ".join(enabled))

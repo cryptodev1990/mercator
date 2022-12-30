@@ -20,15 +20,16 @@ def route(
     lat2: float,
     vehicle: str = "car",
     elevation: bool = False,
+    num_routes: int = 1,
 ):
     # Get the route for the given location and time
-    url = f"{GH_BASE}/route?point={lat},{lng}&point={lat2},{lng2}&vehicle={vehicle}&elevation={elevation}"
+    url = f"{GH_BASE}/route?point={lat},{lng}&point={lat2},{lng2}&vehicle={vehicle}&elevation={elevation}&instructions=false&alternative_route.max_paths={num_routes}"
     response = requests.get(url)
     return response.json()
 
 
 def get_route(
-    session: aiohttp.ClientSession, route: List[Union[float, int]]
+    session: aiohttp.ClientSession, route: List[float]
 ):
     """Get the route for a given location and time."""
     vehicle = "car"
