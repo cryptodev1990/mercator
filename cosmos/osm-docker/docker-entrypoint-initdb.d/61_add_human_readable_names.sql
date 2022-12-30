@@ -26,4 +26,7 @@ CREATE TABLE category_membership AS
 SELECT *
 FROM category_membership_swap;
 
+-- Support fast ILIKE/LIKE queries on these categories
+CREATE INDEX CONCURRENTLY category_trgm ON category_membership USING gin (human_readable gin_trgm_ops);
+
 END;

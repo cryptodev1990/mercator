@@ -290,7 +290,7 @@ class AreaNearConstraintIntentArgs(BaseModel):
 class RawLookupIntentArgs(BaseModel):
     """Arguments for raw_lookup constraint."""
 
-    raw_lookup: Union[str, ParsedEntity] = Field(
+    search_term: Union[str, ParsedEntity] = Field(
         ..., description="Raw lookup to search for."
     )
 

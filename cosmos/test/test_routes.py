@@ -62,7 +62,6 @@ def test_explicit_search(client: TestClient) -> None:
     assert response.json()["parse_result"]["geom"]["features"][0]["geometry"]["type"] == "Polygon"
 
 
-@pytest.mark.asyncio
 def test_osm_execute__x_in_y(client: TestClient) -> None:
     """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
     test_payload = {
@@ -113,3 +112,65 @@ def test_osm_execute__x_between_y_and_z(client: TestClient) -> None:
     assert response.status_code == 200, "Encountered" + response.text
     assert response.json()["parse_result"]["entities"][0]["lookup"] == "gas stations"
     assert response.json()["parse_result"]["geom"]["features"][0]["properties"]['tags']['name'] == "Station K"
+
+
+def test_osm_execute__raw_lookup_fuzzy(client: TestClient) -> None:
+    """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
+    test_payload = {
+        "name": "raw_lookup",
+            "args": {
+                "search_term": {
+                    "lookup": "gas stations",
+                    "match_type": "fuzzy",
+            }
+        }
+    }
+    response = client.post(
+        "/osm/execute",
+        json=test_payload
+    )
+    assert response.status_code == 200, "Encountered" + response.text
+    assert response.json()["parse_result"]["entities"][0]["lookup"] == "gas stations"
+    assert response.json()["parse_result"]["geom"]["features"][0]["properties"]['tags']['name'] == "76 gas station"
+
+
+def test_osm_execute__raw_lookup_named_place(client: TestClient) -> None:
+    """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
+    test_payload = {
+        "name": "raw_lookup",
+            "args": {
+                "search_term": {
+                    "lookup": "Alamo Square",
+                    "match_type": "named_place",
+            }
+        }
+    }
+    response = client.post(
+        "/osm/execute",
+        json=test_payload
+    )
+    assert response.status_code == 200, "Encountered" + response.text
+    parse = response.json()["parse_result"]
+    assert parse["geom"]["features"][0]["properties"]['tags']['name'] == "Alamo Square"
+    assert parse["geom"]["features"][0]["id"] == "W745183964"
+
+
+def test_osm_execute__raw_lookup_category_match(client: TestClient) -> None:
+    """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
+    test_payload = {
+        "name": "raw_lookup",
+            "args": {
+                "search_term": {
+                    "lookup": "Alamo Square",
+                    "match_type": "category",
+            }
+        }
+    }
+    response = client.post(
+        "/osm/execute",
+        json=test_payload
+    )
+    assert response.status_code == 200, "Encountered" + response.text
+    parse = response.json()["parse_result"]
+    assert parse["geom"]["features"][0]["properties"]['tags']['name'] == "Alamo Square"
+    assert parse["geom"]["features"][0]["id"] == "W745183964"

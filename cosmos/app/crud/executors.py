@@ -16,6 +16,10 @@ from app.gateways.geo_route import get_route, multiple_concurrent_routes, route
 from app.parsers.entity_resolvers import Time, parse_into_meters, parse_into_seconds
 from app.schemas import ExecutorResponse, NamedPlaceParsedEntity, ParsedEntity
 
+def _prep_geoids(geoids: List[str]) -> str:
+    return ','.join(['\'%s\'' % x for x in geoids])
+
+
 def surround_by_quote(a_list):
     return ['"%s"' % an_element for an_element in a_list]
 
@@ -176,20 +180,28 @@ async def raw_lookup(search_term: str, conn: AsyncConnection) -> ExecutorRespons
         'features', JSON_AGG(
             JSON_BUILD_OBJECT(
                 'type', 'Feature',
-                'id', osm.osm_id,
+                'id', osm.id,
                 'geometry', ST_AsGeoJSON(geom)::JSON,
-                'properties', tags
+                'properties', JSONB_BUILD_OBJECT(
+                    'tags', tags
+                )
             )
         )
     ) AS feature_collection
     FROM
       osm
     JOIN (
-            {% if needle.match_type != "fuzzy" %}
-                SELECT UNNEST('{ {{ needle.geoids | join(',') }} }'::BIGINT []) AS osm_id
+            {% if needle.match_type == "named_place" %}
+                SELECT UNNEST('{ {{ needle.geoids | join(',') }} }'::VARCHAR[]) AS id
+            {% elif needle.match_type == "named_place" %}
+                SELECT osm_id
+                FROM category_matches
+                WHERE 1=1
+                    -- TODO how should we really do this?
+                  AND human_readble LIKE '%{{ needle.lookup }}%'
             {% else %}
                 {# Otherwise, use the raw text lookup #}
-                SELECT osm_id
+                SELECT id
                 FROM
                     osm,
                     plainto_tsquery( '{{ needle.lookup }}' ) query
@@ -197,13 +209,13 @@ async def raw_lookup(search_term: str, conn: AsyncConnection) -> ExecutorRespons
                     AND query @@ fts
                 LIMIT 100000
             {% endif %}
-    ) queried ON queried.osm_id = osm.osm_id
+    ) queried ON queried.id = osm.id
     """).render(needle=searched_entity)
     geojson = (await conn.execute(text(query))).scalar()
     if geojson is None:
         raise ValueError("No results found")
     return ExecutorResponse(
-        geom=geojson,  # type: ignore
+        geom=geojson,
         entities=[ParsedEntity(**searched_entity.__dict__)],
     )
 
@@ -406,7 +418,7 @@ async def x_in_y(
                   LIMIT 1
                ))
         ) AS features
-    """).render({"needle": needle, "haystack": haystack, "geoids": ','.join(['\'%s\'' % x for x in haystack.geoids])})))
+    """).render({"needle": needle, "haystack": haystack, "geoids": _prep_geoids(haystack.geoids)})))
     feature_collection = res.fetchone()[0]  # type: ignore
     return ExecutorResponse(
         geom=feature_collection,
