@@ -14,7 +14,7 @@ from app.core.datatypes import Feature, FeatureCollection, MultiPolygon
 from app.crud.entity_resolve import named_place, resolve_entity
 from app.gateways.geo_route import get_route, multiple_concurrent_routes, route
 from app.parsers.entity_resolvers import Time, parse_into_meters, parse_into_seconds
-from app.schemas import ExecutorResponse, NamedPlaceParsedEntity, ParsedEntity
+from app.schemas import Distance, ExecutorResponse, NamedPlaceParsedEntity, ParsedEntity
 
 def _prep_geoids(geoids: List[str]) -> str:
     return ','.join(['\'%s\'' % x for x in geoids])
@@ -36,6 +36,9 @@ def _extract_first_geom(er: ExecutorResponse) -> Feature:
 def _prepare_args_for_area_near_constraint(collective_dict: Dict) -> List[ParsedEntity]:
     for k, v in collective_dict.items():
         if k.startswith('distance_or_time_'):
+            if isinstance(v, Distance):
+                collective_dict[k] = v.m
+                continue
             try:
                 t = parse_into_seconds(v)
                 if t is not None:
@@ -108,19 +111,26 @@ async def area_near_constraint(
     query = jinja2.Template("""
     WITH t1 AS (
     {% for rec in records %}
-    SELECT ST_Union(ST_Buffer(geom::GEOGRAPHY, {{ rec.distance_in_meters }})::GEOMETRY) AS geom_buff
+    SELECT ST_Union(ST_Buffer(geom::GEOGRAPHY, {{ rec.m }})::GEOMETRY) AS geom_buff
     FROM
       osm
     JOIN (
             {# If the entity was resolved by the entity resolver, use the matched geo ids #}
-            {% if rec.entity.match_type == "named_place" %}
-                SELECT UNNEST('{ {{ rec.entity.geoids | join(',') }} }'::BIGINT []) AS osm_id
-            {% elif rec.entity.match_type == "fuzzy" %}
+            {% if rec.match_type == "named_place" %}
+                SELECT UNNEST('{ {{ rec.geoids | join(',') }} }'::VARCHAR []) AS id
+            {% elif rec.match_type == "category" %}
+                SELECT osm_id AS id
+                FROM category_membership
+                WHERE 1=1
+                    -- TODO how should we really do this?
+                  AND human_readable ILIKE '%{{ rec.lookup }}%'
+                LIMIT 100000
+            {% elif rec.match_type == "fuzzy" %}
                 {# Otherwise, use the raw text lookup #}
                 SELECT id
                 FROM
                     osm,
-                    plainto_tsquery( '{{ rec.entity.lookup }}' ) query
+                    plainto_tsquery( '{{ rec.lookup }}' ) query
                 WHERE 1=1
                     AND query @@ fts
                 LIMIT 100000
@@ -144,6 +154,7 @@ async def area_near_constraint(
     )
 
     SELECT ST_AsGeoJSON(ST_Difference(unioned.geom_buff, hollow.geom_buff)) AS geojson
+    , ST_Area(ST_Difference(unioned.geom_buff, hollow.geom_buff), FALSE) AS area
     FROM unioned
     CROSS JOIN hollow
     ;
@@ -152,6 +163,7 @@ async def area_near_constraint(
     if res is None:
         raise ValueError("No results found")
     # Format as geojson polygon
+    area = res[1]
     res = json.loads(res[0])
     multipolygon = MultiPolygon(type="MultiPolygon", coordinates=[res['coordinates']] if res['type'] == 'Polygon' else res['coordinates'])
     return ExecutorResponse(
@@ -162,7 +174,9 @@ async def area_near_constraint(
                     id=GENERATED_SHAPE_ID,
                     type="Feature",
                     geometry=multipolygon,
-                    properties={},
+                    properties={
+                        "area": area,
+                    },
                 )
             ],
         ),
@@ -193,12 +207,13 @@ async def raw_lookup(search_term: str, conn: AsyncConnection) -> ExecutorRespons
     JOIN (
             {% if needle.match_type == "named_place" %}
                 SELECT UNNEST('{ {{ needle.geoids | join(',') }} }'::VARCHAR[]) AS id
-            {% elif needle.match_type == "named_place" %}
-                SELECT osm_id
-                FROM category_matches
+            {% elif needle.match_type == "category" %}
+                SELECT osm_id AS id
+                FROM category_membership
                 WHERE 1=1
                     -- TODO how should we really do this?
-                  AND human_readble LIKE '%{{ needle.lookup }}%'
+                  AND human_readable ILIKE '%{{ needle.lookup }}%'
+                LIMIT 100000
             {% else %}
                 {# Otherwise, use the raw text lookup #}
                 SELECT id

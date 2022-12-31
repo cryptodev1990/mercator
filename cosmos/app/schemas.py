@@ -15,6 +15,18 @@ from enum import auto
 from fastapi_utils.enums import StrEnum
 
 
+class AsDictMixin:
+    """Mixin to add as_dict method."""
+
+    def as_dict(self):
+        """Return object as dict."""
+        return {
+            key: value
+            for key, value in self.__dict__.items()
+            if value is not None
+        }
+
+
 class ValidIntentNameEnum(StrEnum):
     """Argument for valid_intent constraint."""
 
@@ -55,6 +67,12 @@ class ParsedEntity(BaseModel):
     geoids: Optional[List[str]] = None
     # Add an optional distance_in_meters field
     m: Optional[float] = None
+
+
+class Distance(BaseModel):
+    """A distance in meters."""
+
+    m: float = Field(..., description="Distance in meters.")
 
 
 class NamedPlaceParsedEntity(ParsedEntity):
@@ -209,7 +227,7 @@ class OsmRawQueryResponse(BaseModel):
         """Pydantic config options."""
 
 
-class XInYIntentArgs(BaseModel):
+class XInYIntentArgs(BaseModel, AsDictMixin):
     """Arguments for x_in_y constraint."""
 
     needle_place_or_amenity: ParsedEntity | str = Field(
@@ -235,35 +253,34 @@ class XInYIntentArgs(BaseModel):
             }
         }
 
-
-class AreaNearConstraintIntentArgs(BaseModel):
+class AreaNearConstraintIntentArgs(BaseModel, AsDictMixin):
     """Arguments for area_near_constraint constraint."""
 
     named_place_or_amenity_0: ParsedEntity | str = Field(
         ..., description="Place or amenity to search for."
     )
-    distance_or_time_0: ParsedEntity | str = Field(
+    distance_or_time_0: Distance | str = Field(
         ..., description="Distance or time to search for."
     )
     named_place_or_amenity_1: ParsedEntity | str = Field(
         ..., description="Place or amenity to search for."
     )
-    distance_or_time_1: ParsedEntity | str = Field(
+    distance_or_time_1: Distance | str = Field(
         ..., description="Distance or time to search for."
     )
     # TODO is there a more elegant way to do this?
     named_place_or_amenity_2: Optional[ParsedEntity | str] = None
-    distance_or_time_2: Optional[str | float] = None
+    distance_or_time_2: Optional[Distance | str] = None
     named_place_or_amenity_3: Optional[ParsedEntity | str] = None
-    distance_or_time_3: Optional[str | float] = None
+    distance_or_time_3: Optional[Distance | str] = None
     named_place_or_amenity_4: Optional[ParsedEntity | str] = None
-    distance_or_time_4: Optional[str | float] = None
+    distance_or_time_4: Optional[Distance | str] = None
     named_place_or_amenity_5: Optional[ParsedEntity | str] = None
-    distance_or_time_5: Optional[str | float] = None
+    distance_or_time_5: Optional[Distance | str] = None
     named_place_or_amenity_6: Optional[ParsedEntity | str] = None
-    distance_or_time_6: Optional[str | float] = None
+    distance_or_time_6: Optional[Distance | str] = None
     named_place_or_amenity_7: Optional[ParsedEntity | str] = None
-    distance_or_time_7: Optional[str | float] = None
+    distance_or_time_7: Optional[Distance | str] = None
 
 
     class Config:
@@ -287,10 +304,10 @@ class AreaNearConstraintIntentArgs(BaseModel):
             }
         }
 
-class RawLookupIntentArgs(BaseModel):
+class RawLookupIntentArgs(BaseModel, AsDictMixin):
     """Arguments for raw_lookup constraint."""
 
-    search_term: Union[str, ParsedEntity] = Field(
+    search_term: str | ParsedEntity = Field(
         ..., description="Raw lookup to search for."
     )
 
@@ -304,7 +321,7 @@ class RawLookupIntentArgs(BaseModel):
         }
 
 
-class XBetweenYAndZIntentArgs(BaseModel):
+class XBetweenYAndZIntentArgs(BaseModel, AsDictMixin):
     """Arguments for x_between_y_and_z constraint."""
 
     named_place_or_amenity_0: ParsedEntity | str = Field(..., description="X to search for.")

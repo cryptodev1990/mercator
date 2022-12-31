@@ -82,18 +82,17 @@ def known_category(hopeful_category: str) -> EnrichedEntity:
     """Match a known category to its relevant OSM lookup.
     """
     categories = category_lookup(hopeful_category)
-    print(categories)
     if not categories:
         raise NoCategoryMatchError("No categories found")
     tmpl = jinja2.Template("""
-            SELECT DISTINCT osm_id
+            SELECT DISTINCT id
             FROM category_membership
-            WHERE category IN ({{ categories | join(", ") }})
+            WHERE category LIKE {{ categories }}
     """)
     sql_snippet = tmpl.render(categories=[squote(p.key) for p in categories])
     return EnrichedEntity(
         lookup=hopeful_category,
-        match_type="known_category",
+        match_type="category",
         geoids=[],
         sql_snippet=sql_snippet,
     )
@@ -129,7 +128,7 @@ def fuzzy(hopeful_entity: str) -> EnrichedEntity:
     )
 
 
-def resolve_entity(hopeful_entity: str | ParsedEntity, enabled=set(["named_place", "known_category", "fuzzy"])) -> EnrichedEntity:
+def resolve_entity(hopeful_entity: str | ParsedEntity, enabled=set(["named_place", "category", "fuzzy"])) -> EnrichedEntity:
     """Resolve an entity to a SQL snippet
 
     First, we check if the input is a named entity or a known category. If not, we pass the result through.
@@ -153,7 +152,7 @@ def resolve_entity(hopeful_entity: str | ParsedEntity, enabled=set(["named_place
             return named_place(hopeful_entity)
         except Exception as e:
             print("Failed with exception", e)
-    if "known_category" in enabled:
+    if "category" in enabled:
         try:
             print({
                 "message": "Trying to resolve entity as a known category",

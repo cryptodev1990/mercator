@@ -1,3 +1,10 @@
+"""
+Each executor should have at least 8 tests:
+- success and error cases
+- named place, category, fuzzy, and unknown matches
+
+This is aspirational at the moment but likely where we should head
+"""
 import os
 import pytest
 
@@ -161,7 +168,7 @@ def test_osm_execute__raw_lookup_category_match(client: TestClient) -> None:
         "name": "raw_lookup",
             "args": {
                 "search_term": {
-                    "lookup": "Alamo Square",
+                    "lookup": "school",
                     "match_type": "category",
             }
         }
@@ -172,5 +179,43 @@ def test_osm_execute__raw_lookup_category_match(client: TestClient) -> None:
     )
     assert response.status_code == 200, "Encountered" + response.text
     parse = response.json()["parse_result"]
-    assert parse["geom"]["features"][0]["properties"]['tags']['name'] == "Alamo Square"
-    assert parse["geom"]["features"][0]["id"] == "W745183964"
+    assert parse["geom"]["features"][0]["properties"]['tags']['name'] == "San Elijo Dance & Music Academy"
+    assert 10 < len(parse["geom"]["features"]) < 100000
+
+
+def test_osm_execute__area_near_constraint(client: TestClient) -> None:
+    """TODO Passes with `pytest -k test_osm_execute` but fails with `pytest`, why?"""
+    test_payload = {
+        "name": "area_near_constraint",
+        "args": {
+            "named_place_or_amenity_0": {
+                "lookup": "school",
+                "match_type": "category",
+            },
+            "distance_or_time_0": {
+                "m": 50000
+            },
+            "named_place_or_amenity_1": {
+                "lookup": "Alamo Square",
+                "match_type": "named_place",
+            },
+            "distance_or_time_1": {
+                "m": 30000
+            },
+            "named_place_or_amenity_2": {
+                "lookup": "Ocean Beach San Francisco",
+                "match_type": "named_place",
+            },
+            "distance_or_time_2": {
+                "m": 100000
+            }
+        }
+    }
+    response = client.post(
+        "/osm/execute",
+        json=test_payload
+    )
+    assert response.status_code == 200, "Encountered" + response.text
+    parse = response.json()["parse_result"]
+    assert len(parse["geom"]["features"]) == 1
+    assert parse["geom"]["features"][0]["properties"]["area"] == 2837259093.7319274

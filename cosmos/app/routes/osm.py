@@ -179,10 +179,11 @@ async def _get_execute(
 ):
     query_id = uuid.uuid4()
     execute = Intent.get_execute_method(intent_payload.name)
-    # We use __dict__ instead of pydantic's .dict() method because we want to
-    # only turn the top-level args into a dict, not the nested args.
-    results = await execute(**intent_payload.args.__dict__, conn=conn)
-    
+    # We use this .as_dict() method instead of pydantic's .dict() method because we want to
+    # only turn the top-level args into a dict, not the nested args, and we want to
+    # remove any None values.
+    results = await execute(**intent_payload.args.as_dict(), conn=conn)
+
     return IntentResponse(
         query="",
         parse_result=results,
