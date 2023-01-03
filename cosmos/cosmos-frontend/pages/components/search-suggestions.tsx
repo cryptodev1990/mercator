@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSearchState, setInputText } from "src/search/search-slice";
 import { useOsmQueryGetQuery } from "src/store/search-api";

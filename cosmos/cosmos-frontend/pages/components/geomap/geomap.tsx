@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 // @ts-ignore
-import DeckGL, { GeoJsonLayer, FlyToInterpolator } from "deck.gl";
+import DeckGL, { GeoJsonLayer } from "deck.gl";
 import StaticMap from "react-map-gl";
 import { snapToBounds } from "../../../src/lib/geo-utils";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,11 +22,28 @@ const GeoMap = () => {
 
   const [baseMap, setBaseMap] = useState(DARK);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const deckRef = useRef<DeckGL | null>(null);
+  const deckContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    // Change the viewport to the local viewport
     setLocalViewPort({ ...viewport });
-    console.log("testing");
   }, [viewport]);
+
+  useEffect(() => {
+    // on resize, update the viewport
+    const handleResize = () => {
+      setLocalViewPort({
+        ...localViewPort,
+        // @ts-ignore
+        width: deckContainerRef.current?.clientWidth ?? 0,
+        // @ts-ignore
+        height: deckContainerRef.current?.clientHeight ?? 0,
+      });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (searchResults.length > 0) {
@@ -73,7 +90,7 @@ const GeoMap = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative" ref={deckContainerRef}>
         <div
           className={clsx(
             "absolute top-0 right-0 z-50 m-2",
@@ -90,6 +107,7 @@ const GeoMap = () => {
           </button>
         </div>
         <DeckGL
+          ref={deckRef}
           initialViewState={localViewPort}
           onWebGLInitialized={webGLInit}
           onViewStateChange={({ viewState }: any) => {
@@ -110,7 +128,7 @@ const GeoMap = () => {
             return [
               new GeoJsonLayer({
                 id: `geojson-layer-${i}-${layerStyle.id}`,
-                data: x.parse_result.geom,
+                data: x?.parse_result?.geom ?? {},
                 pickingRadius: 5,
                 getRadius: layerStyle.lineThicknessPx,
                 getLineWidth: layerStyle.lineThicknessPx,

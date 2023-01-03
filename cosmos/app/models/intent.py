@@ -20,6 +20,9 @@ class Intent:
         self.execute = self.get_execute_method(name)
         # get number of slots in the execute method
         self.num_slots = len(inspect.signature(self.execute).parameters) - 1  # subtract 1 for conn
+        # Kwargs in the signature for area_near_constraint, so we special-case it
+        if name == 'area_near_constraint':
+            self.num_slots -= 1
         self.parse = self.get_parse_method(parse_method, name)
 
     @staticmethod

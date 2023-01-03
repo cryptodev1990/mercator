@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SearchResponse } from "../store/search-api";
+import { IntentResponse } from "../store/search-api";
 import { AppState } from "../store/store";
 import { HYDRATE } from "next-redux-wrapper";
 
 // Type for our state
 export interface SearchState {
-  searchResults: SearchResponse[];
+  searchResults: IntentResponse[];
   inputText: string | null;
 }
 
@@ -28,10 +28,10 @@ export const searchSlice = createSlice({
     },
   },
   reducers: {
-    setSearchResults(state, action: { payload: SearchResponse[] }) {
+    setSearchResults(state, action: { payload: IntentResponse[] }) {
       state.searchResults = action.payload;
     },
-    appendSearchResult(state, action: { payload: SearchResponse }) {
+    appendSearchResult(state, action: { payload: IntentResponse }) {
       state.searchResults = state.searchResults.concat(action.payload);
       state.inputText = "";
     },

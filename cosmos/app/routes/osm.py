@@ -57,7 +57,7 @@ async def _get_query(
             inferred_slots = intent.parse(query)
             num_inferred_slots = len(inferred_slots.keys())
             print({"uuid": str(query_id), "slots": inferred_slots, "num_slots": num_inferred_slots})
-            assert num_inferred_slots >= intent.num_slots, "Parse will not match the executor"
+            assert num_inferred_slots >= intent.num_slots, f"Parse will not match the executor (saw {num_inferred_slots}, expected {intent.num_slots}"
             derived_intent = DerivedIntent(
                 intent=intent,
                 args=inferred_slots,
@@ -68,7 +68,7 @@ async def _get_query(
             )
     except (OpenAIError, OpenAIParseError, AssertionError) as exc:
         logger.warning({"msg": "Unable to parse intents with OpenAI", "query": query,
-                        "intent": intent, "query_id": query_id})
+            "intent": intent, "query_id": query_id, "reason": str(exc)})
         derived_intent = DerivedIntent(
             intent=intents["raw_lookup"],
             args={"IntentResponse": query},

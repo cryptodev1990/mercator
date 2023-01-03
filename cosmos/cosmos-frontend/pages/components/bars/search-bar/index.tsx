@@ -3,10 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import {
   selectSearchState,
   setInputText,
-} from "../../../src/search/search-slice";
+} from "../../../../src/search/search-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { useOsmQueryGetQuery } from "src/store/search-api";
-import { addNewLayer } from "src/lib/add-new-layer";
+import {
+  addNewLayer,
+  runNewSearch,
+} from "src/lib/cross-slice-actions/add-new-layer";
 
 const SearchBar = () => {
   const focusRef = useRef<HTMLInputElement>(null);
@@ -61,12 +64,14 @@ const SearchBar = () => {
             placeholder="Start typing to search..."
             className="w-full h-full bg-transparent pl-2 text-black outline-none"
             onKeyDown={(e) => {
+              /* STEP 1: User runs a query */
+              // Non-intuitive stuff here -- do I really need to use dispatch in the component?
               if (e.key === "Enter") {
-                dispatch(setInputText(e.currentTarget.value));
+                runNewSearch(localInputText, dispatch);
               }
             }}
             onChange={(e) => {
-              setLocalInputText(e.currentTarget.value);
+              setLocalInputText(e.target.value);
             }}
           />
           <button
@@ -75,7 +80,7 @@ const SearchBar = () => {
               isLoading && "animate-pulse"
             )}
             onClick={(e) => {
-              dispatch(setInputText(localInputText));
+              runNewSearch(localInputText, dispatch);
             }}
           >
             {isLoading ? `${timeElapsed} sec` : "Locate"}

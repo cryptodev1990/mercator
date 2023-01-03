@@ -3,6 +3,9 @@ export function generateRandomColor() {
 }
 
 export function convertHexToRGB(hex: string) {
+  if (!hex) {
+    throw new Error("Invalid hex color");
+  }
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
@@ -10,6 +13,9 @@ export function convertHexToRGB(hex: string) {
 }
 
 export function convertRGBToHex(arr: number[]) {
+  if (arr.length !== 3) {
+    throw new Error("Invalid RGB array, saw " + arr);
+  }
   const r = arr[0].toString(16).padStart(2, "0");
   const g = arr[1].toString(16).padStart(2, "0");
   const b = arr[2].toString(16).padStart(2, "0");

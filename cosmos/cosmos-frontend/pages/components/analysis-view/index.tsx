@@ -1,49 +1,66 @@
-import GeoMap from "@/pages/features/geomap/geomap";
-import Image from "next/image";
-import Link from "next/link";
-import { useDispatch } from "react-redux";
-import { clearSearchResults } from "src/search/search-slice";
-import ErrorBar from "../error-bar";
-import LayerCardBar from "../layer-card-bar";
-import SearchBar from "../search-bar/search-bar";
+import ErrorBar from "../bars/error-bar";
+import LayerCardBar from "../bars/layer-card-bar/layer-card-bar";
+import GeoMap from "../geomap/geomap";
+import SmallHeader from "../headers/small-header";
+import TaggedSearchBar from "../bars/tagged-search-bar";
+import { useState } from "react";
+import CancelButton from "../buttons/cancel-button";
+import SearchBar from "../bars/search-bar";
+import AnalysisUIContext from "../../../src/contexts/analysis-context";
+import { IntentResponse, ParsedEntity } from "src/store/search-api";
+import { isServer } from "src/lib/rendering-utils";
 
 const AnalysisView = () => {
-  const dispatch = useDispatch();
+  const [selectedIntentResponse, setSelectedIntentResponse] =
+    useState<IntentResponse | null>(null);
+  const [selectedEntity, setSelectedEntity] = useState<ParsedEntity | null>(
+    null
+  );
+  const [styleDrawerOpen, setStyleDrawerOpen] = useState<boolean>(false);
+  const [showTaggedSearchBar, setShowTaggedSearchBar] =
+    useState<boolean>(false);
+
+  if (isServer()) {
+    return null;
+  }
 
   return (
-    <main className="flex flex-row m-auto w-full gap-1 max-w-[3000px] h-screen overflow-hidden">
-      <div className="w-full flex flex-col gap-3">
-        <header className="relative mt-10 select-none flex flex-row gap-4">
-          <span
-            className="ml-5 cursor-pointer"
-            onClick={() => {
-              dispatch(clearSearchResults());
-            }}
-          >
-            <Link href={"/"}>
-              <h1 className="absolute text-md">Voyager</h1>
-              <Image
-                className="w-30 h-10"
-                src="/small-star.svg"
-                alt="Star"
-                width={100}
-                height={100}
-              ></Image>
-            </Link>
-          </span>
-          <div className="w-full">
-            <SearchBar />
+    <AnalysisUIContext.Provider
+      value={{
+        selectedIntentResponse,
+        setSelectedIntentResponse,
+        selectedEntity,
+        setSelectedEntity,
+        styleDrawerOpen,
+        setStyleDrawerOpen,
+        showTaggedSearchBar,
+        setShowTaggedSearchBar,
+      }}
+    >
+      <main className="flex flex-row m-auto w-full gap-1 max-w-[3000px] h-screen overflow-hidden">
+        <div className="w-full flex flex-col gap-3">
+          <header className="relative mt-10 select-none flex flex-row gap-4">
+            <SmallHeader />
+            <div className="w-full">
+              {showTaggedSearchBar && (
+                <div className="flex justify-around">
+                  <TaggedSearchBar />
+                  <CancelButton onClick={() => setShowTaggedSearchBar(false)} />
+                </div>
+              )}
+              {!showTaggedSearchBar && <SearchBar />}
+            </div>
+            <ErrorBar />
+          </header>
+          <div className="relative h-full">
+            <GeoMap />
           </div>
-          <ErrorBar />
-        </header>
-        <div className="relative h-full">
-          <GeoMap />
         </div>
-      </div>
-      <div className="h-[100%] mt-10 bg-black-500">
-        <LayerCardBar />
-      </div>
-    </main>
+        <div className="h-[100%] mt-10 bg-black-500">
+          <LayerCardBar />
+        </div>
+      </main>
+    </AnalysisUIContext.Provider>
   );
 };
 

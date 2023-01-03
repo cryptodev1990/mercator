@@ -1,16 +1,12 @@
 import { Dispatch } from "react";
-import { appendSearchResult } from "src/search/search-slice";
+import { appendSearchResult, setInputText } from "src/search/search-slice";
 import { addLayerStyle } from "src/shapes/shape-slice";
-import { SearchResponse } from "src/store/search-api";
-import { TAILWIND_COLORS } from "./colors";
-
-export function generateLayerId() {
-  return Math.random().toString(36).substr(2, 9);
-}
+import { IntentResponse } from "src/store/search-api";
+import { TAILWIND_COLORS } from "../colors";
 
 let i = 0;
 
-export function addNewLayer(data: SearchResponse, dispatch: Dispatch<any>) {
+export function addNewLayer(data: IntentResponse, dispatch: Dispatch<any>) {
   // get number of layers already in the store
   dispatch(appendSearchResult(data));
   dispatch(
@@ -23,4 +19,8 @@ export function addNewLayer(data: SearchResponse, dispatch: Dispatch<any>) {
     })
   );
   i += 1;
+}
+
+export function runNewSearch(searchQuery: string, dispatch: Dispatch<any>) {
+  dispatch(setInputText(searchQuery));
 }

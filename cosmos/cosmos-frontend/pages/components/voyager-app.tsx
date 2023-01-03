@@ -1,36 +1,12 @@
-import Image from "next/image";
-import Header from "./header";
-import SearchBar from "./search-bar/search-bar";
+import Header from "./headers/header";
+import SearchBar from "./bars/search-bar";
 import SearchSuggestions from "./search-suggestions";
-import { ToastProvider } from "react-toast-notifications";
 import { useSelector } from "react-redux";
 import { selectSearchState } from "../../src/search/search-slice";
 import AnalysisView from "./analysis-view";
-import ErrorBar from "./error-bar";
-import { useContext } from "react";
-
-type ContextType = {
-  component: any;
-  props?: any;
-};
-
-const ContextProviderNest = ({
-  contextProviders,
-  children,
-}: {
-  contextProviders: ContextType[];
-  children: React.ReactNode;
-}) => {
-  for (let i = contextProviders.length - 1; i >= 0; i--) {
-    const ContextProvider = contextProviders[i];
-    children = (
-      <ContextProvider.component {...ContextProvider.props}>
-        {children}
-      </ContextProvider.component>
-    );
-  }
-  return <>{children}</>;
-};
+import Footer from "./footer";
+import ContextProviderNest from "./context-helpers/context-provider-nest";
+import SmallHeader from "./headers/small-header";
 
 const MainView = () => {
   const { inputText, searchResults } = useSelector(selectSearchState);
@@ -42,16 +18,7 @@ const MainView = () => {
   if (inputText && inputText.length > 0) {
     return (
       <main className="max-w-5xl m-auto flex flex-col justify-center items-center">
-        <header className="relative m-10 select-none flex flex-row min-w-full gap-5">
-          <h1 className="absolute text-md">Voyager</h1>
-          <Image
-            src="/small-star.svg"
-            alt="Star"
-            width={100}
-            height={100}
-          ></Image>
-          <ErrorBar />
-        </header>
+        <SmallHeader />
         <section className="z-10 w-full">
           <SearchBar />
         </section>
@@ -78,39 +45,21 @@ const MainView = () => {
 const VoyagerApp = () => {
   // first context provider is the outermost
 
-  const providers = [
-    {
-      component: ToastProvider,
-    },
-  ];
-
   return (
-    <ContextProviderNest contextProviders={providers}>
-      <div className="w-screen h-screen">
+    <ContextProviderNest>
+      <FullScreen>
         <MainView />
-      </div>
-      <Footer />
+        <Footer />
+      </FullScreen>
     </ContextProviderNest>
   );
 };
 
-const Footer = () => {
+const FullScreen = ({ children }: { children: React.ReactNode }) => {
   return (
-    <footer className="fixed bottom-0 p-3 text-sm bg-[#121212] w-full text-center">
-      <span className="p-1">Powered by</span>
-      <span className="p-1">
-        <a href="https://mercator.tech">Mercator</a>
-      </span>
-      <span className="p-1">•</span>
-      <span className="p-1">
-        <a href="https://openstreetmap.org">OpenStreetMap</a>
-      </span>
-      <span className="p-1">•</span>
-      <span className="p-1">
-        <a href="https://vis.gl">Vis.gl</a>
-      </span>
-      <br />
-    </footer>
+    <div className="w-screen h-screen">
+      <div className="w-full h-full">{children}</div>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { SearchResponse } from "src/store/search-api";
+import { IntentResponse } from "src/store/search-api";
 
 type Layer = {
   id: number;
@@ -21,14 +21,14 @@ type GeoContextType = {
   layers: Layer[];
   appendLayer: (layer: Layer) => void;
   removeLayer: (id: string) => void;
-  getLayerFromSearchResponse: (searchResponse: SearchResponse) => Layer;
+  getLayerFromIntentResponse: (intentResponse: IntentResponse) => Layer;
 };
 
 export const GeoContext = createContext<GeoContextType>({
   layers: [],
   appendLayer: () => {},
   removeLayer: () => {},
-  getLayerFromSearchResponse: () => ({
+  getLayerFromIntentResponse: () => ({
     id: 0,
     data: {},
     getFillColor: [150, 255, 50],
@@ -47,10 +47,10 @@ const GeoContextProvider = ({ children }: { children: React.ReactNode }) => {
     // setLayers(layers.filter((x) => x.id !== id));
   };
 
-  const getLayerFromSearchResponse = (searchResponse: SearchResponse) => {
+  const getLayerFromIntentResponse = (intentResponse: IntentResponse) => {
     const {
       parse_result: { geom },
-    } = searchResponse;
+    } = intentResponse;
     id += 1;
     const color = [
       Math.random() * 255,
@@ -75,7 +75,7 @@ const GeoContextProvider = ({ children }: { children: React.ReactNode }) => {
         layers,
         appendLayer,
         removeLayer,
-        getLayerFromSearchResponse,
+        getLayerFromIntentResponse,
       }}
     >
       {children}

@@ -405,19 +405,37 @@ async def x_in_y(
         FROM (
           SELECT JSONB_BUILD_OBJECT(
               'type', 'Feature',
-              'id', id,
-              'geometry', ST_AsGeoJSON(geom)::JSONB,
+              'id', osm.id,
+              'geometry', ST_AsGeoJSON(osm.geom)::JSONB,
               'properties', JSONB_BUILD_OBJECT(
-                  'id', id,
-                  'tags', tags
+                  'id', osm.id,
+                  'tags', osm.tags
               )
           ) AS feature
           FROM
               osm
+          JOIN (
+                  {% if needle.match_type == "named_place" %}
+                      SELECT UNNEST('{ {{ needle.geoids | join(',') }} }'::VARCHAR[]) AS id
+                  {% elif needle.match_type == "category" %}
+                      SELECT osm_id AS id
+                      FROM category_membership
+                      WHERE 1=1
+                          -- TODO how should we really do this?
+                        AND human_readable ILIKE '%{{ needle.lookup }}%'
+                      LIMIT 100000
+                  {% else %}
+                      {# Otherwise, use the raw text lookup #}
+                      SELECT id
+                      FROM
+                          osm,
+                          plainto_tsquery( '{{ needle.lookup }}' ) query
+                      WHERE 1=1
+                          AND query @@ fts
+                      LIMIT 100000
+                  {% endif %}
+          ) queried ON queried.id = osm.id
           WHERE 1=1
-              AND id IN (
-                {{ needle.sql_snippet }}
-              )
               AND ST_Intersects(geom,
                (
                   SELECT geom AS container_geom
