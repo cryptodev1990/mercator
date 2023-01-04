@@ -1,13 +1,14 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { BiCaretDown, BiSave } from "react-icons/bi";
-import { Namespace } from "../../../../../../client";
+import { Namespace, NamespaceResponse } from "../../../../../../client";
 import { CancelIcon } from "../../../../../../common/components/icons";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { useShapes } from "../../../../hooks/use-shapes";
 import { useViewport } from "../../../../hooks/use-viewport";
 import simplur from "simplur";
 import Loading from "react-loading";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 const CancelButton = () => {
   const { setTentativeShapes } = useShapes();
@@ -34,7 +35,7 @@ const SaveButton = ({
     clearOptimisticShapeUpdates,
     setTileUpdateCount,
   } = useShapes();
-  useShapes();
+
   const { snapToBounds } = useViewport();
   const { clearSelectedShapeUuids } = useSelectedShapes();
   const [locked, setLocked] = useState(false);
@@ -88,14 +89,14 @@ const SaveButton = ({
 
 // dropdown of the current namespaces
 const NamespaceSection = ({ selectedFolder, setSelectedFolder }: any) => {
-  const { namespaces } = useShapes();
+  const { data: namespaces } = useGetNamespaces();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleNamespaceClick = (namespace: Namespace) => {
+  const handleNamespaceClick = (namespace: NamespaceResponse) => {
     setSelectedFolder(namespace);
     setIsDropdownOpen(false);
   };
@@ -127,14 +128,16 @@ const NamespaceSection = ({ selectedFolder, setSelectedFolder }: any) => {
                   onClick={() => setIsDropdownOpen(false)}
                 />
               </div>
-              {namespaces.map((namespace) => (
-                <div
-                  className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
-                  onClick={() => handleNamespaceClick(namespace)}
-                >
-                  <p className="text-black text-sm">{namespace.name}</p>
-                </div>
-              ))}
+              {namespaces
+                ? namespaces.map((namespace: NamespaceResponse) => (
+                    <div
+                      className="flex flex-row items-center justify-start w-full h-8 rounded-md cursor-pointer hover:bg-gray-200 p-2"
+                      onClick={() => handleNamespaceClick(namespace)}
+                    >
+                      <p className="text-black text-sm">{namespace.name}</p>
+                    </div>
+                  ))
+                : null}
             </div>
           )}
         </div>
@@ -145,18 +148,21 @@ const NamespaceSection = ({ selectedFolder, setSelectedFolder }: any) => {
 
 export const TentativeButtonBank = () => {
   // Button bank that pops up for uploaded shapes or shapes from the command palette
-  const { tentativeShapes, namespaces } = useShapes();
+  const { tentativeShapes } = useShapes();
+  const { data: namespaces } = useGetNamespaces();
   const { snapToBounds } = useViewport();
   const [selectedFolder, setSelectedFolder] = useState<Namespace | null>(null);
 
   useEffect(() => {
-    const defaultNamespace = namespaces.find(
-      (namespace) => namespace.is_default
-    );
-    if (defaultNamespace) {
-      setSelectedFolder(defaultNamespace);
+    if (namespaces) {
+      const defaultNamespace = namespaces.find(
+        (namespace) => namespace.is_default
+      );
+      if (defaultNamespace) {
+        setSelectedFolder(defaultNamespace);
+      }
     }
-  }, []);
+  }, [namespaces]);
 
   return (
     <div className="flex flex-col mt-2 space-x-1 w-full items-start bg-slate-900 pb-3">

@@ -49,17 +49,7 @@ const SidebarNavigation = () => {
 };
 
 const GeofencerSidebar = () => {
-  const { shapeForPropertyEdit, shapeMetadataIsLoading } = useShapes();
-
-  if (shapeMetadataIsLoading) {
-    return (
-      <SidebarDrawer>
-        <div className="w-max m-auto">
-          <Loading type="bubbles" />
-        </div>
-      </SidebarDrawer>
-    );
-  }
+  const { shapeForPropertyEdit } = useShapes();
 
   return (
     <SidebarDrawer>

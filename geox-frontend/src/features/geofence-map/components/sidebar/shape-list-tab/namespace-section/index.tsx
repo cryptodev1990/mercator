@@ -1,19 +1,21 @@
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 import { useShapes } from "../../../../hooks/use-shapes";
 import { NamespaceCard } from "./card";
 import { ShapeSearchBar } from "./shape-search-bar";
 
 export const NamespaceSection = ({ className }: { className: string }) => {
-  const {
-    namespaces,
-    visibleNamespaces,
-    activeNamespaces,
-    setActiveNamespaces,
-    shapeMetadata,
-  } = useShapes();
+  const { visibleNamespaces, activeNamespaces, setActiveNamespaces } =
+    useShapes();
+
+  const { data: namespaces } = useGetNamespaces();
+
+  if (!namespaces) return null;
 
   return (
     <div className={className}>
-      {shapeMetadata.length > 0 && <ShapeSearchBar />}
+      {namespaces.flatMap((x) => x.shapes ?? []).length > 0 && (
+        <ShapeSearchBar />
+      )}
       {namespaces.map((namespace, i) => {
         const isVisible = visibleNamespaces
           .map((x) => x.id)

@@ -1,6 +1,11 @@
 import { useContext, useEffect } from "react";
 import { GeofencerContext } from "../../contexts/geofencer-context";
-import { Feature, GeoShapeCreate, GeoShapeMetadata } from "../../../../client";
+import {
+  Feature,
+  GeoShapeCreate,
+  GeoShapeMetadata,
+  Namespace,
+} from "../../../../client";
 import buffer from "@turf/buffer";
 import centroid from "@turf/centroid";
 
@@ -9,16 +14,15 @@ import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { useShapes } from "../../hooks/use-shapes";
 import { toast } from "react-hot-toast";
 import { polygon, union } from "@turf/turf";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 export const CommandPalette = () => {
   const { tentativeShapes, setTentativeShapes, setViewport } =
     useContext(GeofencerContext);
-  const {
-    shapeMetadata,
-    deleteShapes: bulkDeleteShapes,
-    addShape,
-  } = useShapes();
+  const { deleteShapes: bulkDeleteShapes, addShape } = useShapes();
   const { getIsochrones, error: isochroneError } = useIsochrones();
+
+  const { data: allNamespaces } = useGetNamespaces();
 
   useEffect(() => {
     if (isochroneError) {
@@ -32,7 +36,12 @@ export const CommandPalette = () => {
         setViewport(res);
       }}
       onDelete={() => {
-        bulkDeleteShapes(shapeMetadata.map((s: GeoShapeMetadata) => s.uuid));
+        if (!allNamespaces) return;
+        bulkDeleteShapes(
+          allNamespaces
+            .flatMap((x: Namespace) => x.shapes ?? [])
+            .map((s: GeoShapeMetadata) => s.uuid)
+        );
         setTentativeShapes([]);
       }}
       onUnion={() => {

@@ -1,27 +1,13 @@
 // button to add a namespace
 
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import toast from "react-hot-toast";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { useShapes } from "../../../../hooks/use-shapes";
 
 export const AddButton = () => {
-  const { addNamespace, namespaces, namespacesError } = useShapes();
-
-  useEffect(() => {
-    if (namespacesError) {
-      const error = (namespacesError as any)?.status;
-
-      if (error === 409) {
-        toast.error("Namespace already exists");
-      } else if (error === 404) {
-        toast.error("Namespace not found");
-      } else {
-        console.error(error);
-        toast.error("Error adding namespace");
-      }
-    }
-  }, [namespacesError]);
+  const { addNamespace } = useShapes();
+  const { data: namespaces } = useGetNamespaces();
 
   return (
     <div
@@ -36,13 +22,20 @@ export const AddButton = () => {
         // @ts-ignore
         onChange={(newName) => {
           const name = newName.trim();
-          if (name !== "+ Folder" && !namespaces.find((n) => n.name === name)) {
-            // clean up the name
-            addNamespace({
-              name,
-              properties: {},
-            });
+          if (!name) {
+            return toast.error("Namespace cannot be empty");
           }
+          if (namespaces && namespaces.find((n) => n.name === name)) {
+            return toast.error("Namespace already exists");
+          }
+          if (name === "+ Folder") {
+            return toast.error("Please input valid namespace name");
+          }
+
+          addNamespace({
+            name,
+            properties: {},
+          });
         }}
         disabled={false}
       />

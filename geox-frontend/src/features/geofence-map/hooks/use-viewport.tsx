@@ -5,16 +5,18 @@ import { useShapes } from "./use-shapes";
 import { GeoShape, GeoShapeCreate } from "../../../client";
 import { bboxToZoom, featureToFeatureCollection } from "../utils";
 import { useSelectedShapes } from "./use-selected-shapes";
+import { useGetNamespaces } from "./use-openapi-hooks";
 
 export const useViewport = () => {
   const { viewport, setViewport } = useContext(GeofencerContext);
-  const { shapeMetadata, tentativeShapes } = useShapes();
+  const { tentativeShapes } = useShapes();
   const { selectedFeatureCollection, isSelected } = useSelectedShapes();
+  const { data: allNamespaces } = useGetNamespaces();
 
   function _genShapes(category: string) {
-    const selectedShapes = shapeMetadata?.filter((shape: any) =>
-      isSelected(shape)
-    ) as GeoShape[];
+    const selectedShapes = allNamespaces
+      ?.flatMap((x) => x.shapes ?? [])
+      ?.filter((shape: any) => isSelected(shape)) as GeoShape[];
 
     let shapesForOperation: GeoShapeCreate[] | GeoShape[] = [];
     if (category === "tentative") {

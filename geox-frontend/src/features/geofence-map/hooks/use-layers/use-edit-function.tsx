@@ -12,7 +12,10 @@ import { toast } from "react-hot-toast";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 import { useSelectedShapes } from "../use-selected-shapes";
-import { useBulkDeleteShapesMutation } from "../use-openapi-hooks";
+import {
+  useBulkDeleteShapesMutation,
+  useGetNamespaces,
+} from "../use-openapi-hooks";
 
 function injectJitterToPolygon(polygon: MultiPolygon | Polygon): MultiPolygon {
   const jitter = 0.0000000001;
@@ -30,7 +33,6 @@ function injectJitterToPolygon(polygon: MultiPolygon | Polygon): MultiPolygon {
 
 export function useEditFunction() {
   const {
-    shapeMetadata,
     setShapeForPropertyEdit,
     selectedFeatureIndexes,
     clearSelectedFeatureIndexes,
@@ -38,6 +40,8 @@ export function useEditFunction() {
     addShapeAndEdit,
     setTileUpdateCount,
   } = useShapes();
+
+  const { data: allNamespaces } = useGetNamespaces();
 
   const { mutate: deleteShapesRaw } = useBulkDeleteShapesMutation();
 
@@ -69,7 +73,9 @@ export function useEditFunction() {
       }
       const uuid = selectedUuids[0];
 
-      const shape = shapeMetadata.find((x) => x.uuid === uuid);
+      const shape = allNamespaces
+        ?.flatMap((x) => x.shapes ?? [])
+        .find((x) => x.uuid === uuid);
       const name = shape?.name ?? "New shape";
       const namespaceId = shape?.namespace_id;
       delete multiPolygon?.properties?.__uuid;

@@ -14,6 +14,7 @@ import simplur from "simplur";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { SearchContext } from "../../../../contexts/search-context";
 import { MAX_DISPLAY_SHAPES, Paginator } from "./paginator";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 export const NamespaceCard = ({
   namespace,
@@ -27,12 +28,14 @@ export const NamespaceCard = ({
   isVisible: boolean;
 }) => {
   const {
-    shapeMetadata,
     visibleNamespaces,
     setVisibleNamespaces,
     updateNamespace,
     partialUpdateShape,
   } = useShapes();
+
+  const { data: allNamespaces } = useGetNamespaces();
+
   const { setSelectedShapeUuid, clearSelectedShapeUuids } = useSelectedShapes();
   const [shapeHovered, setShapeHovered] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
@@ -42,11 +45,13 @@ export const NamespaceCard = ({
   const [maxPage, setMaxPage] = useState(0);
 
   useEffect(() => {
-    const sectionShapeMetadata = shapeMetadata.filter(
-      (shape) => shape.namespace_id === namespace.id
-    );
+    if (allNamespaces) {
+      const sectionShapeMetadata = allNamespaces
+        ?.flatMap((x) => x.shapes ?? [])
+        .filter((shape) => shape.namespace_id === namespace.id);
 
-    setMaxPage(Math.ceil(sectionShapeMetadata.length / MAX_DISPLAY_SHAPES));
+      setMaxPage(Math.ceil(sectionShapeMetadata.length / MAX_DISPLAY_SHAPES));
+    }
   }, [namespace.shapes]);
 
   useEffect(() => {
@@ -58,9 +63,9 @@ export const NamespaceCard = ({
     }
   }, [shapeHovered]);
 
-  const sectionShapeMetadata = shapeMetadata.filter(
-    (shape) => shape.namespace_id === namespace.id
-  );
+  const sectionShapeMetadata = allNamespaces
+    ?.flatMap((x) => x.shapes ?? [])
+    .filter((shape) => shape.namespace_id === namespace.id);
 
   return (
     <DragTarget
@@ -89,14 +94,17 @@ export const NamespaceCard = ({
             value={namespace.name}
             onChange={(newName) => {
               if (newName !== namespace.name) {
-                updateNamespace(namespace.id, { name: newName });
+                updateNamespace({
+                  namespaceId: namespace.id,
+                  namespace: { name: newName },
+                });
               }
             }}
             disabled={namespace.is_default}
           />
         </div>
         <div className="self-center ml-auto z-10 flex space-x-3">
-          {hovered && (
+          {sectionShapeMetadata && hovered && (
             <span className="text-sm">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
           )}
           {!namespace.is_default && hovered && (
@@ -123,7 +131,8 @@ export const NamespaceCard = ({
       {/* Directory body */}
       {shouldOpen && (
         <div>
-          {sectionShapeMetadata.length > 0 &&
+          {sectionShapeMetadata &&
+            sectionShapeMetadata.length > 0 &&
             sectionShapeMetadata
               .filter((x, i) => {
                 if (searchResults && searchResults.size > 0) {
@@ -145,6 +154,7 @@ export const NamespaceCard = ({
                 />
               ))}
           {(!searchResults || searchResults.size === 0) &&
+            sectionShapeMetadata &&
             sectionShapeMetadata.length > MAX_DISPLAY_SHAPES && (
               <Paginator
                 maxShapes={sectionShapeMetadata.length}

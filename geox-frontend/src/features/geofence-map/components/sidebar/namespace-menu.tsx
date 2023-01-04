@@ -2,6 +2,7 @@ import { RefObject } from "react";
 import { GeoShapeMetadata } from "../../../../client";
 import useContextMenu from "../../hooks/use-context-menu";
 import { useShapes } from "../../hooks/use-shapes";
+import { useGetNamespaces } from "../../hooks/use-openapi-hooks";
 
 const NamespaceMenu = ({
   outerRef,
@@ -10,7 +11,9 @@ const NamespaceMenu = ({
   outerRef: RefObject<HTMLDivElement>;
   shape: GeoShapeMetadata;
 }) => {
-  const { namespaces, partialUpdateShape } = useShapes();
+  const { data: namespaces } = useGetNamespaces();
+
+  const { partialUpdateShape } = useShapes();
   const { xPos, yPos, menu } = useContextMenu(outerRef);
 
   if (menu) {
@@ -24,24 +27,26 @@ const NamespaceMenu = ({
         </div>
         <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
           {namespaces
-            .filter(
-              (namespace) =>
-                shape.namespace_id && shape.namespace_id !== namespace.id
-            )
-            .map((namespace, i) => (
-              <li
-                className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white whitespace-nowrap cursor-pointer"
-                key={namespace.id}
-                onClick={() =>
-                  partialUpdateShape({
-                    uuid: shape.uuid,
-                    namespace: namespace.id,
-                  })
-                }
-              >
-                {namespace.name}
-              </li>
-            ))}
+            ? namespaces
+                .filter(
+                  (namespace) =>
+                    shape.namespace_id && shape.namespace_id !== namespace.id
+                )
+                .map((namespace, i) => (
+                  <li
+                    className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white whitespace-nowrap cursor-pointer"
+                    key={namespace.id}
+                    onClick={() =>
+                      partialUpdateShape({
+                        uuid: shape.uuid,
+                        namespace: namespace.id,
+                      })
+                    }
+                  >
+                    {namespace.name}
+                  </li>
+                ))
+            : null}
         </ul>
       </div>
     );

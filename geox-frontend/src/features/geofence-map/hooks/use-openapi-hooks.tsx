@@ -11,7 +11,6 @@ import {
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
 
 const genericErrorHandler = (error: any) => {
   const status = error?.status;
@@ -58,35 +57,17 @@ export const useAddShapeMutation = () => {
   });
 };
 
-export const useGetAllShapesMetadata = () => {
+export const useGetNamespaces = () => {
   const { isTokenSet } = useTokenInOpenApi();
   return useQuery<NamespaceResponse[]>(
     ["geofencer"],
     () => {
       return NamespacesService.getNamespacesGeofencerNamespacesGet();
     },
-
     {
       enabled: isTokenSet,
       refetchOnWindowFocus: true,
       onError: genericErrorHandler,
-    }
-  );
-};
-
-export const useGetNamespaces = () => {
-  const { isTokenSet } = useTokenInOpenApi();
-
-  return useQuery<NamespaceResponse[]>(
-    ["geofencer"],
-    () => {
-      return NamespacesService.getNamespacesGeofencerNamespacesGet();
-    },
-    {
-      enabled: isTokenSet,
-      onError(error: any) {
-        toast.error(`Namespaces failed to fetch (${error.detail})`);
-      },
     }
   );
 };
@@ -237,22 +218,4 @@ export const useTriggerCopyTaskMutation = () => {
       },
     }
   );
-};
-
-export const useDebouncedMutation = (mutationFn: any, options: any) => {
-  const mutation = useMutation(mutationFn, options);
-  const [isDebouncing, setIsDebouncing] = useState(false);
-  let timer: any;
-
-  // @ts-ignore
-  const debouncedMutate = (variables: any, { debounceMs, ...options }) => {
-    clearTimeout(timer);
-    setIsDebouncing(true);
-    timer = setTimeout(() => {
-      mutation.mutate(variables, options);
-      setIsDebouncing(false);
-    }, debounceMs);
-  };
-
-  return { isDebouncing, debouncedMutate, ...mutation };
 };

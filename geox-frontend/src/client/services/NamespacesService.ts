@@ -4,7 +4,6 @@
 import type { Namespace } from "../models/Namespace";
 import type { NamespaceCreate } from "../models/NamespaceCreate";
 import type { NamespaceResponse } from "../models/NamespaceResponse";
-import type { NamespaceUpdate } from "../models/NamespaceUpdate";
 
 import type { CancelablePromise } from "../core/CancelablePromise";
 import { OpenAPI } from "../core/OpenAPI";
@@ -54,6 +53,7 @@ export class NamespacesService {
       errors: {
         404: `Namespace does not exist`,
         422: `Validation Error`,
+        409: `Namespace already exists`,
       },
     });
   }
@@ -114,17 +114,17 @@ export class NamespacesService {
    * @returns NamespaceResponse Successful Response
    * @throws ApiError
    */
-  public static patchNamespacesGeofencerNamespacesNamespaceIdPatch(
-    namespaceId: string,
-    requestBody: NamespaceUpdate
-  ): CancelablePromise<NamespaceResponse> {
+  public static patchNamespacesGeofencerNamespacesNamespaceIdPatch(update: {
+    namespaceId: Namespace["id"];
+    namespace: Partial<Namespace>;
+  }): CancelablePromise<NamespaceResponse> {
     return __request(OpenAPI, {
       method: "PATCH",
       url: "/geofencer/namespaces/{namespace_id}",
       path: {
-        namespace_id: namespaceId,
+        namespace_id: update.namespaceId,
       },
-      body: requestBody,
+      body: update.namespace,
       mediaType: "application/json",
       errors: {
         404: `Namespace does not exist`,

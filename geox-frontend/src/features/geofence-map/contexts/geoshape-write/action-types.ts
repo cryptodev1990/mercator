@@ -7,35 +7,12 @@ import {
 
 export type Action =
   | {
-      type: "FETCH_SHAPE_METADATA_LOADING";
-    }
-  | {
-      type: "FETCH_SHAPE_METADATA_SUCCESS";
-      shapeMetadata: GeoShapeMetadata[];
-      namespaces: Namespace[];
-    }
-  | {
-      type: "FETCH_SHAPE_METADATA_ERROR";
-      error: any;
-    }
-  | {
       type: "SET_ACTIVE_NAMESPACES";
       namespaces: Namespace[];
     }
   | {
       type: "SET_VISIBLE_NAMESPACES";
       namespaces: Namespace[];
-    }
-  | {
-      type: "FETCH_NUM_SHAPES_LOADING";
-    }
-  | {
-      type: "FETCH_NUM_SHAPES_SUCCESS";
-      numShapes: number;
-    }
-  | {
-      type: "FETCH_NUM_SHAPES_ERROR";
-      error: any;
     }
   | {
       type: "ADD_SHAPE_LOADING";

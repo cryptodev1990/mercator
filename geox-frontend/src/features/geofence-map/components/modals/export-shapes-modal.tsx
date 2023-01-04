@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DownloadIcon } from "../../../../common/components/icons";
 import { useShapes } from "../../hooks/use-shapes";
 import { useUiModals } from "../../hooks/use-ui-modals";
@@ -9,6 +9,7 @@ import { topology } from "topojson-server";
 import ControlledDropdown from "common/components/ControlledDropdown";
 import { GeofencerService } from "client";
 import toast from "react-hot-toast";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 const formatOptions = [
   { key: "geojson", label: "GeoJSON" },
@@ -24,7 +25,7 @@ export const ExportShapesModal = () => {
     label: "All Namespaces",
     id: "all",
   });
-  const { namespaces } = useShapes();
+  const { data: namespaces } = useGetNamespaces();
 
   return (
     <ModalCard
@@ -87,18 +88,20 @@ export const ExportShapesModal = () => {
           <div className="col-span-3"></div>
           <div className="col-span-5 text-black">Select Namespace:</div>
           <div className="col-span-4">
-            <ControlledDropdown
-              options={[
-                ...namespaces.map((namespace) => ({
-                  key: namespace.slug,
-                  label: namespace.name,
-                  id: namespace.id,
-                })),
-                { key: "all", label: "All Namespaces" },
-              ]}
-              handleOptionSelect={setSelectedNamespace}
-              selectedOption={selectedNamespace}
-            />
+            {namespaces ? (
+              <ControlledDropdown
+                options={[
+                  ...namespaces.map((namespace: any) => ({
+                    key: namespace.slug,
+                    label: namespace.name,
+                    id: namespace.id,
+                  })),
+                  { key: "all", label: "All Namespaces" },
+                ]}
+                handleOptionSelect={setSelectedNamespace}
+                selectedOption={selectedNamespace}
+              />
+            ) : null}
           </div>
           <div className="col-span-3"></div>
         </div>

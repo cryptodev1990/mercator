@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { EditorMode } from "../cursor-modes";
 import { useCursorMode } from "../hooks/use-cursor-mode";
+import { useGetNamespaces } from "../hooks/use-openapi-hooks";
 import { useSelectedShapes } from "../hooks/use-selected-shapes";
 import { useShapes } from "../hooks/use-shapes";
 import { useUiModals } from "../hooks/use-ui-modals";
@@ -15,7 +16,6 @@ export const RightClickMenu = () => {
   // read selection from context
   const {
     setShapeForPropertyEdit,
-    shapeMetadata,
     clearSelectedFeatureIndexes,
     mapRef,
     deleteShapes,
@@ -34,6 +34,8 @@ export const RightClickMenu = () => {
     setXPos(null);
     setYPos(null);
   }
+
+  const { data: allNamespaces } = useGetNamespaces();
 
   const { openModal } = useUiModals();
 
@@ -104,9 +106,9 @@ export const RightClickMenu = () => {
         if (numSelected > 1) {
           toast.error("Please select only one shape to edit");
         }
-        const selectedShape = shapeMetadata.find((shape) =>
-          isSelected(shape.uuid)
-        );
+        const selectedShape = allNamespaces
+          ?.flatMap((x) => x.shapes ?? [])
+          .find((shape) => isSelected(shape.uuid));
         if (!selectedShape) {
           toast.error("No shape detected");
           return;

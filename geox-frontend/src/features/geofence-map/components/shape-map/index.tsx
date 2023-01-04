@@ -16,6 +16,7 @@ import "../../../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
 import _ from "lodash";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -25,10 +26,11 @@ const GeofenceMap = () => {
     clearSelectedFeatureIndexes,
     deleteShapes,
     addShape,
-    shapeMetadata,
     setShapeForPropertyEdit,
     deletedShapeIdSet,
   } = useShapes();
+
+  const { data: allNamespaces } = useGetNamespaces();
 
   const {
     selectedUuids,
@@ -124,7 +126,9 @@ const GeofenceMap = () => {
   };
 
   const handleLeftClick = (event: MouseEvent) => {
-    const selectedShape = shapeMetadata.find((shape) => isSelected(shape.uuid));
+    const selectedShape = allNamespaces
+      ?.flatMap((x) => x.shapes ?? [])
+      .find((shape) => isSelected(shape.uuid));
     console.log("cursorMode", cursorMode);
     if (
       selectedShape &&

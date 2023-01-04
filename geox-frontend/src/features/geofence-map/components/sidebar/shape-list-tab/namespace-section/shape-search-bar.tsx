@@ -1,3 +1,4 @@
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 import Fuse from "fuse.js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -10,36 +11,49 @@ import { useShapes } from "../../../../hooks/use-shapes";
 export const ShapeSearchBar = () => {
   // persist fuse instance
   const fuseRef = useRef<Fuse<GeoShapeMetadata>>(null);
-  const { shapeMetadata, setActiveNamespaces, namespaces } = useShapes();
+  const { setActiveNamespaces } = useShapes();
+  const { data: namespaces } = useGetNamespaces();
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const { setSearchResults } = useContext(SearchContext);
   const debouncedSearchTerm: string = useDebounce(searchTerm, 200);
 
   useEffect(() => {
     // filter to unique property keys
-    const allUniquePropertyKeys = shapeMetadata.reduce(
-      (acc, shape) => [
-        ...acc,
-        ...Object.keys(shape.properties).filter((key) => !acc.includes(key)),
-      ],
-      [] as string[]
-    );
-    const fuse = new Fuse(shapeMetadata, {
-      keys: [...allUniquePropertyKeys.map((x) => "properties." + x), "name"],
-      threshold: 0.3,
-      distance: 100,
-    });
-    // @ts-ignore
-    fuseRef.current = fuse;
-  }, [shapeMetadata]);
+    if (namespaces) {
+      const allUniquePropertyKeys = namespaces
+        ?.flatMap((x) => x.shapes ?? [])
+        .reduce(
+          (acc, shape) => [
+            ...acc,
+            ...Object.keys(shape.properties).filter(
+              (key) => !acc.includes(key)
+            ),
+          ],
+          [] as string[]
+        );
+      const fuse = new Fuse(
+        namespaces?.flatMap((x) => x.shapes ?? []),
+        {
+          keys: [
+            ...allUniquePropertyKeys.map((x) => "properties." + x),
+            "name",
+          ],
+          threshold: 0.3,
+          distance: 100,
+        }
+      );
+      // @ts-ignore
+      fuseRef.current = fuse;
+    }
+  }, [namespaces]);
 
   useEffect(() => {
-    if (!fuseRef.current || !debouncedSearchTerm) {
+    if (!fuseRef.current || !debouncedSearchTerm || !namespaces) {
       return;
     }
     const results = debouncedSearchTerm
       ? fuseRef.current.search(debouncedSearchTerm)
-      : shapeMetadata.map((x) => ({ item: x }));
+      : namespaces.flatMap((x) => x.shapes ?? []).map((x) => ({ item: x }));
     if (results.length > 0) {
       // set new activeNamespaces
       let namespaceIds = new Set(results.map((x) => x.item.namespace_id));

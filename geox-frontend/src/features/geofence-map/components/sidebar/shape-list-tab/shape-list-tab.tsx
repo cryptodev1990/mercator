@@ -10,9 +10,10 @@ import { UIModalEnum } from "../../../types";
 import { useDbSync } from "../../../hooks/use-db-sync";
 import { NamespaceSection } from "./namespace-section";
 import { TentativeButtonBank } from "./shape-card/button-bank";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 export const ShapeBarPaginator = () => {
-  const { tentativeShapes, numShapes, namespaces } = useShapes();
+  const { tentativeShapes, numShapes } = useShapes();
   const { openModal } = useUiModals();
   const { isLoading: isPolling } = useDbSync();
 
@@ -65,14 +66,12 @@ export const ShapeBarPaginator = () => {
         ))}
       </div>
       {tentativeShapes.length > 0 && <TentativeButtonBank />}
-      {namespaces.length !== 0 && (
-        <NamespaceSection
-          className="
+      <NamespaceSection
+        className="
           flex-1
           h-full p-1 bg-gradient-to-b from-slate-600 to-slate-700
       "
-        />
-      )}
+      />
     </div>
   );
 };
