@@ -1,0 +1,52 @@
+# Command runner for Mercator backend
+# This is a [justfile](https://github.com/casey/juste)
+
+# set the default shell (to be safe)
+set shell := ["zsh", "-uc"]
+
+venv := 'env'
+source_venv := 'source ' + venv + '/bin/activate'
+
+git_commit_hash := `git rev-parse HEAD`
+
+default:
+	@just --list
+
+dev:
+	just run
+
+run:
+	#!/bin/zsh
+	{{ source_venv }}
+	./scripts/run.sh
+
+lint:
+	#!/bin/zsh
+	{{ source_venv }}
+	python -m mypy .
+	python -m pylintpython -m
+
+format:
+	#!/bin/zsh
+	{{ source_venv }}
+	set -x
+	python -m isort --quiet .
+	python -m black .
+
+
+test:
+	#!/bin/zsh
+	{{ source_venv }}
+	python -m pytest
+
+# Create and update a new local OSM database
+install:
+	#!/bin/zsh
+	set -e
+	if [[ ! -d .venv ]]; then
+		python3 -m venv {{ venv }}
+	fi
+	{{ source_venv }}
+	pip install --upgrade pip wheel
+	pip install -r requirements.txt
+	pip install -r requirements-dev.txt

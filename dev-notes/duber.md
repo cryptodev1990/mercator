@@ -1301,7 +1301,13 @@ clicking on a result card populates the search bar with this info
   - [ ] Write UI component
     - This is going to be a row with a few rounded text boxes that each contain an intent name
     - Clicking on a bubble changes the selected intent and recomputes the intent
-  - [ ] Add intent candidates and selected intent to state
-  - [ ] Add slots candidates and filled slots to the state
+  - [X] Add intent candidates and selected intent to state
+  - [X] Add slots candidates and filled slots to the state
 - [ ] Search switcher
-- [ ] Regenerate search client
+- [X] Regenerate search client
+
+# 01-04-23
+
+- Create and publish the dubo library
+- Create a WASM Jupyter notebook and post it to the dubo website
+- TODO need to rate limit
