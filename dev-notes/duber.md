@@ -1308,6 +1308,13 @@ clicking on a result card populates the search bar with this info
 
 # 01-04-23
 
-- Create and publish the dubo library
-- Create a WASM Jupyter notebook and post it to the dubo website
-- TODO need to rate limit
+## Progress / plans
+
+- [X] Create and publish the dubo library, available at https://pypi.org/project/dubo with its source at https://github.com/mercatorhq/dubo
+- Create a WASM Jupyter notebook and post it to the dubo website, available at https://silver-parakeet-7bf89cc0.pages.github.io/retro/notebooks/?path=dubo.ipynb with its source at https://github.com/mercatorhq/dubo-jl
+- Create a backend API, whose source is here https://github.com/mercatorhq/mercator/pull/817 and whose endpoint is here https://dubo-api.fly.dev/docs and should be here https://dubo-api.mercator.tech/v1/dubo/query
+- TODO
+  - [ ] need to somehow decide if we even want to pursue this
+  - [ ] need to fix the URL that the client library talks to -- currently CNAME record doesn't appear to be correctly pointed at the fly URL
+  - [ ] need to rate limit user requests
+  - [ ] need to add API key validation
