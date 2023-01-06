@@ -1314,7 +1314,8 @@ clicking on a result card populates the search bar with this info
 - Create a WASM Jupyter notebook and post it to the dubo website, available at https://silver-parakeet-7bf89cc0.pages.github.io/retro/notebooks/?path=dubo.ipynb with its source at https://github.com/mercatorhq/dubo-jl
 - Create a backend API, whose source is here https://github.com/mercatorhq/mercator/pull/817 and whose endpoint is here https://dubo-api.fly.dev/docs and should be here https://dubo-api.mercator.tech/v1/dubo/query
 - TODO
+  - [ ] need to add API key validation
+  - [ ] Logging the queries that come in
   - [ ] need to somehow decide if we even want to pursue this
   - [ ] need to fix the URL that the client library talks to -- currently CNAME record doesn't appear to be correctly pointed at the fly URL
   - [ ] need to rate limit user requests
-  - [ ] need to add API key validation
