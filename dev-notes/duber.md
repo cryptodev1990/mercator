@@ -1319,3 +1319,39 @@ clicking on a result card populates the search bar with this info
   - [ ] need to somehow decide if we even want to pursue this
   - [ ] need to fix the URL that the client library talks to -- currently CNAME record doesn't appear to be correctly pointed at the fly URL
   - [ ] need to rate limit user requests
+<<<<<<< Updated upstream
+=======
+  - [ ] need to add API key validation
+
+# 01-05-23
+
+- Voyager MVP features
+
+  1) The Danish. Overlap between a set of amenities. ✅
+  2) Basic census. Pull in Census
+  3) Pulling in raw features from OSM ✅
+  4) User feedback on intent classification TODO
+  5) Hosting
+  6) Let users upload small amounts of data (e.g. CSVs with lat/lng)
+     and answer simple questions about them that stay client-side?
+  7) Isochrones
+    - TODO Figure out a reasonable cap
+    - Figure out how to warn the user if the isochrone size is too large
+  8) Let users difference/union/intersect data from the client
+
+- Pantry
+  - Deep linking -- link to a set of queries already written by someone else
+    - Skip until it feels necessary
+
+- Magic: Show me all the ZCTAs that aren’t within an hour of a hospital
+- Surrender: 
+
+- CSV of lat / lng or addresses
+- Give us a column name and a value
+- Show me vacant warehouses within half a mile of a coffee shop
+
+- [ ] Go Danish
+- Type in 
+  - neighborhoods in San Francisco near a park and a grocery store and a cafe and a MUNI stop
+  - join to my own data -- differences and unions
+>>>>>>> Stashed changes
