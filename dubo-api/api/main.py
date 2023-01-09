@@ -1,15 +1,22 @@
 from typing import List, Optional
 import os
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 import openai
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import sqlparse
 
 openai.api_key = os.environ['OPENAI_KEY']
 
 app = FastAPI()
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.get("/")
 def read_root():
@@ -50,17 +57,19 @@ app.add_middleware(
     tags=["dubo"],
     summary="Convert text to SQL",
 )
+@limiter.limit("100/day")
 def read_query(
+    request: Request,
     user_query: str = Query(default=None, description="The question to answer"),
     schemas: List[str] = Query(default=[], description="The table schema(s) to use"),
     descriptions: List[str] | None = Query(default=[], description="The table description(s) to use")
-): 
+):
     if not user_query:
         raise HTTPException(status_code=422, detail="No query provided")
     if not schemas:
         raise HTTPException(status_code=422, detail="No schemas provided")
+
     try:
-        descriptions = descriptions or []
         parsed = sqlparse.parse(schemas[0])[0]
         # Really rough check to make sure the input is a valid SQL table schema
         assert parsed.tokens[0].value.upper() == "CREATE", "Invalid schema"
