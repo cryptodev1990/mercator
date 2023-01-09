@@ -2,6 +2,7 @@ from typing import List, Optional
 import os
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 import openai
 from pydantic import BaseModel
 import sqlparse
@@ -24,6 +25,18 @@ SQL_TABLE_REGEX = r"""
 # Createa Pydanic model for the response
 class QueryResponse(BaseModel):
     query_text: str
+
+
+origins = ["*"]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/v1/dubo/query",
