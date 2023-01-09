@@ -1354,4 +1354,18 @@ clicking on a result card populates the search bar with this info
 - Type in 
   - neighborhoods in San Francisco near a park and a grocery store and a cafe and a MUNI stop
   - join to my own data -- differences and unions
->>>>>>> Stashed changes
+
+# How do we solve the REGION query problems?
+
+`SELECT COUNT(*) FROM tbl_0 WHERE zip_code LIKE '%AF%';`
+df = pd.read_csv('https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv')
+
+## Explicit sources of data [meaning]
+
+- Documentation
+- Fine-tuning on your tables and data
+
+## Implicit sources of data [meaning]
+
+- Prior usage (e.g. metadata tables)
+- Table summary stats
