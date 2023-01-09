@@ -1358,7 +1358,7 @@ clicking on a result card populates the search bar with this info
 # How do we solve the REGION query problems?
 
 `SELECT COUNT(*) FROM tbl_0 WHERE zip_code LIKE '%AF%';`
-df = pd.read_csv('https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv')
+`df = pd.read_csv('https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv')`
 
 ## Explicit sources of data [meaning]
 
@@ -1369,3 +1369,12 @@ df = pd.read_csv('https://raw.githubusercontent.com/ajduberstein/geo_datasets/ma
 
 - Prior usage (e.g. metadata tables)
 - Table summary stats
+
+Jan 9 2023
+------------
+
+### Plans
+
+- [ ] Dubo landing page
+  - Put up a page 
+- [ ] Review Usman's [PR](https://github.com/mercatorhq/mercator/pull/827)
