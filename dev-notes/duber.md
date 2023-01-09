@@ -1378,3 +1378,9 @@ Jan 9 2023
 - [ ] Dubo landing page
   - Put up a page 
 - [ ] Review Usman's [PR](https://github.com/mercatorhq/mercator/pull/827)
+
+dubo expansions:
+  - new interfaces: Slack bot, web portal
+  - data quality
+  - fine tuning
+  - custom dashboards?
