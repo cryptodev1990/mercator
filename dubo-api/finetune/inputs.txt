@@ -1,0 +1,13 @@
+Convert text to SQL.
+
+You have the following DDLs:
+
+```
+CREATE TABLE 
+```
+
+Write the SQL that answers the following question:
+
+"""{user_query}"""
+
+Respond with only one concise SQL statement.
