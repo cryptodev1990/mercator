@@ -1,4 +1,4 @@
-import { GeoShapeMetadata, Namespace } from "../../../../client";
+import { Namespace } from "../../../../client";
 import { Action } from "./action-types";
 
 export interface State {
@@ -12,6 +12,7 @@ export const initialState: State = {
 };
 
 export function geoshapeReducer(state: State, action: Action): State {
+  console.log("geoshape-metadata reducer", action);
   switch (action.type) {
     case "SET_ACTIVE_NAMESPACES": {
       return {

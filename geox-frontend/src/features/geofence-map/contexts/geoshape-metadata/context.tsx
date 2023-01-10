@@ -2,7 +2,6 @@ import { createContext, Dispatch, useEffect, useReducer } from "react";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "react-query";
 import {
-  GeoShapeMetadata,
   Namespace,
   NamespaceCreate,
   NamespacesService,
@@ -85,14 +84,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
           namespaces: lastVisibleNamespacesParsed,
         });
       }
-    }
-    if (allNamespaces) {
-      const justUseDefault = allNamespaces.find((ns) => ns.is_default);
-      dispatch({
-        type: "SET_VISIBLE_NAMESPACES",
-        // @ts-ignore
-        namespaces: justUseDefault ? [justUseDefault] : [],
-      });
     }
   }, [allNamespaces]);
 

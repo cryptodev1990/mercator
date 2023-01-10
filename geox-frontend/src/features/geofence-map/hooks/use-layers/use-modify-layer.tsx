@@ -92,9 +92,9 @@ export function useModifyLayer() {
       guides: {
         stroked: true,
         // https://deck.gl/docs/api-reference/layers/geojson-layer#pointtypecircle-options
-        pointRadiusMinPixels: 5,
-        getPointRadius: 1,
-        lineWidthMinPixels: 1,
+        pointRadiusMinPixels: 1,
+        getPointRadius: 3,
+        pointRadiusMaxPixels: 5,
         getLineColor: (d: any) => {
           if (
             d.properties.editHandleType === "existing" &&
