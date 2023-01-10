@@ -18,13 +18,22 @@ class AuthorizedTileFunction(layer.Function):
         **kwargs: Any,
     ):
         """Custom get_tile method which translates a request for an MVT tile into a SQL query.
-        See generate_shape_tile.sql for the SQL that actually executes on each MVT tile request."""
+        See generate_shape_tile.sql for the SQL that actually executes on each MVT tile request.
+
+        We moved this to a db migration on Jan 9 2023, since we identified
+        that the function was getting created/replaced needlessly
+        """
 
         async with pool.acquire() as conn:
             transaction = conn.transaction()
             await transaction.start()
-            with time_db_query("get_tile_sql"):
-                await conn.execute(self.sql)
+
+            # with time_db_query("get_tile_sql"):
+            #     import time
+            #     start = time.time()
+            #     await conn.execute(self.sql)
+            #     end = time.time() - start
+            #     print(end)
 
             sql_query = clauses.Select(
                 Func(

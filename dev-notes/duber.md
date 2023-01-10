@@ -1319,7 +1319,6 @@ clicking on a result card populates the search bar with this info
   - [ ] need to somehow decide if we even want to pursue this
   - [ ] need to fix the URL that the client library talks to -- currently CNAME record doesn't appear to be correctly pointed at the fly URL
   - [ ] need to rate limit user requests
-<<<<<<< Updated upstream
 =======
   - [ ] need to add API key validation
 
@@ -1375,9 +1374,10 @@ Jan 9 2023
 
 ### Plans
 
-- [ ] Dubo landing page
-  - Put up a page 
+- [X] Dubo landing page
+  - Put up a page: https://mercatorhq.github.io/dubo-jl/retro/notebooks/?path=dubo.ipynb
 - [ ] Review Usman's [PR](https://github.com/mercatorhq/mercator/pull/827)
+- [ ] Fix geox function call
 - [ ] Deploy https://github.com/mercatorhq/mercator/pull/830
 
 dubo expansions:
