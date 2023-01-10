@@ -1376,9 +1376,9 @@ Jan 9 2023
 
 - [X] Dubo landing page
   - Put up a page: https://mercatorhq.github.io/dubo-jl/retro/notebooks/?path=dubo.ipynb
-- [ ] Review Usman's [PR](https://github.com/mercatorhq/mercator/pull/827)
-- [ ] Fix geox function call
-- [ ] Deploy https://github.com/mercatorhq/mercator/pull/830
+- [X] Review Usman's [PR](https://github.com/mercatorhq/mercator/pull/827)
+- [X] Fix SQL geox function call
+- [X] Deploy https://github.com/mercatorhq/mercator/pull/830
 
 dubo expansions:
   - new interfaces: Slack bot, web portal
@@ -1386,3 +1386,17 @@ dubo expansions:
   - fine tuning
   - custom dashboards?
 
+https://maartenbreddels.medium.com/advance-your-ipywidget-app-development-with-reacton-6734a5607d69
+https://observablehq.com/@asg017/introducing-sqlite-http
+
+Jan 10 2023
+------------
+
+### Plans
+
+- [ ] Voyager tooltip
+- [ ] Add Census data to map
+- [ ] Errors
+  - Entity resolution error triggered by `parks in san franisco`
+  - `none is not an allowed value (type=type_error.none.not_allowed)` from `areas near a graveyard and a michelin star restaurant`
+  
