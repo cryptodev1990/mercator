@@ -1400,3 +1400,18 @@ Jan 10 2023
   - Entity resolution error triggered by `parks in san franisco`
   - `none is not an allowed value (type=type_error.none.not_allowed)` from `areas near a graveyard and a michelin star restaurant`
   
+
+google sheets function
+data enrichment?
+vis?
+
+Jan 12 2023
+-----------
+
+Trying to support a "natural language to GIS query" demo
+
+Fun link: https://huggingface.co/docs/transformers/v4.24.0/en/model_doc/codegen#overview
+
+### Progress
+
+Got a working version of SQLite in the browser, which will be useful for the Chrome extension version of this and the demo frontend
