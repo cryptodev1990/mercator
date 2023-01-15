@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import duboQuery from "./dubo-client";
 import initSqlJs from "sql.js";
-import { DataFrameViewer } from "./demo-box";
+import { DataFrameViewer } from "./DataFrameViewer";
 import { useLocalSqlite } from "./use-sql-db";
-import { FaSpinner } from "react-icons/fa";
+import { FaPlay, FaSpinner } from "react-icons/fa";
 
 const DATA_OPTIONS = {
   "US Census ACS 2021 Subset": [
@@ -84,7 +84,7 @@ const DuboPreview = () => {
           <input
             value={query ?? ""}
             type="text"
-            className="border w-full placeholder:gray-500 text-lg"
+            className="border w-full placeholder:gray-500 text-lg p-4"
             placeholder="Enter a query"
             onChange={(e) => {
               setQuery(e.target.value);
@@ -116,14 +116,15 @@ const DuboPreview = () => {
                 if (res) {
                   setExecResults(res);
                 } else {
-                  setError("Query failed. Try a different query.");
+                  setError("Query returned no results.");
                 }
               } else {
                 setError("Query failed. Try a different query.");
               }
             }}
           >
-            Run Query
+            Run
+            <FaPlay className="inline-block h-4 w-4" />
           </button>
         </div>
         {error && (
@@ -134,7 +135,9 @@ const DuboPreview = () => {
         {duboResponse && (
           <>
             <p>SQL:</p>
-            <p className="font-mono">{duboResponse}</p>
+            <p className="font-mono max-w-5xl whitespace-pre-wrap">
+              {duboResponse}
+            </p>
           </>
         )}
         <p>Results:</p>
@@ -153,13 +156,5 @@ const DuboPreview = () => {
     </div>
   );
 };
-
-// Possibility 1
-// Upload data or select a data set
-// https://www.npmjs.com/package/@duckdb/duckdb-wasm
-// Load that data to the duckdb or in-browser SQL
-// Run a query from the browser to our endpoint
-// Return the results to the browser
-// Display the results
 
 export default DuboPreview;
