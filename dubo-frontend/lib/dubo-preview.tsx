@@ -17,6 +17,8 @@ const DATA_OPTIONS = {
 
 type DataNames = keyof typeof DATA_OPTIONS;
 
+const isSSR = () => typeof window === "undefined";
+
 export type DataFrame = {
   columns: string[];
   data: any[];
@@ -51,6 +53,10 @@ const DuboPreview = () => {
       setExecResults(res);
     }
   }, [status]);
+
+  if (isSSR()) {
+    return null;
+  }
 
   if (status === "preparing") {
     return (
