@@ -1,16 +1,16 @@
-import { JSONLoader, load } from "@loaders.gl/core";
+import { JSONLoader, load, parse } from "@loaders.gl/core";
 import { CSVLoader } from "@loaders.gl/csv";
 
 import { useEffect, useState } from "react";
 import { Database } from "sql.js";
 import { DataFrame } from "./dubo-preview";
-import { convertZip, sniff } from "./dubo-client";
+import { convertZip, sniff, sanitizeColumnNames } from "./dubo-client";
 
 export const usePrepareData = ({
-  urlsToData,
+  urlsOrFile,
   db,
 }: {
-  urlsToData: string[];
+  urlsOrFile: (string | File)[];
   db: Database | null;
 }) => {
   const [error, setError] = useState<string | null>(null);
@@ -20,12 +20,19 @@ export const usePrepareData = ({
   const loadData = async () => {
     setPreparing(true);
     const newDfs: DataFrame[] = [];
-    for (const path of urlsToData) {
+    for (const path of urlsOrFile) {
       const df: DataFrame = {
         columns: [],
         data: [],
       };
-      df.data = await load(path, [CSVLoader, JSONLoader]);
+      if (typeof path === "string") {
+        df.data = await load(path, [CSVLoader, JSONLoader]);
+      } else if (path instanceof File) {
+        df.data = await parse(path, [CSVLoader, JSONLoader]);
+        console.table(df.data);
+      } else {
+        throw new Error("Unknown type");
+      }
       // apply the function to convert any of the data frame records to a string if ZIP is a number
       df.data = df.data.map((row: any) => {
         for (const key of Object.keys(row)) {
@@ -40,14 +47,18 @@ export const usePrepareData = ({
       });
       // We assume the header is properly set in the first row
       df.columns = Object.keys(df.data[0]) as string[];
+      sanitizeColumnNames(df.columns);
       newDfs.push(df);
     }
     return newDfs;
   };
 
-  const fillDb = async (dfs: DataFrame[]) => {
+  const fillDb = async (dfs?: DataFrame[]) => {
     let dfNum = 0;
     if (db === null) {
+      return;
+    }
+    if (!dfs) {
       return;
     }
     for (const df of dfs) {
@@ -82,11 +93,15 @@ export const usePrepareData = ({
       dfNum += 1;
     }
     setPreparing(false);
+    const rows = db.exec(`SELECT COUNT(*) FROM tbl_0 LIMIT 10`)[0].values[0][0];
     console.log(
       "Rows",
       // @ts-ignore
-      db.exec(`SELECT COUNT(*) FROM tbl_0 LIMIT 10`)[0].values[0][0]
+      rows
     );
+    if (rows === 0) {
+      setError("No data found, please check your file and try again");
+    }
     console.log("done loading data");
   };
 
@@ -97,9 +112,16 @@ export const usePrepareData = ({
     setPrepared(false);
     loadData()
       .then(fillDb)
-      .catch((err) => setError(err));
-    setPrepared(true);
-  }, [db, urlsToData]);
+      .then(() => {
+        setPreparing(false);
+        setPrepared(true);
+      })
+      .catch((err) => {
+        setError(err);
+        setPreparing(false);
+        setPrepared(false);
+      });
+  }, [db, urlsOrFile]);
 
   return { error, preparing, prepared };
 };

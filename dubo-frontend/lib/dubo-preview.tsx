@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import duboQuery from "./dubo-client";
 import initSqlJs from "sql.js";
 import { DataFrameViewer } from "./DataFrameViewer";
 import { useLocalSqlite } from "./use-sql-db";
 import { FaPlay, FaSpinner } from "react-icons/fa";
-import dynamic from "next/dynamic";
 
 const DATA_OPTIONS = {
   "US Census ACS 2021 Subset": [
@@ -23,6 +22,23 @@ export type DataFrame = {
   data: any[];
 };
 
+export async function getUploadData(): Promise<File | null> {
+  const file = await new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    // restrict to csv files or json files
+    input.accept = ".csv,.json";
+    input.onchange = () => {
+      resolve(input.files?.[0]);
+    };
+    input.click();
+  });
+  if (!file) {
+    return null;
+  }
+  return file as File;
+}
+
 const DuboPreview = () => {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState<string | null>(null);
@@ -30,10 +46,26 @@ const DuboPreview = () => {
   const [execResults, setExecResults] = useState<initSqlJs.QueryExecResult[]>(
     []
   );
-  const [selectedData, setSelectedData] = useState<DataNames>("Fortune 500");
-  const { exec, status } = useLocalSqlite({
-    urlsToData: DATA_OPTIONS[selectedData],
+  const [selectedData, setSelectedData] = useState<DataNames | null>(
+    "Fortune 500"
+  );
+  const [customData, setCustomData] = useState<File[] | null>(null);
+  const {
+    exec,
+    status,
+    error: sqlError,
+  } = useLocalSqlite({
+    // @ts-ignore
+    urlsOrFile: customData || DATA_OPTIONS[selectedData],
   });
+
+  useEffect(() => {
+    if (sqlError) {
+      // TODO provide a better error message
+      console.log(sqlError);
+      setError((sqlError as any).message);
+    }
+  }, [sqlError]);
 
   useEffect(() => {
     if (!error) {
@@ -53,6 +85,14 @@ const DuboPreview = () => {
     }
   }, [status]);
 
+  if (error && status !== "ready") {
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <h1>Error loading data</h1>
+      </div>
+    );
+  }
+
   if (status === "preparing") {
     return (
       <div className="flex flex-col items-center justify-center">
@@ -67,19 +107,31 @@ const DuboPreview = () => {
       <div className="flex flex-col min-w-5xl">
         <select
           className="border w-full placeholder:gray-500 text-lg"
-          onChange={(e) => {
-            setSelectedData(e.target.value as any);
+          onChange={async (e) => {
             setDuboResponse(null);
             setExecResults([]);
             setQuery("");
+            if (e.target.value === "custom") {
+              const f = await getUploadData();
+              if (!f) {
+                setError("No file selected");
+                return;
+              }
+              setCustomData([f]);
+            } else {
+              setSelectedData(e.target.value as any);
+            }
           }}
-          value={selectedData}
+          value={typeof selectedData === "string" ? selectedData : "Custom"}
         >
           {Object.keys(DATA_OPTIONS).map((key) => (
             <option key={key} value={key}>
               {key}
             </option>
           ))}
+          <option key={"custom"} value={"custom"}>
+            Upload your own data
+          </option>
         </select>
         <div className="flex flex-row">
           <input

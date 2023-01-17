@@ -46,6 +46,20 @@ const duboQuery = async (query: string, schemas: string[]) => {
   return response.data;
 };
 
+export function sanitizeColumnNames(columns: string[]) {
+  // if column names contain an invalid character, throw an error
+  const invalidCharacters = [" ", "-", "."];
+  for (const col of columns) {
+    for (const char of invalidCharacters) {
+      if (col.includes(char)) {
+        throw new Error(
+          `Column name ${col} contains invalid character ${char}`
+        );
+      }
+    }
+  }
+}
+
 export function sniff(df: DataFrame) {
   const columns = df.columns;
   const counter: any = {};

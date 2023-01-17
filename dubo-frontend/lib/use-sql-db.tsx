@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import initSqlJs, { Database } from "sql.js";
 import { usePrepareData } from "./use-prepare-data";
 
-export const useLocalSqlite = ({ urlsToData }: { urlsToData: string[] }) => {
+export const useLocalSqlite = ({
+  urlsOrFile,
+}: {
+  urlsOrFile: (string | File)[];
+}) => {
   const [db, setDb] = useState<Database | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState<boolean>(false);
@@ -29,7 +33,7 @@ export const useLocalSqlite = ({ urlsToData }: { urlsToData: string[] }) => {
     preparing,
     prepared,
   } = usePrepareData({
-    urlsToData,
+    urlsOrFile,
     db,
   });
 
