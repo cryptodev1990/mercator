@@ -4,6 +4,7 @@ import initSqlJs from "sql.js";
 import { DataFrameViewer } from "./DataFrameViewer";
 import { useLocalSqlite } from "./use-sql-db";
 import { FaPlay, FaSpinner } from "react-icons/fa";
+import dynamic from "next/dynamic";
 
 const DATA_OPTIONS = {
   "US Census ACS 2021 Subset": [
@@ -16,8 +17,6 @@ const DATA_OPTIONS = {
 };
 
 type DataNames = keyof typeof DATA_OPTIONS;
-
-const isSSR = () => typeof window === "undefined";
 
 export type DataFrame = {
   columns: string[];
@@ -53,10 +52,6 @@ const DuboPreview = () => {
       setExecResults(res);
     }
   }, [status]);
-
-  if (isSSR()) {
-    return null;
-  }
 
   if (status === "preparing") {
     return (
@@ -148,6 +143,12 @@ const DuboPreview = () => {
         )}
         <p>Results:</p>
         <div className="max-w-[800px] overflow-scroll">
+          {status === "running" && (
+            <div className="flex flex-col items-center justify-center">
+              <h1>Running query...</h1>
+              <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+            </div>
+          )}
           {status === "ready" && execResults.length > 0 && (
             <>
               <p>{execResults[0]?.values.length} rows returned</p>

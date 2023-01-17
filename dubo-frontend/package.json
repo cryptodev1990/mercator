@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.20.0",
-    "@loaders.gl/arrow": "^3.2.12",
     "@loaders.gl/core": "^3.2.12",
     "@loaders.gl/csv": "^3.2.12",
     "@loaders.gl/json": "^3.2.12",

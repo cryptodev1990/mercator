@@ -1,5 +1,4 @@
 import { JSONLoader, load } from "@loaders.gl/core";
-import { ArrowLoader } from "@loaders.gl/arrow";
 import { CSVLoader } from "@loaders.gl/csv";
 
 import { useEffect, useState } from "react";
@@ -26,7 +25,7 @@ export const usePrepareData = ({
         columns: [],
         data: [],
       };
-      df.data = await load(path, [ArrowLoader, CSVLoader, JSONLoader]);
+      df.data = await load(path, [CSVLoader, JSONLoader]);
       // apply the function to convert any of the data frame records to a string if ZIP is a number
       df.data = df.data.map((row: any) => {
         for (const key of Object.keys(row)) {

@@ -50,15 +50,6 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@loaders.gl/arrow@^3.2.12":
-  version "3.2.12"
-  resolved "https://registry.npmjs.org/@loaders.gl/arrow/-/arrow-3.2.12.tgz"
-  integrity sha512-bZ84aUu9hNkFXdgkfOnB78sMy8qTFehDGdPSmFDfVgP4lWD2jDpuxXpOFx4X9BD0pgxdeyaoYFNtLsn+OfLcGw==
-  dependencies:
-    "@loaders.gl/loader-utils" "3.2.12"
-    "@loaders.gl/schema" "3.2.12"
-    apache-arrow "^4.0.0"
-
 "@loaders.gl/core@^3.2.12":
   version "3.2.12"
   resolved "https://registry.npmjs.org/@loaders.gl/core/-/core-3.2.12.tgz"
