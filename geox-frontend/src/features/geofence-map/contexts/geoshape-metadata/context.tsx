@@ -53,7 +53,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
   const { data: allNamespaces } = useGetNamespaces();
 
   // on the initial load of the data, set the active namespaces to the default namespaces
-
   useEffect(() => {
     const lastVisibleNamespaces = localStorage.getItem("lastVisibleNamespaces");
     if (lastVisibleNamespaces?.length) {

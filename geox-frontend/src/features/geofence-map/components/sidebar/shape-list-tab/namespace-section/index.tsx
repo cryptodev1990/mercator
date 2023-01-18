@@ -1,4 +1,5 @@
 import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import { useEffect } from "react";
 import { useShapes } from "../../../../hooks/use-shapes";
 import { NamespaceCard } from "./card";
 import { ShapeSearchBar } from "./shape-search-bar";

@@ -32,13 +32,6 @@ export type Action =
       deletedShapeIds: string[];
     }
   | {
-      type: "DELETE_SHAPES_SUCCESS";
-    }
-  | {
-      type: "DELETE_SHAPES_ERROR";
-      error: any;
-    }
-  | {
       type: "UPDATE_SHAPE_LOADING";
       shapes: GeoShape[];
     }

@@ -99,7 +99,6 @@ export function reducer(state: State, action: Action): State {
       );
       const res = {
         ...state,
-        shapeUpdateLoading: true,
         deletedShapeIds: [...state.deletedShapeIds, ...action.deletedShapeIds],
         optimisticShapeUpdates: osu,
       };
@@ -126,12 +125,6 @@ export function reducer(state: State, action: Action): State {
         optimisticShapeUpdates: osu,
       };
       return res;
-    }
-    case "DELETE_SHAPES_SUCCESS": {
-      return {
-        ...state,
-        shapeUpdateLoading: false,
-      };
     }
     case "BULK_ADD_SHAPES_SUCCESS": {
       const updatedShapeIds = [
@@ -166,9 +159,9 @@ export function reducer(state: State, action: Action): State {
         ],
       };
     }
+
     case "BULK_ADD_SHAPES_ERROR":
     case "ADD_SHAPE_ERROR":
-    case "DELETE_SHAPES_ERROR":
     case "UPDATE_SHAPE_ERROR": {
       return {
         ...state,

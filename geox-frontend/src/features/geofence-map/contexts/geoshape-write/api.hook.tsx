@@ -1,4 +1,5 @@
 import { Dispatch, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { GeoShape, ShapeCountResponse } from "../../../../client";
 import {
   useAddShapeMutation,
@@ -7,6 +8,7 @@ import {
   useUpdateShapeMutation,
 } from "../../hooks/use-openapi-hooks";
 import { Action } from "./action-types";
+import simplur from "simplur";
 
 export const useApi = (dispatch: Dispatch<Action>) => {
   const {
@@ -41,18 +43,20 @@ export const useApi = (dispatch: Dispatch<Action>) => {
 
   useEffect(() => {
     if (deleteShapesIsLoading === false && deletedUuids !== undefined) {
+      toast.loading("Deleting shapes...");
       dispatch({
         type: "DELETE_SHAPES_LOADING",
         deletedShapeIds: deletedUuids,
       });
     }
     if (deleteShapesIsLoading === false && deleteShapesIsSuccess) {
-      dispatch({
-        type: "DELETE_SHAPES_SUCCESS",
-      });
+      toast.dismiss();
+      toast.success(
+        simplur`${deletedUuids?.length} Shape[|s] Deleted Successfully!`
+      );
     }
     if (deleteShapesError !== null) {
-      dispatch({ type: "DELETE_SHAPES_ERROR", error: deleteShapesError });
+      toast.error("Error deleting shape(s)!");
     }
   }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
 
