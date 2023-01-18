@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import duboQuery from "./dubo-client";
 import initSqlJs from "sql.js";
 import { DataFrameViewer } from "./DataFrameViewer";
@@ -103,8 +103,8 @@ const DuboPreview = () => {
   }
 
   return (
-    <div>
-      <div className="flex flex-col min-w-5xl">
+    <div className="max-w-5xl m-auto">
+      <div className="flex flex-col">
         <select
           className="border w-full placeholder:gray-500 text-lg"
           onChange={async (e) => {
@@ -181,7 +181,7 @@ const DuboPreview = () => {
           </button>
         </div>
         {error && (
-          <p className="bg-orange-500 text-white font-mono px-3">
+          <p className="bg-orange-500 text-white font-mono px-3 mt-3">
             Error: {error}
           </p>
         )}
@@ -194,7 +194,7 @@ const DuboPreview = () => {
           </>
         )}
         <p>Results:</p>
-        <div className="max-w-[800px] overflow-scroll">
+        <div className="overflow-scroll">
           {status === "running" && (
             <div className="flex flex-col items-center justify-center">
               <h1>Running query...</h1>

@@ -14,7 +14,7 @@ export const DataFrameViewer = ({
       <thead className="bg-spBlue text-white">
         <tr>
           {header.map((h, i) => (
-            <th className="border border-white px-5 text-center" key={i}>
+            <th className="border border-white p-1.5 text-center" key={i}>
               {h}
             </th>
           ))}
