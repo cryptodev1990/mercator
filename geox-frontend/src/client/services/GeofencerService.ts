@@ -18,6 +18,7 @@ import type { TileMatrixSetNames } from "../models/TileMatrixSetNames";
 import type { CancelablePromise } from "../core/CancelablePromise";
 import { OpenAPI } from "../core/OpenAPI";
 import { request as __request } from "../core/request";
+import { ShapesBulkUploadOptions } from "features/geofence-map/types";
 
 export class GeofencerService {
   /**
@@ -70,7 +71,7 @@ export class GeofencerService {
    * @throws ApiError
    */
   public static bulkCreateShapesGeofencerShapesBulkPost(
-    requestBody: Array<GeoShapeCreate>,
+    requestBody: ShapesBulkUploadOptions,
     namespace?: string,
     asList = false
   ): CancelablePromise<ShapeCountResponse | Array<GeoShape>> {
@@ -81,11 +82,12 @@ export class GeofencerService {
         namespace: namespace,
         as_list: asList,
       },
-      body: requestBody,
+      body: requestBody.shapes,
       mediaType: "application/json",
       errors: {
         422: `Validation Error`,
       },
+      onUploadProgress: requestBody.onUploadProgress,
     });
   }
 

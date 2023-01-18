@@ -93,7 +93,7 @@ export const useApi = (dispatch: Dispatch<Action>) => {
     if (bulkAddShapesIsLoading) {
       dispatch({
         type: "BULK_ADD_SHAPES_LOADING",
-        updatedShapes: bulkAddShapesVars ?? [],
+        updatedShapes: bulkAddShapesVars?.shapes ?? [],
       });
     } else if (
       bulkAddShapesIsLoading === false &&

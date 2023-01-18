@@ -1,4 +1,5 @@
 import { difference } from "@turf/turf";
+import { ShapesBulkUploadOptions } from "features/geofence-map/types";
 import {
   createContext,
   Dispatch,
@@ -50,7 +51,7 @@ export interface IGeoShapeWriteContext {
   bulkAddShapes: UseMutateFunction<
     ShapeCountResponse,
     unknown,
-    GeoShapeCreate[],
+    ShapesBulkUploadOptions,
     unknown
   >;
   bulkAddFromSplit: UseMutateFunction<
@@ -114,10 +115,10 @@ export const GeoShapeWriteContextProvider = ({
     });
   }
 
-  function bulkAddShapes(shapes: GeoShapeCreate[], ...args: any[]) {
-    opLog("BULK_ADD_SHAPES", shapes);
+  function bulkAddShapes(data: ShapesBulkUploadOptions, ...args: any[]) {
+    opLog("BULK_ADD_SHAPES", data.shapes);
     api.setPreferList(false);
-    return api.bulkAddShapesApi(shapes, ...args);
+    return api.bulkAddShapesApi(data, ...args);
   }
 
   useEffect(() => {
@@ -130,10 +131,13 @@ export const GeoShapeWriteContextProvider = ({
   ) {
     opLog("BULK_ADD_SHAPE_SPLIT", shapes);
     api.setPreferList(true);
-    return api.bulkAddShapesApi(shapes, {
-      onSuccess,
-      onError,
-    });
+    return api.bulkAddShapesApi(
+      { shapes },
+      {
+        onSuccess,
+        onError,
+      }
+    );
   }
 
   const deletedShapeIdSet = useMemo(() => {

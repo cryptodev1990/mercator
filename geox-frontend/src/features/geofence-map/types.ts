@@ -1,3 +1,4 @@
+import { GeoShapeCreate } from "client";
 import { EditorMode } from "./cursor-modes";
 
 export interface GlobalEditorOptions {
@@ -13,4 +14,9 @@ export enum UIModalEnum {
   DbSyncModal = "DbSyncModal",
   SupportModal = "SupportModal",
   BulkEditModal = "BulkEditModal",
+}
+
+export interface ShapesBulkUploadOptions {
+  shapes: GeoShapeCreate[];
+  onUploadProgress?: (progressEvent: ProgressEvent) => void;
 }

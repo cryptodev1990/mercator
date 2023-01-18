@@ -46,7 +46,6 @@ export const useViewport = () => {
     // get bounding box of all shapes
     if (!selectedFeatureCollection && category !== "tentative") return;
     if (category === "tentative" && tentativeShapes.length === 0) return;
-    console.log("zoom", selectedFeatureCollection);
     const fc =
       category === "tentative"
         ? featureToFeatureCollection(

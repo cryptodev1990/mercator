@@ -40,6 +40,8 @@ const SaveButton = ({
   const { clearSelectedShapeUuids } = useSelectedShapes();
   const [locked, setLocked] = useState(false);
 
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   return (
     <div className="flex flex-row flex-grow">
       <button
@@ -47,16 +49,25 @@ const SaveButton = ({
           btn
           w-full
           bg-green-600
+          hover:bg-green-800
           text-white
         "
         disabled={locked}
         onClick={() => {
           setLocked(true);
           bulkAddShapes(
-            tentativeShapes.map((shape) => ({
-              ...shape,
-              namespace: selectedFolder?.id,
-            })),
+            {
+              shapes: tentativeShapes.map((shape) => ({
+                ...shape,
+                namespace: selectedFolder?.id,
+              })),
+              onUploadProgress: (progressEvent: ProgressEvent) => {
+                const { loaded, total } = progressEvent;
+                let precentage = Math.floor((loaded * 100) / total);
+                if (precentage === 100) setUploadProgress(91);
+                else setUploadProgress(precentage);
+              },
+            },
             {
               onSuccess: () => {
                 snapToBounds({ category: "tentative" });
@@ -65,6 +76,7 @@ const SaveButton = ({
                 setVisibleNamespaces([selectedFolder]);
                 clearSelectedShapeUuids();
                 setLocked(false);
+                setUploadProgress(100);
                 clearOptimisticShapeUpdates();
                 // @ts-ignore
                 setTileUpdateCount((t) => t + 1);
@@ -78,10 +90,20 @@ const SaveButton = ({
       >
         {!locked && (
           <>
-            <BiSave></BiSave> Save
+            <BiSave /> Save
           </>
         )}
-        {locked && <Loading className="spin" height={20} width={20} />}
+        {locked && (
+          <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+            <div
+              className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+              style={{ width: `${uploadProgress}%` }}
+            >
+              {" "}
+              {uploadProgress}%
+            </div>
+          </div>
+        )}
       </button>
     </div>
   );

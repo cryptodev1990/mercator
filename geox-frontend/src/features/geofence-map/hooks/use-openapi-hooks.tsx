@@ -11,6 +11,7 @@ import {
 } from "../../../client";
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
+import { ShapesBulkUploadOptions } from "../types";
 
 const genericErrorHandler = (error: any) => {
   const status = error?.status;
@@ -128,7 +129,7 @@ export const useBulkAddShapesMutation = (asList = false) => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    (requestBody: GeoShapeCreate[]) => {
+    (requestBody: ShapesBulkUploadOptions) => {
       return GeofencerService.bulkCreateShapesGeofencerShapesBulkPost(
         requestBody, // requestBody
         undefined, // TODO: add a namespace

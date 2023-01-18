@@ -200,7 +200,8 @@ const sendRequest = async <T>(
     body: any,
     formData: FormData | undefined,
     headers: Record<string, string>,
-    onCancel: OnCancel
+    onCancel: OnCancel,
+    onUploadProgress: (progressEvent: ProgressEvent) => void
 ): Promise<AxiosResponse<T>> => {
     const source = axios.CancelToken.source();
 
@@ -211,6 +212,8 @@ const sendRequest = async <T>(
         method: options.method,
         withCredentials: config.WITH_CREDENTIALS,
         cancelToken: source.token,
+        onUploadProgress
+
     };
 
     onCancel(() => source.cancel('The user aborted a request.'));
@@ -279,9 +282,10 @@ export const request = <T>(config: OpenAPIConfig, options: ApiRequestOptions): C
             const formData = getFormData(options);
             const body = getRequestBody(options);
             const headers = await getHeaders(config, options, formData);
+            const onUploadProgress = options.onUploadProgress || (() => {});
 
             if (!onCancel.isCancelled) {
-                const response = await sendRequest<T>(config, options, url, body, formData, headers, onCancel);
+                const response = await sendRequest<T>(config, options, url, body, formData, headers, onCancel, onUploadProgress);
                 const responseBody = getResponseBody(response);
                 const responseHeader = getResponseHeader(response, options.responseHeader);
 
