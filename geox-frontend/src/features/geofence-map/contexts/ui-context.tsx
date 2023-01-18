@@ -10,6 +10,8 @@ interface UIContextState {
     timeInMinutes: number;
     travelMode: string;
   };
+  heading: string;
+  setHeading: (heading: string) => void;
   // delete prompt
   deletePromptCoords: number[];
   confirmDelete: (coords: number[], onConfirm: () => void) => void;
@@ -34,11 +36,14 @@ export const UIContext = createContext<UIContextState>({
     timeInMinutes: 5,
     travelMode: "car",
   },
+  heading: "",
+  setHeading: () => {},
   setIsochroneParams: () => {},
 });
 UIContext.displayName = "UIContext";
 
 export const UIContextContainer = ({ children }: { children: any }) => {
+  const [heading, setHeading] = useState("");
   const [modal, setModal] = useState<UIModalEnum | null>(null);
   const [isochroneParams, setIsochroneParams] = useState({
     timeInMinutes: 5,
@@ -114,6 +119,8 @@ export const UIContextContainer = ({ children }: { children: any }) => {
           timeInMinutes: number;
           travelMode: string;
         }) => setIsochroneParams(params),
+        heading,
+        setHeading,
       }}
     >
       {children}

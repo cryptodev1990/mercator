@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { UIContext } from "../contexts/ui-context";
 
 export const DeletePrompt = () => {
-  const { deletePromptCoords, onDeleteConfirm, onDeleteCancel } =
+  const { deletePromptCoords, onDeleteConfirm, onDeleteCancel, heading } =
     useContext(UIContext);
   if (deletePromptCoords.length === 0) return null;
   return (
@@ -44,7 +44,7 @@ export const DeletePrompt = () => {
             borderTop: "10px solid white",
           }}
         />
-        <div className="text-xl font-bold">Delete geofence?</div>
+        <div className="text-xl font-bold">{heading}</div>
         <div className="text-sm text-gray-500">
           This action cannot be undone.
         </div>

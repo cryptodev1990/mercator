@@ -37,7 +37,7 @@ export const ShapeCard = ({
     updateShape,
   } = useShapes();
 
-  const { confirmDelete } = useContext(UIContext);
+  const { confirmDelete, setHeading } = useContext(UIContext);
 
   const { selectedFeatureCollection } = useSelectedShapes();
 
@@ -102,6 +102,7 @@ export const ShapeCard = ({
                 className="cx-btn-square hover:bg-red-400 hover:border-red-400 box-border"
                 disabled={updateLoading}
                 onClick={(e: any) => {
+                  setHeading("Delete geofence?");
                   if (!shape.uuid) toast.error("Delete shape failed");
                   else {
                     const coords = [e.clientX, e.clientY];

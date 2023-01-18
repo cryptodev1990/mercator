@@ -138,6 +138,8 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
             previousNamespaces.filter((x: Namespace) => x.id !== id)
           );
         }
+
+        toast.success("Namespace deleted successfully");
       },
       onError: () => {
         toast.error("Error occured deleting namespace");
