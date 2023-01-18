@@ -58,4 +58,4 @@ const DiscordBar = () => {
   );
 };
 
-export { DiscordBar };
+export default DiscordBar;

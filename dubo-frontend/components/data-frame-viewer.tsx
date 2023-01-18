@@ -1,10 +1,4 @@
-export const DataFrameViewer = ({
-  header,
-  data,
-}: {
-  header: string[];
-  data: any;
-}) => {
+const DataFrameViewer = ({ header, data }: { header: string[]; data: any }) => {
   // Format like a pandas dataframe
   if (data.length === 0) {
     return <div className="text-center">No results</div>;
@@ -34,3 +28,5 @@ export const DataFrameViewer = ({
     </table>
   );
 };
+
+export default DataFrameViewer;

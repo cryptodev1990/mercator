@@ -1,8 +1,8 @@
 import Head from "next/head";
-import DemoBox from "../lib/demo-box";
-import Navbar from "../lib/navbar";
 import Link from "next/link";
-import InfoCard from "../lib/info-card";
+import Navbar from "../components/navbar";
+import DemoBox from "../components/demo-box";
+import InfoCard from "../components/info-card";
 
 export default function Home() {
   return (

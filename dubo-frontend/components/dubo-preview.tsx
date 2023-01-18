@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import duboQuery from "./dubo-client";
+import duboQuery from "../lib/dubo-client";
 import initSqlJs from "sql.js";
-import { DataFrameViewer } from "./DataFrameViewer";
-import { useLocalSqlite } from "./use-sql-db";
+import DataFrameViewer from "./data-frame-viewer";
+import { useLocalSqlite } from "../lib/hooks/use-sql-db";
 import { FaPlay, FaSpinner } from "react-icons/fa";
+import { getUploadData } from "../lib/utils";
 
 const DATA_OPTIONS = {
   "US Census ACS 2021 Subset": [
@@ -16,28 +17,6 @@ const DATA_OPTIONS = {
 };
 
 type DataNames = keyof typeof DATA_OPTIONS;
-
-export type DataFrame = {
-  columns: string[];
-  data: any[];
-};
-
-export async function getUploadData(): Promise<File | null> {
-  const file = await new Promise((resolve) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    // restrict to csv files or json files
-    input.accept = ".csv,.json";
-    input.onchange = () => {
-      resolve(input.files?.[0]);
-    };
-    input.click();
-  });
-  if (!file) {
-    return null;
-  }
-  return file as File;
-}
 
 const DuboPreview = () => {
   const [error, setError] = useState<string | null>(null);

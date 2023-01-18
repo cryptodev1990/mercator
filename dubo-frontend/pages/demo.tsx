@@ -1,5 +1,5 @@
-import DuboPreview from "../lib/dubo-preview";
-import Navbar from "../lib/navbar";
+import DuboPreview from "../components/dubo-preview";
+import Navbar from "../components/navbar";
 
 const Info = () => (
   <div className="flex flex-col max-w-2xl m-auto">
