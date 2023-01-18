@@ -27,13 +27,6 @@ export interface IGeoShapeMetadataContext {
   // namespace writes
   addNamespace: (namespace: NamespaceCreate) => void;
   removeNamespace: (id: Namespace["id"]) => void;
-  updateNamespace: ({
-    namespaceId,
-    namespace,
-  }: {
-    namespaceId: Namespace["id"];
-    namespace: Partial<Namespace>;
-  }) => void;
 }
 
 export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
@@ -45,7 +38,6 @@ export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
   // namespace writes
   addNamespace: async () => {},
   removeNamespace: async () => {},
-  updateNamespace: async () => {},
 });
 
 GeoShapeMetadataContext.displayName = "GeoShapeMetadataContext";
@@ -78,7 +70,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
           .join(",");
 
       if (!matched) {
-        console.log("setting visible namespaces");
         dispatch({
           type: "SET_VISIBLE_NAMESPACES",
           namespaces: lastVisibleNamespacesParsed,
@@ -155,37 +146,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
     });
   }
 
-  const { mutate: updateNamespaceMutation } = useMutation(
-    NamespacesService.patchNamespacesGeofencerNamespacesNamespaceIdPatch
-  );
-
-  function updateNamespace(data: {
-    namespaceId: Namespace["id"];
-    namespace: Partial<Namespace>;
-  }) {
-    updateNamespaceMutation(data, {
-      onSuccess: async (response) => {
-        await qc.cancelQueries(["geofencer"]);
-
-        const previousNamespaces: Namespace[] | undefined = qc.getQueryData([
-          "geofencer",
-        ]);
-
-        if (previousNamespaces) {
-          qc.setQueryData(
-            ["geofencer"],
-            previousNamespaces.map((x: any) =>
-              x.id === data.namespaceId ? response : x
-            )
-          );
-        }
-      },
-      onError: () => {
-        toast.error("Error occured deleting namespace");
-      },
-    });
-  }
-
   return (
     <GeoShapeMetadataContext.Provider
       value={{
@@ -196,7 +156,6 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
         numShapes: allNamespaces?.flatMap((x) => x.shapes ?? []).length ?? null,
         addNamespace,
         removeNamespace,
-        updateNamespace,
       }}
     >
       {children}

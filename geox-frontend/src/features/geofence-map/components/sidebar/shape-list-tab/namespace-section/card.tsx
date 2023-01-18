@@ -4,7 +4,7 @@ import {
   EyeSlashFillIcon,
   CaretRightIcon,
 } from "../../../../../../common/components/icons";
-import { Namespace } from "../../../../../../client";
+import { Namespace, NamespacesService } from "../../../../../../client";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { useShapes } from "../../../../hooks/use-shapes";
 import { DragTarget } from "../shape-card/drag-handle";
@@ -15,6 +15,9 @@ import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { SearchContext } from "../../../../contexts/search-context";
 import { MAX_DISPLAY_SHAPES, Paginator } from "./paginator";
 import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import { useMutation, useQueryClient } from "react-query";
+import toast from "react-hot-toast";
+import ReactLoading from "react-loading";
 
 export const NamespaceCard = ({
   namespace,
@@ -27,12 +30,33 @@ export const NamespaceCard = ({
   shouldOpen: boolean;
   isVisible: boolean;
 }) => {
-  const {
-    visibleNamespaces,
-    setVisibleNamespaces,
-    updateNamespace,
-    partialUpdateShape,
-  } = useShapes();
+  const { visibleNamespaces, setVisibleNamespaces, partialUpdateShape } =
+    useShapes();
+
+  const qc = useQueryClient();
+
+  const mutation = useMutation(NamespacesService.patchNamespace, {
+    onSuccess: async (newNamespace) => {
+      await qc.cancelQueries(["geofencer"]);
+      const previousNamespaces: Namespace[] | undefined = qc.getQueryData([
+        "geofencer",
+      ]);
+      if (previousNamespaces) {
+        qc.setQueryData(
+          ["geofencer"],
+          previousNamespaces.map((prevNamespace: Namespace) =>
+            prevNamespace.id === newNamespace.id
+              ? { ...newNamespace, shapes: prevNamespace.shapes }
+              : prevNamespace
+          )
+        );
+      }
+    },
+    onError: (error: any) => {
+      if (error.message) toast.error(error.message);
+      else toast.error("Error occured updating namespace");
+    },
+  });
 
   const { data: allNamespaces } = useGetNamespaces();
 
@@ -78,7 +102,7 @@ export const NamespaceCard = ({
     >
       {/* Namespace header */}
       <div
-        className="flex cursor-pointer px-3"
+        className="flex items-center cursor-pointer px-3"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -94,15 +118,19 @@ export const NamespaceCard = ({
             value={namespace.name}
             onChange={(newName) => {
               if (newName !== namespace.name) {
-                updateNamespace({
-                  namespaceId: namespace.id,
-                  namespace: { name: newName },
+                mutation.mutate({
+                  id: namespace.id,
+                  name: newName,
                 });
               }
             }}
             disabled={namespace.is_default}
           />
         </div>
+        {mutation.isLoading ? (
+          <ReactLoading type="spin" height={"15px"} width={"15px"} />
+        ) : null}
+
         <div className="self-center ml-auto z-10 flex space-x-3">
           {sectionShapeMetadata && hovered && (
             <span className="text-sm">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>

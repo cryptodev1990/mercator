@@ -107,28 +107,26 @@ export class NamespacesService {
   }
 
   /**
-   *  Patch Namespaces
+   *  Patch Namespace
    * Return namespaces available to the user.
-   * @param namespaceId
-   * @param requestBody
+   * @param namespace
    * @returns NamespaceResponse Successful Response
    * @throws ApiError
    */
-  public static patchNamespacesGeofencerNamespacesNamespaceIdPatch(update: {
-    namespaceId: Namespace["id"];
-    namespace: Partial<Namespace>;
-  }): CancelablePromise<NamespaceResponse> {
+  public static patchNamespace(
+    namespace: Partial<Namespace>
+  ): CancelablePromise<NamespaceResponse> {
     return __request(OpenAPI, {
       method: "PATCH",
       url: "/geofencer/namespaces/{namespace_id}",
       path: {
-        namespace_id: update.namespaceId,
+        namespace_id: namespace.id,
       },
-      body: update.namespace,
+      body: namespace,
       mediaType: "application/json",
       errors: {
         404: `Namespace does not exist`,
-        409: `Namespace exists`,
+        409: `Namespace already exists exists`,
         422: `Validation Error`,
       },
     });

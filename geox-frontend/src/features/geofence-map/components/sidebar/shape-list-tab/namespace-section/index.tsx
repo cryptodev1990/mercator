@@ -2,6 +2,7 @@ import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks"
 import { useShapes } from "../../../../hooks/use-shapes";
 import { NamespaceCard } from "./card";
 import { ShapeSearchBar } from "./shape-search-bar";
+import ReactLoading from "react-loading";
 
 export const NamespaceSection = ({ className }: { className: string }) => {
   const { visibleNamespaces, activeNamespaces, setActiveNamespaces } =
@@ -9,7 +10,12 @@ export const NamespaceSection = ({ className }: { className: string }) => {
 
   const { data: namespaces } = useGetNamespaces();
 
-  if (!namespaces) return null;
+  if (!namespaces)
+    return (
+      <div className="flex justify-center">
+        <ReactLoading type="bubbles" />
+      </div>
+    );
 
   return (
     <div className={className}>
