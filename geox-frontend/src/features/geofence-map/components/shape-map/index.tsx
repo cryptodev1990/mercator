@@ -158,7 +158,16 @@ const GeofenceMap = () => {
         onViewStateChange={({ viewState, oldViewState }) =>
           setViewport(viewState)
         }
-        onClick={({ object, x, y, coordinate }: any, e: any) => {
+        onClick={({ x, y, coordinate }: any, e: any) => {
+          const multipleObjects = deckRef.current.pickMultipleObjects({ x, y });
+
+          const nonDeletedShapes = multipleObjects.filter(
+            (feature: any) =>
+              ![...deletedShapeIdSet].includes(feature.object.properties.__uuid)
+          );
+
+          const object = nonDeletedShapes[0]?.object;
+
           if (window.location.hash === "#click") {
             console.log("object", object);
           }
