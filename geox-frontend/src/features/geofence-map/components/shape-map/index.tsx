@@ -31,7 +31,6 @@ const GeofenceMap = () => {
   } = useShapes();
 
   const { data: allNamespaces } = useGetNamespaces();
-
   const {
     selectedUuids,
     multiSelectedShapesUuids,

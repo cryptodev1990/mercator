@@ -16,7 +16,7 @@ export const ShapeEditor = () => {
     shapeForPropertyEdit?.uuid || ""
   );
 
-  const handleSubmit = (properties: IDictionary<string>) => {
+  const handleSubmit = (formData: IDictionary<string>) => {
     if (
       !shapeForPropertyEdit ||
       !shapeForPropertyEdit.uuid ||
@@ -26,9 +26,11 @@ export const ShapeEditor = () => {
       return;
     }
     const shapeUuid = shapeForPropertyEdit.uuid;
+    const { namespace, ...properties } = formData;
     updateShape(
       {
         name: properties.name,
+        namespace,
         geojson: {
           ...(oneShape?.geojson as any),
           properties,
@@ -68,6 +70,7 @@ export const ShapeEditor = () => {
             uuid={shapeForPropertyEdit?.uuid}
             properties={reformattedProperties as any}
             handleResults={handleSubmit}
+            namespaceId={shapeForPropertyEdit?.namespace_id}
           />
         </div>
       </div>

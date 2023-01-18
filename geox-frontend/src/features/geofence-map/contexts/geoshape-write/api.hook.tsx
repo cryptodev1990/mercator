@@ -52,11 +52,11 @@ export const useApi = (dispatch: Dispatch<Action>) => {
     if (deleteShapesIsLoading === false && deleteShapesIsSuccess) {
       toast.dismiss();
       toast.success(
-        simplur`${deletedUuids?.length} Shape[|s] Deleted Successfully!`
+        simplur`${deletedUuids?.length} shape[|s] deleted`
       );
     }
     if (deleteShapesError !== null) {
-      toast.error("Error deleting shape(s)!");
+      toast.error("Error with deletion. Please try again.");
     }
   }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
 

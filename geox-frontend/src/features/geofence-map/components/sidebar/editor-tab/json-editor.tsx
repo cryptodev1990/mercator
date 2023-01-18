@@ -1,7 +1,8 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDelete as DeleteIcon } from "react-icons/md";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
 
 type FormValues = {
   properties: {
@@ -18,12 +19,14 @@ interface IJsonEditorProps {
   uuid: string;
   properties: Array<{ key: string; value: any }>;
   handleResults: (properties: IDictionary<string>) => void;
+  namespaceId: string | undefined;
 }
 
 export default function JsonEditor({
   uuid,
   properties,
   handleResults,
+  namespaceId,
 }: IJsonEditorProps) {
   const {
     register,
@@ -41,12 +44,22 @@ export default function JsonEditor({
     name: "properties",
     control,
   });
+
+  const { data: allNamespaces } = useGetNamespaces();
+  const defaultNamespace: any = allNamespaces?.find(
+    (namespace) => namespace.name === "Default"
+  );
+  const [selectNamespaceId, setSelectedNamespaceId] = useState<string>(
+    namespaceId || defaultNamespace.id
+  );
   const onSubmit = (data: FormValues) => {
     // convert array of properties e.g [{key: 'key 1', value: 'value 1'}] to property object {'key 1': 'value 1'}
-    const formProperties = data["properties"].reduce(
+    let formProperties = data["properties"].reduce(
       (obj, item) => Object.assign(obj, { [item.key]: item.value }),
       {}
     );
+    formProperties = { ...formProperties, namespace: selectNamespaceId };
+    console.log("formProperties", formProperties);
     handleResults(formProperties);
   };
 
@@ -103,6 +116,31 @@ export default function JsonEditor({
           </div>
         );
       })}
+      <div className="section grid grid-cols-10">
+        <input
+          className={` read-only:bg-slate-900  col-span-4 read-only:font-bold read-only:text-white bg-gray-50 border border-gray-300 text-sm rounded-lg p-1 dark:bg-gray-800 dark:border-gray-600
+          `}
+          value="Namespace"
+          disabled={true}
+        />
+        <select
+          id="countries"
+          onChange={(event: any) => {
+            setSelectedNamespaceId(event.target.value);
+          }}
+          className="col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        >
+          {allNamespaces &&
+            allNamespaces.map((namespace) => (
+              <option
+                value={namespace.id}
+                selected={namespace.id === selectNamespaceId}
+              >
+                {namespace.name}
+              </option>
+            ))}
+        </select>
+      </div>
       <div className="grid grid-cols-10 mt-2">
         <div className="col-span-9 flex justify-end">
           {" "}
