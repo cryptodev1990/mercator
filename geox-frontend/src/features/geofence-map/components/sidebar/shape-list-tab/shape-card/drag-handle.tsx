@@ -27,9 +27,10 @@ export const DragHandle = ({
       className="w-4 h-4 cursor-grab"
       onDragStart={dragStartHandler}
       draggable={true}
-      ref={outerRef}
     >
-      <DragIndicatorIcon className="transform text-gray-400 hover:text-red-300 hover:translate-y-[-1px]" />
+      <div ref={outerRef}>
+        <DragIndicatorIcon className="transform text-gray-400 hover:text-red-300 hover:translate-y-[-1px]" />
+      </div>
       <NamespaceMenu outerRef={outerRef} shape={shape} />
     </div>
   );

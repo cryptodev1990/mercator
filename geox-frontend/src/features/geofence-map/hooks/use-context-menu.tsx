@@ -28,10 +28,10 @@ const useContextMenu = (outerRef: RefObject<HTMLDivElement>) => {
   }, [showMenu]);
 
   useEffect(() => {
-    document.addEventListener("click", handleClick);
+    document.addEventListener("click", handleContextMenu);
     document.addEventListener("contextmenu", handleContextMenu);
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener("click", handleContextMenu);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
   }, []);
