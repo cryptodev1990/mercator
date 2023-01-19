@@ -22,6 +22,7 @@ module.exports = {
       }),
       colors: {
         spBlue: "#0070f3",
+        spBlueDark: "#005bd9",
         periwinkle: "#7289da",
       },
     },

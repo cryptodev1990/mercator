@@ -64,16 +64,16 @@ export default function Home() {
               </p>
             </InfoCard>
           </section>
-          <section>
+          <section className="mt-6">
             <div className="flex flex-col items-center justify-center h-full">
-              <br />
-              <Link
-                href="/demo"
-                className="text-3xl font-bold text-spBlue underline cursor-pointer"
-              >
-                Try our interactive demo
+              <Link href="/demo">
+                <button
+                  type="button"
+                  className="inline-block px-6 py-2.5 bg-spBlue text-white font-medium text-lg leading-tight rounded shadow-md hover:bg-spBlueDark hover:shadow-lg focus:bg-spBlueDark focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                >
+                  Try Our Interactive Demo
+                </button>
               </Link>
-              <br />
             </div>
           </section>
         </div>
