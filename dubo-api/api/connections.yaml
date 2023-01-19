@@ -1,0 +1,65 @@
+polygon-blocks:
+  connection_type: "bigquery"
+  ddl: |
+    -- Google BigQuery SQL
+    CREATE TABLE `bigquery-public-data.crypto_polygon.tokens` ( address STRING NOT NULL, symbol STRING, name STRING, decimals STRING, total_supply STRING, block_timestamp TIMESTAMP NOT NULL, block_number INT64 NOT NULL, block_hash STRING NOT NULL);
+    CREATE TABLE `bigquery-public-data.crypto_polygon.blocks` ( timestamp TIMESTAMP NOT NULL, number INT64 NOT NULL, hash STRING NOT NULL, parent_hash STRING, nonce STRING NOT NULL, sha3_uncles STRING, logs_bloom STRING, transactions_root STRING, state_root STRING, receipts_root STRING, miner STRING, difficulty NUMERIC, total_difficulty NUMERIC, size INT64, gas_limit INT64, gas_used INT64, transactions_count INT64, uncles_count INT64);
+    CREATE TABLE `bigquery-public-data.crypto_polygon.logs` ( block_number INT64 NOT NULL, block_hash STRING NOT NULL, transaction_hash STRING NOT NULL, address STRING NOT NULL, data STRING, topics ARRAY<STRING>);
+    CREATE TABLE `bigquery-public-data.crypto_polygon.transactions` ( block_number INT64 NOT NULL, block_hash STRING NOT NULL, hash STRING NOT NULL, from_address STRING NOT NULL, to_address STRING, value NUMERIC, gas INT64, gas_price NUMERIC, input STRING, nonce INT64, transaction_index INT64, v INT64, r STRING, s STRING);
+    CREATE TABLE `bigquery-public-data.crypto_polygon.token_transfers` ( block_number INT64 NOT NULL, block_hash STRING NOT NULL, transaction_hash STRING NOT NULL, from_address STRING NOT NULL, to_address STRING NOT NULL, value NUMERIC NOT NULL, contract_address STRING NOT NULL, symbol STRING, name STRING, decimals INT64);
+  table_description: Polygon block chain
+  column_descriptions:
+    - name: address
+      description: The address of the token contract
+    - name: symbol
+      description: The symbol of the token
+    - name: name
+      description: The name of the token
+    - name: decimals
+      description: The number of decimals the token uses
+    - name: total_supply
+      description: The total supply of the token
+    - name: block_timestamp
+      description: The timestamp of the block that the token was created in
+    - name: block_number
+      description: The number of the block that the token was created in
+    - name: block_hash
+      description: The hash of the block that the token was created in
+    - name: timestamp
+      description: The timestamp of the block
+    - name: number
+      description: The number of the block
+    - name: hash
+      description: The hash of the block
+    - name: parent_hash
+      description: The hash of the parent block
+    - name: nonce
+      description: The nonce of the block
+    - name: sha3_uncles
+      description: The SHA3 hash of the uncles of the block
+    - name: logs_bloom
+      description: The bloom filter for the logs of the block
+    - name: transactions_root
+      description: The root of the transaction trie of the block
+    - name: state_root
+      description: The root of the final state trie of the block
+    - name: receipts_root
+      description: The root of the receipts trie of the block
+    - name: miner
+      description: The address of the beneficiary to whom the mining rewards were given
+    - name: difficulty
+      description: The difficulty for this block
+    - name: total_difficulty
+      description: The total difficulty of the chain until this block
+    - name: size
+      description: The size of the block in bytes
+    - name: gas_limit
+      description: The maximum gas allowed in this block
+    - name: gas_used
+      description: The total used gas by all transactions in this block
+    - name: transactions_count
+      description: The number of transactions in the block
+    - name: uncles_count
+      description: The number of uncles in the block
+    - name: block_number
+      description: The number of the block that the log

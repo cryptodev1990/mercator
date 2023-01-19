@@ -1,14 +1,17 @@
-from typing import List, Optional
+from typing import List
 import os
 
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 import openai
-from pydantic import BaseModel
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import sqlparse
+
+from api.gateways.conns import run_query_against_connection
+from api.gateways.openai import assemble_prompt, get_sql_from_gpt_prompt
+from api.schemas.responses import QueryResponse, ResultsResponse
 
 openai.api_key = os.environ['OPENAI_KEY']
 
@@ -28,11 +31,6 @@ def read_root():
 SQL_TABLE_REGEX = r"""
     ^CREATE\s+TABLE.*\(
 """
-
-# Createa Pydanic model for the response
-class QueryResponse(BaseModel):
-    query_text: str
-
 
 origins = ["*"]
 
@@ -73,7 +71,7 @@ def read_query(
         parsed = sqlparse.parse(schemas[0])[0]
         # Really rough check to make sure the input is a valid SQL table schema
         assert parsed.tokens[0].value.upper() == "CREATE", "Invalid schema"
-        for s_to_check in [user_query, *schemas, *descriptions]:
+        for s_to_check in [user_query, *schemas, *descriptions]:  # type: ignore
             if not s_to_check:
                 continue
             assert '```' not in s_to_check, "Reserved tokens in query"
@@ -82,39 +80,37 @@ def read_query(
         raise HTTPException(status_code=422, detail=str(e))
 
     schema = '\n'.join(schemas)
-
     print(schema)
-
-    prompt = f'''
-    Convert text to SQL.
-
-    You have the following DDLs:
-
-    ```
-    {schema}
-    ```
-
-    Write the SQL that answers the following question:
-
-    """{user_query}"""
-
-    Respond with only one concise SQL statement.
-    '''
-
+    prompt = assemble_prompt(user_query, schema, descriptions)
     print(prompt)
 
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=1000,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
+    sql = get_sql_from_gpt_prompt(prompt)
+    if sql:
+        return QueryResponse(query_text=sql)
+    raise HTTPException(status_code=400, detail="No suitable response for the given query.")
 
-    if response.choices:  # type: ignore
-        return {
-            "query_text": response.choices[0].text.strip() # type: ignore
-        }
+
+@app.get("/v1/dubo/query/{conn_id}",
+    response_model=ResultsResponse,
+    responses={
+        422: {"description": "Invalid schema"},
+        429: {"description": "Too many requests"},
+        500: {"description": "No suitable response for the given query."},
+        503: {"description": "Service unavailable"}
+    },
+    tags=["dubo"],
+    summary="Convert text to SQL for a specific connection",
+)
+@limiter.limit("100/day")
+def read_query_conn(
+    conn_id: str,
+    request: Request,
+    user_query: str = Query(default=None, description="The question to answer"),
+):
+    if not user_query:
+        raise HTTPException(status_code=422, detail="No query provided")
+
+    resp = run_query_against_connection(conn_id, user_query)
+    if resp:
+        return resp
     raise HTTPException(status_code=400, detail="No suitable response for the given query.")

@@ -18,7 +18,7 @@ dev:
 run:
 	#!/bin/zsh
 	{{ source_venv }}
-	./scripts/run.sh
+	export $(cat .env | xargs) && ./scripts/run.sh
 
 lint:
 	#!/bin/zsh

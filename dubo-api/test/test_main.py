@@ -42,3 +42,12 @@ def test_read_query_with_dubo():
 
     # Check the results
     assert c.fetchall() == [(1,)]
+
+
+def test_read_query_from_connection():
+    response = client.get("/v1/dubo/query/polygon-blocks", params={"user_query": "How many transactions were there in 2020 by month ordered by month?"})
+    assert response.status_code == 200
+    # Both of these queries are correct
+    res = response.json()["results"]
+    res = pd.DataFrame(res)['transactions'].tolist()
+    assert res == [4, 64, 1861, 85755, 308090, 500179, 419088, 620390]
