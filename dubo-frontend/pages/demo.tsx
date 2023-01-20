@@ -9,7 +9,7 @@ const Info = () => (
       NOTE: We value your privacy. Your data content never leaves the browser.
       We process your data header and a data description but otherwise do not
       see any data itself. Still, because of resource constraints, we would
-      recommend processing a smaller (less than 50MB) data set.
+      recommend processing a smaller (less than 30MB) data set.
     </p>
     <br />
     <p className="leading-5">
