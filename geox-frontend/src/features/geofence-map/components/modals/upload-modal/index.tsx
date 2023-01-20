@@ -62,7 +62,7 @@ export const UploadModal = () => {
           />
         }
         loading={loading}
-      ></UploadModalView>
+      />
     </div>
   );
 };

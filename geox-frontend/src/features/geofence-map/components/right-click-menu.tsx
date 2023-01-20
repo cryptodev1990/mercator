@@ -25,9 +25,7 @@ export const RightClickMenu = () => {
     numSelected,
     isSelected,
     selectedUuids,
-    multiSelectedShapesUuids,
     clearSelectedShapeUuids,
-    clearMultiSelectedShapeUuids,
   } = useSelectedShapes();
 
   function closeMenu() {
@@ -40,7 +38,6 @@ export const RightClickMenu = () => {
   const { openModal } = useUiModals();
 
   function cleanup() {
-    clearMultiSelectedShapeUuids();
     setShapeForPropertyEdit(null);
     clearSelectedFeatureIndexes();
     clearSelectedShapeUuids();
@@ -57,16 +54,16 @@ export const RightClickMenu = () => {
   const listenerFunc = (event: MouseEvent) => {
     event.preventDefault();
 
-    if (!multiSelectedShapesUuids.length && !selectedUuids.length) {
+    if (!selectedUuids.length) {
       setMenuOptions([
         "Draw",
         editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
       ]);
     }
-    if (multiSelectedShapesUuids.length && event.metaKey) {
+    if (selectedUuids.length > 1) {
       setMenuOptions(["Bulk Delete", "Bulk Edit"]);
     }
-    if (selectedUuids.length && !event.metaKey) {
+    if (selectedUuids.length === 1) {
       setMenuOptions([
         "Edit Metadata",
         "Copy as GeoJSON",
@@ -91,7 +88,7 @@ export const RightClickMenu = () => {
         ref.removeEventListener("contextmenu", listenerFunc, false);
       };
     }
-  }, [mapRef, multiSelectedShapesUuids.length, selectedUuids.length]);
+  }, [mapRef, selectedUuids.length]);
 
   if (!xPos || !yPos) {
     return null;
@@ -146,7 +143,7 @@ export const RightClickMenu = () => {
         openModal(UIModalEnum.BulkEditModal);
         return;
       case "Bulk Delete":
-        deleteShapes(multiSelectedShapesUuids, {
+        deleteShapes(selectedUuids, {
           onSuccess: () => {
             cleanup();
           },

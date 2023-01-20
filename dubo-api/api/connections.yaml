@@ -8,62 +8,232 @@ polygon-blocks:
     CREATE TABLE `bigquery-public-data.crypto_polygon.logs` ( block_number INT64 NOT NULL, block_hash STRING NOT NULL, transaction_hash STRING NOT NULL, address STRING NOT NULL, data STRING, topics ARRAY<STRING>);
     -- A table of transactions between wallets
     CREATE TABLE `bigquery-public-data.crypto_polygon.transactions` ( block_number INT64 NOT NULL, block_hash STRING NOT NULL, hash STRING NOT NULL, from_address STRING NOT NULL, to_address STRING, value NUMERIC, gas INT64, gas_price NUMERIC, input STRING, nonce INT64, transaction_index INT64, v INT64, r STRING, s STRING);
-    CREATE TABLE `bigquery-public-data.crypto_polygon.token_transfers` ( block_number INT64 NOT NULL, block_hash STRING NOT NULL, transaction_hash STRING NOT NULL, from_address STRING NOT NULL, to_address STRING NOT NULL, value NUMERIC NOT NULL, contract_address STRING NOT NULL, symbol STRING, name STRING, decimals INT64);
+    CREATE TABLE `bigquery-public-data.crypto_polygon.token_transfers` ( token_address STRING, from_address STRING, to_address STRING, value NUMERIC, transaction_hash STRING, log_index INT64, block_timestamp TIMESTAMP, block_number INT64, block_hash STRING);
     -- A table of conversion rates to US Dollars
     CREATE TABLE `dubo-375020.crypto.matic_to_usd` (Date DATE, Open FLOAT, High FLOAT, Low FLOAT, Close FLOAT, Adj_Close FLOAT, Volume INTEGER);
-  table_description: Polygon block chain
-  column_descriptions:
-    - name: address
-      description: The address of the token contract
-    - name: symbol
-      description: The symbol of the token
-    - name: name
-      description: The name of the token
-    - name: decimals
-      description: The number of decimals the token uses
-    - name: total_supply
-      description: The total supply of the token
-    - name: block_timestamp
-      description: The timestamp of the block that the token was created in
-    - name: block_number
-      description: The number of the block that the token was created in
-    - name: block_hash
-      description: The hash of the block that the token was created in
-    - name: timestamp
-      description: The timestamp of the block
-    - name: number
-      description: The number of the block
-    - name: hash
-      description: The hash of the block
-    - name: parent_hash
-      description: The hash of the parent block
-    - name: nonce
-      description: The nonce of the block
-    - name: sha3_uncles
-      description: The SHA3 hash of the uncles of the block
-    - name: logs_bloom
-      description: The bloom filter for the logs of the block
-    - name: transactions_root
-      description: The root of the transaction trie of the block
-    - name: state_root
-      description: The root of the final state trie of the block
-    - name: receipts_root
-      description: The root of the receipts trie of the block
-    - name: miner
-      description: The address of the beneficiary to whom the mining rewards were given
-    - name: difficulty
-      description: The difficulty for this block
-    - name: total_difficulty
-      description: The total difficulty of the chain until this block
-    - name: size
-      description: The size of the block in bytes
-    - name: gas_limit
-      description: The maximum gas allowed in this block
-    - name: gas_used
-      description: The total used gas by all transactions in this block
-    - name: transactions_count
-      description: The number of transactions in the block
-    - name: uncles_count
-      description: The number of uncles in the block
-    - name: block_number
-      description: The number of the block that the log
+bitcoin-blocks:
+  connection_type: "bigquery"
+  ddl: |
+    CREATE TABLE `bigquery-public-data.crypto_bitcoin.blocks` (`hash` STRING NOT NULL OPTIONS(description="Hash of this block"), size INT64 OPTIONS(description="The size of block data in bytes"), stripped_size INT64 OPTIONS(description="The size of block data in bytes excluding witness data"), weight INT64 OPTIONS(description="Three times the base size plus the total size. https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki"), number INT64 NOT NULL OPTIONS(description="The number of the block"), version INT64 OPTIONS(description="Protocol version specified in block header"), merkle_root STRING OPTIONS(description="The root node of a Merkle tree, where leaves are transaction hashes"), timestamp TIMESTAMP NOT NULL OPTIONS(description="Block creation timestamp specified in block header"), timestamp_month DATE NOT NULL OPTIONS(description="Month of the block creation timestamp specified in block header"), nonce STRING OPTIONS(description="Difficulty solution specified in block header"), bits STRING OPTIONS(description="Difficulty threshold specified in block header"), coinbase_param STRING OPTIONS(description="Data specified in the coinbase transaction of this block"), transaction_count INT64 OPTIONS(description="Number of transactions included in this block")) PARTITION BY timestamp_month OPTIONS( description="All blocks.\nData is exported using https://github.com/blockchain-etl/bitcoin-etl");
+    CREATE VIEW `bigquery-public-data.crypto_bitcoin.outputs` OPTIONS(description="Outputs from all transactions.\nData is exported using https://github.com/blockchain-etl/bitcoin-etl") AS SELECT transactions.hash as transaction_hash, transactions.block_hash, transactions.block_number, transactions.block_timestamp, outputs.index, outputs.script_asm, outputs.script_hex, outputs.required_signatures, outputs.type, outputs.addresses, outputs.value FROM `bigquery-public-data.crypto_bitcoin.transactions` as transactions, transactions.outputs as outputs;
+    CREATE TABLE `bigquery-public-data.crypto_bitcoin.transactions` ( `hash` STRING NOT NULL OPTIONS(description="The hash of this transaction"), size INT64 OPTIONS(description="The size of this transaction in bytes"), virtual_size INT64 OPTIONS(description="The virtual transaction size (differs from size for witness transactions)"), version INT64 OPTIONS(description="Protocol version specified in block which contained this transaction"), lock_time INT64 OPTIONS(description="Earliest time that miners can include the transaction in their hashing of the Merkle root to attach it in the latest block of the blockchain"), block_hash STRING NOT NULL OPTIONS(description="Hash of the block which contains this transaction"), block_number INT64 NOT NULL OPTIONS(description="Number of the block which contains this transaction"), block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block which contains this transaction"), block_timestamp_month DATE NOT NULL OPTIONS(description="Month of the block which contains this transaction"), input_count INT64 OPTIONS(description="The number of inputs in the transaction"), output_count INT64 OPTIONS(description="The number of outputs in the transaction"), input_value NUMERIC OPTIONS(description="Total value of inputs in the transaction"), output_value NUMERIC OPTIONS(description="Total value of outputs in the transaction"), is_coinbase BOOL OPTIONS(description="true if this transaction is a coinbase transaction"), fee NUMERIC OPTIONS(description="The fee paid by this transaction"), inputs ARRAY<STRUCT<index INT64 NOT NULL OPTIONS(description="0-indexed number of an input within a transaction"), spent_transaction_hash STRING OPTIONS(description="The hash of the transaction which contains the output that this input spends"), spent_output_index INT64 OPTIONS(description="The index of the output this input spends"), script_asm STRING OPTIONS(description="Symbolic representation of the bitcoin's script language op-codes"), script_hex STRING OPTIONS(description="Hexadecimal representation of the bitcoin's script language op-codes"), sequence INT64 OPTIONS(description="A number intended to allow unconfirmed time-locked transactions to be updated before being finalized; not currently used except to disable locktime in a transaction"), required_signatures INT64 OPTIONS(description="The number of signatures required to authorize the spent output"), type STRING OPTIONS(description="The address type of the spent output"), addresses ARRAY<STRING> OPTIONS(description="Addresses which own the spent output"), value NUMERIC OPTIONS(description="The value in base currency attached to the spent output")>> OPTIONS(description="Transaction inputs"), outputs ARRAY<STRUCT<index INT64 NOT NULL OPTIONS(description="0-indexed number of an output within a transaction used by a later transaction to refer to that specific output"), script_asm STRING OPTIONS(description="Symbolic representation of the bitcoin's script language op-codes"), script_hex STRING OPTIONS(description="Hexadecimal representation of the bitcoin's script language op-codes"), required_signatures INT64 OPTIONS(description="The number of signatures required to authorize spending of this output"), type STRING OPTIONS(description="The address type of the output"), addresses ARRAY<STRING> OPTIONS(description="Addresses which own this output"), value NUMERIC OPTIONS(description="The value in base currency attached to this output")>> OPTIONS(description="Transaction outputs")) PARTITION BY block_timestamp_month OPTIONS( description="All transactions.\nData is exported using https://github.com/blockchain-etl/bitcoin-etl\n");
+    CREATE VIEW `bigquery-public-data.crypto_bitcoin.inputs` OPTIONS( description="Inputs from all transactions.\nData is exported using https://github.com/blockchain-etl/bitcoin-etl") AS SELECT transactions.hash as transaction_hash, transactions.block_hash, transactions.block_number, transactions.block_timestamp, inputs.index, inputs.spent_transaction_hash, inputs.spent_output_index, inputs.script_asm, inputs.script_hex, inputs.sequence, inputs.required_signatures, inputs.type, inputs.addresses, inputs.value FROM `bigquery-public-data.crypto_bitcoin.transactions` as transactions, transactions.inputs as inputs;
+    CREATE TABLE `dubo-375020.crypto.btc_to_usd` (Date DATE, Open FLOAT, High FLOAT, Low FLOAT, Close FLOAT, Adj_Close FLOAT, Volume INTEGER);
+bitcoin-blocks:
+  connection_type: "bigquery"
+  ddl: |
+    CREATE TABLE `bigquery-public-data.crypto_bitcoin.transactions` (
+      hash STRING NOT NULL OPTIONS(description="The hash of this transaction"),
+      version INT64 OPTIONS(description="Protocol version specified in block which contained this transaction"),
+      lock_time INT64 OPTIONS(description="Earliest time that miners can include the transaction in their hashing of the Merkle root to attach it in the latest block of the blockchain"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block which contains this transaction"),
+      block_number INT64 NOT NULL OPTIONS(description="Number of the block which contains this transaction"),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block which contains this transaction"),
+      block_timestamp_month DATE NOT NULL OPTIONS(description="Month of the block which contains this transaction"),
+      input_count INT64 OPTIONS(description="The number of inputs in the transaction"),
+      output_count INT64 OPTIONS(description="The number of outputs in the transaction"),
+      input_value NUMERIC OPTIONS(description="Total value of inputs in the transaction"),
+      output_value NUMERIC OPTIONS(description="Total value of outputs in the transaction"),
+      is_coinbase BOOL OPTIONS(description="true if this transaction is a coinbase transaction"),
+      fee NUMERIC OPTIONS(description="The fee paid by this transaction"),
+      spent_output_index INT64 OPTIONS(description="The index of the output this input spends")
+    );
+    CREATE TABLE `dubo-375020.crypto.btc_to_usd` (Date DATE, Open FLOAT, High FLOAT, Low FLOAT, Close FLOAT, Adj_Close FLOAT, Volume INTEGER);
+ethereum-blocks:
+  connection_type: "bigquery"
+  ddl: |
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.tokens`
+    (
+      address STRING NOT NULL OPTIONS(description="The address of the ERC20 token"),
+      symbol STRING OPTIONS(description="The symbol of the ERC20 token"),
+      name STRING OPTIONS(description="The name of the ERC20 token"),
+      decimals STRING OPTIONS(description="The number of decimals the token uses. Use safe_cast for casting to NUMERIC or FLOAT64"),
+      total_supply STRING OPTIONS(description="The total token supply. Use safe_cast for casting to NUMERIC or FLOAT64"),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block where this token was created"),
+      block_number INT64 NOT NULL OPTIONS(description="Block number where this token was created"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block where this token was created")
+    )
+    OPTIONS(
+      description="Token data.\nData is exported using https://github.com/medvedev1088/ethereum-etl"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.blocks`
+    (
+      timestamp TIMESTAMP NOT NULL OPTIONS(description="The timestamp for when the block was collated"),
+      number INT64 NOT NULL OPTIONS(description="The block number"),
+      `hash` STRING NOT NULL OPTIONS(description="Hash of the block"),
+      parent_hash STRING OPTIONS(description="Hash of the parent block"),
+      nonce STRING NOT NULL OPTIONS(description="Hash of the generated proof-of-work"),
+      sha3_uncles STRING OPTIONS(description="SHA3 of the uncles data in the block"),
+      logs_bloom STRING OPTIONS(description="The bloom filter for the logs of the block"),
+      transactions_root STRING OPTIONS(description="The root of the transaction trie of the block"),
+      state_root STRING OPTIONS(description="The root of the final state trie of the block"),
+      receipts_root STRING OPTIONS(description="The root of the receipts trie of the block"),
+      miner STRING OPTIONS(description="The address of the beneficiary to whom the mining rewards were given"),
+      difficulty NUMERIC OPTIONS(description="Integer of the difficulty for this block"),
+      total_difficulty NUMERIC OPTIONS(description="Integer of the total difficulty of the chain until this block"),
+      size INT64 OPTIONS(description="The size of this block in bytes"),
+      extra_data STRING OPTIONS(description="The extra data field of this block"),
+      gas_limit INT64 OPTIONS(description="The maximum gas allowed in this block"),
+      gas_used INT64 OPTIONS(description="The total used gas by all transactions in this block"),
+      transaction_count INT64 OPTIONS(description="The number of transactions in the block"),
+      base_fee_per_gas INT64 OPTIONS(description="Protocol base fee per gas, which can move up or down")
+    )
+    PARTITION BY DATE(timestamp)
+    OPTIONS(
+      description="The Ethereum blockchain is composed of a series of blocks. This table contains a set of all blocks in the blockchain and their attributes.\nData is exported using https://github.com/medvedev1088/ethereum-etl"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.contracts`
+    (
+      address STRING NOT NULL OPTIONS(description="Address of the contract"),
+      bytecode STRING OPTIONS(description="Bytecode of the contract"),
+      function_sighashes ARRAY<STRING> OPTIONS(description="4-byte function signature hashes"),
+      is_erc20 BOOL OPTIONS(description="Whether this contract is an ERC20 contract"),
+      is_erc721 BOOL OPTIONS(description="Whether this contract is an ERC721 contract"),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block where this contract was created"),
+      block_number INT64 NOT NULL OPTIONS(description="Block number where this contract was created"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block where this contract was created")
+    )
+    PARTITION BY DATE(block_timestamp)
+    OPTIONS(
+      description="Some transactions create smart contracts from their input bytes, and this smart contract is stored at a particular 20-byte address.\nThis table contains a subset of Ethereum addresses that contain contract byte-code, as well as some basic analysis of that byte-code.\nData is exported using https://github.com/medvedev1088/ethereum-etl"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.traces`
+    (
+      transaction_hash STRING OPTIONS(description="Transaction hash where this trace was in"),
+      transaction_index INT64 OPTIONS(description="Integer of the transactions index position in the block"),
+      from_address STRING OPTIONS(description="Address of the sender, null when trace_type is genesis or reward"),
+      to_address STRING OPTIONS(description="Address of the receiver if trace_type is call, address of new contract or null if trace_type is create, beneficiary address if trace_type is suicide, miner address if trace_type is reward, shareholder address if trace_type is genesis, WithdrawDAO address if trace_type is daofork"),
+      value NUMERIC OPTIONS(description="Value transferred in Wei"),
+      input STRING OPTIONS(description="The data sent along with the message call"),
+      output STRING OPTIONS(description="The output of the message call, bytecode of contract when trace_type is create"),
+      trace_type STRING NOT NULL OPTIONS(description="One of call, create, suicide, reward, genesis, daofork"),
+      call_type STRING OPTIONS(description="One of call, callcode, delegatecall, staticcall"),
+      reward_type STRING OPTIONS(description="One of block, uncle"),
+      gas INT64 OPTIONS(description="Gas provided with the message call"),
+      gas_used INT64 OPTIONS(description="Gas used by the message call"),
+      subtraces INT64 OPTIONS(description="Number of subtraces"),
+      trace_address STRING OPTIONS(description="Comma separated list of trace address in call tree"),
+      error STRING OPTIONS(description="Error if message call failed. This field doesn't contain top-level trace errors."),
+      status INT64 OPTIONS(description="Either 1 (success) or 0 (failure, due to any operation that can cause the call itself or any top-level call to revert)"),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block where this trace was in"),
+      block_number INT64 NOT NULL OPTIONS(description="Block number where this trace was in"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block where this trace was in"),
+      trace_id STRING OPTIONS(description="Unique string that identifies the trace. For transaction-scoped traces it is {trace_type}_{transaction_hash}_{trace_address}. For block-scoped traces it is {trace_type}_{block_number}_{index_within_block}")
+    )
+    PARTITION BY DATE(block_timestamp)
+    OPTIONS(
+      description="Traces exported using Parity trace module https://wiki.parity.io/JSONRPC-trace-module.\nData is exported using https://github.com/medvedev1088/ethereum-etl\n"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.token_transfers`
+    (
+      token_address STRING NOT NULL OPTIONS(description="ERC20 token address"),
+      from_address STRING OPTIONS(description="Address of the sender"),
+      to_address STRING OPTIONS(description="Address of the receiver"),
+      value STRING OPTIONS(description="Amount of tokens transferred (ERC20) / id of the token transferred (ERC721). Use safe_cast for casting to NUMERIC or FLOAT64"),
+      transaction_hash STRING NOT NULL OPTIONS(description="Transaction hash"),
+      log_index INT64 NOT NULL OPTIONS(description="Log index in the transaction receipt"),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block where this transfer was in"),
+      block_number INT64 NOT NULL OPTIONS(description="Block number where this transfer was in"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block where this transfer was in")
+    )
+    PARTITION BY DATE(block_timestamp)
+    OPTIONS(
+      description="The most popular type of transaction on the Ethereum blockchain invokes a contract of type ERC20 to perform a transfer operation, moving some number of tokens from one 20-byte address to another 20-byte address.\nThis table contains the subset of those transactions and has further processed and denormalized the data to make it easier to consume for analysis of token transfer events.\nData is exported using https://github.com/medvedev1088/ethereum-etl\n"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.balances`
+    (
+      address STRING NOT NULL OPTIONS(description="Address"),
+      eth_balance NUMERIC OPTIONS(description="Ether balance")
+    )
+    OPTIONS(
+      description="This table contains Ether balances of all addresses, updated daily.\nData is exported using https://github.com/medvedev1088/ethereum-etl"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.transactions`
+    (
+      `hash` STRING NOT NULL OPTIONS(description="Hash of the transaction"),
+      nonce INT64 NOT NULL OPTIONS(description="The number of transactions made by the sender prior to this one"),
+      transaction_index INT64 NOT NULL OPTIONS(description="Integer of the transactions index position in the block"),
+      from_address STRING NOT NULL OPTIONS(description="Address of the sender"),
+      to_address STRING OPTIONS(description="Address of the receiver. null when its a contract creation transaction"),
+      value NUMERIC OPTIONS(description="Value transferred in Wei"),
+      gas INT64 OPTIONS(description="Gas provided by the sender"),
+      gas_price INT64 OPTIONS(description="Gas price provided by the sender in Wei"),
+      input STRING OPTIONS(description="The data sent along with the transaction"),
+      receipt_cumulative_gas_used INT64 OPTIONS(description="The total amount of gas used when this transaction was executed in the block"),
+      receipt_gas_used INT64 OPTIONS(description="The amount of gas used by this specific transaction alone"),
+      receipt_contract_address STRING OPTIONS(description="The contract address created, if the transaction was a contract creation, otherwise null"),
+      receipt_root STRING OPTIONS(description="32 bytes of post-transaction stateroot (pre Byzantium)"),
+      receipt_status INT64 OPTIONS(description="Either 1 (success) or 0 (failure) (post Byzantium)"),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block where this transaction was in"),
+      block_number INT64 NOT NULL OPTIONS(description="Block number where this transaction was in"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block where this transaction was in"),
+      max_fee_per_gas INT64 OPTIONS(description="Total fee that covers both base and priority fees"),
+      max_priority_fee_per_gas INT64 OPTIONS(description="Fee given to miners to incentivize them to include the transaction"),
+      transaction_type INT64 OPTIONS(description="Transaction type"),
+      receipt_effective_gas_price INT64 OPTIONS(description="The actual value per gas deducted from the senders account. Replacement of gas_price after EIP-1559")
+    )
+    PARTITION BY DATE(block_timestamp)
+    OPTIONS(
+      description="Each block in the blockchain is composed of zero or more transactions. Each transaction has a source address, a target address, an amount of Ether transferred, and an array of input bytes.\nThis table contains a set of all transactions from all blocks, and contains a block identifier to get associated block-specific information associated with each transaction.\nData is exported using https://github.com/medvedev1088/ethereum-etl\n"
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.sessions`
+    (
+      id STRING NOT NULL,
+      start_trace_id STRING NOT NULL,
+      start_block_number INT64 NOT NULL,
+      start_block_timestamp TIMESTAMP NOT NULL,
+      wallet_address STRING NOT NULL,
+      contract_address STRING
+    );
+    CREATE TABLE `bigquery-public-data.crypto_ethereum.logs`
+    (
+      log_index INT64 NOT NULL OPTIONS(description="Integer of the log index position in the block"),
+      transaction_hash STRING NOT NULL OPTIONS(description="Hash of the transactions this log was created from"),
+      transaction_index INT64 NOT NULL OPTIONS(description="Integer of the transactions index position log was created from"),
+      address STRING OPTIONS(description="Address from which this log originated"),
+      data STRING OPTIONS(description="Contains one or more 32 Bytes non-indexed arguments of the log"),
+      topics ARRAY<STRING> OPTIONS(description="Indexed log arguments (0 to 4 32-byte hex strings). (In solidity: The first topic is the hash of the signature of the event (e.g. Deposit(address,bytes32,uint256)), except you declared the event with the anonymous specifier.)),
+      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block where this log was in"),
+      block_number INT64 NOT NULL OPTIONS(description="The block number where this log was in"),
+      block_hash STRING NOT NULL OPTIONS(description="Hash of the block where this log was in")
+    )
+    PARTITION BY DATE(block_timestamp)
+    OPTIONS(
+      description="Similar to the token_transfers table, the logs table contains data for smart contract events. However, it contains all log data, not only ERC20 token transfers.\nThis table is generally useful for reporting on any logged event type on the Ethereum blockchain.\nData is exported using https://github.com/blockchain-etl/ethereum-etl"
+    );
+    CREATE VIEW `bigquery-public-data.crypto_ethereum.amended_tokens`
+    OPTIONS(
+      description="Token amended with data from https://github.com/blockchain-etl/ethereum-etl-airflow/blob/master/dags/resources/stages/seed/data/token_amendments.csv"
+    )
+    AS WITH tokens AS (
+        -- Deduplicate first since the tokens table might have duplicate entries due to CREATE2 https://medium.com/@jason.carver/defend-against-wild-magic-in-the-next-ethereum-upgrade-b008247839d2
+        SELECT 
+            address,
+            ANY_VALUE(symbol) AS symbol,
+            ANY_VALUE(name) AS name,
+            ANY_VALUE(decimals) AS decimals,
+        FROM `bigquery-public-data.crypto_ethereum.tokens`
+        GROUP BY address
+    ),
+    deduplicated_token_amendments AS (
+        -- Deduplicate first since token_amendments can have human errors
+        SELECT
+            address,
+            ANY_VALUE(symbol) AS symbol,
+            ANY_VALUE(name) AS name,
+            ANY_VALUE(decimals) AS decimals,
+        FROM `blockchain-etl-internal.common.token_amendments`
+        GROUP BY address
+    )
+    SELECT 
+        LOWER(address) AS address,
+        COALESCE(am.symbol, tokens.symbol) AS symbol,
+        COALESCE(am.name, tokens.name) AS name,
+        COALESCE(am.decimals, tokens.decimals) AS decimals,
+    FROM
+      deduplicated_token_amendments AS am
+    FULL OUTER JOIN
+      tokens
+    USING(address)
+    ;
+    CREATE TABLE `dubo-375020.crypto.eth_to_usd` (Date DATE, Open FLOAT, High FLOAT, Low FLOAT, Close FLOAT, Adj_Close FLOAT, Volume INTEGER);

@@ -88,10 +88,10 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
 
 const BulkEditModal = () => {
   const { modal, closeModal } = useUiModals();
-  const { multiSelectedShapes, clearSelectedShapeUuids } = useSelectedShapes();
+  const { selectedShapes, clearSelectedShapeUuids } = useSelectedShapes();
 
   const [data, setData] = React.useState(() =>
-    multiSelectedShapes.map((shape) => shape.properties)
+    selectedShapes.map((shape) => shape.properties)
   );
 
   const [tableColumns, setTableColumns] = useState<string[]>([]);
@@ -101,7 +101,7 @@ const BulkEditModal = () => {
   useEffect(() => {
     const cols = [
       ...new Set(
-        multiSelectedShapes
+        selectedShapes
           .map((shape: any) => Object.keys(shape.properties))
           .flat()
           .filter((column) => !["__uuid", "__namespace_id"].includes(column))

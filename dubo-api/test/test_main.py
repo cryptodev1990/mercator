@@ -45,7 +45,7 @@ def test_read_query_with_dubo():
 
 
 def test_read_query_from_connection():
-    response = client.get("/v1/dubo/query/polygon-blocks", params={"user_query": "How many transactions were there in 2020 by month ordered by month?"})
+    response = client.get("/v1/dubo/query/polygon-blocks", params={"user_query": "How much USD of WMATIC was exchanged on December 15, 2020?"})
     assert response.status_code == 200
     # Both of these queries are correct
     res = response.json()["results"]

@@ -28,8 +28,7 @@ export function useTiles() {
 
   const { cursorMode } = useCursorMode();
 
-  const { isSelected, selectedUuids, multiSelectedShapesUuids } =
-    useSelectedShapes();
+  const { isSelected, selectedUuids } = useSelectedShapes();
 
   useEffect(() => {
     if (optimisticShapeUpdates.length > MAX_OPTIMISTIC_FEATURES) {
@@ -60,13 +59,11 @@ export function useTiles() {
         getLineColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          multiSelectedShapesUuids.length,
           selectedUuids,
         ],
         getFillColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          multiSelectedShapesUuids.length,
           hoveredUuid,
           selectedUuids,
         ],
@@ -80,7 +77,6 @@ export function useTiles() {
           return [0, 0, 0, 0];
         }
         if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (multiSelectedShapesUuids.includes(uuid)) return [0, 0, 255, 50];
         if (hoveredUuid === uuid) return [255, 125, 0, 150];
         return [0, 0, 0, 150];
       },
@@ -94,7 +90,6 @@ export function useTiles() {
           return [0, 0, 0, 0];
         }
         if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (multiSelectedShapesUuids.includes(uuid)) return [0, 0, 255, 50];
         if (hoveredUuid === uuid) return [255, 125, 0, 150];
         return [173, 216, 230, 255];
       },
@@ -109,7 +104,6 @@ export function useTiles() {
           return [0, 0, 0, 0];
         }
         if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (multiSelectedShapesUuids.includes(uuid)) return [0, 0, 255, 50];
         if (hoveredUuid === uuid) return [255, 125, 0, 150];
         return [0, 0, 0, 150];
       },
@@ -119,7 +113,6 @@ export function useTiles() {
           return [0, 0, 0, 0];
         }
         if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (multiSelectedShapesUuids.includes(uuid)) return [0, 0, 255, 50];
         if (hoveredUuid === uuid) return [255, 125, 0, 150];
         return [173, 216, 230, 255];
       },
@@ -127,14 +120,12 @@ export function useTiles() {
         getLineColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          multiSelectedShapesUuids.length,
           hoveredUuid,
           selectedUuids,
         ],
         getFillColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          multiSelectedShapesUuids.length,
           selectedUuids,
         ],
         getTileData: [tileUpdateCount],
