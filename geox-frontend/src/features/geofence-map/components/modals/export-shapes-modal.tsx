@@ -47,7 +47,6 @@ export const ExportShapesModal = () => {
             ? exportable
             : topology({ exportable });
 
-        console.log("exportData", exportData);
         const dataStr =
             "data:text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(exportData)),

@@ -128,7 +128,6 @@ const GeofenceMap = () => {
     const selectedShape = allNamespaces
       ?.flatMap((x) => x.shapes ?? [])
       .find((shape) => isSelected(shape.uuid));
-    console.log("cursorMode", cursorMode);
     if (
       selectedShape &&
       (cursorMode === EditorMode.ViewMode ||
@@ -168,7 +167,6 @@ const GeofenceMap = () => {
           const object = nonDeletedShapes[0]?.object;
 
           if (window.location.hash === "#click") {
-            console.log("object", object);
           }
 
           if (cursorMode === EditorMode.DrawIsochroneMode) {

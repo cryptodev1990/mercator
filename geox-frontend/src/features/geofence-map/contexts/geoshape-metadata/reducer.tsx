@@ -12,7 +12,6 @@ export const initialState: State = {
 };
 
 export function geoshapeReducer(state: State, action: Action): State {
-  console.log("geoshape-metadata reducer", action);
   switch (action.type) {
     case "SET_ACTIVE_NAMESPACES": {
       return {

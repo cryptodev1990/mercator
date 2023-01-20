@@ -107,7 +107,6 @@ export const ShapeCard = ({
                   else {
                     const coords = [e.clientX, e.clientY];
                     confirmDelete(coords, () => {
-                      console.log("Deleting shape", shape.uuid);
                       deleteShapes([shape.uuid]);
                       clearSelectedShapeUuids();
                       clearSelectedFeatureIndexes();

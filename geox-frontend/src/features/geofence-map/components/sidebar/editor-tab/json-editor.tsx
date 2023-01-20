@@ -59,7 +59,6 @@ export default function JsonEditor({
       {}
     );
     formProperties = { ...formProperties, namespace: selectNamespaceId };
-    console.log("formProperties", formProperties);
     handleResults(formProperties);
   };
 

@@ -58,7 +58,6 @@ export function useModifyLayer() {
     onEdit: (e: any) => {
       const { updatedData, editType, editContext } = e;
       setLocalData(updatedData);
-      console.log("onEdit", editType);
       if (
         ["addPosition", "removePosition", "finishMovePosition"].includes(
           editType

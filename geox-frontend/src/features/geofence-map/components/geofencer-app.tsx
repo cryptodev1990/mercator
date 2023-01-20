@@ -17,6 +17,41 @@ import { DeletePrompt } from "./delete-prompt";
 import { TopRightCornerBank } from "./top-right-corner-bank";
 import { SearchContextProvider } from "../contexts/search-context";
 import { SubscriptionRequiredPopup } from "./subscription-required-popup";
+import { ErrorBoundary } from "react-error-boundary";
+import { useShapes } from "../hooks/use-shapes";
+import { ModalCard } from "./modals/modal-card";
+import { useUiModals } from "../hooks/use-ui-modals";
+import { BiErrorCircle } from "react-icons/bi";
+
+function ErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: any;
+  resetErrorBoundary: any;
+}) {
+  const { modal, closeModal } = useUiModals();
+  console.log("modal", modal);
+
+  return (
+    <ModalCard
+      open={true}
+      onClose={() => {
+        window.location.reload();
+      }}
+      icon={
+        <BiErrorCircle className="h-6 w-6 text-red-600" aria-hidden="true" />
+      }
+      title={`Error!`}
+    >
+      <div>
+        <p className=" font-medium leading-6 text-gray-900">
+          {error.message}. Please try again.
+        </p>
+      </div>
+    </ModalCard>
+  );
+}
 
 window.location.hash === "#performance" &&
   (() => {
@@ -81,7 +116,9 @@ const GeofencerApp = () => {
           <div className="h-[95vh] px-5 py-5 flex flex-row relative">
             <GeofencerSidebar />
           </div>
-          <GeofenceMap />
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <GeofenceMap />
+          </ErrorBoundary>
         </div>
         <div className="fixed bottom-0 left-0 my-7 text-gray-700 text-2xs mx-1 select-none pointer-events-none">
           Basemap tiles by
