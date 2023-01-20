@@ -58,7 +58,7 @@ const RESPONSES = [
   },
   {
     header: ["ZIP Code", "Population Growth"],
-    data: [["94102", "+0.9%"]],
+    data: [["94102", "+10.9%"]],
   },
   {
     header: ["Email", "Interview Date"],
