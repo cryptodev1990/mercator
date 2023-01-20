@@ -27,7 +27,7 @@ const DiscordBar = () => {
             // navigate to DISCORD_URL
             window.open(DISCORD_URL, "_blank");
           }}
-          className="border w-50 p-3 hover:bg-white hover:text-spBlue"
+          className="inline-block px-3 py-2 hover:text-spBlue border border-white hover:bg-white border-spBlue text-white font-medium text-md leading-tight hover:bg-white focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
         >
           <div className="flex flex-row gap-3 items-center">
             <span>Join dubo </span>
