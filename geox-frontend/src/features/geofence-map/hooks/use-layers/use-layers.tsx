@@ -14,11 +14,12 @@ import { useImageLayer } from "./use-image-layer";
 import { SelectionLayer } from "@nebula.gl/layers";
 
 export const useLayers = () => {
-  const { tentativeShapes, setSelectedFeatureIndexes } = useShapes();
+  const { tentativeShapes, setSelectedFeatureIndexes, deletedShapeIds } =
+    useShapes();
 
   const {
     selectedFeatureCollection,
-    multiSelectedShapes,
+    selectedShapes,
     addShapesToMultiSelectedShapes,
   } = useSelectedShapes();
 
@@ -77,7 +78,7 @@ export const useLayers = () => {
           // @ts-ignore
           data: selectedFeatureCollection,
         }),
-      multiSelectedShapes &&
+      selectedShapes &&
         new GeoJsonLayer({
           id: "multi-select-geojson-view",
           pickable: true,
@@ -89,7 +90,7 @@ export const useLayers = () => {
           stroked: true,
           filled: true,
           // @ts-ignore
-          data: multiSelectedShapes,
+          data: selectedShapes,
         }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
@@ -115,7 +116,9 @@ export const useLayers = () => {
           onSelect: ({ pickingInfos }) => {
             const newObjs = [];
             for (const obj of pickingInfos) {
-              newObjs.push(obj.object);
+              if (!deletedShapeIds.includes(obj.object.properties.__uuid)) {
+                newObjs.push(obj.object);
+              }
             }
             const distinctShapes = _.uniqBy(newObjs, "properties.__uuid");
             addShapesToMultiSelectedShapes(distinctShapes);
