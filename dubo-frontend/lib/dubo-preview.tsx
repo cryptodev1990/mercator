@@ -6,13 +6,30 @@ import { useLocalSqlite } from "./use-sql-db";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 
 const DATA_OPTIONS = {
-  "US Census ACS 2021 Subset": [
-    "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv",
-    "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/zcta-centroids.csv",
-  ],
-  "Fortune 500": [
-    "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/fortune_500.csv",
-  ],
+  "US Census ACS 2021 Subset": {
+    data: [
+      "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv",
+      "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/zcta-centroids.csv",
+    ],
+    queries: [],
+  },
+  "Fortune 500": {
+    data: [
+      "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/fortune_500.csv",
+    ],
+    queries: [
+      {
+        query:
+          "Which companies are within a 50 mile radius of Washington D.C.?",
+        sql: "SELECT * FROM tbl_0 WHERE (3959 * acos(cos(radians(38.9072)) * cos(radians(latitude)) * cos(radians(longitude) - radians(-77.0369)) + sin(radians(38.9072)) * sin(radians(latitude)))) < 50;",
+      },
+      {
+        query:
+          "Which companies are not located within a 150 mile radius of any other company?",
+        sql: "SELECT tbl_0.name FROM tbl_0 WHERE NOT EXISTS (SELECT * FROM tbl_0 tbl_1 WHERE tbl_0.name != tbl_1.name AND (6371 * acos(cos(radians(tbl_0.latitude)) * cos(radians(tbl_1.latitude)) * cos(radians(tbl_1.longitude) - radians(tbl_0.longitude)) + sin(radians(tbl_0.latitude)) * sin(radians(tbl_1.latitude)))) < 150);",
+      },
+    ],
+  },
 };
 
 type DataNames = keyof typeof DATA_OPTIONS;
@@ -39,24 +56,52 @@ export async function getUploadData(): Promise<File | null> {
   return file as File;
 }
 
+const SuggestedQueries = ({
+  queries,
+  handleQuery,
+}: {
+  queries: { query: string; sql: string }[];
+  handleQuery: (sql: string) => void;
+}) => {
+  const [selectedQuery, setSelectedQuery] = useState<number | null>(null);
+
+  return (
+    <div className="mt-2 flex gap-1 flex-wrap">
+      {queries.map(({ query, sql }, index) => (
+        <span
+          key={index}
+          className={`px-4 py-2 rounded-full border border-spBlue ${
+            selectedQuery === index
+              ? "bg-white text-spBlue"
+              : "bg-spBlue text-white"
+          } font-semibold text-sm w-max cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis transition duration-300 ease`}
+          onClick={() => {
+            setSelectedQuery(index);
+            handleQuery(sql);
+          }}
+        >
+          {query}
+        </span>
+      ))}
+    </div>
+  );
+};
+
 const DuboPreview = () => {
   const [error, setError] = useState<string | null>(null);
-  const [query, setQuery] = useState<string | null>(null);
+  const [query, setQuery] = useState<string>("");
   const [duboResponse, setDuboResponse] = useState<string | null>(null);
   const [execResults, setExecResults] = useState<initSqlJs.QueryExecResult[]>(
     []
   );
-  const [selectedData, setSelectedData] = useState<DataNames | null>(
-    "Fortune 500"
-  );
+  const [selectedData, setSelectedData] = useState<DataNames>("Fortune 500");
   const [customData, setCustomData] = useState<File[] | null>(null);
   const {
     exec,
     status,
     error: sqlError,
   } = useLocalSqlite({
-    // @ts-ignore
-    urlsOrFile: customData || DATA_OPTIONS[selectedData],
+    urlsOrFile: customData || DATA_OPTIONS[selectedData].data,
   });
 
   useEffect(() => {
@@ -102,6 +147,33 @@ const DuboPreview = () => {
     );
   }
 
+  const handleQuery = async (sql: string) => {
+    const schemas = await exec(
+      `SELECT sql FROM sqlite_schema WHERE name LIKE 'tbl_%'`
+    );
+    if (schemas?.length === 0 || typeof schemas === "undefined") {
+      setError("No tables found");
+      return;
+    }
+    const res = schemas[0].values.map((row: any) => row[0]);
+    if (res.length === 0) {
+      setError("No tables found");
+      return;
+    }
+    const duboRes = await duboQuery(sql, res);
+    if (duboRes.query_text) {
+      setDuboResponse(duboRes.query_text);
+      const res = exec(duboRes.query_text);
+      if (res) {
+        setExecResults(res);
+      } else {
+        setError("Query returned no results.");
+      }
+    } else {
+      setError("Query failed. Try a different query.");
+    }
+  };
+
   return (
     <div className="max-w-5xl m-auto">
       <div className="flex flex-col">
@@ -144,42 +216,17 @@ const DuboPreview = () => {
             }}
           />
           <button
-            className="bg-blue-500 text-white font-mono p-3"
-            onClick={async () => {
-              const schemas = await exec(
-                `SELECT sql FROM sqlite_schema WHERE name LIKE 'tbl_%'`
-              );
-              if (schemas?.length === 0 || typeof schemas === "undefined") {
-                setError("No tables found");
-                return;
-              }
-              const res = schemas[0].values.map((row: any) => row[0]);
-              if (res.length === 0) {
-                setError("No tables found");
-                return;
-              }
-              if (query === null) {
-                setError("No query found");
-                return;
-              }
-              const duboRes = await duboQuery(query, res);
-              if (duboRes.query_text) {
-                setDuboResponse(duboRes.query_text);
-                const res = exec(duboRes.query_text);
-                if (res) {
-                  setExecResults(res);
-                } else {
-                  setError("Query returned no results.");
-                }
-              } else {
-                setError("Query failed. Try a different query.");
-              }
-            }}
+            className="bg-spBlue text-white font-mono p-3"
+            onClick={() => handleQuery(query)}
           >
             Run
             <FaPlay className="inline-block h-4 w-4" />
           </button>
         </div>
+        <SuggestedQueries
+          queries={DATA_OPTIONS[selectedData].queries}
+          handleQuery={handleQuery}
+        />
         {error && (
           <p className="bg-orange-500 text-white font-mono px-3 mt-3">
             Error: {error}
