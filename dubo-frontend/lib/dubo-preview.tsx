@@ -11,7 +11,12 @@ const DATA_OPTIONS = {
       "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv",
       "https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/zcta-centroids.csv",
     ],
-    queries: [],
+    queries: [
+      {
+        query: "Which zip codes have the most old people and children?",
+        sql: "SELECT tbl_0.zip_code, (tbl_0.elderly_pop + tbl_0.pop_under_5_years + tbl_0.pop_5_to_9_years + tbl_0.pop_10_to_14_years + tbl_0.pop_15_to_19_years) AS total_old_and_children FROM tbl_0 INNER JOIN tbl_1 ON tbl_0.zip_code = tbl_1.zcta ORDER BY total_old_and_children DESC;",
+      },
+    ],
   },
   "Fortune 500": {
     data: [
