@@ -10,7 +10,7 @@ const Info = () => {
         data-bs-toggle="modal"
         data-bs-target="#disclaimerModal"
       >
-        Disclaimer
+        Notes
       </button>
       <div
         className="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
@@ -26,7 +26,7 @@ const Info = () => {
                 className="text-xl font-medium leading-normal text-gray-800"
                 id="disclaimerModalLabel"
               >
-                Disclaimer
+                Notes on data privacy and limitations
               </h5>
               <button
                 type="button"
@@ -72,7 +72,7 @@ const DemoPage = () => (
     <Navbar />
     <div className="pr-8 pl-8 pt-8 pb-16 min-h-full">
       <div className="max-w-5xl m-auto flex justify-between items-center">
-        <p className="text-lg mr-3">Choose a data set below to get started:</p>
+        <p className="text-lg mr-3">Choose a data set below to get started</p>
         <Info />
       </div>
       <br />
