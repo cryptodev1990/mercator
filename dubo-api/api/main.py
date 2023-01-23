@@ -12,10 +12,13 @@ import sqlparse
 from api.gateways.conns import run_query_against_connection
 from api.gateways.openai import assemble_prompt, get_sql_from_gpt_prompt
 from api.schemas.responses import QueryResponse, ResultsResponse
+from api.whitelist import add_whitelist_middleware, is_request_exempt
 
 openai.api_key = os.environ['OPENAI_KEY']
 
 app = FastAPI()
+add_whitelist_middleware(app)
+
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
@@ -55,7 +58,7 @@ app.add_middleware(
     tags=["dubo"],
     summary="Convert text to SQL",
 )
-@limiter.limit("100/day")
+@limiter.limit("100/day", exempt_when=is_request_exempt)
 def read_query(
     request: Request,
     user_query: str = Query(default=None, description="The question to answer"),
@@ -66,7 +69,6 @@ def read_query(
         raise HTTPException(status_code=422, detail="No query provided")
     if not schemas:
         raise HTTPException(status_code=422, detail="No schemas provided")
-
     try:
         parsed = sqlparse.parse(schemas[0])[0]
         # Really rough check to make sure the input is a valid SQL table schema
@@ -101,7 +103,7 @@ def read_query(
     tags=["dubo"],
     summary="Convert text to SQL for a specific connection",
 )
-@limiter.limit("100/day")
+@limiter.limit("100/day", exempt_when=is_request_exempt)
 def read_query_conn(
     conn_id: str,
     request: Request,
