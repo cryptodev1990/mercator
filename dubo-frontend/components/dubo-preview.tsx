@@ -67,7 +67,7 @@ const SuggestedQueries = ({
       {queries.map(({ query, sql }, index) => (
         <span
           key={index}
-          className={`px-4 py-2 rounded sm:rounded-full border border-spBlue font-semibold text-sm w-max cursor-pointer sm:truncate sm:text transition duration-300 ease ${
+          className={`px-2 sm:px-4 py-2 rounded sm:rounded-full border border-spBlue font-semibold text-sm w-max cursor-pointer sm:truncate sm:text transition duration-300 ease ${
             selectedQuery === index
               ? "bg-white text-spBlue"
               : "bg-spBlue text-white"
