@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DataFrameViewer } from "./DataFrameViewer";
+import DataFrameViewer from "./data-frame-viewer";
 
 const FlickeringCursor = () => {
   const [cursor, setCursor] = useState("|");
