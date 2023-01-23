@@ -35,11 +35,10 @@ export const ShapeCard = ({
     updateLoading,
     clearSelectedFeatureIndexes,
     updateShape,
+    partialUpdateShape,
   } = useShapes();
 
   const { confirmDelete, setHeading } = useContext(UIContext);
-
-  const { selectedFeatureCollection } = useSelectedShapes();
 
   const { isSelected, selectedDataIsLoading, clearSelectedShapeUuids } =
     useSelectedShapes();
@@ -69,23 +68,10 @@ export const ShapeCard = ({
           value={shape?.name || "New shape"}
           disabled={selectedDataIsLoading}
           onChange={(newName) => {
-            const geojson = selectedFeatureCollection?.features.find(
-              (x) => x?.properties?.__uuid === shape.uuid
-            );
-
-            if (!geojson) {
-              console.error("Could not find geojson for shape", shape);
-              return;
-            }
-
-            // @ts-ignore
-            geojson.properties.name = newName;
-
             if (newName !== shape.name) {
-              updateShape({
-                ...shape,
-                // @ts-ignore
-                geojson,
+              partialUpdateShape({
+                uuid: shape.uuid,
+                namespace: shape.namespace_id,
                 name: newName,
               });
             }
