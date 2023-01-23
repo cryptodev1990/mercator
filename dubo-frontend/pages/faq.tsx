@@ -1,5 +1,5 @@
-import Navbar from "../lib/navbar";
-import Section from "../lib/section";
+import Navbar from "../components/navbar";
+import Section from "../components/section";
 
 const FAQ = () => {
   return (

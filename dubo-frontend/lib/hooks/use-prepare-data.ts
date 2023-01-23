@@ -3,8 +3,7 @@ import { CSVLoader } from "@loaders.gl/csv";
 
 import { useEffect, useState } from "react";
 import { Database } from "sql.js";
-import { DataFrame } from "./dubo-preview";
-import { convertZip, sniff, sanitizeColumnNames } from "./dubo-client";
+import { convertZip, sniff, sanitizeColumnNames } from "../utils";
 
 export const usePrepareData = ({
   urlsOrFile,

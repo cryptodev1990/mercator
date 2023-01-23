@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DiscordBar } from "./discord-bar";
+import DiscordBar from "./discord-bar";
 
 const Navitem = ({ children }: { children: React.ReactNode }) => {
   return (

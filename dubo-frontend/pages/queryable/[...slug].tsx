@@ -1,6 +1,6 @@
 // TODO - this is a placeholder for the queryable page
 import useSWR from "swr";
-import DuboPreview from "../../lib/dubo-preview";
+import DuboPreview from "../../components/dubo-preview";
 
 // @ts-ignore
 const fetcher = (...args: any) => fetch(...args).then((res) => res.json());

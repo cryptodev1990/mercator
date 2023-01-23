@@ -1,6 +1,6 @@
-import EmailBox from "../lib/email-box";
-import Navbar from "../lib/navbar";
-import Section from "../lib/section";
+import EmailBox from "../components/email-box";
+import Navbar from "../components/navbar";
+import Section from "../components/section";
 
 const Pricing = () => {
   return (
