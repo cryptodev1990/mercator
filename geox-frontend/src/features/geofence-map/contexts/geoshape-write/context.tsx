@@ -246,10 +246,7 @@ export const GeoShapeWriteContextProvider = ({
     // @ts-ignore
     dispatch({ type: "SET_SHAPE_LOADING", value: true });
 
-    GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatch(
-      update.uuid,
-      update
-    ).then(() => {
+    GeofencerService.patchShapeById(update.uuid, update).then(() => {
       dispatch({
         type: "SET_SHAPE_LOADING",
         value: false,

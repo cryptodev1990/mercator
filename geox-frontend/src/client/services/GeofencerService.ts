@@ -263,28 +263,9 @@ export class GeofencerService {
    * @returns GeoShape Successful Response
    * @throws ApiError
    */
-  public static patchShapesShapeIdGeofencerShapesShapeIdPatch(
+  public static patchShapeById(
     shapeId: string,
     requestBody: GeoShapeUpdate
-  ): CancelablePromise<GeoShape> {
-    return __request(OpenAPI, {
-      method: "PATCH",
-      url: "/geofencer/shapes/{shape_id}",
-      path: {
-        shape_id: shapeId,
-      },
-      body: requestBody,
-      mediaType: "application/json",
-      errors: {
-        404: `Shape does not exist`,
-        422: `Validation Error`,
-      },
-    });
-  }
-
-  public static patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
-    shapeId: string,
-    requestBody: any
   ): CancelablePromise<GeoShape> {
     return __request(OpenAPI, {
       method: "PATCH",

@@ -247,16 +247,15 @@ const BulkEditModal = () => {
                         closeModal();
                         setShapeLoading(true);
                         for (let shapeProperties of data) {
-                          const response =
-                            await GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
-                              shapeProperties && shapeProperties.__uuid,
-                              {
-                                properties: shapeProperties,
-                                namespace_id:
-                                  shapeProperties &&
-                                  shapeProperties.__namespace_id,
-                              }
-                            );
+                          await GeofencerService.patchShapeById(
+                            shapeProperties && shapeProperties.__uuid,
+                            {
+                              properties: shapeProperties,
+                              namespace:
+                                shapeProperties &&
+                                shapeProperties.__namespace_id,
+                            }
+                          );
                         }
                         clearSelectedShapeUuids();
                         setTileUpdateCount(tileUpdateCount + 1);
