@@ -34,7 +34,6 @@ export const ShapeCard = ({
     deleteShapes,
     updateLoading,
     clearSelectedFeatureIndexes,
-    updateShape,
     partialUpdateShape,
   } = useShapes();
 

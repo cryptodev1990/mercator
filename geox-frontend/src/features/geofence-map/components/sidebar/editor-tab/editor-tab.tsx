@@ -1,7 +1,11 @@
-import { useGetOneShapeByUuid } from "../../../hooks/use-openapi-hooks";
+import {
+  useGetOneShapeByUuid,
+  useUpdateShapeMutation,
+} from "../../../hooks/use-openapi-hooks";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
 import JsonEditor from "./json-editor";
+import { GeoShape } from "client";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -10,11 +14,23 @@ interface IDictionary<T> {
 // Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
   // add update shape mutation that only modifies shape metadata
-  const { shapeForPropertyEdit, setShapeForPropertyEdit, updateShape } =
-    useShapes();
+  const {
+    shapeForPropertyEdit,
+    setShapeForPropertyEdit,
+    partialUpdateShape,
+    dispatch,
+  } = useShapes();
   const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
     shapeForPropertyEdit?.uuid || ""
   );
+
+  const {
+    mutate: updateShapeApi,
+    isLoading: updateShapeIsLoading,
+    error: updateShapeError,
+    isSuccess: updateShapeIsSuccess,
+    data: updateShapeResponse,
+  } = useUpdateShapeMutation();
 
   const handleSubmit = (formData: IDictionary<string>) => {
     if (
@@ -27,20 +43,26 @@ export const ShapeEditor = () => {
     }
     const shapeUuid = shapeForPropertyEdit.uuid;
     const { namespace, ...properties } = formData;
-    updateShape(
-      {
-        name: properties.name,
-        namespace,
-        geojson: {
-          ...(oneShape?.geojson as any),
-          properties,
-        },
-        uuid: shapeUuid,
+
+    const newShape = {
+      name: properties.name,
+      namespace,
+      geojson: {
+        ...(oneShape?.geojson as any),
+        properties,
       },
-      {
-        onSuccess: () => setShapeForPropertyEdit(null),
-      }
-    );
+      uuid: shapeUuid,
+    };
+
+    dispatch({
+      type: "OP_LOG_ADD",
+      op: "UPDATE_SHAPE",
+      payload: newShape,
+    });
+    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [newShape as GeoShape] });
+    updateShapeApi(newShape, {
+      onSuccess: () => setShapeForPropertyEdit(null),
+    });
   };
 
   const reformattedProperties = useMemo(() => {

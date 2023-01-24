@@ -71,6 +71,7 @@ export interface IGeoShapeWriteContext {
   setShapeLoading: (value: boolean) => void;
   deletedShapeIdSet: Set<string>;
   updatedShapeIdSet: Set<string>;
+  dispatch: Dispatch<Action>;
 }
 
 export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
@@ -90,6 +91,7 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   partialUpdateShape: async () => {},
   deletedShapeIdSet: new Set(),
   updatedShapeIdSet: new Set(),
+  dispatch: () => {},
 });
 
 GeoShapeWriteContext.displayName = "GeoShapeWriteContext";
@@ -282,6 +284,7 @@ export const GeoShapeWriteContextProvider = ({
         setShapeLoading,
         deletedShapeIdSet,
         updatedShapeIdSet,
+        dispatch,
       }}
     >
       {children}
