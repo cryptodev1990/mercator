@@ -30,7 +30,15 @@ bitcoin-blocks:
       fee NUMERIC OPTIONS(description="The fee paid by this transaction"),
       spent_output_index INT64 OPTIONS(description="The index of the output this input spends")
     );
-    CREATE TABLE `dubo-375020.crypto.btc_to_usd` (Date DATE, Open FLOAT, High FLOAT, Low FLOAT, Close FLOAT, Adj_Close FLOAT, Volume INTEGER);
+    CREATE TABLE `dubo-375020.crypto.btc_to_usd` (
+      Date DATE,       -- UTC timestamp indicating the day of interest e.g. `2020-01-01 00:00:00`
+      Open FLOAT,      -- Opening price one Bitcoin in US Dollars
+      High FLOAT,      -- Highest trading price for one Bitcoin in US Dollars in that day
+      Low FLOAT,       -- Lowest trading price for one Bitcoin in US Dollars in that day
+      Close FLOAT,     -- Close price for one Bitcoin in US Dollars
+      Adj_Close FLOAT, -- Adjusted close price
+      Volume INTEGER   -- Volume of trading that day
+    );
 ethereum-blocks:
   connection_type: "bigquery"
   ddl: |
