@@ -112,7 +112,7 @@ const DemoBox = () => {
       <div className="h-[10rem]">
         <br />
         {revealResponse && (
-          <div className="transition-opacity animate-fadeIn">
+          <div className="transition-opacity animate-fadeIn500">
             <DataFrameViewer header={response.header} data={response.data} />
           </div>
         )}

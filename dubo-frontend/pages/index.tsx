@@ -12,7 +12,7 @@ export default function Home() {
         </div>
         <div className="max-w-4xl m-auto">
           <section className="flex flex-col items-center justify-center w-full">
-            <div className="p-10 flex flex-col mx-auto items-center gap-5 animate-fadeInSlow">
+            <div className="p-10 flex flex-col mx-auto items-center gap-5 animate-fadeIn500">
               <h1 className="text-8xl font-bold text-spBlue">dubo</h1>
               <div>
                 <h2 className="text-2xl">
@@ -21,7 +21,7 @@ export default function Home() {
                 <p className="w-[200px]"></p>
               </div>
             </div>
-            <div className="animate-fadeInSlow flex flex-col justify-center items-center h-[200px] overflow-hidden">
+            <div className="animate-fadeIn500 flex flex-col justify-center items-center h-[200px] overflow-hidden">
               <br />
               <DemoBox />
             </div>

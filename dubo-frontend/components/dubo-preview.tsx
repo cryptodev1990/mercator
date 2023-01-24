@@ -226,15 +226,15 @@ const DuboPreview = () => {
           </p>
         )}
         {duboResponse && (
-          <>
+          <div className="animate-fadeIn100">
             <p className="font-semibold">Generated SQL</p>
             <p className="font-mono max-w-5xl whitespace-pre-wrap">
               {duboResponse}
             </p>
-          </>
+          </div>
         )}
         {!awaitingResult && !error && (
-          <>
+          <div className="animate-fadeIn100">
             <br />
             <p>Results:</p>
             <div className="overflow-scroll">
@@ -248,7 +248,7 @@ const DuboPreview = () => {
                 </>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
