@@ -33,13 +33,6 @@ export interface IGeoShapeWriteContext {
     string[],
     unknown
   >;
-  // API call - update shape
-  updateShape: UseMutateFunction<
-    GeoShapeMetadata,
-    unknown,
-    GeoShapeUpdate,
-    unknown
-  >;
   // API call - add shape
   addShape: UseMutateFunction<
     GeoShapeMetadata,
@@ -65,7 +58,6 @@ export interface IGeoShapeWriteContext {
   updatedShapeIds: string[];
   deletedShapeIds: string[];
   updatedShape: GeoShape | null;
-  partialUpdateShape: (shape: GeoShapeUpdate) => void;
   optimisticShapeUpdates: GeoShapeCreate[];
   clearOptimisticShapeUpdates: () => void;
   setShapeLoading: (value: boolean) => void;
@@ -76,7 +68,6 @@ export interface IGeoShapeWriteContext {
 
 export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   deleteShapes: async () => {},
-  updateShape: async () => {},
   addShape: async () => {},
   bulkAddShapes: async () => {},
   bulkAddFromSplit: async () => {},
@@ -88,7 +79,6 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   optimisticShapeUpdates: [],
   clearOptimisticShapeUpdates: () => {},
   setShapeLoading: () => {},
-  partialUpdateShape: async () => {},
   deletedShapeIdSet: new Set(),
   updatedShapeIdSet: new Set(),
   dispatch: () => {},
@@ -233,29 +223,28 @@ export const GeoShapeWriteContextProvider = ({
     return api.deleteShapesApi(shapeIds, ...args);
   }
 
-  function updateShape(update: GeoShapeUpdate, params: any) {
-    opLog("UPDATE_SHAPE", update);
-    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update as GeoShape] });
-    return api.updateShapeApi(update, params);
-  }
+  // function updateShape(update: GeoShapeUpdate, params: any) {
+  //   opLog("UPDATE_SHAPE", update);
+  //   dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update as GeoShape] });
+  //   return api.updateShapeApi(update, params);
+  // }
 
-  const qc = useQueryClient();
-  function partialUpdateShape(update: GeoShapeUpdate) {
-    if (!update.uuid) {
-      throw new Error("update must have a uuid");
-    }
-    opLog("UPDATE_SHAPE", update);
-    // @ts-ignore
-    dispatch({ type: "SET_SHAPE_LOADING", value: true });
+  // function partialUpdateShape(update: GeoShapeUpdate) {
+  //   if (!update.uuid) {
+  //     throw new Error("update must have a uuid");
+  //   }
+  //   opLog("UPDATE_SHAPE", update);
+  //   // @ts-ignore
+  //   dispatch({ type: "SET_SHAPE_LOADING", value: true });
 
-    GeofencerService.patchShapeById(update.uuid, update).then(() => {
-      dispatch({
-        type: "SET_SHAPE_LOADING",
-        value: false,
-      });
-      qc.fetchQuery("geofencer");
-    });
-  }
+  //   GeofencerService.patchShapeById(update).then(() => {
+  //     dispatch({
+  //       type: "SET_SHAPE_LOADING",
+  //       value: false,
+  //     });
+  //     qc.fetchQuery("geofencer");
+  //   });
+  // }
 
   function setShapeLoading(value: boolean) {
     dispatch({ type: "SET_SHAPE_LOADING", value });
@@ -271,11 +260,9 @@ export const GeoShapeWriteContextProvider = ({
         updateLoading: state.shapeAddLoading || state.shapeUpdateLoading,
         addShape,
         deleteShapes,
-        updateShape,
         bulkAddShapes,
         bulkAddFromSplit,
         addShapeAndEdit,
-        partialUpdateShape,
         optimisticShapeUpdates: state.optimisticShapeUpdates,
         updatedShapeIds: state.updatedShapeIds,
         updatedShape: state.updatedShape,

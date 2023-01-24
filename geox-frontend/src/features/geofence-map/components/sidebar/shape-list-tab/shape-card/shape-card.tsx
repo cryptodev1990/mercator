@@ -18,6 +18,7 @@ import { DragHandle } from "./drag-handle";
 import { SHAPE_CARD_IMAGE } from "./drag-images";
 import React, { useContext } from "react";
 import { UIContext } from "../../../../contexts/ui-context";
+import { usePatchShapeMutation } from "features/geofence-map/hooks/use-openapi-hooks";
 
 export const ShapeCard = ({
   shape,
@@ -30,12 +31,10 @@ export const ShapeCard = ({
   onMouseLeave: (e: React.MouseEvent) => void;
   isHovered: boolean;
 }) => {
-  const {
-    deleteShapes,
-    updateLoading,
-    clearSelectedFeatureIndexes,
-    partialUpdateShape,
-  } = useShapes();
+  const { deleteShapes, updateLoading, clearSelectedFeatureIndexes } =
+    useShapes();
+
+  const { mutate: patchShapeById } = usePatchShapeMutation();
 
   const { confirmDelete, setHeading } = useContext(UIContext);
 
@@ -68,7 +67,7 @@ export const ShapeCard = ({
           disabled={selectedDataIsLoading}
           onChange={(newName) => {
             if (newName !== shape.name) {
-              partialUpdateShape({
+              patchShapeById({
                 uuid: shape.uuid,
                 namespace: shape.namespace_id,
                 name: newName,

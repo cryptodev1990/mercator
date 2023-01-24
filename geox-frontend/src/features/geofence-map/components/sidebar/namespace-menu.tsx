@@ -1,8 +1,10 @@
 import { RefObject } from "react";
 import { GeoShapeMetadata } from "../../../../client";
 import useContextMenu from "../../hooks/use-context-menu";
-import { useShapes } from "../../hooks/use-shapes";
-import { useGetNamespaces } from "../../hooks/use-openapi-hooks";
+import {
+  useGetNamespaces,
+  usePatchShapeMutation,
+} from "../../hooks/use-openapi-hooks";
 
 const NamespaceMenu = ({
   outerRef,
@@ -13,7 +15,7 @@ const NamespaceMenu = ({
 }) => {
   const { data: namespaces } = useGetNamespaces();
 
-  const { partialUpdateShape } = useShapes();
+  const { mutate: patchShapeById } = usePatchShapeMutation();
   const { xPos, yPos, menu } = useContextMenu(outerRef);
 
   if (menu) {
@@ -37,7 +39,7 @@ const NamespaceMenu = ({
                     className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white whitespace-nowrap cursor-pointer"
                     key={namespace.id}
                     onClick={() =>
-                      partialUpdateShape({
+                      patchShapeById({
                         uuid: shape.uuid,
                         namespace: namespace.id,
                       })

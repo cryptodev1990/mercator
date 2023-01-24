@@ -4,7 +4,6 @@ import {
   CeleryTaskResult,
   GeofencerService,
   GeoShape,
-  GeoShapeCreate,
   ShapeCountResponse,
   NamespaceResponse,
   NamespacesService,
@@ -92,22 +91,34 @@ export const useGetOneShapeByUuid = (uuid: string | null) => {
   );
 };
 
-export const useUpdateShapeMutation = () => {
+export const usePutShapeMutation = () => {
   const queryClient = useQueryClient();
-  return useMutation(
-    GeofencerService.updateShapesShapeIdGeofencerShapesUuidPut,
-    {
-      onSuccess(data: GeoShape) {
-        queryClient.fetchQuery("geofencer");
-      },
-      onMutate(variables) {
-        queryClient.setQueryData(["shape", variables.uuid], variables);
-      },
-      onError(error: any) {
-        toast.error(`Shapes failed to update (${error.detail ?? error})`);
-      },
-    }
-  );
+  return useMutation(GeofencerService.putShapeById, {
+    onSuccess(data: GeoShape) {
+      queryClient.fetchQuery("geofencer");
+    },
+    onMutate(variables) {
+      queryClient.setQueryData(["shape", variables.uuid], variables);
+    },
+    onError(error: any) {
+      toast.error(`Shapes failed to update (${error.detail ?? error})`);
+    },
+  });
+};
+
+export const usePatchShapeMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation(GeofencerService.patchShapeById, {
+    onSuccess(data: GeoShape) {
+      queryClient.fetchQuery("geofencer");
+    },
+    onMutate(variables) {
+      // queryClient.setQueryData(["shape", variables.uuid], variables);
+    },
+    onError(error: any) {
+      toast.error(`Shapes failed to update (${error.detail ?? error})`);
+    },
+  });
 };
 
 export const useBulkDeleteShapesMutation = () => {

@@ -264,15 +264,12 @@ export class GeofencerService {
    * @throws ApiError
    */
   public static patchShapeById(
-    shapeId: string,
     requestBody: GeoShapeUpdate
   ): CancelablePromise<GeoShape> {
     return __request(OpenAPI, {
       method: "PATCH",
-      url: "/geofencer/shapes/{shape_id}",
-      path: {
-        shape_id: shapeId,
-      },
+      url: "/geofencer/shapes/{uuid}",
+      path: { uuid: requestBody.uuid },
       body: requestBody,
       mediaType: "application/json",
       errors: {
@@ -290,7 +287,7 @@ export class GeofencerService {
    * @returns GeoShape Successful Response
    * @throws ApiError
    */
-  public static updateShapesShapeIdGeofencerShapesUuidPut(
+  public static putShapeById(
     requestBody: GeoShapeUpdate
   ): CancelablePromise<GeoShape> {
     return __request(OpenAPI, {

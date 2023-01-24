@@ -5,7 +5,6 @@ import {
   useAddShapeMutation,
   useBulkAddShapesMutation,
   useBulkDeleteShapesMutation,
-  useUpdateShapeMutation,
 } from "../../hooks/use-openapi-hooks";
 import { Action } from "./action-types";
 import simplur from "simplur";
@@ -51,34 +50,12 @@ export const useApi = (dispatch: Dispatch<Action>) => {
     }
     if (deleteShapesIsLoading === false && deleteShapesIsSuccess) {
       toast.dismiss();
-      toast.success(
-        simplur`${deletedUuids?.length} shape[|s] deleted`
-      );
+      toast.success(simplur`${deletedUuids?.length} shape[|s] deleted`);
     }
     if (deleteShapesError !== null) {
       toast.error("Error with deletion. Please try again.");
     }
   }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
-
-  const {
-    mutate: updateShapeApi,
-    isLoading: updateShapeIsLoading,
-    error: updateShapeError,
-    isSuccess: updateShapeIsSuccess,
-    data: updateShapeResponse,
-  } = useUpdateShapeMutation();
-
-  useEffect(() => {
-    if (updateShapeIsSuccess) {
-      dispatch({
-        type: "UPDATE_SHAPE_SUCCESS",
-        updatedShapeIds: [updateShapeResponse.uuid],
-        updatedShape: updateShapeResponse,
-      });
-    } else if (updateShapeIsLoading === false && updateShapeError !== null) {
-      dispatch({ type: "UPDATE_SHAPE_ERROR", error: updateShapeError });
-    }
-  }, [updateShapeIsLoading, updateShapeError, updateShapeIsSuccess]);
 
   const {
     mutate: bulkAddShapesApi,
@@ -125,6 +102,5 @@ export const useApi = (dispatch: Dispatch<Action>) => {
     setPreferList,
     addShapeApi,
     deleteShapesApi,
-    updateShapeApi,
   };
 };

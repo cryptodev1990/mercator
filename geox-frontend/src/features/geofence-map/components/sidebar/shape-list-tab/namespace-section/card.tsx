@@ -14,7 +14,10 @@ import simplur from "simplur";
 import { useSelectedShapes } from "../../../../hooks/use-selected-shapes";
 import { SearchContext } from "../../../../contexts/search-context";
 import { MAX_DISPLAY_SHAPES, Paginator } from "./paginator";
-import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import {
+  useGetNamespaces,
+  usePatchShapeMutation,
+} from "features/geofence-map/hooks/use-openapi-hooks";
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
@@ -30,8 +33,9 @@ export const NamespaceCard = ({
   shouldOpen: boolean;
   isVisible: boolean;
 }) => {
-  const { visibleNamespaces, setVisibleNamespaces, partialUpdateShape } =
-    useShapes();
+  const { visibleNamespaces, setVisibleNamespaces } = useShapes();
+
+  const { mutate: patchShapeById } = usePatchShapeMutation();
 
   const qc = useQueryClient();
 
@@ -97,7 +101,7 @@ export const NamespaceCard = ({
       className={`snap-start bg-slate-600 border-gray-200`}
       handleDragOver={(e: React.DragEvent) => {
         const data = e.dataTransfer.getData("text");
-        partialUpdateShape({ uuid: data, namespace: namespace.id });
+        patchShapeById({ uuid: data, namespace: namespace.id });
       }}
     >
       {/* Namespace header */}

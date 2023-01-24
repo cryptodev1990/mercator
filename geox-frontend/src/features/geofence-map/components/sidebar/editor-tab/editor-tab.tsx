@@ -1,11 +1,10 @@
 import {
   useGetOneShapeByUuid,
-  useUpdateShapeMutation,
+  usePutShapeMutation,
 } from "../../../hooks/use-openapi-hooks";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
 import JsonEditor from "./json-editor";
-import { GeoShape } from "client";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -14,23 +13,13 @@ interface IDictionary<T> {
 // Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
   // add update shape mutation that only modifies shape metadata
-  const {
-    shapeForPropertyEdit,
-    setShapeForPropertyEdit,
-    partialUpdateShape,
-    dispatch,
-  } = useShapes();
+  const { shapeForPropertyEdit, setShapeForPropertyEdit, dispatch } =
+    useShapes();
   const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
     shapeForPropertyEdit?.uuid || ""
   );
 
-  const {
-    mutate: updateShapeApi,
-    isLoading: updateShapeIsLoading,
-    error: updateShapeError,
-    isSuccess: updateShapeIsSuccess,
-    data: updateShapeResponse,
-  } = useUpdateShapeMutation();
+  const { mutate: putShapeApi } = usePutShapeMutation();
 
   const handleSubmit = (formData: IDictionary<string>) => {
     if (
@@ -54,13 +43,13 @@ export const ShapeEditor = () => {
       uuid: shapeUuid,
     };
 
-    dispatch({
-      type: "OP_LOG_ADD",
-      op: "UPDATE_SHAPE",
-      payload: newShape,
-    });
-    dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [newShape as GeoShape] });
-    updateShapeApi(newShape, {
+    // dispatch({
+    //   type: "OP_LOG_ADD",
+    //   op: "UPDATE_SHAPE",
+    //   payload: newShape,
+    // });
+    // dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [newShape as GeoShape] });
+    putShapeApi(newShape, {
       onSuccess: () => setShapeForPropertyEdit(null),
     });
   };
