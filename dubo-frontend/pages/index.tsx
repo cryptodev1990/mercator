@@ -1,4 +1,3 @@
-import Head from "next/head";
 import Link from "next/link";
 import Navbar from "../components/navbar";
 import DemoBox from "../components/demo-box";
@@ -7,12 +6,6 @@ import InfoCard from "../components/info-card";
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>dubo Analytics</title>
-        <meta name="description" content="Analytics made easy" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <main>
         <div>
           <Navbar />
