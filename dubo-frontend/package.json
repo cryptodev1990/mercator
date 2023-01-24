@@ -27,6 +27,7 @@
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.7.1",
+    "simplur": "^3.0.1",
     "sql.js": "^1.8.0",
     "swr": "^2.0.0",
     "tw-elements": "^1.0.0-alpha13",

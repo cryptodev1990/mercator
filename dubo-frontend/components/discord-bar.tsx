@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaArrowRight, FaDiscord } from "react-icons/fa";
 
-const DISCORD_URL = "https://discord.gg/46EnwuQm";
+const DISCORD_URL = "https://discord.gg/u2GgjX9eKU";
 
 const DiscordBar = () => {
   const [hidden, setHidden] = useState(false);

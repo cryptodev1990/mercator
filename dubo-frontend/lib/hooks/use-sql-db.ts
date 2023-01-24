@@ -42,16 +42,13 @@ export const useLocalSqlite = ({
       if (!db) {
         throw new Error("db not initialized");
       }
-      setRunning(true);
       const results = db.exec(sql);
       console.log(results);
       if (results.length === 0) {
         throw new Error("No results");
       }
-      setRunning(false);
       return results;
     } catch (err: any) {
-      setRunning(false);
       setError(err);
     }
   };
@@ -66,5 +63,5 @@ export const useLocalSqlite = ({
     return { status: "ready", error: prepareError, exec };
   }
 
-  return { exec, error };
+  return { status: "idle", exec, error };
 };

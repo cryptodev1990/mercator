@@ -72,7 +72,9 @@ const DemoPage = () => (
     <Navbar />
     <div className="pr-8 pl-8 pt-8 pb-16 min-h-full">
       <div className="max-w-5xl m-auto flex justify-between items-center">
-        <p className="text-lg mr-3">Choose a data set below to get started</p>
+        <p className="text-lg mr-3">
+          Select a data set (or upload your own) then ask a question.
+        </p>
         <Info />
       </div>
       <br />

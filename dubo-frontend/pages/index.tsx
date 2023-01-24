@@ -71,7 +71,7 @@ export default function Home() {
                   type="button"
                   className="inline-block px-6 py-2.5 bg-spBlue text-white font-medium text-lg leading-tight shadow-md hover:bg-spBlueDark hover:shadow-lg focus:bg-spBlueDark focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                 >
-                  Try Our Interactive Demo
+                  Try our demo
                 </button>
               </Link>
             </div>
