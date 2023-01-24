@@ -1,7 +1,8 @@
 import Head from "next/head";
 import { useEffect } from "react";
-import "../styles/globals.css";
 import type { AppProps } from "next/app";
+import Navbar from "../components/navbar";
+import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -19,7 +20,10 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <Navbar />
+      <div className="pr-8 pl-8 pt-8 pb-16 min-h-full">
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }

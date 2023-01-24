@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Navbar from "../components/navbar";
+
 import DemoBox from "../components/demo-box";
 import InfoCard from "../components/info-card";
 
@@ -7,12 +7,9 @@ export default function Home() {
   return (
     <>
       <main>
-        <div>
-          <Navbar />
-        </div>
         <div className="max-w-4xl m-auto">
           <section className="flex flex-col items-center justify-center w-full">
-            <div className="p-10 flex flex-col mx-auto items-center gap-5 animate-fadeIn500">
+            <div className="px-10 pb-10 flex flex-col mx-auto items-center gap-5 animate-fadeIn500">
               <h1 className="text-8xl font-bold text-spBlue">dubo</h1>
               <div>
                 <h2 className="text-2xl">

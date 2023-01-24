@@ -1,5 +1,4 @@
 import DuboPreview from "../components/dubo-preview";
-import Navbar from "../components/navbar";
 
 const Info = () => {
   return (
@@ -68,19 +67,16 @@ const Info = () => {
 };
 
 const DemoPage = () => (
-  <>
-    <Navbar />
-    <div className="pr-8 pl-8 pt-8 pb-16 min-h-full">
-      <div className="max-w-5xl m-auto flex justify-between items-center">
-        <p className="text-lg mr-3">
-          Select a data set (or upload your own) then ask a question.
-        </p>
-        <Info />
-      </div>
-      <br />
-      <DuboPreview />
+  <div>
+    <div className="max-w-5xl m-auto flex justify-between items-center">
+      <p className="text-lg mr-3">
+        Select a data set (or upload your own) then ask a question.
+      </p>
+      <Info />
     </div>
-  </>
+    <br />
+    <DuboPreview />
+  </div>
 );
 
 export default DemoPage;
