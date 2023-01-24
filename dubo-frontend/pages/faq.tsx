@@ -6,8 +6,8 @@ const FAQ = () => {
     <>
       <Navbar />
       <Section size="full">
-        <div className="flex flex-col items-center justify-center w-full h-full">
-          <h1 className="text-3xl">About</h1>
+        <div className="flex flex-col items-start justify-center w-full h-full m-3 p-3">
+          <h1 className="text-2xl">About dubo</h1>
           <div className="flex flex-col items-center justify-center max-w-5xl h-full">
             <div>
               <strong>How does dubo work?</strong>
