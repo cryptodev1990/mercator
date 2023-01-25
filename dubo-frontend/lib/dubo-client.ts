@@ -29,19 +29,31 @@ const duboClient = axios.create({
   },
 });
 
-const duboQuery = async (query: string, schemas: string[]) => {
-  const response = await duboClient.get(BASE_URL, {
-    params: {
-      user_query: query,
-      schemas,
-    },
-    paramsSerializer: {
-      serialize: (params: ParamsSerializerOptions) => {
-        return qs.stringify(params, { arrayFormat: "repeat" });
-      },
-    },
-  });
-  return response.data;
+const duboQuery = async (
+  query: string,
+  schemas?: string[],
+  databaseSchema?: DatabaseSchema
+) => {
+  try {
+    const response = await duboClient.get(
+      databaseSchema ? `${BASE_URL}/${databaseSchema}` : BASE_URL,
+      {
+        params: {
+          user_query: query,
+          schemas,
+        },
+        paramsSerializer: {
+          serialize: (params: ParamsSerializerOptions) => {
+            return qs.stringify(params, { arrayFormat: "repeat" });
+          },
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export default duboQuery;
