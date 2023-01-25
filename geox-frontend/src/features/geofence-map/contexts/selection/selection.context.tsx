@@ -7,26 +7,29 @@ import { GeoShapeMetadataContext } from "../geoshape-metadata/context";
 import { selectionReducer, initialState } from "./selection.reducer";
 
 export interface SelectionContextI {
-  selectedUuids: GeoShapeMetadata["uuid"][];
-  setSelectedShapeUuid: (uuid: string) => void;
   selectedShapes: Feature[];
+  // TODO: all the context below should be removed
   addShapesToSelectedShapes: (shape: Feature[]) => void;
-  isSelected: (shape: GeoShapeMetadata | string) => boolean;
   removeShapeFromSelectedShapes: (uuid: string) => void;
   clearSelectedShapeUuids: () => void;
+  selectedUuids: GeoShapeMetadata["uuid"][];
+  setSelectedShapeUuid: (uuid: string) => void;
+  isSelected: (shape: GeoShapeMetadata | string) => boolean;
   selectedFeatureCollection: FeatureCollection | null;
   selectedDataIsLoading: boolean;
   numSelected: number;
 }
 
+// We only need selectedShapes in our
 export const SelectionContext = createContext<SelectionContextI>({
-  selectedUuids: [],
-  setSelectedShapeUuid: () => {},
   selectedShapes: [],
+  // TODO: all the context below should be removed
   addShapesToSelectedShapes: () => {},
-  isSelected: () => false,
   removeShapeFromSelectedShapes: () => {},
   clearSelectedShapeUuids: () => {},
+  selectedUuids: [],
+  setSelectedShapeUuid: () => {},
+  isSelected: () => false,
   selectedFeatureCollection: null,
   selectedDataIsLoading: false,
   numSelected: 0,

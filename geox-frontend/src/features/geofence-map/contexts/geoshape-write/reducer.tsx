@@ -43,22 +43,17 @@ export type UndoLogRecord = {
 
 export interface State {
   loading: boolean;
-  undoLog: UndoLogRecord[];
-  redoLog: UndoLogRecord[];
-  updatedShapeIds: string[];
-  updatedShape: GeoShape | null;
-  updateError: Error | null;
-  deletedShapeIds: string[];
   optimisticShapeUpdates: GeoShape[] | GeoShapeCreate[];
+  updatedShape: GeoShape | null;
+  deletedShapeIds: string[];
+  // TODO: all the states below should be removed
+  updatedShapeIds: string[];
 }
 
 export const initialState: State = {
   loading: false,
-  undoLog: [],
-  redoLog: [],
   updatedShapeIds: [],
   updatedShape: null,
-  updateError: null,
   deletedShapeIds: [],
   optimisticShapeUpdates: [],
 };
@@ -149,15 +144,6 @@ export function reducer(state: State, action: Action): State {
       };
     }
 
-    case "BULK_ADD_SHAPES_ERROR":
-    case "ADD_SHAPE_ERROR":
-    case "UPDATE_SHAPE_ERROR": {
-      return {
-        ...state,
-        updateError: action.error,
-        loading: false,
-      };
-    }
     case "CLEAR_OPTIMISTIC_SHAPE_UPDATES": {
       return {
         ...state,

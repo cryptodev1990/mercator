@@ -8,13 +8,11 @@ import {
   useMemo,
   useReducer,
 } from "react";
-import { UseMutateFunction, useQueryClient } from "react-query";
+import { UseMutateFunction } from "react-query";
 import {
-  GeofencerService,
   GeoShape,
   GeoShapeCreate,
   GeoShapeMetadata,
-  GeoShapeUpdate,
   ShapeCountResponse,
 } from "../../../../client";
 import { aggressiveLog } from "../../../../common/aggressive-log";
@@ -22,11 +20,15 @@ import { useCursorMode } from "../../hooks/use-cursor-mode";
 import { DeckContext } from "../deck-context";
 import { Action } from "./action-types";
 import { useApi } from "./api.hook";
-import { reducer, initialState, State, UndoLogRecord } from "./reducer";
+import { reducer, initialState, State } from "./reducer";
 
 export interface IGeoShapeWriteContext {
-  // Refreshes the shape tiles
-  // API call - bulk delete
+  updatedShape: GeoShape | null;
+  deletedShapeIds: string[];
+  optimisticShapeUpdates: GeoShapeCreate[];
+  updateLoading: boolean;
+  dispatch: Dispatch<Action>;
+  // TODO: remove all the context values below this comment
   deleteShapes: UseMutateFunction<
     ShapeCountResponse,
     unknown,
@@ -54,15 +56,10 @@ export interface IGeoShapeWriteContext {
     unknown
   >;
   addShapeAndEdit: any;
-  updateLoading: boolean;
-  updatedShapeIds: string[];
-  deletedShapeIds: string[];
-  updatedShape: GeoShape | null;
-  optimisticShapeUpdates: GeoShapeCreate[];
-  clearOptimisticShapeUpdates: () => void;
-  deletedShapeIdSet: Set<string>;
   updatedShapeIdSet: Set<string>;
-  dispatch: Dispatch<Action>;
+  deletedShapeIdSet: Set<string>;
+  updatedShapeIds: string[];
+  clearOptimisticShapeUpdates: () => void;
 }
 
 export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({

@@ -22,7 +22,7 @@ export const useApi = (dispatch: Dispatch<Action>) => {
 
   useEffect(() => {
     if (addShapeIsLoading === false && addShapeError !== null) {
-      dispatch({ type: "ADD_SHAPE_ERROR", error: addShapeError });
+      dispatch({ type: "SET_LOADING", value: false });
     } else if (addShapeIsSuccess) {
       dispatch({
         type: "ADD_SHAPE_SUCCESS",
@@ -76,7 +76,7 @@ export const useApi = (dispatch: Dispatch<Action>) => {
       bulkAddShapesIsLoading === false &&
       bulkAddShapesError !== null
     ) {
-      dispatch({ type: "BULK_ADD_SHAPES_ERROR", error: bulkAddShapesError });
+      dispatch({ type: "SET_LOADING", value: false });
     } else if (bulkAddShapesIsSuccess) {
       if ((bulkAddShapesResponse as ShapeCountResponse).num_shapes) {
         console.warn("New additions were not reflected in optimistic updates");

@@ -1,9 +1,4 @@
-import {
-  GeoShape,
-  GeoShapeCreate,
-  GeoShapeMetadata,
-  Namespace,
-} from "../../../../client";
+import { GeoShape, GeoShapeCreate, Namespace } from "../../../../client";
 
 export type Action =
   | {
@@ -15,6 +10,14 @@ export type Action =
       namespaces: Namespace[];
     }
   | {
+      type: "CLEAR_OPTIMISTIC_SHAPE_UPDATES";
+    }
+  | {
+      type: "SET_OPTIMISTIC_SHAPES";
+      shapes: GeoShape[];
+    }
+  // TODO: all the actions below should be removed
+  | {
       type: "ADD_SHAPE_LOADING";
       shape: GeoShapeCreate;
     }
@@ -24,16 +27,8 @@ export type Action =
       updatedShape: GeoShape | null;
     }
   | {
-      type: "ADD_SHAPE_ERROR";
-      error: any;
-    }
-  | {
       type: "DELETE_SHAPES_LOADING";
       deletedShapeIds: string[];
-    }
-  | {
-      type: "SET_OPTIMISTIC_SHAPES";
-      shapes: GeoShape[];
     }
   | {
       type: "SET_LOADING";
@@ -45,10 +40,6 @@ export type Action =
       updatedShape: GeoShape | null;
     }
   | {
-      type: "UPDATE_SHAPE_ERROR";
-      error: any;
-    }
-  | {
       type: "BULK_ADD_SHAPES_LOADING";
       updatedShapes: GeoShapeCreate[];
     }
@@ -56,24 +47,4 @@ export type Action =
       type: "BULK_ADD_SHAPES_SUCCESS";
       updatedShapeIds: string[];
       updatedShapes: GeoShape[];
-    }
-  | {
-      type: "BULK_ADD_SHAPES_ERROR";
-      error: any;
-    }
-  | {
-      type: "OP_LOG_UNDO" | "OP_LOG_REDO";
-      op: any;
-      payload: any;
-    }
-  | {
-      type: "SNAPSHOT_START";
-      selectedFeatureCollection: any;
-    }
-  | {
-      type: "SNAPSHOT_END";
-      selectedFeatureCollection: any;
-    }
-  | {
-      type: "CLEAR_OPTIMISTIC_SHAPE_UPDATES";
     };

@@ -3,15 +3,16 @@ import { GeoShapeMetadata } from "../../../../client";
 import _ from "lodash";
 
 export interface State {
-  selectedShapesUuids: GeoShapeMetadata["uuid"][];
   selectedShapes: Feature[];
+  // TODO: all the states below should be removed
+  selectedShapesUuids: GeoShapeMetadata["uuid"][];
   numSelected: number;
   isEmpty: boolean;
 }
 
 export const initialState = {
-  selectedShapesUuids: [],
   selectedShapes: [],
+  selectedShapesUuids: [],
   numSelected: 0,
   isEmpty: false,
 };
