@@ -43,14 +43,10 @@ export const ShapeEditor = () => {
       uuid: shapeUuid,
     };
 
-    // dispatch({
-    //   type: "OP_LOG_ADD",
-    //   op: "UPDATE_SHAPE",
-    //   payload: newShape,
-    // });
-    // dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [newShape as GeoShape] });
     putShapeApi(newShape, {
-      onSuccess: () => setShapeForPropertyEdit(null),
+      onSuccess: () => {
+        setShapeForPropertyEdit(null);
+      },
     });
   };
 

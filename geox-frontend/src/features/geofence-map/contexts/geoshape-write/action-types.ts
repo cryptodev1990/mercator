@@ -32,11 +32,11 @@ export type Action =
       deletedShapeIds: string[];
     }
   | {
-      type: "UPDATE_SHAPE_LOADING";
+      type: "SET_OPTIMISTIC_SHAPES";
       shapes: GeoShape[];
     }
   | {
-      type: "SET_SHAPE_LOADING";
+      type: "SET_LOADING";
       value: boolean;
     }
   | {
@@ -60,16 +60,6 @@ export type Action =
   | {
       type: "BULK_ADD_SHAPES_ERROR";
       error: any;
-    }
-  | {
-      type: "OP_LOG_ADD";
-      op:
-        | "ADD_SHAPE"
-        | "DELETE_SHAPES"
-        | "UPDATE_SHAPE"
-        | "BULK_ADD_SHAPES"
-        | "BULK_ADD_SHAPE_SPLIT";
-      payload: any;
     }
   | {
       type: "OP_LOG_UNDO" | "OP_LOG_REDO";

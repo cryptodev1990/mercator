@@ -42,8 +42,7 @@ export type UndoLogRecord = {
 };
 
 export interface State {
-  shapeUpdateLoading: boolean;
-  shapeAddLoading: boolean;
+  loading: boolean;
   undoLog: UndoLogRecord[];
   redoLog: UndoLogRecord[];
   updatedShapeIds: string[];
@@ -54,8 +53,7 @@ export interface State {
 }
 
 export const initialState: State = {
-  shapeUpdateLoading: false,
-  shapeAddLoading: false,
+  loading: false,
   undoLog: [],
   redoLog: [],
   updatedShapeIds: [],
@@ -67,13 +65,13 @@ export const initialState: State = {
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case "SET_SHAPE_LOADING": {
+    case "SET_LOADING": {
       return {
         ...state,
-        shapeUpdateLoading: action.value,
+        loading: action.value,
       };
     }
-    case "UPDATE_SHAPE_LOADING": {
+    case "SET_OPTIMISTIC_SHAPES": {
       const osu = [
         ...new Set([...state.optimisticShapeUpdates, ...action.shapes]),
       ];
@@ -102,8 +100,7 @@ export function reducer(state: State, action: Action): State {
     case "BULK_ADD_SHAPES_LOADING": {
       const res = {
         ...state,
-        shapeUpdateLoading: true,
-        shapeAddLoading: true,
+        loading: true,
         optimisticShapeUpdates: [
           ...state.optimisticShapeUpdates,
           ...action.updatedShapes,
@@ -115,8 +112,7 @@ export function reducer(state: State, action: Action): State {
       const osu = [...new Set([...state.optimisticShapeUpdates, action.shape])];
       const res = {
         ...state,
-        shapeUpdateLoading: true,
-        shapeAddLoading: true,
+        loading: true,
         optimisticShapeUpdates: osu,
       };
       return res;
@@ -127,8 +123,7 @@ export function reducer(state: State, action: Action): State {
       ];
       return {
         ...state,
-        shapeUpdateLoading: false,
-        shapeAddLoading: false,
+        loading: false,
         updatedShapeIds,
       };
     }
@@ -145,8 +140,7 @@ export function reducer(state: State, action: Action): State {
 
       return {
         ...state,
-        shapeUpdateLoading: false,
-        shapeAddLoading: false,
+        loading: false,
         optimisticShapeUpdates: osuDeduped,
         updatedShape: action?.updatedShape ?? null,
         updatedShapeIds: [
@@ -161,8 +155,7 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         updateError: action.error,
-        shapeUpdateLoading: false,
-        shapeAddLoading: false,
+        loading: false,
       };
     }
     case "CLEAR_OPTIMISTIC_SHAPE_UPDATES": {
@@ -171,8 +164,7 @@ export function reducer(state: State, action: Action): State {
         optimisticShapeUpdates: [],
         deletedShapeIds: [],
         updatedShapeIds: [],
-        shapeUpdateLoading: false,
-        shapeAddLoading: false,
+        loading: false,
       };
     }
     default:

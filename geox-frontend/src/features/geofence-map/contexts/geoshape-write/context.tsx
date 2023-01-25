@@ -60,7 +60,6 @@ export interface IGeoShapeWriteContext {
   updatedShape: GeoShape | null;
   optimisticShapeUpdates: GeoShapeCreate[];
   clearOptimisticShapeUpdates: () => void;
-  setShapeLoading: (value: boolean) => void;
   deletedShapeIdSet: Set<string>;
   updatedShapeIdSet: Set<string>;
   dispatch: Dispatch<Action>;
@@ -78,7 +77,6 @@ export const GeoShapeWriteContext = createContext<IGeoShapeWriteContext>({
   updatedShape: null,
   optimisticShapeUpdates: [],
   clearOptimisticShapeUpdates: () => {},
-  setShapeLoading: () => {},
   deletedShapeIdSet: new Set(),
   updatedShapeIdSet: new Set(),
   dispatch: () => {},
@@ -99,16 +97,7 @@ export const GeoShapeWriteContextProvider = ({
   const { options } = useCursorMode();
   const { deckRef, setHoveredUuid } = useContext(DeckContext);
 
-  function opLog(op: UndoLogRecord["op"], payload: any) {
-    dispatch({
-      type: "OP_LOG_ADD",
-      op,
-      payload,
-    });
-  }
-
   function bulkAddShapes(data: ShapesBulkUploadOptions, ...args: any[]) {
-    opLog("BULK_ADD_SHAPES", data.shapes);
     api.setPreferList(false);
     return api.bulkAddShapesApi(data, ...args);
   }
@@ -121,7 +110,6 @@ export const GeoShapeWriteContextProvider = ({
     shapes: GeoShapeCreate[],
     { onSuccess, onError }: any
   ) {
-    opLog("BULK_ADD_SHAPE_SPLIT", shapes);
     api.setPreferList(true);
     return api.bulkAddShapesApi(
       { shapes },
@@ -192,7 +180,6 @@ export const GeoShapeWriteContextProvider = ({
   }
 
   function addShape(shape: GeoShapeCreate, ...args: any[]) {
-    opLog("ADD_SHAPE", shape);
     dispatch({ type: "ADD_SHAPE_LOADING", shape });
     return api.addShapeApi(removeOverlapFrom(shape), ...args);
   }
@@ -201,7 +188,6 @@ export const GeoShapeWriteContextProvider = ({
     shape: GeoShapeCreate,
     onSuccess: (x: GeoShapeMetadata) => void
   ) => {
-    opLog("ADD_SHAPE", shape);
     dispatch({ type: "ADD_SHAPE_LOADING", shape });
     api.addShapeApi(removeOverlapFrom(shape), {
       onSuccess: (data: GeoShape) => {
@@ -219,35 +205,7 @@ export const GeoShapeWriteContextProvider = ({
   };
 
   function deleteShapes(shapeIds: string[], ...args: any[]) {
-    opLog("DELETE_SHAPES", shapeIds);
     return api.deleteShapesApi(shapeIds, ...args);
-  }
-
-  // function updateShape(update: GeoShapeUpdate, params: any) {
-  //   opLog("UPDATE_SHAPE", update);
-  //   dispatch({ type: "UPDATE_SHAPE_LOADING", shapes: [update as GeoShape] });
-  //   return api.updateShapeApi(update, params);
-  // }
-
-  // function partialUpdateShape(update: GeoShapeUpdate) {
-  //   if (!update.uuid) {
-  //     throw new Error("update must have a uuid");
-  //   }
-  //   opLog("UPDATE_SHAPE", update);
-  //   // @ts-ignore
-  //   dispatch({ type: "SET_SHAPE_LOADING", value: true });
-
-  //   GeofencerService.patchShapeById(update).then(() => {
-  //     dispatch({
-  //       type: "SET_SHAPE_LOADING",
-  //       value: false,
-  //     });
-  //     qc.fetchQuery("geofencer");
-  //   });
-  // }
-
-  function setShapeLoading(value: boolean) {
-    dispatch({ type: "SET_SHAPE_LOADING", value });
   }
 
   function clearOptimisticShapeUpdates() {
@@ -257,7 +215,7 @@ export const GeoShapeWriteContextProvider = ({
   return (
     <GeoShapeWriteContext.Provider
       value={{
-        updateLoading: state.shapeAddLoading || state.shapeUpdateLoading,
+        updateLoading: state.loading,
         addShape,
         deleteShapes,
         bulkAddShapes,
@@ -268,7 +226,6 @@ export const GeoShapeWriteContextProvider = ({
         updatedShape: state.updatedShape,
         deletedShapeIds: state.deletedShapeIds,
         clearOptimisticShapeUpdates,
-        setShapeLoading,
         deletedShapeIdSet,
         updatedShapeIdSet,
         dispatch,

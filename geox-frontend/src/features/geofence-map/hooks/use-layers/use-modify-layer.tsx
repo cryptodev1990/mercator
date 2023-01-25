@@ -78,7 +78,7 @@ export function useModifyLayer() {
         };
         clearOptimisticShapeUpdates();
         dispatch({
-          type: "UPDATE_SHAPE_LOADING",
+          type: "SET_OPTIMISTIC_SHAPES",
           shapes: [newShape],
         });
         putShapeApi(newShape);
