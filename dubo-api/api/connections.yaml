@@ -14,22 +14,22 @@ polygon-blocks:
 bitcoin-blocks:
   connection_type: "bigquery"
   ddl: |
+    -- A table of cryptocurrency transactions on the Bitcoin (BTC) blockchain
     CREATE TABLE `bigquery-public-data.crypto_bitcoin.transactions` (
-      hash STRING NOT NULL OPTIONS(description="The hash of this transaction"),
-      version INT64 OPTIONS(description="Protocol version specified in block which contained this transaction"),
-      lock_time INT64 OPTIONS(description="Earliest time that miners can include the transaction in their hashing of the Merkle root to attach it in the latest block of the blockchain"),
-      block_hash STRING NOT NULL OPTIONS(description="Hash of the block which contains this transaction"),
-      block_number INT64 NOT NULL OPTIONS(description="Number of the block which contains this transaction"),
-      block_timestamp TIMESTAMP NOT NULL OPTIONS(description="Timestamp of the block which contains this transaction"),
-      block_timestamp_month DATE NOT NULL OPTIONS(description="Month of the block which contains this transaction"),
-      input_count INT64 OPTIONS(description="The number of inputs in the transaction"),
-      output_count INT64 OPTIONS(description="The number of outputs in the transaction"),
-      input_value NUMERIC OPTIONS(description="Total value of inputs in the transaction"),
-      output_value NUMERIC OPTIONS(description="Total value of outputs in the transaction"),
-      is_coinbase BOOL OPTIONS(description="true if this transaction is a coinbase transaction"),
-      fee NUMERIC OPTIONS(description="The fee paid by this transaction"),
-      spent_output_index INT64 OPTIONS(description="The index of the output this input spends")
+      hash STRING,                -- The hash of this transaction
+      version INT64,              -- Protocol version specified in block which contained this transaction
+      block_hash STRING,          -- Hash of the block which contains this transaction
+      block_number INT64,         -- Number of the block which contains this transaction
+      block_timestamp TIMESTAMP,  -- Timestamp of the block which contains this transaction
+      block_timestamp_month DATE, -- Month of the block which contains this transaction
+      input_count INT64,          -- Number of inputs in the transaction
+      output_count INT64,         -- Number of outputs in the transaction
+      input_value NUMERIC,        -- Value of inputs in the transaction
+      output_value NUMERIC,       -- Value of outputs in the transaction
+      is_coinbase BOOL,           -- If this transaction is a Coinbase transaction
+      fee NUMERIC                -- Fee paid by this transaction
     );
+    -- A table of BTC-USD exchange rates aggregated by day
     CREATE TABLE `dubo-375020.crypto.btc_to_usd` (
       Date DATE,       -- UTC timestamp indicating the day of interest e.g. `2020-01-01 00:00:00`
       Open FLOAT,      -- Opening price one Bitcoin in US Dollars
