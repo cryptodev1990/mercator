@@ -58,7 +58,7 @@ class Connection:
         """Make the prompt for the API"""
         if not self.ddl:
             raise Exception("Prompt requires DDL")
-        prompt = assemble_prompt(self.ddl, query, sql_flavor=self.connection_type)
+        prompt = assemble_prompt(query, self.ddl, sql_flavor=self.connection_type)
         return prompt
 
 

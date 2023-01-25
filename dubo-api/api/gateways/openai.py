@@ -60,4 +60,4 @@ def assemble_prompt(user_query: str, schema: str, descriptions: List[str] | None
         schema=schema,
         descriptions=descriptions,
         sql_flavor=sql_flavor
-    ) 
+    )
