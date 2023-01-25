@@ -1,4 +1,5 @@
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import { GeoShape } from "client";
 import { useEffect, useState } from "react";
 import { MercatorModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
 import { EditorMode } from "../../cursor-modes";
@@ -10,7 +11,12 @@ import { useViewport } from "../use-viewport";
 
 export function useModifyLayer() {
   const [localData, setLocalData] = useState<any>([]);
-  const { selectedFeatureIndexes, setSelectedFeatureIndexes } = useShapes();
+  const {
+    selectedFeatureIndexes,
+    setSelectedFeatureIndexes,
+    dispatch,
+    clearOptimisticShapeUpdates,
+  } = useShapes();
   const { cursorMode } = useCursorMode();
   const { setSelectedShapeUuid, isSelected, selectedFeatureCollection } =
     useSelectedShapes();
@@ -65,11 +71,17 @@ export function useModifyLayer() {
           editType
         )
       ) {
-        putShapeApi({
+        const newShape: GeoShape = {
           geojson: updatedData.features[editContext.featureIndexes[0]],
           uuid: updatedData.features[editContext.featureIndexes[0]].properties
             .__uuid,
+        };
+        clearOptimisticShapeUpdates();
+        dispatch({
+          type: "UPDATE_SHAPE_LOADING",
+          shapes: [newShape],
         });
+        putShapeApi(newShape);
         return;
       }
     },

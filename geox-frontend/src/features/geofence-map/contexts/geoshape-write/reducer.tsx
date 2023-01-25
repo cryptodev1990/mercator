@@ -67,9 +67,6 @@ export const initialState: State = {
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
-    // Shape metadata actions
-    // Add shape actions
-
     case "SET_SHAPE_LOADING": {
       return {
         ...state,
@@ -82,8 +79,6 @@ export function reducer(state: State, action: Action): State {
       ];
       return {
         ...state,
-        shapeUpdateLoading: true,
-        updateError: null,
         updatedShapeIds: [
           ...new Set([
             ...state.updatedShapeIds,
