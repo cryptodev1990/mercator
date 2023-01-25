@@ -10,9 +10,9 @@ export interface SelectionContextI {
   selectedUuids: GeoShapeMetadata["uuid"][];
   setSelectedShapeUuid: (uuid: string) => void;
   selectedShapes: Feature[];
-  addShapesToMultiSelectedShapes: (shape: Feature[]) => void;
+  addShapesToSelectedShapes: (shape: Feature[]) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
-  removeShapeFromMultiSelectedShapes: (uuid: string) => void;
+  removeShapeFromSelectedShapes: (uuid: string) => void;
   clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
   selectedDataIsLoading: boolean;
@@ -23,9 +23,9 @@ export const SelectionContext = createContext<SelectionContextI>({
   selectedUuids: [],
   setSelectedShapeUuid: () => {},
   selectedShapes: [],
-  addShapesToMultiSelectedShapes: () => {},
+  addShapesToSelectedShapes: () => {},
   isSelected: () => false,
-  removeShapeFromMultiSelectedShapes: () => {},
+  removeShapeFromSelectedShapes: () => {},
   clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
   selectedDataIsLoading: false,
@@ -45,14 +45,14 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", selectedShapesUuids: [uuid] });
   };
 
-  const addShapesToMultiSelectedShapes = (shape: Feature[]) => {
+  const addShapesToSelectedShapes = (shape: Feature[]) => {
     dispatch({
       type: "ADD_SHAPES_TO_SELECTED_SHAPES",
       selectedShapes: shape,
     });
   };
 
-  const removeShapeFromMultiSelectedShapes = (uuid: string) => {
+  const removeShapeFromSelectedShapes = (uuid: string) => {
     dispatch({
       type: "REMOVE_SHAPE_FROM_SELECTED_SHAPES",
       multiSelectedUuid: uuid,
@@ -92,9 +92,9 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
         numSelected: state.numSelected,
         isSelected,
         setSelectedShapeUuid,
-        removeShapeFromMultiSelectedShapes,
+        removeShapeFromSelectedShapes,
         clearSelectedShapeUuids,
-        addShapesToMultiSelectedShapes,
+        addShapesToSelectedShapes,
         // @ts-ignore
         selectedFeatureCollection,
         selectedDataIsLoading,
