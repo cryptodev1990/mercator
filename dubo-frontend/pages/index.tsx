@@ -50,7 +50,7 @@ export default function Home() {
               <p className="">
                 Use our Slack bot, our Chrome extension, or our web interface,
                 coming soon, and use our integrations with SaaS providers like
-                Greehouse and Salesforce.
+                Greenhouse and Salesforce.
               </p>
             </InfoCard>
           </section>
