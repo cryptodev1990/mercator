@@ -1,20 +1,28 @@
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import { GeoShape } from "client";
 import { useEffect, useState } from "react";
 import { MercatorModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
+import { usePutShapeMutation } from "../use-openapi-hooks";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useShapes } from "../use-shapes";
 import { useViewport } from "../use-viewport";
 
 export function useModifyLayer() {
   const [localData, setLocalData] = useState<any>([]);
-  const { selectedFeatureIndexes, setSelectedFeatureIndexes, updateShape } =
-    useShapes();
+  const {
+    selectedFeatureIndexes,
+    setSelectedFeatureIndexes,
+    dispatch,
+    clearOptimisticShapeUpdates,
+  } = useShapes();
   const { cursorMode } = useCursorMode();
   const { setSelectedShapeUuid, isSelected, selectedFeatureCollection } =
     useSelectedShapes();
   const { viewport } = useViewport();
+
+  const { mutate: putShapeApi } = usePutShapeMutation();
 
   function getFillColorFunc(datum: any) {
     if (isSelected(datum?.properties?.__uuid)) {
@@ -63,11 +71,17 @@ export function useModifyLayer() {
           editType
         )
       ) {
-        updateShape({
+        const newShape: GeoShape = {
           geojson: updatedData.features[editContext.featureIndexes[0]],
           uuid: updatedData.features[editContext.featureIndexes[0]].properties
             .__uuid,
+        };
+        clearOptimisticShapeUpdates();
+        dispatch({
+          type: "SET_OPTIMISTIC_SHAPES",
+          shapes: [newShape],
         });
+        putShapeApi(newShape);
         return;
       }
     },

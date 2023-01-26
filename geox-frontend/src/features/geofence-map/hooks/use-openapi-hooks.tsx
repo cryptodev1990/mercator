@@ -4,7 +4,6 @@ import {
   CeleryTaskResult,
   GeofencerService,
   GeoShape,
-  GeoShapeCreate,
   ShapeCountResponse,
   NamespaceResponse,
   NamespacesService,
@@ -12,6 +11,7 @@ import {
 import { useTokenInOpenApi } from "../../../hooks/use-token-in-openapi";
 import toast from "react-hot-toast";
 import { ShapesBulkUploadOptions } from "../types";
+import { useShapes } from "./use-shapes";
 
 const genericErrorHandler = (error: any) => {
   const status = error?.status;
@@ -92,22 +92,44 @@ export const useGetOneShapeByUuid = (uuid: string | null) => {
   );
 };
 
-export const useUpdateShapeMutation = () => {
+export const usePutShapeMutation = () => {
+  const { dispatch } = useShapes();
+
   const queryClient = useQueryClient();
-  return useMutation(
-    GeofencerService.updateShapesShapeIdGeofencerShapesUuidPut,
-    {
-      onSuccess(data: GeoShape) {
-        queryClient.fetchQuery("geofencer");
-      },
-      onMutate(variables) {
-        queryClient.setQueryData(["shape", variables.uuid], variables);
-      },
-      onError(error: any) {
-        toast.error(`Shapes failed to update (${error.detail ?? error})`);
-      },
-    }
-  );
+  return useMutation(GeofencerService.putShapeById, {
+    onSuccess(data: GeoShape) {
+      queryClient.fetchQuery("geofencer");
+    },
+    onMutate(variables) {
+      dispatch({ type: "SET_LOADING", value: true });
+      queryClient.setQueryData(["shape", variables.uuid], variables);
+    },
+    onError(error: any) {
+      toast.error(`Shapes failed to update (${error.detail ?? error})`);
+    },
+    onSettled() {
+      dispatch({ type: "SET_LOADING", value: false });
+    },
+  });
+};
+
+export const usePatchShapeMutation = () => {
+  const { dispatch } = useShapes();
+  const queryClient = useQueryClient();
+  return useMutation(GeofencerService.patchShapeById, {
+    onSuccess(data: GeoShape) {
+      queryClient.fetchQuery("geofencer");
+    },
+    onMutate(variables) {
+      dispatch({ type: "SET_LOADING", value: true });
+    },
+    onError(error: any) {
+      toast.error(`Shapes failed to update (${error.detail ?? error})`);
+    },
+    onSettled() {
+      dispatch({ type: "SET_LOADING", value: false });
+    },
+  });
 };
 
 export const useBulkDeleteShapesMutation = () => {

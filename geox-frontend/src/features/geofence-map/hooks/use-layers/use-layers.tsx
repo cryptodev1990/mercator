@@ -20,7 +20,7 @@ export const useLayers = () => {
   const {
     selectedFeatureCollection,
     selectedShapes,
-    addShapesToMultiSelectedShapes,
+    addShapesToSelectedShapes,
   } = useSelectedShapes();
 
   const memoizedTentativeShapes = useMemo(
@@ -121,7 +121,7 @@ export const useLayers = () => {
               }
             }
             const distinctShapes = _.uniqBy(newObjs, "properties.__uuid");
-            addShapesToMultiSelectedShapes(distinctShapes);
+            addShapesToSelectedShapes(distinctShapes);
             setCursorMode(EditorMode.ViewMode);
           },
           layerIds: ["gf-mvt", "optimistic-layer"],

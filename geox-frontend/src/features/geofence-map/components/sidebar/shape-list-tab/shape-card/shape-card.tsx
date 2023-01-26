@@ -18,6 +18,7 @@ import { DragHandle } from "./drag-handle";
 import { SHAPE_CARD_IMAGE } from "./drag-images";
 import React, { useContext } from "react";
 import { UIContext } from "../../../../contexts/ui-context";
+import { usePatchShapeMutation } from "features/geofence-map/hooks/use-openapi-hooks";
 
 export const ShapeCard = ({
   shape,
@@ -30,16 +31,12 @@ export const ShapeCard = ({
   onMouseLeave: (e: React.MouseEvent) => void;
   isHovered: boolean;
 }) => {
-  const {
-    deleteShapes,
-    updateLoading,
-    clearSelectedFeatureIndexes,
-    updateShape,
-  } = useShapes();
+  const { deleteShapes, updateLoading, clearSelectedFeatureIndexes } =
+    useShapes();
+
+  const { mutate: patchShapeById } = usePatchShapeMutation();
 
   const { confirmDelete, setHeading } = useContext(UIContext);
-
-  const { selectedFeatureCollection } = useSelectedShapes();
 
   const { isSelected, selectedDataIsLoading, clearSelectedShapeUuids } =
     useSelectedShapes();
@@ -69,23 +66,10 @@ export const ShapeCard = ({
           value={shape?.name || "New shape"}
           disabled={selectedDataIsLoading}
           onChange={(newName) => {
-            const geojson = selectedFeatureCollection?.features.find(
-              (x) => x?.properties?.__uuid === shape.uuid
-            );
-
-            if (!geojson) {
-              console.error("Could not find geojson for shape", shape);
-              return;
-            }
-
-            // @ts-ignore
-            geojson.properties.name = newName;
-
             if (newName !== shape.name) {
-              updateShape({
-                ...shape,
-                // @ts-ignore
-                geojson,
+              patchShapeById({
+                uuid: shape.uuid,
+                namespace: shape.namespace_id,
                 name: newName,
               });
             }

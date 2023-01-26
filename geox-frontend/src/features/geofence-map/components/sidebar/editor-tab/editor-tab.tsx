@@ -1,4 +1,7 @@
-import { useGetOneShapeByUuid } from "../../../hooks/use-openapi-hooks";
+import {
+  useGetOneShapeByUuid,
+  usePutShapeMutation,
+} from "../../../hooks/use-openapi-hooks";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
 import JsonEditor from "./json-editor";
@@ -10,11 +13,13 @@ interface IDictionary<T> {
 // Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
   // add update shape mutation that only modifies shape metadata
-  const { shapeForPropertyEdit, setShapeForPropertyEdit, updateShape } =
+  const { shapeForPropertyEdit, setShapeForPropertyEdit, dispatch } =
     useShapes();
   const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
     shapeForPropertyEdit?.uuid || ""
   );
+
+  const { mutate: putShapeApi } = usePutShapeMutation();
 
   const handleSubmit = (formData: IDictionary<string>) => {
     if (
@@ -27,20 +32,22 @@ export const ShapeEditor = () => {
     }
     const shapeUuid = shapeForPropertyEdit.uuid;
     const { namespace, ...properties } = formData;
-    updateShape(
-      {
-        name: properties.name,
-        namespace,
-        geojson: {
-          ...(oneShape?.geojson as any),
-          properties,
-        },
-        uuid: shapeUuid,
+
+    const newShape = {
+      name: properties.name,
+      namespace,
+      geojson: {
+        ...(oneShape?.geojson as any),
+        properties,
       },
-      {
-        onSuccess: () => setShapeForPropertyEdit(null),
-      }
-    );
+      uuid: shapeUuid,
+    };
+
+    putShapeApi(newShape, {
+      onSuccess: () => {
+        setShapeForPropertyEdit(null);
+      },
+    });
   };
 
   const reformattedProperties = useMemo(() => {

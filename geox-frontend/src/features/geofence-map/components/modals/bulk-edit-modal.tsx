@@ -96,7 +96,7 @@ const BulkEditModal = () => {
 
   const [tableColumns, setTableColumns] = useState<string[]>([]);
 
-  const { setShapeLoading, tileUpdateCount, setTileUpdateCount } = useShapes();
+  const { tileUpdateCount, setTileUpdateCount, dispatch } = useShapes();
 
   useEffect(() => {
     const cols = [
@@ -245,22 +245,18 @@ const BulkEditModal = () => {
                       className="btn btn-success btn-xs capitalize"
                       onClick={async () => {
                         closeModal();
-                        setShapeLoading(true);
+                        dispatch({ type: "SET_LOADING", value: true });
                         for (let shapeProperties of data) {
-                          const response =
-                            await GeofencerService.patchShapesShapeIdGeofencerShapesShapeIdPatchAny(
-                              shapeProperties && shapeProperties.__uuid,
-                              {
-                                properties: shapeProperties,
-                                namespace_id:
-                                  shapeProperties &&
-                                  shapeProperties.__namespace_id,
-                              }
-                            );
+                          if (shapeProperties === null) continue;
+                          await GeofencerService.patchShapeById({
+                            uuid: shapeProperties.__uuid,
+                            properties: shapeProperties,
+                            namespace: shapeProperties.__namespace_id,
+                          });
                         }
                         clearSelectedShapeUuids();
                         setTileUpdateCount(tileUpdateCount + 1);
-                        setShapeLoading(false);
+                        dispatch({ type: "SET_LOADING", value: false });
                       }}
                     >
                       Save

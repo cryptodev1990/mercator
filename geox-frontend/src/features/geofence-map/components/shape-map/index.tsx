@@ -36,8 +36,8 @@ const GeofenceMap = () => {
     clearSelectedShapeUuids,
     isSelected,
     setSelectedShapeUuid,
-    addShapesToMultiSelectedShapes,
-    removeShapeFromMultiSelectedShapes,
+    addShapesToSelectedShapes,
+    removeShapeFromSelectedShapes,
   } = useSelectedShapes();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
@@ -205,7 +205,7 @@ const GeofenceMap = () => {
               ...object,
               properties: _.omit(object.properties, ["layerName"]),
             };
-            addShapesToMultiSelectedShapes([filteredObject]);
+            addShapesToSelectedShapes([filteredObject]);
           }
           if (
             e.leftButton &&
@@ -213,7 +213,7 @@ const GeofenceMap = () => {
             e.changedPointers[0].metaKey &&
             selectedUuids.includes(uuid)
           ) {
-            removeShapeFromMultiSelectedShapes(uuid);
+            removeShapeFromSelectedShapes(uuid);
           }
         }}
         onHover={({ object, x, y }: any) => {

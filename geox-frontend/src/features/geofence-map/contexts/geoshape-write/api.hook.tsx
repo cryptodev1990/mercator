@@ -5,7 +5,6 @@ import {
   useAddShapeMutation,
   useBulkAddShapesMutation,
   useBulkDeleteShapesMutation,
-  useUpdateShapeMutation,
 } from "../../hooks/use-openapi-hooks";
 import { Action } from "./action-types";
 import simplur from "simplur";
@@ -23,7 +22,7 @@ export const useApi = (dispatch: Dispatch<Action>) => {
 
   useEffect(() => {
     if (addShapeIsLoading === false && addShapeError !== null) {
-      dispatch({ type: "ADD_SHAPE_ERROR", error: addShapeError });
+      dispatch({ type: "SET_LOADING", value: false });
     } else if (addShapeIsSuccess) {
       dispatch({
         type: "ADD_SHAPE_SUCCESS",
@@ -51,34 +50,12 @@ export const useApi = (dispatch: Dispatch<Action>) => {
     }
     if (deleteShapesIsLoading === false && deleteShapesIsSuccess) {
       toast.dismiss();
-      toast.success(
-        simplur`${deletedUuids?.length} shape[|s] deleted`
-      );
+      toast.success(simplur`${deletedUuids?.length} shape[|s] deleted`);
     }
     if (deleteShapesError !== null) {
       toast.error("Error with deletion. Please try again.");
     }
   }, [deleteShapesIsLoading, deleteShapesError, deleteShapesIsSuccess]);
-
-  const {
-    mutate: updateShapeApi,
-    isLoading: updateShapeIsLoading,
-    error: updateShapeError,
-    isSuccess: updateShapeIsSuccess,
-    data: updateShapeResponse,
-  } = useUpdateShapeMutation();
-
-  useEffect(() => {
-    if (updateShapeIsSuccess) {
-      dispatch({
-        type: "UPDATE_SHAPE_SUCCESS",
-        updatedShapeIds: [updateShapeResponse.uuid],
-        updatedShape: updateShapeResponse,
-      });
-    } else if (updateShapeIsLoading === false && updateShapeError !== null) {
-      dispatch({ type: "UPDATE_SHAPE_ERROR", error: updateShapeError });
-    }
-  }, [updateShapeIsLoading, updateShapeError, updateShapeIsSuccess]);
 
   const {
     mutate: bulkAddShapesApi,
@@ -99,7 +76,7 @@ export const useApi = (dispatch: Dispatch<Action>) => {
       bulkAddShapesIsLoading === false &&
       bulkAddShapesError !== null
     ) {
-      dispatch({ type: "BULK_ADD_SHAPES_ERROR", error: bulkAddShapesError });
+      dispatch({ type: "SET_LOADING", value: false });
     } else if (bulkAddShapesIsSuccess) {
       if ((bulkAddShapesResponse as ShapeCountResponse).num_shapes) {
         console.warn("New additions were not reflected in optimistic updates");
@@ -125,6 +102,5 @@ export const useApi = (dispatch: Dispatch<Action>) => {
     setPreferList,
     addShapeApi,
     deleteShapesApi,
-    updateShapeApi,
   };
 };

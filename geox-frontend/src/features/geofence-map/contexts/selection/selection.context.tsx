@@ -7,26 +7,29 @@ import { GeoShapeMetadataContext } from "../geoshape-metadata/context";
 import { selectionReducer, initialState } from "./selection.reducer";
 
 export interface SelectionContextI {
+  selectedShapes: Feature[];
+  // TODO: all the context below should be removed
+  addShapesToSelectedShapes: (shape: Feature[]) => void;
+  removeShapeFromSelectedShapes: (uuid: string) => void;
+  clearSelectedShapeUuids: () => void;
   selectedUuids: GeoShapeMetadata["uuid"][];
   setSelectedShapeUuid: (uuid: string) => void;
-  selectedShapes: Feature[];
-  addShapesToMultiSelectedShapes: (shape: Feature[]) => void;
   isSelected: (shape: GeoShapeMetadata | string) => boolean;
-  removeShapeFromMultiSelectedShapes: (uuid: string) => void;
-  clearSelectedShapeUuids: () => void;
   selectedFeatureCollection: FeatureCollection | null;
   selectedDataIsLoading: boolean;
   numSelected: number;
 }
 
+// We only need selectedShapes in our
 export const SelectionContext = createContext<SelectionContextI>({
+  selectedShapes: [],
+  // TODO: all the context below should be removed
+  addShapesToSelectedShapes: () => {},
+  removeShapeFromSelectedShapes: () => {},
+  clearSelectedShapeUuids: () => {},
   selectedUuids: [],
   setSelectedShapeUuid: () => {},
-  selectedShapes: [],
-  addShapesToMultiSelectedShapes: () => {},
   isSelected: () => false,
-  removeShapeFromMultiSelectedShapes: () => {},
-  clearSelectedShapeUuids: () => {},
   selectedFeatureCollection: null,
   selectedDataIsLoading: false,
   numSelected: 0,
@@ -45,14 +48,14 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
     dispatch({ type: "ADD_SELECTED_SHAPE_UUIDS", selectedShapesUuids: [uuid] });
   };
 
-  const addShapesToMultiSelectedShapes = (shape: Feature[]) => {
+  const addShapesToSelectedShapes = (shape: Feature[]) => {
     dispatch({
       type: "ADD_SHAPES_TO_SELECTED_SHAPES",
       selectedShapes: shape,
     });
   };
 
-  const removeShapeFromMultiSelectedShapes = (uuid: string) => {
+  const removeShapeFromSelectedShapes = (uuid: string) => {
     dispatch({
       type: "REMOVE_SHAPE_FROM_SELECTED_SHAPES",
       multiSelectedUuid: uuid,
@@ -92,9 +95,9 @@ export const SelectionContextProvider = ({ children }: { children: any }) => {
         numSelected: state.numSelected,
         isSelected,
         setSelectedShapeUuid,
-        removeShapeFromMultiSelectedShapes,
+        removeShapeFromSelectedShapes,
         clearSelectedShapeUuids,
-        addShapesToMultiSelectedShapes,
+        addShapesToSelectedShapes,
         // @ts-ignore
         selectedFeatureCollection,
         selectedDataIsLoading,
