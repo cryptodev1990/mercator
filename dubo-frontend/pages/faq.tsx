@@ -1,8 +1,6 @@
-import Section from "../components/section";
-
-const FAQ = () => {
-  return (
-    <Section size="full">
+const FAQ = () => (
+  <div className="flex w-full justify-center">
+    <div className="flex flex-col items-center justify-center max-w-2xl">
       <div className="flex flex-col items-start justify-center w-full h-full m-3 p-3">
         <h1 className="text-2xl">About dubo</h1>
         <div className="flex flex-col items-center justify-center max-w-5xl h-full">
@@ -33,8 +31,8 @@ const FAQ = () => {
           </div>
         </div>
       </div>
-    </Section>
-  );
-};
+    </div>
+  </div>
+);
 
 export default FAQ;
