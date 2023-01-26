@@ -1,15 +1,37 @@
-import { useEffect, useState } from "react";
-import duboQuery from "../lib/dubo-client";
-import initSqlJs from "sql.js";
-import DataFrameViewer from "./data-frame-viewer";
-import { useLocalSqlite } from "../lib/hooks/use-sql-db";
+import React, { useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
+import initSqlJs from "sql.js";
+import duboQuery from "../lib/dubo-client";
+import DataFrameViewer from "./data-frame-viewer";
 import { getUploadData } from "../lib/utils";
-import { DATA_OPTIONS } from "../lib/demo-data";
+import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
 import simplur from "simplur";
 import { CloseButton } from "./close-button";
+import useSQLDb from "../lib/hooks/use-sql-db";
+import useLoadData from "../lib/hooks/use-load-data";
+import usePrepareData from "../lib/hooks/use-prepare-data";
 
-type DataNames = keyof typeof DATA_OPTIONS;
+const Results = ({
+  results,
+}: {
+  results: initSqlJs.QueryExecResult[] | undefined;
+}) => (
+  <div className="animate-fadeIn100">
+    <br />
+    <p>Results:</p>
+    <div className="overflow-scroll">
+      {results && results.length > 0 && (
+        <>
+          <p>{simplur`${results[0]?.values.length} row[|s] returned`}</p>
+          <DataFrameViewer
+            header={results[0]?.columns ?? []}
+            data={results[0]?.values ?? []}
+          />
+        </>
+      )}
+    </div>
+  </div>
+);
 
 const SuggestedQueries = ({
   queries,
@@ -45,57 +67,55 @@ const DuboPreview = () => {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState<string>("");
   const [duboResponse, setDuboResponse] = useState<string | null>(null);
-  const [execResults, setExecResults] = useState<initSqlJs.QueryExecResult[]>(
-    []
+  const [selectedData, setSelectedData] = useState<DataNames | null>(
+    "Fortune 500"
   );
-  const [selectedData, setSelectedData] = useState<DataNames>("Fortune 500");
   const [awaitingResult, setAwaitingResult] = useState<boolean>(false);
   const [customData, setCustomData] = useState<File[] | null>(null);
+
   const {
+    db,
+    error: dbError,
+    loading: dbLoading,
     exec,
-    status,
-    error: sqlError,
-  } = useLocalSqlite({
-    urlsOrFile: customData || DATA_OPTIONS[selectedData].data,
+    results,
+    setResults,
+  } = useSQLDb();
+
+  const {
+    dfs,
+    error: prepareError,
+    reset,
+  } = usePrepareData({
+    urlsOrFile:
+      customData || (selectedData ? DATA_OPTIONS[selectedData].data : []),
+    selectedData,
+  });
+  const {
+    error: dataError,
+    setError: setDataError,
+    loading: dataLoading,
+    setLoading: setDataLoading,
+  } = useLoadData({
+    dfs,
+    db,
+    exec,
   });
 
+  const hasError = error || dataError || prepareError;
+
   const wrappedExec = (sql: string) => {
-    const res = exec(sql);
+    const res = db?.exec(sql);
     if (res) {
-      setExecResults(res);
+      setResults(res);
     } else {
-      setExecResults([]);
+      setResults([]);
       setError("Query returned no results.");
     }
     return res;
   };
 
-  useEffect(() => {
-    if (sqlError) {
-      // TODO provide a better error message
-      console.log(sqlError);
-      setError((sqlError as any).message);
-    }
-  }, [sqlError]);
-
-  useEffect(() => {
-    if (!error) {
-      return;
-    }
-    console.error(error);
-  }, [error]);
-
-  useEffect(() => {
-    if (status === "ready") {
-      let res = wrappedExec("SELECT * FROM tbl_0 LIMIT 10");
-      if (res?.length === 0 || typeof res === "undefined") {
-        setError("No tables found");
-        return;
-      }
-    }
-  }, [status]);
-
-  if (error && status !== "ready") {
+  if (dbError) {
     return (
       <div className="flex flex-col items-center justify-center">
         <h1>Error loading data</h1>
@@ -103,7 +123,7 @@ const DuboPreview = () => {
     );
   }
 
-  if (status === "preparing") {
+  if (dbLoading || dataLoading) {
     return (
       <div className="flex flex-col items-center justify-center">
         <h1>Preparing data...</h1>
@@ -115,7 +135,7 @@ const DuboPreview = () => {
   const handleQuery = async (sql: string) => {
     setAwaitingResult(true);
     setError(null);
-    const schemas = exec(
+    const schemas = db?.exec(
       `SELECT sql FROM sqlite_schema WHERE name LIKE 'tbl_%'`
     );
     if (schemas?.length === 0 || typeof schemas === "undefined") {
@@ -143,7 +163,15 @@ const DuboPreview = () => {
         {customData && (
           <div className="flex flex-col gap-2">
             <h1 className="text-lg">
-              Custom data <CloseButton onClick={() => setCustomData(null)} />
+              Custom data{" "}
+              <CloseButton
+                onClick={() => {
+                  setSelectedData("Fortune 500");
+                  setCustomData(null);
+                  setDataError(null);
+                  reset();
+                }}
+              />
             </h1>
             <div className="flex flex-col gap-2"></div>
           </div>
@@ -154,7 +182,6 @@ const DuboPreview = () => {
               className="border w-full placeholder:gray-500 text-lg"
               onChange={async (e) => {
                 setDuboResponse(null);
-                setExecResults([]);
                 setQuery("");
                 if (e.target.value === "custom") {
                   const f = await getUploadData();
@@ -163,7 +190,9 @@ const DuboPreview = () => {
                     return;
                   }
                   setCustomData([f]);
+                  setSelectedData(null);
                 } else {
+                  setDataLoading(true);
                   setSelectedData(e.target.value as any);
                 }
               }}
@@ -210,7 +239,7 @@ const DuboPreview = () => {
             {awaitingResult && <FaSpinner className="animate-spin h-4 w-4" />}
           </button>
         </div>
-        {!query && !customData && (
+        {!query && !customData && selectedData && (
           <div>
             <p className="text-sm pt-4 pb-2">Some ideas:</p>
             <SuggestedQueries
@@ -220,9 +249,9 @@ const DuboPreview = () => {
             />
           </div>
         )}
-        {error && (
+        {hasError && (
           <p className="bg-orange-500 text-white font-mono px-3 mt-3">
-            {error}
+            {hasError}
           </p>
         )}
         {duboResponse && (
@@ -233,23 +262,7 @@ const DuboPreview = () => {
             </p>
           </div>
         )}
-        {!awaitingResult && !error && (
-          <div className="animate-fadeIn100">
-            <br />
-            <p>Results:</p>
-            <div className="overflow-scroll">
-              {status === "ready" && execResults.length > 0 && (
-                <>
-                  <p>{simplur`${execResults[0]?.values.length} row[|s] returned`}</p>
-                  <DataFrameViewer
-                    header={execResults[0]?.columns ?? []}
-                    data={execResults[0]?.values ?? []}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-        )}
+        {!awaitingResult && !hasError && <Results results={results} />}
       </div>
     </div>
   );

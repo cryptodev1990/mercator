@@ -1,3 +1,5 @@
+export type DataNames = keyof typeof DATA_OPTIONS;
+
 export const DATA_OPTIONS = {
   "US Census ACS 2021 Subset": {
     data: [
