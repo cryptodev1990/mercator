@@ -4,8 +4,9 @@ import sqlparse
 from api.schemas.responses import QueryResponse, ResultsResponse
 from api.rate_limiter import is_request_exempt, limiter
 
-from api.gateways.openai import assemble_prompt, get_sql_from_gpt_prompt
+from api.gateways.openai import assemble_prompt, assemble_finetuned_prompt, get_sql_from_gpt_prompt, get_sql_from_gpt_finetuned
 from api.gateways.conns import run_query_against_connection
+
 
 router = APIRouter()
 
@@ -26,7 +27,8 @@ def read_query(
     request: Request,
     user_query: str = Query(default=None, description="The question to answer"),
     schemas: List[str] = Query(default=[], description="The table schema(s) to use"),
-    descriptions: List[str] | None = Query(default=[], description="The table description(s) to use")
+    descriptions: List[str] | None = Query(default=[], description="The table description(s) to use"),
+    finetuned: bool = Query(default=False, description="Whether to use the finetuned model")
 ):
     if not user_query:
         raise HTTPException(status_code=422, detail="No query provided")
@@ -46,10 +48,16 @@ def read_query(
 
     schema = '\n'.join(schemas)
     print(schema)
-    prompt = assemble_prompt(user_query, schema, descriptions)
-    print(prompt)
+    if not finetuned: 
+        prompt = assemble_prompt(user_query, schema, descriptions)
+        sql = get_sql_from_gpt_prompt(prompt)
+    else: 
+        prompt = assemble_finetuned_prompt(user_query, schema)
+        sql = get_sql_from_gpt_finetuned(prompt)
 
-    sql = get_sql_from_gpt_prompt(prompt)
+    print(prompt)
+    print(sql)
+    
     if sql:
         return QueryResponse(query_text=sql)
     raise HTTPException(status_code=400, detail="No suitable response for the given query.")
