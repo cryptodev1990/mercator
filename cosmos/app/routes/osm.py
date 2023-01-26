@@ -2,12 +2,16 @@
 import logging
 import uuid
 from typing import Any, List
+from asyncpg import DuplicateObjectError
 from openai import OpenAIError
 
 import sqlalchemy.exc
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
+import dubo
+from app.core.datatypes import FeatureCollection
+
 from app.crud.entity_resolve import named_place, resolve_entity
 from app.crud.executors import category_lookup, raw_lookup
 
@@ -16,7 +20,7 @@ from app.crud.osm_search import eval_query
 from app.parsers.intents import DerivedIntent, ParsedQuery
 from app.parsers.openai_icsf.openai_slot_parser import OpenAIParseError
 
-from app.schemas import IntentPayload, OsmRawQueryResponse, ParsedEntity, IntentResponse, ValidIntentNameEnum
+from app.schemas import ExecutorResponse, IntentPayload, OsmRawQueryResponse, ParsedEntity, IntentResponse, ValidIntentNameEnum
 from app.parsers.openai_icsf import openai_intent_classifier
 from app.models.intent import Intent, intents
 
@@ -187,6 +191,57 @@ async def _get_execute(
     return IntentResponse(
         query="",
         parse_result=results,
+        intents=[intent_payload.name],
+        slots=intent_payload.args,
+        id=query_id,
+    )
+
+
+# TODO HACK HACK HACK
+import pandas as pd
+census_df = pd.read_csv("https://raw.githubusercontent.com/ajduberstein/geo_datasets/master/2021_5_yr_acs.csv", dtype={"zip_code": str})
+
+@router.post(
+    "/census",
+    response_model=IntentResponse,
+    responses={"400": {"description": "Unable to execute search"}}
+)
+async def _get_execute(
+    intent_payload: IntentPayload = Body(..., example={
+        "name": "census",
+        "args": {
+            "query": "Places where the median income is low"
+        }
+    }),
+    conn: AsyncConnection = Depends(get_conn),
+):
+    query = intent_payload.args.query + ". Return the ZIP code as `zip_code` and also return the associated values."
+    # ZCTA geojson
+    census_result: pd.DataFrame = dubo.ask(query, census_df)
+    zips = census_result["zip_code"].tolist()
+    zip_shapes = await conn.execute(text(
+        "SELECT AS_GeoJSON(geom) AS geojson FROM zcta_polys WHERE zcta5ce10 IN (:zcta5ce10)"
+    ), {"zcta5ce10": zips})
+
+    # add census result to GeoJSON as properties
+    zip_shapes = [dict(row._mapping) for row in zip_shapes.fetchall()]  # pylint: disable=protected-access
+    for shape in zip_shapes:
+        shape["properties"] = census_result[census_result["zip_code"] == shape["zcta5ce10"]].iloc[0].to_dict()
+
+    return IntentResponse(
+        query="",
+        parse_result=ExecutorResponse(
+            geom=FeatureCollection(
+                type="FeatureCollection",
+                features=[
+                    Feature(
+                        geometry=shape["geojson"],
+                        properties=shape["properties"],
+                    )
+                    for shape in zip_shapes
+                ]
+            )
+        ),
         intents=[intent_payload.name],
         slots=intent_payload.args,
         id=query_id,

@@ -1,8 +1,10 @@
+import os
+from typing import List
 import jinja2
 
-from typing import List
 import openai
 
+openai.api_key = os.environ['OPENAI_KEY']
 
 prompt_template = jinja2.Template('''
     Convert text to {{sql_flavor or 'ANSI'}} SQL.
@@ -51,7 +53,6 @@ def get_sql_from_gpt_prompt(prompt: str) -> str | None:
         query_response = response.choices[0].text.strip()  # type: ignore
         return query_response
     return None
-
 
 
 def assemble_prompt(user_query: str, schema: str, descriptions: List[str] | None=None, sql_flavor=None) -> str:

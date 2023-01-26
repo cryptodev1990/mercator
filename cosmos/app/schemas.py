@@ -304,6 +304,22 @@ class AreaNearConstraintIntentArgs(BaseModel, AsDictMixin):
             }
         }
 
+class CensusArgs(BaseModel, AsDictMixin):
+    """Arguments for census constraint."""
+
+    query: str = Field(
+        ..., description="Census value to search for."
+    )
+
+    class Config:
+        """Pydantic config options."""
+
+        schema_extra = {
+            "example": {
+                "query": "Population",
+            }
+        }
+
 class RawLookupIntentArgs(BaseModel, AsDictMixin):
     """Arguments for raw_lookup constraint."""
 
@@ -349,7 +365,7 @@ class XBetweenYAndZIntentArgs(BaseModel, AsDictMixin):
         }
 
 
-ValidIntentArgs = XInYIntentArgs | AreaNearConstraintIntentArgs | RawLookupIntentArgs | XBetweenYAndZIntentArgs
+ValidIntentArgs = XInYIntentArgs | AreaNearConstraintIntentArgs | RawLookupIntentArgs | XBetweenYAndZIntentArgs | CensusArgs
 
 class IntentPayload(BaseModel):
     """Intent for a query."""
