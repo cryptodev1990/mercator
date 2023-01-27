@@ -8,3 +8,5 @@ sqlparse==0.4.3
 Jinja2==3.1.2
 python-dotenv==0.21.0
 google-cloud-bigquery==3.4.1
+datadog==0.44.*
+JSON-log-formatter==0.5.*

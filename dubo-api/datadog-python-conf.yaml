@@ -1,0 +1,12 @@
+init_config:
+
+instances:
+
+##Log section
+logs:
+
+  - type: file
+    path: "/var/log/app.log"
+    service: "dubo_api"
+    source: python
+    sourcecategory: sourcecode

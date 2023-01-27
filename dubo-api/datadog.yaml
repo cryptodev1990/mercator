@@ -1,0 +1,14 @@
+api_key: MY_DD_API_KEY_PLACEHOLDER
+logs_enabled: true
+apm_config:
+  enabled: false
+appsec_config:
+  enabled: false
+process_config:
+  process_collection:
+    enabled: false
+  container_collection:
+    enabled: true
+compliance_config:
+  enabled: false
+use_dogstatsd: false

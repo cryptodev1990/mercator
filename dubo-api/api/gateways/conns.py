@@ -5,6 +5,7 @@ from fastapi import HTTPException
 import yaml
 
 from google.cloud import bigquery
+from api.core.logging import get_logger
 
 from api.gateways.openai import assemble_prompt, get_sql_from_gpt_prompt
 from api.schemas.responses import QueryResponse, ResultsResponse
@@ -13,6 +14,9 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(here, '../connections.yaml'), 'r') as f:
     config = yaml.safe_load(f)
+
+
+logger = get_logger(__name__)
 
 
 memoized_connections = {}
@@ -68,11 +72,21 @@ def run_query_against_connection(conn_id: str, user_query: str) -> list[dict]:
         raise HTTPException(status_code=422, detail="Invalid connection ID")
     conn = Connection.make_conn(conn_id)
     prompt = conn.make_prompt(user_query)
-    print(prompt)
+    logger.info({
+        "event": "query",
+        "conn_id": conn_id,
+        "user_query": user_query,
+        "prompt": prompt
+    })
     sql = get_sql_from_gpt_prompt(prompt)
     if not sql:
         raise HTTPException(status_code=400, detail="No suitable response for the given query.")
-    print(sql)
+    logger.info({
+        "event": "sql",
+        "conn_id": conn_id,
+        "user_query": user_query,
+        "sql": sql
+    })
     results = conn.execute(sql)
     results: list[dict[str, str | float | int | bool | None]] = [dict(x) for x in results]
     return ResultsResponse(query_text=sql, results=results) # type: ignore

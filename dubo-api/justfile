@@ -33,7 +33,6 @@ format:
 	python -m isort --quiet .
 	python -m black .
 
-
 test:
 	#!/bin/zsh
 	{{ source_venv }}
@@ -50,3 +49,11 @@ install:
 	pip install --upgrade pip wheel
 	pip install -r requirements.txt
 	pip install -r requirements-dev.txt
+
+# Build docker container
+docker-build:
+	docker compose -f docker-compose.yml --env-file .env.docker build
+
+# Run Docker container
+docker-up: docker-build
+	docker compose -f docker-compose.yml --env-file .env.docker up

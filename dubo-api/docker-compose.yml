@@ -1,0 +1,14 @@
+version: "3.3"
+services:
+
+  api:
+    container_name: dubo-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    # See https://docs.docker.com/compose/environment-variables/#set-environment-variables-with-docker-compose-run
+    env_file: ./.env.docker
+    environment:
+      ENV_FILE: .env.docker
+    ports:
+      - "8080:8080"
