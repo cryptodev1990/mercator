@@ -32,7 +32,7 @@ const useDuboResults = ({
   schemas?: initSqlJs.QueryExecResult[];
   databaseSchema?: DatabaseSchema;
 }) => {
-  const { data, error, isValidating, mutate } = useSWR<any, Error>(
+  const { data, error, isValidating, mutate, isLoading } = useSWR<any, Error>(
     getURL({ query, schemas, databaseSchema }),
     fetcher,
     {
@@ -48,6 +48,7 @@ const useDuboResults = ({
     error,
     isValidating,
     mutate,
+    isLoading,
   };
 };
 

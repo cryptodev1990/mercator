@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import initSqlJs from "sql.js";
 import useDuboResults from "../lib/hooks/use-dubo-results";
@@ -35,12 +35,12 @@ const Results = ({
 
 const SuggestedQueries = ({
   queries,
-  handleQuery,
+  handleSqlQuery,
   setDuboQuery,
   setQuery,
 }: {
   queries: { query: string; sql: string }[];
-  handleQuery: (sql: string) => void;
+  handleSqlQuery: (sql: string) => void;
   setDuboQuery: React.Dispatch<React.SetStateAction<string>>;
   setQuery: (prompt: string) => void;
 }) => {
@@ -54,7 +54,7 @@ const SuggestedQueries = ({
             text-sm w-max cursor-pointer sm:truncate sm:text
             transition duration-300 ease bg-spBlue text-white`}
           onClick={() => {
-            handleQuery(sql);
+            handleSqlQuery(sql);
             setQuery(query);
             setDuboQuery(query);
           }}
@@ -105,10 +105,18 @@ const DuboPreview = () => {
     data,
     error: duboError,
     isValidating,
+    isLoading,
     mutate: setDuboResults,
   } = useDuboResults({ query: duboQuery, schemas });
 
   const hasError = dataError || prepareError || duboError?.message;
+
+  useEffect(() => {
+    if (data && data.query_text && !isLoading) {
+      const duboGeneratedSql = data.query_text;
+      handleSqlQuery(duboGeneratedSql);
+    }
+  }, [duboQuery, isLoading]);
 
   if (dbError) {
     return (
@@ -127,8 +135,12 @@ const DuboPreview = () => {
     );
   }
 
-  const handleQuery = (sql: string) => {
-    const res = db?.exec(sql);
+  const handleSqlQuery = (sql: string) => {
+    if (!db) {
+      console.error("DB not loaded");
+      return;
+    }
+    const res = db.exec(sql);
     if (res) {
       setResults(res);
     } else {
@@ -199,7 +211,7 @@ const DuboPreview = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleQuery(query);
+                setDuboQuery(query);
               }
             }}
           />
@@ -223,7 +235,7 @@ const DuboPreview = () => {
             <p className="text-sm pt-4 pb-2">Some ideas:</p>
             <SuggestedQueries
               queries={DATA_OPTIONS[selectedData].queries}
-              handleQuery={handleQuery}
+              handleSqlQuery={handleSqlQuery}
               setDuboQuery={setDuboQuery}
               setQuery={setQuery}
             />
