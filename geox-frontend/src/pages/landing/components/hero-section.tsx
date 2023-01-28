@@ -68,12 +68,15 @@ export const HeroSection = (): JSX.Element => {
         <p className="mt-5">
           Mercator provides a suite of tools for manipulating data in space.
           We're starting with{" "}
+          <a className="font-bold hover:underline" href="https://dubo.gg/">
+            dubo
+          </a>, which supports natural language analysis, and
           <a className="font-bold hover:underline" href="#geofencer-features">
             Geofencer
           </a>
           , our tool for annotating and creating map data.{" "}
           <a className="font-bold hover:underline" href="/subscribe">
-            Try it for free.
+            Try Geofencer for free.
           </a>
         </p>
         <div className="py-10">
