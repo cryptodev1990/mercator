@@ -29,6 +29,9 @@ bitcoin-blocks:
       is_coinbase BOOL,           -- If this transaction is a Coinbase transaction
       fee NUMERIC                -- Fee paid by this transaction
     );
+bitcoin-exchange:
+  connection_type: "bigquery"
+  ddl: |
     -- A table of BTC-USD exchange rates aggregated by day
     CREATE TABLE `dubo-375020.crypto.btc_to_usd` (
       Date DATE,       -- UTC timestamp indicating the day of interest e.g. `2020-01-01 00:00:00`
