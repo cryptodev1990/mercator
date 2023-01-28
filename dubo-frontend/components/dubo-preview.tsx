@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import initSqlJs from "sql.js";
-import duboQuery from "../lib/dubo-client";
+import useDuboResults from "../lib/hooks/use-dubo-results";
 import DataFrameViewer from "./data-frame-viewer";
 import { getUploadData } from "../lib/utils";
 import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
@@ -21,13 +21,13 @@ const Results = ({
     <p>Results:</p>
     <div className="overflow-scroll">
       {results && results.length > 0 && (
-        <>
+        <div className="animate-fadeIn100">
           <p>{simplur`${results[0]?.values.length} row[|s] returned`}</p>
           <DataFrameViewer
             header={results[0]?.columns ?? []}
             data={results[0]?.values ?? []}
           />
-        </>
+        </div>
       )}
     </div>
   </div>
@@ -36,10 +36,12 @@ const Results = ({
 const SuggestedQueries = ({
   queries,
   handleQuery,
+  setDuboQuery,
   setQuery,
 }: {
   queries: { query: string; sql: string }[];
   handleQuery: (sql: string) => void;
+  setDuboQuery: React.Dispatch<React.SetStateAction<string>>;
   setQuery: (prompt: string) => void;
 }) => {
   return (
@@ -54,6 +56,7 @@ const SuggestedQueries = ({
           onClick={() => {
             handleQuery(sql);
             setQuery(query);
+            setDuboQuery(query);
           }}
         >
           {query}
@@ -64,24 +67,20 @@ const SuggestedQueries = ({
 };
 
 const DuboPreview = () => {
-  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState<string>("");
-  const [duboResponse, setDuboResponse] = useState<string | null>(null);
+  const [duboQuery, setDuboQuery] = useState("");
   const [selectedData, setSelectedData] = useState<DataNames | null>(
     "Fortune 500"
   );
-  const [awaitingResult, setAwaitingResult] = useState<boolean>(false);
   const [customData, setCustomData] = useState<File[] | null>(null);
 
   const {
     db,
     error: dbError,
     loading: dbLoading,
-    exec,
     results,
     setResults,
   } = useSQLDb();
-
   const {
     dfs,
     error: prepareError,
@@ -96,24 +95,20 @@ const DuboPreview = () => {
     setError: setDataError,
     loading: dataLoading,
     setLoading: setDataLoading,
+    schemas,
   } = useLoadData({
     dfs,
     db,
-    exec,
+    setResults,
   });
+  const {
+    data,
+    error: duboError,
+    isValidating,
+    mutate: setDuboResults,
+  } = useDuboResults({ query: duboQuery, schemas });
 
-  const hasError = error || dataError || prepareError;
-
-  const wrappedExec = (sql: string) => {
-    const res = db?.exec(sql);
-    if (res) {
-      setResults(res);
-    } else {
-      setResults([]);
-      setError("Query returned no results.");
-    }
-    return res;
-  };
+  const hasError = dataError || prepareError || duboError?.message;
 
   if (dbError) {
     return (
@@ -132,29 +127,14 @@ const DuboPreview = () => {
     );
   }
 
-  const handleQuery = async (sql: string) => {
-    setAwaitingResult(true);
-    setError(null);
-    const schemas = db?.exec(
-      `SELECT sql FROM sqlite_schema WHERE name LIKE 'tbl_%'`
-    );
-    if (schemas?.length === 0 || typeof schemas === "undefined") {
-      setError("No tables found");
-      return;
-    }
-    const res = schemas[0].values.map((row: any) => row[0]);
-    if (res.length === 0) {
-      setError("No tables found");
-      return;
-    }
-    const duboRes = await duboQuery(sql, res);
-    if (duboRes.query_text) {
-      setDuboResponse(duboRes.query_text);
-      wrappedExec(duboRes.query_text);
-      setAwaitingResult(false);
+  const handleQuery = (sql: string) => {
+    const res = db?.exec(sql);
+    if (res) {
+      setResults(res);
     } else {
-      setError("Query failed. Try a different query.");
+      setResults([]);
     }
+    return res;
   };
 
   return (
@@ -181,16 +161,15 @@ const DuboPreview = () => {
             <select
               className="border w-full placeholder:gray-500 text-lg"
               onChange={async (e) => {
-                setDuboResponse(null);
+                setDuboResults(null);
+                setDuboQuery("");
                 setQuery("");
                 if (e.target.value === "custom") {
                   const f = await getUploadData();
-                  if (!f) {
-                    setError("No file selected");
-                    return;
+                  if (f) {
+                    setCustomData([f]);
+                    setSelectedData(null);
                   }
-                  setCustomData([f]);
-                  setSelectedData(null);
                 } else {
                   setDataLoading(true);
                   setSelectedData(e.target.value as any);
@@ -211,7 +190,7 @@ const DuboPreview = () => {
         )}
         <div className="flex flex-row">
           <input
-            value={query ?? ""}
+            value={query}
             type="text"
             className="border w-full placeholder:gray-500 text-lg p-4"
             placeholder="Enter a query"
@@ -227,16 +206,16 @@ const DuboPreview = () => {
           <button
             className="bg-spBlue text-white font-mono p-3"
             onClick={() => {
-              handleQuery(query);
+              setDuboQuery(query);
             }}
           >
-            {!awaitingResult && (
+            {!isValidating && (
               <>
                 Run
                 <FaPlay className="inline-block h-4 w-4" />
               </>
             )}
-            {awaitingResult && <FaSpinner className="animate-spin h-4 w-4" />}
+            {isValidating && <FaSpinner className="animate-spin h-4 w-4" />}
           </button>
         </div>
         {!query && !customData && selectedData && (
@@ -245,6 +224,7 @@ const DuboPreview = () => {
             <SuggestedQueries
               queries={DATA_OPTIONS[selectedData].queries}
               handleQuery={handleQuery}
+              setDuboQuery={setDuboQuery}
               setQuery={setQuery}
             />
           </div>
@@ -254,15 +234,15 @@ const DuboPreview = () => {
             {hasError}
           </p>
         )}
-        {duboResponse && (
+        {data && (
           <div className="animate-fadeIn100">
             <p className="font-semibold">Generated SQL</p>
             <p className="font-mono max-w-5xl whitespace-pre-wrap">
-              {duboResponse}
+              {data.query_text}
             </p>
           </div>
         )}
-        {!awaitingResult && !hasError && <Results results={results} />}
+        {!isValidating && !hasError && <Results results={results} />}
       </div>
     </div>
   );

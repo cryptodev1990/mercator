@@ -1,46 +1,31 @@
-import { useEffect, useState } from "react";
-import duboQuery from "../lib/dubo-client";
+import { useState } from "react";
 import DataFrameViewer from "./data-frame-viewer";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import simplur from "simplur";
+import useDuboResults from "../lib/hooks/use-dubo-results";
 
 const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
-  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState<string>(
     "Show ten rows of data from the transactions table"
   );
-  const [duboResponse, setDuboResponse] = useState<any>(null);
-  const [awaitingResult, setAwaitingResult] = useState<boolean>(false);
 
-  const handleQuery = async (sql: string) => {
-    setAwaitingResult(true);
-    setDuboResponse(null);
-    setError(null);
-    const duboRes = await duboQuery(sql, undefined, databaseSchema);
+  const [duboQuery, setDuboQuery] = useState<string>(
+    "Show ten rows of data from the transactions table"
+  );
 
-    if (duboRes) {
-      setDuboResponse(duboRes);
-      setAwaitingResult(false);
-    } else {
-      setError("Query failed. Try a different query.");
-      setAwaitingResult(false);
-    }
-  };
+  const { data, error, isValidating } = useDuboResults({
+    query: duboQuery,
+    databaseSchema,
+  });
 
-  useEffect(() => {
-    if (databaseSchema) {
-      handleQuery(query);
-    }
-  }, [databaseSchema]);
-
-  const header = duboResponse
-    ? Object.keys(duboResponse?.results[0]).filter(
+  const header = data
+    ? Object.keys(data?.results[0]).filter(
         (c) => c !== "inputs" && c !== "outputs"
       )
     : [];
 
-  const data = duboResponse
-    ? duboResponse.results.map((row: any) =>
+  const rows = data
+    ? data.results.map((row: any) =>
         header.reduce((acc: any, cur) => [...acc, row[cur]], [])
       )
     : [];
@@ -50,7 +35,7 @@ const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
       <div className="flex flex-col">
         <div className="flex flex-row">
           <input
-            value={query ?? ""}
+            value={query}
             type="text"
             className="border w-full placeholder:gray-500 text-lg p-4 h-75"
             placeholder="Enter a query"
@@ -59,48 +44,48 @@ const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleQuery(query);
+                setDuboQuery(query);
               }
             }}
           />
           <button
             className="bg-spBlue text-white font-mono p-3"
             onClick={() => {
-              handleQuery(query);
+              setDuboQuery(query);
             }}
           >
-            {!awaitingResult && (
+            {!isValidating && (
               <>
                 Run
                 <FaPlay className="inline-block h-4 w-4" />
               </>
             )}
-            {awaitingResult && <FaSpinner className="animate-spin h-4 w-4" />}
+            {isValidating && <FaSpinner className="animate-spin h-4 w-4" />}
           </button>
         </div>
 
         {error && (
           <p className="bg-orange-500 text-white font-mono px-3 mt-3">
-            {error}
+            {error.message}
           </p>
         )}
-        {!awaitingResult && duboResponse && (
+        {!isValidating && data && (
           <>
             <p className="font-semibold">Generated SQL</p>
             <p className="font-mono max-w-5xl whitespace-pre-wrap">
-              {duboResponse.query_text}
+              {data.query_text}
             </p>
           </>
         )}
-        {!awaitingResult && !error && duboResponse?.results && (
+        {!isValidating && !error && data?.results && (
           <>
             <br />
             <p>Results:</p>
             <div className="overflow-scroll">
-              {duboResponse.results.length > 0 && (
+              {data.results.length > 0 && (
                 <>
-                  <p>{simplur`${duboResponse.results.length} row[|s] returned`}</p>
-                  <DataFrameViewer header={header} data={data} />
+                  <p>{simplur`${data.results.length} row[|s] returned`}</p>
+                  <DataFrameViewer header={header} data={rows} />
                 </>
               )}
             </div>

@@ -6,13 +6,18 @@ import { Database } from "sql.js";
 const useLoadData = ({
   dfs,
   db,
-  exec,
+  setResults,
 }: {
   dfs?: DataFrame[];
   db: Database | null;
-  exec: (sql: string) => void;
+  setResults: React.Dispatch<
+    React.SetStateAction<initSqlJs.QueryExecResult[] | undefined>
+  >;
 }) => {
   const [error, setError] = useState<string | null>(null);
+  const [schemas, setSchemas] = useState<
+    initSqlJs.QueryExecResult[] | undefined
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fillDb = async ({ dfs }: { dfs?: DataFrame[] }) => {
@@ -64,6 +69,24 @@ const useLoadData = ({
       }
       dfNum += 1;
     }
+
+    const schemas = db.exec(
+      `SELECT sql FROM sqlite_schema WHERE name LIKE 'tbl_%'`
+    );
+
+    if (
+      schemas?.length === 0 ||
+      typeof schemas === "undefined" ||
+      schemas[0].values.map((row: any) => row[0]).length === 0
+    ) {
+      setError("No tables found");
+      return;
+    } else {
+      setSchemas(schemas[0].values.map((row: any) => row[0])[0]);
+
+      const rows = db.exec("SELECT * FROM tbl_0 LIMIT 10");
+      setResults(rows);
+    }
   };
 
   useEffect(() => {
@@ -73,7 +96,6 @@ const useLoadData = ({
     setLoading(true);
     fillDb({ dfs })
       .then(() => {
-        exec("SELECT * FROM tbl_0 LIMIT 10");
         setLoading(false);
       })
       .catch((err) => {
@@ -82,7 +104,7 @@ const useLoadData = ({
       });
   }, [dfs, db]);
 
-  return { error, setError, loading, setLoading };
+  return { error, setError, schemas, loading, setLoading };
 };
 
 export default useLoadData;
