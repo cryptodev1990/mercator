@@ -70,7 +70,7 @@ export const HeroSection = (): JSX.Element => {
           We're starting with{" "}
           <a className="font-bold hover:underline" href="https://dubo.gg/">
             dubo
-          </a>, which supports natural language analysis, and
+          </a>, which supports natural language analysis, and{" "}
           <a className="font-bold hover:underline" href="#geofencer-features">
             Geofencer
           </a>
