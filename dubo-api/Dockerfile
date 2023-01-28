@@ -22,8 +22,9 @@ COPY --from=builder /usr/local/cargo/bin/just /usr/local/bin/just
 
 RUN DD_API_KEY=MY_DD_API_KEY_PLACEHOLDER DD_INSTALL_ONLY=true bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
 
-COPY ./api /api
-COPY scripts/run.sh justfile /api/
+RUN mkdir /app
+COPY ./api /app/api
+COPY scripts/run.sh justfile /app
 
 # copy in datadog config files
 RUN mkdir /etc/datadog-agent/conf.d/python.d
@@ -31,9 +32,9 @@ COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog-python-conf.yaml /etc/data
 COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog-security-agent.yaml /etc/datadog-agent/security-agent.yaml
 COPY --chown=dd-agent:dd-agent --chmod=0777 ./datadog.yaml /etc/datadog-agent/datadog.yaml
 
-WORKDIR /api
+WORKDIR /app
 EXPOSE 8080
 ENV APP_ENV=production
-ENV PYTHONPATH=/api
+ENV PYTHONPATH=/app
 ENV APP_RELOAD=
 CMD ["bash", "run.sh"]

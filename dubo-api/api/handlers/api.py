@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, Request
 import sqlparse
 from api.schemas.responses import QueryResponse, ResultsResponse
@@ -27,7 +27,7 @@ def read_query(
     request: Request,
     user_query: str = Query(default=None, description="The question to answer"),
     schemas: List[str] = Query(default=[], description="The table schema(s) to use"),
-    descriptions: List[str] | None = Query(default=[], description="The table description(s) to use"),
+    descriptions: Optional[List[str]] = Query(default=[], description="The table description(s) to use"),
     finetuned: bool = Query(default=False, description="Whether to use the finetuned model")
 ):
     if not user_query:
@@ -48,16 +48,16 @@ def read_query(
 
     schema = '\n'.join(schemas)
     print(schema)
-    if not finetuned: 
+    if not finetuned:
         prompt = assemble_prompt(user_query, schema, descriptions)
         sql = get_sql_from_gpt_prompt(prompt)
-    else: 
+    else:
         prompt = assemble_finetuned_prompt(user_query, schema)
         sql = get_sql_from_gpt_finetuned(prompt)
 
     print(prompt)
     print(sql)
-    
+
     if sql:
         return QueryResponse(query_text=sql)
     raise HTTPException(status_code=400, detail="No suitable response for the given query.")

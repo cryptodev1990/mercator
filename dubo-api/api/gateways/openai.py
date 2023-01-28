@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 import jinja2
 
 import openai
@@ -39,7 +39,7 @@ prompt_template = jinja2.Template('''
 
 finetuned_prompt_template = jinja2.Template('''Schema: {{schema}}\nQuestion: {{user_query}}\n\n###\n\n''')
 
-def get_sql_from_gpt_prompt(prompt: str) -> str | None:
+def get_sql_from_gpt_prompt(prompt: str) -> Optional[str]:
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
@@ -55,7 +55,7 @@ def get_sql_from_gpt_prompt(prompt: str) -> str | None:
     return None
 
 
-def assemble_prompt(user_query: str, schema: str, descriptions: List[str] | None=None, sql_flavor=None) -> str:
+def assemble_prompt(user_query: str, schema: str, descriptions: Optional[List[str]]=None, sql_flavor=None) -> str:
     return prompt_template.render(
         user_query=user_query,
         schema=schema,
@@ -65,7 +65,7 @@ def assemble_prompt(user_query: str, schema: str, descriptions: List[str] | None
 
 finetuned_engine = "davinci:ft-mercator-2023-01-25-23-01-53"
 
-def get_sql_from_gpt_finetuned(prompt: str) -> str | None:
+def get_sql_from_gpt_finetuned(prompt: str) -> Optional[str]:
     completions = openai.Completion.create(
              engine=finetuned_engine,
              prompt=prompt,
