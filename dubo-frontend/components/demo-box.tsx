@@ -105,14 +105,14 @@ const DemoBox = () => {
   // After 5 seconds, cycle to the next prompt
   return (
     <>
-      <div className="border-b-2 w-[300px] sm:w-[600px]">
+      <div className="border-b-2 w-full">
         {text}
         <FlickeringCursor />
       </div>
       <div className="h-[10rem]">
         <br />
         {revealResponse && (
-          <div className="transition-opacity animate-fadeIn500">
+          <div className="transition-opacity animate-fadeIn500 overflow-x-auto">
             <DataFrameViewer header={response.header} data={response.data} />
           </div>
         )}

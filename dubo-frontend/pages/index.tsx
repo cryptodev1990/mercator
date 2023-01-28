@@ -2,28 +2,25 @@ import Link from "next/link";
 
 import DemoBox from "../components/demo-box";
 import InfoCard from "../components/info-card";
+import EmailBox from "../components/email-box";
 
 export default function Home() {
   return (
     <>
-      <main>
-        <div className="max-w-4xl m-auto">
-          <section className="flex flex-col items-center justify-center w-full">
-            <div className="px-10 pb-10 flex flex-col mx-auto items-center gap-5 animate-fadeIn500">
+      <main className="flex flex justify-center w-full">
+        <div className="flex flex-col items-center justify-center max-w-lg">
+          <section className="flex flex-col justify-center w-full">
+            <div className="mb-10 flex flex-col mx-auto items-center gap-5 animate-fadeIn500">
               <h1 className="text-8xl font-bold text-spBlue">dubo</h1>
-              <div>
-                <h2 className="text-2xl">
-                  Analytics in English, powered by AI
-                </h2>
-                <p className="w-[200px]"></p>
-              </div>
+              <h2 className="text-2xl">Analytics in English, powered by AI</h2>
             </div>
-            <div className="animate-fadeIn500 flex flex-col justify-center items-center h-[200px] overflow-hidden">
+            <div className="animate-fadeIn500 flex flex-col justify-center items-center w-full h-[300px] sm:h-[220px] overflow-hidden w-full">
               <br />
               <DemoBox />
             </div>
           </section>
-          <section className="grid grid-rows-3 max-w-xl mx-auto px-10">
+          <EmailBox />
+          <section className="flex flex-col gap-3">
             <InfoCard header={"Dev-friendly"}>
               <p>
                 Get started in minutes for free with our Python SDK at{" "}
@@ -59,7 +56,7 @@ export default function Home() {
               <Link href="/demo">
                 <button
                   type="button"
-                  className="inline-block px-6 py-2.5 bg-spBlue text-white font-medium text-lg leading-tight shadow-md hover:bg-spBlueDark hover:shadow-lg focus:bg-spBlueDark focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                  className="inline-block px-6 py-2.5 bg-spBlue text-white font-medium text-lg leading-tight shadow-md hover:bg-spBlueDark hover:shadow-lg focus:bg-spBlueDark focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out"
                 >
                   Try our demo
                 </button>

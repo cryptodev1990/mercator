@@ -122,7 +122,7 @@ const DuboPreview = () => {
     return (
       <div className="flex flex-col items-center justify-center">
         <h1>Preparing data...</h1>
-        <FaSpinner className="animate-spin h-10 w-10 text-blue-500" />
+        <FaSpinner className="animate-spin h-10 w-10 text-spBlue" />
       </div>
     );
   }
