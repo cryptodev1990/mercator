@@ -1,14 +1,15 @@
 import base64
 import json
 import os
-from fastapi import HTTPException
+import re
 import yaml
 
 from google.cloud import bigquery
 from api.core.logging import get_logger
+from fastapi import HTTPException
 
 from api.gateways.openai import assemble_prompt, get_sql_from_gpt_prompt
-from api.schemas.responses import QueryResponse, ResultsResponse
+from api.schemas.responses import ResultsResponse
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,6 +36,7 @@ class Connection:
         self.conn_id = conn_id
         self.connection_type = kwargs['connection_type']
         self.ddl = kwargs.get('ddl')
+        self.prompt_addendum = kwargs.get('prompt_addendum')
         self.kwargs = kwargs
         # BigQuery client, if needed
         self._client = None
@@ -54,15 +56,19 @@ class Connection:
         if memoized_connections.get(conn_id):
             return memoized_connections[conn_id]
         conn = Connection(conn_id, **config[conn_id])
-        print(conn.__dict__)
         memoized_connections[conn_id] = conn
         return conn
 
-    def make_prompt(self, query: str) -> str:
+    def make_prompt(self, query: str, ddl_line_filter: str | None = None) -> str:
         """Make the prompt for the API"""
         if not self.ddl:
             raise Exception("Prompt requires DDL")
-        prompt = assemble_prompt(query, self.ddl, sql_flavor=self.connection_type)
+        ddl = self.ddl
+        if ddl_line_filter is not None:
+            # Filter out lines that don't match the filter by a regex match to ddl_line_filter
+            # Kind of a hack
+            ddl = '\n'.join([x for x in ddl.splitlines() if ' ' + ddl_line_filter + ' ' in x])
+        prompt = assemble_prompt(query, ddl, sql_flavor=self.connection_type, prompt_addendum=self.prompt_addendum)
         return prompt
 
 

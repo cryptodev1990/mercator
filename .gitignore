@@ -52,4 +52,4 @@ autogen/*
 schema.sql
 
 dubo-api/finetune/finetune/spider
-
+*.pt

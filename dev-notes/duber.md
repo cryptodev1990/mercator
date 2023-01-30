@@ -1415,3 +1415,10 @@ Fun link: https://huggingface.co/docs/transformers/v4.24.0/en/model_doc/codegen#
 ### Progress
 
 Got a working version of SQLite in the browser, which will be useful for the Chrome extension version of this and the demo frontend
+
+Jan 28 2023
+-----------
+
+We need to get the census demo live.
+I've added a connections.yaml section with the tables that I mostly manually created (I'll add the scripts to git eventually/hopefully).
+I need to create a mode where our query engine chooses one table to focus on before running a query

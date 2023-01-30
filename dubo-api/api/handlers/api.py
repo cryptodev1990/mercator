@@ -10,7 +10,6 @@ from api.gateways.conns import run_query_against_connection
 
 router = APIRouter()
 
-
 @router.get("/dubo/query",
     response_model=QueryResponse,
     responses={

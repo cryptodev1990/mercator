@@ -1,3 +1,4 @@
+from optparse import Option
 import os
 from typing import List, Optional
 import jinja2
@@ -7,13 +8,13 @@ import openai
 openai.api_key = os.environ['OPENAI_KEY']
 
 prompt_template = jinja2.Template('''
-    Convert text to {{sql_flavor or 'ANSI'}} SQL.
-
+    Convert text to {{sql_flavor.title() or 'ANSI'}} SQL.
     {% if sql_flavor == 'bigquery' %}
+
     BigQuery SQL uses Postgres-flavored syntax, e.g., `EXTRACT(part FROM date_expression)`
     GROUP BY and ORDER BY statements should use numbers instead of column names, e.g., `GROUP BY 1, 2`
-    {% endif %}
 
+    {% endif %}
     You have the following DDLs:
 
     ```
@@ -33,8 +34,12 @@ prompt_template = jinja2.Template('''
     Write the SQL that answers the following question:
 
     """{{user_query}}"""
+    {% if prompt_addendum %}
 
-    Respond with only one concise SQL statement.
+    {{prompt_addendum}}
+
+    {% endif %}
+    Task: Respond with only one concise SQL statement.
     ''')
 
 finetuned_prompt_template = jinja2.Template('''Schema: {{schema}}\nQuestion: {{user_query}}\n\n###\n\n''')
@@ -55,24 +60,25 @@ def get_sql_from_gpt_prompt(prompt: str) -> Optional[str]:
     return None
 
 
-def assemble_prompt(user_query: str, schema: str, descriptions: Optional[List[str]]=None, sql_flavor=None) -> str:
+def assemble_prompt(user_query: str, schema: str, descriptions: Optional[List[str]]=None, sql_flavor=None, prompt_addendum: Optional[str]=None) -> str:
     return prompt_template.render(
         user_query=user_query,
         schema=schema,
         descriptions=descriptions,
-        sql_flavor=sql_flavor
+        sql_flavor=sql_flavor,
+        prompt_addendum=prompt_addendum
     )
 
 finetuned_engine = "davinci:ft-mercator-2023-01-25-23-01-53"
 
 def get_sql_from_gpt_finetuned(prompt: str) -> Optional[str]:
     completions = openai.Completion.create(
-             engine=finetuned_engine,
-             prompt=prompt,
-             max_tokens=1024,
-             n=1,
-             stop=["\n"],
-             temperature=0.5
+            engine=finetuned_engine,
+            prompt=prompt,
+            max_tokens=1024,
+            n=1,
+            stop=["\n\n"],
+            temperature=0.3,
          )
     if getattr(completions, 'choices', None):
         query_response = completions.choices[0].text.strip()  # type: ignore
