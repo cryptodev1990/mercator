@@ -4,7 +4,6 @@ instances:
 
 ##Log section
 logs:
-
   - type: file
     path: "/var/log/app.log"
     service: "dubo_api"

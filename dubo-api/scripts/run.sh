@@ -4,12 +4,12 @@ __start_dd_agent() {
       exit 1
   fi
 
-  sed "s/MY_DD_API_KEY_PLACEHOLDER/$DD_API_KEY/g" /etc/datadog-agent/datadog.yaml
+  sed -n "s/MY_DD_API_KEY_PLACEHOLDER/$DD_API_KEY/g" /etc/datadog-agent/datadog.yaml
   service datadog-agent start
 }
 
-# if DD_DISABLED is true, don't start the DataDog agent
-if [ "$DD_DISABLED" = "true" ]
+# if DD_ENABLED is true, then start the DataDog agent
+if [ "$DD_ENABLED" = "true" ]
 then
     __start_dd_agent
 fi

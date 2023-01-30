@@ -31,6 +31,7 @@ async def _startup() -> None:
 
 @app.get("/health", tags=["health"])
 async def health():
+    logger.info("Health endpoint received request", extra={"endpoint": "health", "num": 123})
     return {"message": "OK"}
 
 @app.get("/")
