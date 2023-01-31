@@ -39,4 +39,4 @@ def add_tiler_routes(app: FastAPI) -> None:
         )
     )
 
-    app.include_router(router, tags=["tiles"], dependencies=[Depends(verify_token)])
+    app.include_router(router, tags=["tiles"])

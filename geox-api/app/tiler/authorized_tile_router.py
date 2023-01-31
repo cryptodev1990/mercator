@@ -53,14 +53,14 @@ async def get_shape_tile(
     **TILE_RESPONSE_PARAMS,
     tags=["geofencer"],
 )
-async def get_shape_tile(
+async def get_zcta_shape_tile(
     request: Request,
     tile: Tile = Depends(TileParams),
     tms: TileMatrixSet = Depends(TileMatrixSetParams),
     layer: Layer = Depends(LayerParams),
     # Can use get_current_user_org instead of get_user_connection because currently
     # the tiler uses a separate connection pool
-    user_org: UserOrganization = Depends(get_current_user_org),
+    # user_org: UserOrganization = Depends(get_current_user_org),
 ):
     """Get the US census ZCTAs served"""
     ONE_VALID_NAMESPACE_UUID = '61aa8970-6102-4ecb-b7aa-be8f0080a8f5'
