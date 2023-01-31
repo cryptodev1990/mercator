@@ -4,6 +4,8 @@ import os
 import re
 import yaml
 
+from typing import Optional, Union
+
 from google.cloud import bigquery
 from api.core.logging import get_logger
 from fastapi import HTTPException
@@ -59,7 +61,7 @@ class Connection:
         memoized_connections[conn_id] = conn
         return conn
 
-    def make_prompt(self, query: str, ddl_line_filter: str | None = None) -> str:
+    def make_prompt(self, query: str, ddl_line_filter: Optional[str] = None) -> str:
         """Make the prompt for the API"""
         if not self.ddl:
             raise Exception("Prompt requires DDL")
@@ -94,5 +96,5 @@ def run_query_against_connection(conn_id: str, user_query: str) -> list[dict]:
         "sql": sql
     })
     results = conn.execute(sql)
-    results: list[dict[str, str | float | int | bool | None]] = [dict(x) for x in results]
+    results: list[dict[str, Optional[Union[str,float,int,bool]]]] = [dict(x) for x in results]
     return ResultsResponse(query_text=sql, results=results) # type: ignore
