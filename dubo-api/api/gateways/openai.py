@@ -8,7 +8,7 @@ import openai
 openai.api_key = os.environ['OPENAI_KEY']
 
 prompt_template = jinja2.Template('''
-    Convert text to {{sql_flavor.title() or 'ANSI'}} SQL.
+    Convert text to {{sql_flavor or 'ANSI'}} SQL.
     {% if sql_flavor == 'bigquery' %}
 
     BigQuery SQL uses Postgres-flavored syntax, e.g., `EXTRACT(part FROM date_expression)`
