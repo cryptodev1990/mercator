@@ -1422,3 +1422,13 @@ Jan 28 2023
 We need to get the census demo live.
 I've added a connections.yaml section with the tables that I mostly manually created (I'll add the scripts to git eventually/hopefully).
 I need to create a mode where our query engine chooses one table to focus on before running a query
+
+Jan 30 2023
+------------
+
+Census data is readable from the frontend
+We just need to actually read it out somehow
+I might expose one of the Geofencer endpoints to render some of the shape data
+Alternatively, I could just use centroids
+We also need to figure out how to get the parquet format working so that we're not passing a bunch of JSON back and forth
+5 bytes per ZIP code, 4 bytes per float * 33000 records = 561 kilobytes, which isn't too bad
