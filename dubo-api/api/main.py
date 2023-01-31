@@ -7,7 +7,7 @@ from api.handlers.api import router as api_router
 from api.core.config import get_settings
 from api.core.logging import get_logger
 from api.core.stats import attach_stats_middleware, stats
-from api.handlers.census import create_embeddings, router as census_router
+from api.handlers.census import router as census_router
 from api.handlers.api import router as api_router
 
 app = FastAPI()
@@ -33,7 +33,6 @@ app.add_middleware(
 @app.on_event("startup")
 async def _startup() -> None:
     stats.start()
-    create_embeddings()
 
 
 @app.get("/health", tags=["health"])
