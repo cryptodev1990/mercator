@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import qs from "qs";
 
-const BASE_URL = "https://dubo-api.mercator.tech/v1/dubo/query";
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://dubo-api.mercator.tech/v1/dubo/query";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
