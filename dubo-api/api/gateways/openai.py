@@ -39,7 +39,7 @@ prompt_template = jinja2.Template('''
     {{prompt_addendum}}
 
     {% endif %}
-    Task: Respond with only one concise SQL statement.
+    Respond with only one concise SQL statement.
     ''')
 
 finetuned_prompt_template = jinja2.Template('''Schema: {{schema}}\nQuestion: {{user_query}}\n\n###\n\n''')
