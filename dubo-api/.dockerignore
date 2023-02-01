@@ -4,3 +4,5 @@
 .env
 finetune/*
 __pycache__/
+env/*
+assets/census/
