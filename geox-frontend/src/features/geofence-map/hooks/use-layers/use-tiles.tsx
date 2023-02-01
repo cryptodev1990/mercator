@@ -118,7 +118,8 @@ export function useTiles() {
           (namespace) => namespace.id === namespace_id
         );
         if (namespace?.properties?.color) {
-          return [0, 0, 0];
+          const color = namespace?.properties?.color;
+          return [color.r, color.g, color.b];
         }
 
         return [173, 216, 230];

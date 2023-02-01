@@ -32,6 +32,8 @@ from app.core.stats import time_db_query
 from app.db.metadata import namespaces as namespaces_tbl
 from app.db.metadata import shapes as shapes_tbl
 from app.schemas import Namespace
+from fastapi.encoders import jsonable_encoder
+from app.schemas import Namespace, NamespaceCreate, NamespaceUpdate, RequestErrorModel
 
 logger = get_logger(__name__)
 
@@ -237,12 +239,25 @@ def create_namespace(
         ) from None
     return Namespace.from_orm(res)
 
+def delete_none(_dict):
+    """Delete None values recursively from all of the dictionaries"""
+    for key, value in list(_dict.items()):
+        if isinstance(value, dict):
+            delete_none(value)
+        elif value is None:
+            del _dict[key]
+        elif isinstance(value, list):
+            for v_i in value:
+                if isinstance(v_i, dict):
+                    delete_none(v_i)
+
+    return _dict
+
 
 def update_namespace(
     conn: Connection,
     id_: UUID,
-    name: Optional[str] = None,
-    properties: Optional[Dict[str, Any]] = None,
+    data: NamespaceUpdate,
 ) -> Namespace:
     """Update a namespace."""
     values: Dict[str, Any] = {}
@@ -250,26 +265,23 @@ def update_namespace(
     # but we need to also check other values.
     # This will raise values if the namespace does not exist.
     namespace = get_namespace(conn, id_)
-    if name:
-        if namespace.is_default:
-            raise DefaultNamespaceCannotBeRenamedError(id_)
-        # check that the slug does not exist - ideally the partial index should handle it
-        # but it appears that it does not
-        slug = slugify_name(name)
-        try:
-            namespace_with_slug = get_namespace_by_slug(conn, slug)
-            raise NamespaceExistsError(
-                namespace_with_slug.name,
-                namespace_with_slug.slug,
-                namespace_with_slug.id,
-            )
-        except NamespaceWithThisSlugDoesNotExistError:
-            pass
-        values["name"] = name
-        values["slug"] = slug
 
-    if properties is not None:
-        values["properties"] = properties
+    if namespace.is_default and "name" in data:
+        raise DefaultNamespaceCannotBeRenamedError(id_)
+    # check that the slug does not exist - ideally the partial index should handle it
+    # but it appears that it does not
+    # slug = slugify_name(namespace.name)
+    # try:
+    #     namespace_with_slug = get_namespace_by_slug(conn, slug)
+    #     raise NamespaceExistsError(
+    #         namespace_with_slug.name,
+    #         namespace_with_slug.slug,
+    #         namespace_with_slug.id,
+    #     )
+    # except NamespaceWithThisSlugDoesNotExistError:
+    #     pass
+    values = delete_none(jsonable_encoder(data))
+
 
     stmt = (
         update(namespaces_tbl).where(namespaces_tbl.c.id == id_).returning(namespaces_tbl)

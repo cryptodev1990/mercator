@@ -2,16 +2,18 @@
 
 import React from "react";
 import reactCSS from "reactcss";
-import { SketchPicker } from "react-color";
+import { SketchPicker, RGBColor } from "react-color";
+import { Namespace, NamespacesService } from "client";
+import { useMutation, useQueryClient } from "react-query";
+import toast from "react-hot-toast";
+import { useShapes } from "../hooks/use-shapes";
 
-export function SketchExampleHook() {
+export function SketchExampleHook({ namespace }: { namespace: Namespace }) {
   const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
-  const [color, setColor] = React.useState({
-    r: 241,
-    g: 112,
-    b: 19,
-    a: 1,
-  });
+
+  const [color, setColor] = React.useState<RGBColor>(
+    namespace.properties.color
+  );
 
   const handleClick = () => {
     setDisplayColorPicker(!displayColorPicker);
@@ -21,9 +23,33 @@ export function SketchExampleHook() {
     setDisplayColorPicker(false);
   };
 
-  const handleChange = (color: any) => {
-    setColor(color.rgb);
-  };
+  const qc = useQueryClient();
+
+  const { tileUpdateCount, setTileUpdateCount } = useShapes();
+
+  const mutation = useMutation(NamespacesService.patchNamespace, {
+    onSuccess: async (newNamespace) => {
+      await qc.cancelQueries(["geofencer"]);
+      const previousNamespaces: Namespace[] | undefined = qc.getQueryData([
+        "geofencer",
+      ]);
+      if (previousNamespaces) {
+        qc.setQueryData(
+          ["geofencer"],
+          previousNamespaces.map((prevNamespace: Namespace) =>
+            prevNamespace.id === newNamespace.id
+              ? { ...prevNamespace, properties: newNamespace.properties }
+              : prevNamespace
+          )
+        );
+      }
+      setTileUpdateCount(tileUpdateCount + 1);
+    },
+    onError: (error: any) => {
+      if (error.message) toast.error(error.message);
+      else toast.error("Error occured updating namespace");
+    },
+  });
 
   const styles = reactCSS({
     default: {
@@ -76,7 +102,16 @@ export function SketchExampleHook() {
             }}
             onClick={handleClose}
           />
-          <SketchPicker color={color} onChange={handleChange} />
+          <SketchPicker
+            color={color}
+            onChange={(d) => setColor(d.rgb)}
+            onChangeComplete={(d) => {
+              mutation.mutate({
+                id: namespace.id,
+                properties: { color: d.rgb },
+              });
+            }}
+          />
         </div>
       ) : null}
     </div>

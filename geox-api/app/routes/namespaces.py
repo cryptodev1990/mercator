@@ -133,8 +133,7 @@ async def _patch_namespaces(
         namespace = update_namespace(
             user_conn.connection,
             namespace_id,
-            name=data.name,
-            properties=data.properties,
+            data,
         )
     except NamespaceDoesNotExistError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail=str(exc)) from None

@@ -133,7 +133,7 @@ export const NamespaceCard = ({
           />
         </div>
         <div>
-          <SketchExampleHook />
+          <SketchExampleHook namespace={namespace} />
         </div>
         {mutation.isLoading ? (
           <ReactLoading type="spin" height={"15px"} width={"15px"} />

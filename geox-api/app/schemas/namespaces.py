@@ -59,7 +59,7 @@ class NamespaceCreate(BaseModel):
 class NamespaceUpdate(BaseModel):
     """Data to update an existing namespace."""
 
-    name: str
+    name: Optional[str]
     _validate_normalize_name = validator("name", allow_reuse=True)(normalize_name)
     _validate_name_not_default = validator("name", allow_reuse=True)(not_default)
 
