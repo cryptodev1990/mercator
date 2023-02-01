@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import { SketchPicker, RGBColor } from "react-color";
+import { ChromePicker, RGBColor } from "react-color";
 import { Namespace, NamespacesService } from "client";
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
@@ -88,7 +88,7 @@ export function SketchExampleHook({ namespace }: { namespace: Namespace }) {
             }}
             onClick={handleClose}
           />
-          <SketchPicker
+          <ChromePicker
             color={color}
             onChange={(d) => setColor(d.rgb)}
             onChangeComplete={(d) => {
