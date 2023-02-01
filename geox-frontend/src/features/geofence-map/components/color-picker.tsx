@@ -1,7 +1,6 @@
 "use strict";
 
 import React from "react";
-import reactCSS from "reactcss";
 import { SketchPicker, RGBColor } from "react-color";
 import { Namespace, NamespacesService } from "client";
 import { useMutation, useQueryClient } from "react-query";
@@ -51,39 +50,26 @@ export function SketchExampleHook({ namespace }: { namespace: Namespace }) {
     },
   });
 
-  const styles = reactCSS({
-    default: {
-      color: {
-        width: 8,
-        height: 8,
-        background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-      },
-      swatch: {
-        padding: 1,
-        background: "#fff",
-        borderRadius: "1px",
-        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-        display: "inline-block",
-        cursor: "pointer",
-      },
-      popover: {
-        position: "absolute",
-        zIndex: 2,
-      },
-      cover: {
-        position: "fixed",
-        top: "0px",
-        right: "0px",
-        bottom: "0px",
-        left: "0px",
-      },
-    },
-  });
-
   return (
     <div>
-      <div style={styles.swatch} onClick={handleClick}>
-        <div style={styles.color} />
+      <div
+        style={{
+          padding: 1,
+          background: "#fff",
+          borderRadius: "1px",
+          boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+          display: "inline-block",
+          cursor: "pointer",
+        }}
+        onClick={handleClick}
+      >
+        <div
+          style={{
+            width: 8,
+            height: 8,
+            background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+          }}
+        />
       </div>
       {displayColorPicker ? (
         <div
