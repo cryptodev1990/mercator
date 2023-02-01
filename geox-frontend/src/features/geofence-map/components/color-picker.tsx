@@ -25,7 +25,7 @@ export function SketchExampleHook({ namespace }: { namespace: Namespace }) {
 
   const qc = useQueryClient();
 
-  const { tileUpdateCount, setTileUpdateCount } = useShapes();
+  const { tilePropertyChange, setTilePropertyChange } = useShapes();
 
   const mutation = useMutation(NamespacesService.patchNamespace, {
     onSuccess: async (newNamespace) => {
@@ -43,7 +43,7 @@ export function SketchExampleHook({ namespace }: { namespace: Namespace }) {
           )
         );
       }
-      setTileUpdateCount(tileUpdateCount + 1);
+      setTilePropertyChange(tilePropertyChange + 1);
     },
     onError: (error: any) => {
       if (error.message) toast.error(error.message);

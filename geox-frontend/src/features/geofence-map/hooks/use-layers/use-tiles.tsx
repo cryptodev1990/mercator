@@ -25,6 +25,7 @@ export function useTiles() {
     clearOptimisticShapeUpdates,
     tileUpdateCount,
     setTileUpdateCount,
+    tilePropertyChange,
   } = useShapes();
 
   const { cursorMode } = useCursorMode();
@@ -135,6 +136,7 @@ export function useTiles() {
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
           selectedUuids.length,
+          tilePropertyChange,
         ],
         getTileData: [tileUpdateCount],
       },

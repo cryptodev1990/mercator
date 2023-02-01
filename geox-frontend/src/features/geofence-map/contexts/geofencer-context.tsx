@@ -22,6 +22,8 @@ interface GeofencerContextState {
   setSelectedFeatureIndexes: (indexes: number[]) => void;
   tileUpdateCount: number;
   setTileUpdateCount: (count: number) => void;
+  tilePropertyChange: number;
+  setTilePropertyChange: (count: number) => void;
 }
 
 export const GeofencerContext = createContext<GeofencerContextState>({
@@ -43,6 +45,8 @@ export const GeofencerContext = createContext<GeofencerContextState>({
   setSelectedFeatureIndexes: () => {},
   tileUpdateCount: 0,
   setTileUpdateCount: () => {},
+  tilePropertyChange: 0,
+  setTilePropertyChange: () => {},
 });
 GeofencerContext.displayName = "GeofencerContext";
 
@@ -91,6 +95,7 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
   }, [viewport]);
 
   const [tileUpdateCount, setTileUpdateCount] = useState(0);
+  const [tilePropertyChange, setTilePropertyChange] = useState(0);
 
   const [options, setOptions] = useState<GlobalEditorOptions>({
     denyOverlap: true,
@@ -137,6 +142,8 @@ export const GeofencerContextContainer = ({ children }: { children: any }) => {
           setSelectedFeatureIndexes(indexes),
         tileUpdateCount,
         setTileUpdateCount: (count: number) => setTileUpdateCount(count),
+        tilePropertyChange,
+        setTilePropertyChange: (count: number) => setTilePropertyChange(count),
       }}
     >
       {children}

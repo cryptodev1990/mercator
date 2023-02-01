@@ -16,6 +16,8 @@ export const useShapes = () => {
     setSelectedFeatureIndexes,
     tileUpdateCount,
     setTileUpdateCount,
+    tilePropertyChange,
+    setTilePropertyChange,
   } = useContext(GeofencerContext);
 
   const gswc = useContext(GeoShapeWriteContext);
@@ -41,5 +43,7 @@ export const useShapes = () => {
     clearSelectedFeatureIndexes,
     tileUpdateCount,
     setTileUpdateCount,
+    tilePropertyChange,
+    setTilePropertyChange,
   };
 };
