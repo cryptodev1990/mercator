@@ -110,6 +110,9 @@ async def census(
     )
     sql = response.choices[0].text  # type: ignore
     print(sql)
+    if ' * 100' in sql:
+        print('removing `* 100`')
+        sql = sql.replace(' * 100', '')  # THIS IS A HACK, for whatever reason gpt-3 loves multiplying percentages by 100
     records = await conn.fetch(sql)
     if len(records) == 0:
         raise HTTPException(status_code=404, detail="No results found")
