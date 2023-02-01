@@ -21,6 +21,7 @@ import {
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
+import { SketchExampleHook } from "features/geofence-map/components/color-picker";
 
 export const NamespaceCard = ({
   namespace,
@@ -130,6 +131,9 @@ export const NamespaceCard = ({
             }}
             disabled={namespace.is_default}
           />
+        </div>
+        <div>
+          <SketchExampleHook />
         </div>
         {mutation.isLoading ? (
           <ReactLoading type="spin" height={"15px"} width={"15px"} />
