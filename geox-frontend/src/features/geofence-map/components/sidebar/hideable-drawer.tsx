@@ -59,10 +59,11 @@ export const SidebarDrawer = ({ children }: { children: any }) => {
       <Transition in={!hidden} timeout={50}>
         {(state: any) => (
           <div
-            className={`w-[300px] z-10 bg-slate-700 overflow-y-scroll scrollbar-thin`}
+            className={`w-[300px] z-10 bg-slate-700 overflow-y-scroll scrollbar-thin `}
             style={{
               ...defaultStyles,
               ...transitionStyles[state],
+              overflow: "visible",
             }}
           >
             {children}
