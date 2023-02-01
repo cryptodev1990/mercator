@@ -8,6 +8,7 @@ import { DeckContext } from "../../contexts/deck-context";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
+import { useGetNamespaces } from "../use-openapi-hooks";
 
 const MAX_OPTIMISTIC_FEATURES = 30;
 
@@ -27,8 +28,9 @@ export function useTiles() {
   } = useShapes();
 
   const { cursorMode } = useCursorMode();
-
   const { isSelected, selectedUuids } = useSelectedShapes();
+
+  const { data: allNamespaces } = useGetNamespaces();
 
   useEffect(() => {
     if (optimisticShapeUpdates.length > MAX_OPTIMISTIC_FEATURES) {
@@ -103,18 +105,23 @@ export function useTiles() {
         if (deletedShapeIdSet.has(uuid) || updatedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
-        if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (hoveredUuid === uuid) return [255, 125, 0, 150];
-        return [0, 0, 0, 150];
+        if (hoveredUuid === uuid) return [255, 125, 0];
+        return [0, 0, 0];
       },
       getFillColor: (d: any) => {
         const uuid = d?.properties?.__uuid;
         if (deletedShapeIdSet.has(uuid) || updatedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
-        if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (hoveredUuid === uuid) return [255, 125, 0, 150];
-        return [173, 216, 230, 255];
+        const namespace_id = d?.properties?.__namespace_id;
+        const namespace = allNamespaces?.find(
+          (namespace) => namespace.id === namespace_id
+        );
+        if (namespace?.properties?.color) {
+          return [0, 0, 0];
+        }
+
+        return [173, 216, 230];
       },
       updateTriggers: {
         getLineColor: [
@@ -126,7 +133,7 @@ export function useTiles() {
         getFillColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          selectedUuids,
+          selectedUuids.length,
         ],
         getTileData: [tileUpdateCount],
       },

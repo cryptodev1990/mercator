@@ -83,10 +83,9 @@ export const useLayers = () => {
           id: "multi-select-geojson-view",
           pickable: true,
           // @ts-ignore
-          getFillColor: [0, 0, 255, 100],
-          getLineColor: [128, 128, 128, 255],
+          getFillColor: [0, 0, 255],
+          getLineColor: [128, 128, 128],
           lineWidthMinPixels: 1,
-          onClick: (info) => {},
           stroked: true,
           filled: true,
           // @ts-ignore
