@@ -21,7 +21,7 @@ import {
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
-import { SketchExampleHook } from "features/geofence-map/components/color-picker";
+import { ColorPicker } from "features/geofence-map/components/color-picker";
 
 export const NamespaceCard = ({
   namespace,
@@ -118,6 +118,9 @@ export const NamespaceCard = ({
           <CaretRightIcon />
         </button>
         <div>
+          <ColorPicker namespace={namespace} />
+        </div>
+        <div>
           <EditableLabel
             className="font-bold text-md mx-1 select-none text-white"
             value={namespace.name}
@@ -131,9 +134,6 @@ export const NamespaceCard = ({
             }}
             disabled={namespace.is_default}
           />
-        </div>
-        <div>
-          <SketchExampleHook namespace={namespace} />
         </div>
         {mutation.isLoading ? (
           <ReactLoading type="spin" height={"15px"} width={"15px"} />

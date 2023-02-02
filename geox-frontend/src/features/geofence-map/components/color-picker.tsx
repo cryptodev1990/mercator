@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import { useShapes } from "../hooks/use-shapes";
 
-export function SketchExampleHook({ namespace }: { namespace: Namespace }) {
+export function ColorPicker({ namespace }: { namespace: Namespace }) {
   const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
 
   const [color, setColor] = React.useState<RGBColor>(
