@@ -10,9 +10,11 @@ import { useShapes } from "../hooks/use-shapes";
 export function ColorPicker({ namespace }: { namespace: Namespace }) {
   const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
 
-  const [color, setColor] = React.useState<RGBColor>(
-    namespace.properties.color
-  );
+  const rgbaColor = namespace.properties.color
+    ? namespace.properties.color
+    : { r: 173, g: 216, b: 230 };
+
+  const [color, setColor] = React.useState<RGBColor>(rgbaColor);
 
   const handleClick = () => {
     setDisplayColorPicker(!displayColorPicker);
