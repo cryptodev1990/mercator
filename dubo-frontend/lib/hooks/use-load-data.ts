@@ -1,7 +1,7 @@
 import { sniff } from "../utils";
 
-import { useEffect, useState } from "react";
-import { Database } from "sql.js";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { Database, QueryExecResult } from "sql.js";
 
 const useLoadData = ({
   dfs,
@@ -10,14 +10,10 @@ const useLoadData = ({
 }: {
   dfs?: DataFrame[];
   db: Database | null;
-  setResults: React.Dispatch<
-    React.SetStateAction<initSqlJs.QueryExecResult[] | undefined>
-  >;
+  setResults: Dispatch<SetStateAction<QueryExecResult[] | undefined>>;
 }) => {
   const [error, setError] = useState<string | null>(null);
-  const [schemas, setSchemas] = useState<
-    initSqlJs.QueryExecResult[] | undefined
-  >([]);
+  const [schemas, setSchemas] = useState<QueryExecResult[] | undefined>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fillDb = async ({ dfs }: { dfs?: DataFrame[] }) => {

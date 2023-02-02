@@ -2,6 +2,9 @@ import Head from "next/head";
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import Navbar from "../components/navbar";
+
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {

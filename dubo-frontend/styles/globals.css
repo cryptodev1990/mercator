@@ -9,3 +9,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ag-theme-alpine {
+  --ag-header-background-color: #0070f3;
+  --ag-header-foreground-color: #ffffff;
+
+  --ag-secondary-foreground-color: #ffffff;
+
+  /* --ag-header-cell-hover-background-color: #679eff; */
+
+  --ag-header-cell: {
+    border: solid 1px white;
+  }
+
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-height: 100%;
+  --ag-header-column-separator-width: 1px;
+  --ag-header-column-separator-color: #ffffff;
+
+  --ag-header-column-resize-handle-height: 100%;
+
+  --ag-input-focus-border-color: #679eff;
+
+  --ag-border-radius: 0;
+
+  /* --ag-font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono",
+    "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace",
+    "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace; */
+}

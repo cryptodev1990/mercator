@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import qs from "qs";
+import { QueryExecResult } from "sql.js";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://dubo-api.mercator.tech/v1/dubo/query";
 
@@ -11,7 +12,7 @@ const getURL = ({
   databaseSchema,
 }: {
   query: string;
-  schemas?: initSqlJs.QueryExecResult[];
+  schemas?: QueryExecResult[];
   databaseSchema?: DatabaseSchema;
 }) => {
   if (!(query.length > 0) || (!schemas && !databaseSchema)) return null;
@@ -29,7 +30,7 @@ const useDuboResults = ({
   databaseSchema,
 }: {
   query: string;
-  schemas?: initSqlJs.QueryExecResult[];
+  schemas?: QueryExecResult[];
   databaseSchema?: DatabaseSchema;
 }) => {
   const { data, error, isValidating, mutate, isLoading } = useSWR<any, Error>(

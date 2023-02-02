@@ -1,70 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
-import initSqlJs from "sql.js";
 import useDuboResults from "../lib/hooks/use-dubo-results";
-import DataFrameViewer from "./data-frame-viewer";
 import { getUploadData } from "../lib/utils";
 import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
-import simplur from "simplur";
+import DataTable from "./data-table";
 import { CloseButton } from "./close-button";
 import useSQLDb from "../lib/hooks/use-sql-db";
 import useLoadData from "../lib/hooks/use-load-data";
 import usePrepareData from "../lib/hooks/use-prepare-data";
-
-const Results = ({
-  results,
-}: {
-  results: initSqlJs.QueryExecResult[] | undefined;
-}) => (
-  <div className="animate-fadeIn100">
-    <br />
-    <p>Results:</p>
-    <div className="overflow-scroll">
-      {results && results.length > 0 && (
-        <div className="animate-fadeIn100">
-          <p>{simplur`${results[0]?.values.length} row[|s] returned`}</p>
-          <DataFrameViewer
-            header={results[0]?.columns ?? []}
-            data={results[0]?.values ?? []}
-          />
-        </div>
-      )}
-    </div>
-  </div>
-);
-
-const SuggestedQueries = ({
-  queries,
-  handleSqlQuery,
-  setDuboQuery,
-  setQuery,
-}: {
-  queries: { query: string; sql: string }[];
-  handleSqlQuery: (sql: string) => void;
-  setDuboQuery: React.Dispatch<React.SetStateAction<string>>;
-  setQuery: (prompt: string) => void;
-}) => {
-  return (
-    <div className="flex gap-1 flex-wrap">
-      {queries.map(({ query, sql }, index) => (
-        <span
-          key={index}
-          className={`
-            px-2 sm:px-4 py-2 rounded sm:rounded-full border border-spBlue
-            text-sm w-max cursor-pointer sm:truncate sm:text
-            transition duration-300 ease bg-spBlue text-white`}
-          onClick={() => {
-            handleSqlQuery(sql);
-            setQuery(query);
-            setDuboQuery(query);
-          }}
-        >
-          {query}
-        </span>
-      ))}
-    </div>
-  );
-};
+import SuggestedQueries from "./suggested-queries";
 
 const DuboPreview = () => {
   const [query, setQuery] = useState<string>("");
@@ -254,7 +198,9 @@ const DuboPreview = () => {
             </p>
           </div>
         )}
-        {!isValidating && !hasError && <Results results={results} />}
+        {!isValidating && !hasError && results && results.length > 0 && (
+          <DataTable results={results} />
+        )}
       </div>
     </div>
   );
