@@ -8,6 +8,7 @@ import { CloseButton } from "./close-button";
 import useSQLDb from "../lib/hooks/use-sql-db";
 import useLoadData from "../lib/hooks/use-load-data";
 import usePrepareData from "../lib/hooks/use-prepare-data";
+import { useRouter } from "next/router";
 import SuggestedQueries from "./suggested-queries";
 
 const DuboPreview = () => {
@@ -52,6 +53,9 @@ const DuboPreview = () => {
     isLoading,
     mutate: setDuboResults,
   } = useDuboResults({ query: duboQuery, schemas });
+
+  const router = useRouter();
+  const showVis = router.query?.vis !== undefined;
 
   const hasError = dataError || prepareError || duboError?.message;
 
@@ -199,7 +203,7 @@ const DuboPreview = () => {
           </div>
         )}
         {!isValidating && !hasError && results && results.length > 0 && (
-          <DataTable results={results} />
+          <DataTable results={results} showVis={showVis} />
         )}
       </div>
     </div>

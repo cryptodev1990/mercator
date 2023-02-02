@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import simplur from "simplur";
 import { AgGridReact } from "ag-grid-react";
 import { QueryExecResult } from "sql.js";
+import Visualizer from "./visualizer";
 
 export const DataTable = ({
   rows,
@@ -37,7 +38,13 @@ export const DataTable = ({
   );
 };
 
-const DataTableContainer = ({ results }: { results: QueryExecResult[] }) => {
+const DataTableContainer = ({
+  results,
+  showVis,
+}: {
+  results: QueryExecResult[];
+  showVis: boolean;
+}) => {
   const res = results[0];
   const { values, columns } = res;
 
@@ -46,7 +53,17 @@ const DataTableContainer = ({ results }: { results: QueryExecResult[] }) => {
   );
   const columnDefs = columns.map((c) => ({ field: c }));
 
-  return <DataTable rows={rowData} columns={columnDefs} />;
+  return (
+    <>
+      <DataTable rows={rowData} columns={columnDefs} />
+      {showVis && (
+        <Visualizer
+          header={results[0]?.columns ?? []}
+          data={results[0]?.values ?? []}
+        />
+      )}
+    </>
+  );
 };
 
 export default DataTableContainer;
