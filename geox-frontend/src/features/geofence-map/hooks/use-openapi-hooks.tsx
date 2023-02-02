@@ -80,7 +80,7 @@ export const useGetOneShapeByUuid = (uuid: string | null) => {
       if (!uuid) {
         return Promise.resolve(null);
       }
-      return GeofencerService.getShapesShapeIdGeofencerShapesShapeIdGet(uuid);
+      return GeofencerService.getShapeByUuid(uuid);
     },
     {
       staleTime: 0,

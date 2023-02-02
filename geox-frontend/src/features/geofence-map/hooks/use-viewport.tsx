@@ -6,17 +6,22 @@ import { GeoShape, GeoShapeCreate } from "../../../client";
 import { bboxToZoom, featureToFeatureCollection } from "../utils";
 import { useSelectedShapes } from "./use-selected-shapes";
 import { useGetNamespaces } from "./use-openapi-hooks";
+import { useSelectedShapesUuids } from "./use-selected-shapes-uuids";
 
 export const useViewport = () => {
   const { viewport, setViewport } = useContext(GeofencerContext);
   const { tentativeShapes } = useShapes();
-  const { selectedFeatureCollection, isSelected } = useSelectedShapes();
+  const { selectedShapes } = useSelectedShapes();
   const { data: allNamespaces } = useGetNamespaces();
+
+  const selectedShapesUuids = useSelectedShapesUuids();
 
   function _genShapes(category: string) {
     const selectedShapes = allNamespaces
       ?.flatMap((x) => x.shapes ?? [])
-      ?.filter((shape: any) => isSelected(shape)) as GeoShape[];
+      ?.filter((shape: any) =>
+        selectedShapesUuids.includes(shape.uuid)
+      ) as GeoShape[];
 
     let shapesForOperation: GeoShapeCreate[] | GeoShape[] = [];
     if (category === "tentative") {
@@ -44,14 +49,14 @@ export const useViewport = () => {
 
   const snapToBounds = ({ category }: { category: string }) => {
     // get bounding box of all shapes
-    if (!selectedFeatureCollection && category !== "tentative") return;
+    if (!selectedShapes.length && category !== "tentative") return;
     if (category === "tentative" && tentativeShapes.length === 0) return;
     const fc =
       category === "tentative"
         ? featureToFeatureCollection(
             tentativeShapes.map((shape) => shape.geojson) as any
           )
-        : selectedFeatureCollection;
+        : featureToFeatureCollection(selectedShapes);
     const bounds = bbox(fc);
     const centroid = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
     const [latMin, latMax, lngMin, lngMax] = [

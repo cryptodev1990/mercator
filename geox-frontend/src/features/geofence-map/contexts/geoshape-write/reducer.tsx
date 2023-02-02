@@ -1,5 +1,5 @@
 import { GeoShape, GeoShapeCreate } from "../../../../client";
-import { Action } from "./action-types";
+import { Action } from "./actions";
 
 // get a type for an object that implements created_at and updated_at
 export type OptionallyTimestamped = {
@@ -66,18 +66,13 @@ export function reducer(state: State, action: Action): State {
         loading: action.value,
       };
     }
-    case "SET_OPTIMISTIC_SHAPES": {
-      const osu = [
-        ...new Set([...state.optimisticShapeUpdates, ...action.shapes]),
-      ];
+    case "SET_OPTIMISTIC_SHAPE": {
+      const osu = state.optimisticShapeUpdates.map((shape) =>
+        shape.uuid === action.shape.uuid ? action.shape : shape
+      );
       return {
         ...state,
-        updatedShapeIds: [
-          ...new Set([
-            ...state.updatedShapeIds,
-            ...action.shapes.map((s) => s.uuid),
-          ]),
-        ],
+        updatedShapeIds: osu.map((shape: any) => shape.uuid),
         optimisticShapeUpdates: osu,
       };
     }

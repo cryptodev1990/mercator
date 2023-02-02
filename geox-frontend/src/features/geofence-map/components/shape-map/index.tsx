@@ -17,6 +17,12 @@ import { useIsochrones } from "../../../../hooks/use-isochrones";
 import { UIContext } from "../../contexts/ui-context";
 import _ from "lodash";
 import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import {
+  addShapesToSelectedShapesAction,
+  clearSelectedShapesAction,
+  removeShapeFromSelectedShapesAction,
+} from "features/geofence-map/contexts/selection/actions";
+import { useSelectedShapesUuids } from "features/geofence-map/hooks/use-selected-shapes-uuids";
 
 const GeofenceMap = () => {
   const { viewport, setViewport } = useViewport();
@@ -28,17 +34,13 @@ const GeofenceMap = () => {
     addShape,
     setShapeForPropertyEdit,
     deletedShapeIdSet,
+    optimisticShapeUpdates,
   } = useShapes();
 
   const { data: allNamespaces } = useGetNamespaces();
-  const {
-    selectedUuids,
-    clearSelectedShapeUuids,
-    isSelected,
-    setSelectedShapeUuid,
-    addShapesToSelectedShapes,
-    removeShapeFromSelectedShapes,
-  } = useSelectedShapes();
+  const { selectedShapes, dispatch: selectionDispatch } = useSelectedShapes();
+
+  const selectedShapesUuids = useSelectedShapesUuids();
 
   const { deckRef, hoveredUuid, setHoveredUuid } = useContext(DeckContext);
   const { getIsochrones } = useIsochrones();
@@ -50,10 +52,14 @@ const GeofenceMap = () => {
       if (event.target instanceof HTMLInputElement) {
         return;
       }
-      if (event.key === "Backspace" && !event.metaKey && selectedUuids.length) {
-        deleteShapes(selectedUuids, {
+      if (
+        event.key === "Backspace" &&
+        !event.metaKey &&
+        selectedShapes.length
+      ) {
+        deleteShapes(selectedShapesUuids, {
           onSuccess: () => {
-            clearSelectedShapeUuids();
+            selectionDispatch(clearSelectedShapesAction());
             setCursorMode(EditorMode.ViewMode);
           },
         });
@@ -78,7 +84,7 @@ const GeofenceMap = () => {
           return { ...prevOptions, cursorMode: EditorMode.ViewMode };
         });
         clearSelectedFeatureIndexes();
-        clearSelectedShapeUuids();
+        selectionDispatch(clearSelectedShapesAction());
         setShapeForPropertyEdit(null);
       }
     }
@@ -91,7 +97,7 @@ const GeofenceMap = () => {
       document.removeEventListener("keydown", escFunction);
       document.removeEventListener("keydown", undoHandler);
     };
-  }, [selectedUuids, deleteShapes]);
+  }, [selectedShapesUuids, deleteShapes]);
 
   const { layers } = useLayers();
 
@@ -114,7 +120,7 @@ const GeofenceMap = () => {
   const handleLeftClick = (event: MouseEvent) => {
     const selectedShape = allNamespaces
       ?.flatMap((x) => x.shapes ?? [])
-      .find((shape) => isSelected(shape.uuid));
+      .find((shape) => selectedShapesUuids.includes(shape.uuid));
     if (
       selectedShape &&
       (cursorMode === EditorMode.ViewMode ||
@@ -133,7 +139,7 @@ const GeofenceMap = () => {
         ref.removeEventListener("click", handleLeftClick, false);
       };
     }
-  }, [mapRef, selectedUuids]);
+  }, [mapRef, selectedShapesUuids]);
 
   return (
     <div ref={mapRef}>
@@ -181,39 +187,74 @@ const GeofenceMap = () => {
             return;
           }
           // select a shape on click
-          console.log(
-            "e.changedPointers[0].metaKey",
-            e.changedPointers[0].metaKey
-          );
           if (
             e.leftButton &&
             (cursorMode === EditorMode.ViewMode ||
               cursorMode === EditorMode.ModifyMode) &&
             !e.changedPointers[0].metaKey &&
-            !isSelected(uuid)
+            !selectedShapesUuids.includes(uuid)
           ) {
-            clearSelectedShapeUuids();
-            setSelectedShapeUuid(uuid);
+            selectionDispatch(clearSelectedShapesAction());
+
+            let filteredObject: any;
+
+            const optimisticShapesUuids = optimisticShapeUpdates.map(
+              (shape) => shape.uuid
+            );
+            if (optimisticShapesUuids.includes(object.properties.__uuid)) {
+              filteredObject = optimisticShapeUpdates.find(
+                (shape: any) => shape.uuid === object.properties.__uuid
+              )?.geojson;
+              selectionDispatch(
+                addShapesToSelectedShapesAction([filteredObject])
+              );
+            } else {
+              filteredObject = {
+                ...object,
+                properties: _.omit(object.properties, ["layerName"]),
+              };
+              selectionDispatch(
+                addShapesToSelectedShapesAction([
+                  {
+                    ...filteredObject,
+                    geometry: {
+                      ...filteredObject.geometry,
+                      coordinates: filteredObject.geometry.coordinates,
+                    },
+                  },
+                ])
+              );
+            }
           }
           if (
             e.leftButton &&
             cursorMode === EditorMode.ViewMode &&
             e.changedPointers[0].metaKey &&
-            !isSelected(uuid)
+            !selectedShapesUuids.includes(uuid)
           ) {
             const filteredObject = {
               ...object,
               properties: _.omit(object.properties, ["layerName"]),
             };
-            addShapesToSelectedShapes([filteredObject]);
+            selectionDispatch(
+              addShapesToSelectedShapesAction([
+                {
+                  ...filteredObject,
+                  geometry: {
+                    ...filteredObject.geometry,
+                    coordinates: filteredObject.geometry.coordinates,
+                  },
+                },
+              ])
+            );
           }
           if (
             e.leftButton &&
             cursorMode === EditorMode.ViewMode &&
             e.changedPointers[0].metaKey &&
-            selectedUuids.includes(uuid)
+            selectedShapesUuids.includes(uuid)
           ) {
-            removeShapeFromSelectedShapes(uuid);
+            selectionDispatch(removeShapeFromSelectedShapesAction(uuid));
           }
         }}
         onHover={({ object, x, y }: any) => {

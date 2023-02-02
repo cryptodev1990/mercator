@@ -217,9 +217,7 @@ export class GeofencerService {
    * @returns GeoShape Successful Response
    * @throws ApiError
    */
-  public static getShapesShapeIdGeofencerShapesShapeIdGet(
-    shapeId: string
-  ): CancelablePromise<GeoShape> {
+  public static getShapeByUuid(shapeId: string): CancelablePromise<GeoShape> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/geofencer/shapes/{shape_id}",

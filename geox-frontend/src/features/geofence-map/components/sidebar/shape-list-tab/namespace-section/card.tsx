@@ -34,6 +34,7 @@ export const NamespaceCard = ({
   isVisible: boolean;
 }) => {
   const { visibleNamespaces, setVisibleNamespaces } = useShapes();
+  const { dispatch: selectionDispatch } = useSelectedShapes();
 
   const { mutate: patchShapeById } = usePatchShapeMutation();
 
@@ -64,8 +65,6 @@ export const NamespaceCard = ({
 
   const { data: allNamespaces } = useGetNamespaces();
 
-  const { setSelectedShapeUuid, clearSelectedShapeUuids } = useSelectedShapes();
-  const [shapeHovered, setShapeHovered] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
   const { searchResults } = useContext(SearchContext);
   // support pages
@@ -81,15 +80,6 @@ export const NamespaceCard = ({
       setMaxPage(Math.ceil(sectionShapeMetadata.length / MAX_DISPLAY_SHAPES));
     }
   }, [namespace.shapes]);
-
-  useEffect(() => {
-    // select a shape if hovered
-    if (shapeHovered) {
-      setSelectedShapeUuid(shapeHovered);
-    } else {
-      clearSelectedShapeUuids();
-    }
-  }, [shapeHovered]);
 
   const sectionShapeMetadata = allNamespaces
     ?.flatMap((x) => x.shapes ?? [])
@@ -144,6 +134,7 @@ export const NamespaceCard = ({
           )}
           <div
             onClick={() => {
+              selectionDispatch({ type: "RESET_SELECTION" });
               if (isVisible) {
                 setVisibleNamespaces(
                   visibleNamespaces.filter((x) => x.id !== namespace.id)
@@ -176,15 +167,7 @@ export const NamespaceCard = ({
                   );
                 }
               })
-              .map((x, i) => (
-                <ShapeCard
-                  shape={x}
-                  onMouseEnter={() => setShapeHovered(x.uuid)}
-                  onMouseLeave={() => setShapeHovered(null)}
-                  isHovered={shapeHovered === x.uuid}
-                  key={x.uuid}
-                />
-              ))}
+              .map((x, i) => <ShapeCard shape={x} key={x.uuid} />)}
           {(!searchResults || searchResults.size === 0) &&
             sectionShapeMetadata &&
             sectionShapeMetadata.length > MAX_DISPLAY_SHAPES && (
