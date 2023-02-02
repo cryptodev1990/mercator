@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import simplur from "simplur";
 import { AgGridReact } from "ag-grid-react";
 import { QueryExecResult } from "sql.js";
@@ -10,8 +10,13 @@ export const DataTable = ({
   rows: object[];
   columns: object[];
 }) => {
-  const [rowData, setRowData] = useState<object[]>(rows);
-  const [columnDefs, setColumnDefs] = useState<object[]>(columns);
+  const [rowData, setRowData] = useState<object[] | null>(null);
+  const [columnDefs, setColumnDefs] = useState<object[] | null>(null);
+
+  useEffect(() => {
+    setRowData(rows);
+    setColumnDefs(columns);
+  }, [rows, columns]);
 
   const defaultColDef = useMemo(
     () => ({ sortable: true, filter: true, resizable: true }),
