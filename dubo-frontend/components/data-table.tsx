@@ -26,7 +26,9 @@ export const DataTable = ({
 
   return (
     <div className="mt-6 animate-fadeIn100">
-      <p>Results: {simplur`${rows.length} row[|s] returned`}</p>
+      <p className="text-lg">
+        Results: {simplur`${rows.length} row[|s] returned`}
+      </p>
       <div className="mt-2 ag-theme-alpine" style={{ height: 300 }}>
         <AgGridReact
           defaultColDef={defaultColDef}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DataTable } from "./data-table";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import useDuboResults from "../lib/hooks/use-dubo-results";
+import GeneratedSQL from "./generated-sql";
 
 const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
   const [query, setQuery] = useState<string>(
@@ -55,14 +56,7 @@ const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
             {error.message}
           </p>
         )}
-        {!isValidating && data && (
-          <>
-            <p className="font-semibold">Generated SQL</p>
-            <p className="font-mono max-w-5xl whitespace-pre-wrap">
-              {data.query_text}
-            </p>
-          </>
-        )}
+        {!isValidating && data && <GeneratedSQL query={data.query_text} />}
         {!isValidating &&
           !error &&
           data?.results &&

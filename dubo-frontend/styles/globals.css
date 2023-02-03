@@ -10,6 +10,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.hljs {
+  padding: 1em !important;
+  overflow: scroll;
+}
+
 .sanddance-explorer {
   height: 800px;
 }
