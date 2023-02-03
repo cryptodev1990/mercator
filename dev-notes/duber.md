@@ -1432,3 +1432,31 @@ I might expose one of the Geofencer endpoints to render some of the shape data
 Alternatively, I could just use centroids
 We also need to figure out how to get the parquet format working so that we're not passing a bunch of JSON back and forth
 5 bytes per ZIP code, 4 bytes per float * 33000 records = 561 kilobytes, which isn't too bad
+
+
+Feb 3 2023
+----------
+
+TODOs for dubo
+
+- [dubo-api] fillna with 0's
+- [dubo-frontend] log sample of data on frontend
+- [dubo-frontend] change scale strategy
+- [dubo-frontend] fix the blue flicker bug -- state does not 
+- [dubo-frontend] return query text to client?
+- [dubo-api] log time for different phases -- OpenAI, query, etc
+- [dubo-api] handle divide-by-0
+- [dubo-api] handle `Answer` prefix
+- [dubo-frontend] Surface variables for querying somehow
+- [dubo-frontend] Tiling alternatives?
+- [dubo-frontend] UI layout?
+- [dubo-api] Create read-only user for Postgres
+
+
+Categories of errors:
+- Syntax
+- Divide by error
+- 'Answer' prefix
+- Wrong variable(s) selected
+- 
+
