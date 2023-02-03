@@ -17,9 +17,11 @@ const securityHeaders = [
 module.exports = {
   ...nextConfig,
   poweredByHeader: false,
+  staticPageGenerationTimeout: 1000,
   webpack: (config, { isServer }) => {
     if (!isServer) config.resolve.fallback.fs = false;
     // config.optimization.minimize = false;
+    config.experiments = { asyncWebAssembly: true, layers: true };
     return config;
   },
   async headers() {
