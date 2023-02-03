@@ -39,7 +39,13 @@ export const useZctaShapes = () => {
         for (let i = 0; i < arrowTbl.numRows; i++) {
           const zcta: string = zctaCol[i];
           const geom = JSON.parse(geomColumn[i]);
-          output.push([zcta, geom]);
+          if (geom.length !== 1) {
+            for (const g of geom) {
+              output.push({ zcta, geom: g });
+            }
+          } else {
+            output.push({ zcta, geom });
+          }
         }
         setZctaShapes(output);
         setIsLoading(false);

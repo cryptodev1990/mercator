@@ -4,7 +4,7 @@ import DeckGL from "deck.gl";
 // @ts-ignore
 import { MVTLayer } from "@deck.gl/geo-layers";
 // @ts-ignore
-import { PolygonLayer } from "@deck.gl/layers";
+import { PolygonLayer, GeoJsonLayer } from "@deck.gl/layers";
 import StaticMap from "react-map-gl";
 import clsx from "clsx";
 // @ts-ignore
@@ -13,8 +13,10 @@ import useCensus from "../lib/hooks/use-census";
 import Legend from "./legend";
 import { useZctaShapes } from "../lib/hooks/use-zcta-shapes";
 
+const ZOOM_TRANSITION = 7.3;
 const LIGHT = "mapbox://styles/mapbox/light-v9";
 const SATELLITE = "mapbox://styles/mapbox/satellite-v9";
+const NONE = "none";
 const TILE_URL =
   "https://api.mercator.tech/backsplash/zcta/generate_shape_tile/{z}/{x}/{y}";
 
@@ -44,7 +46,7 @@ const GeoMap = () => {
   const [colors, setColors] = useState(COLORS);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
-  // const { zctaShapes } = useZctaShapes();
+  const { zctaShapes } = useZctaShapes();
   const {
     data: { header, lookup: zctaLookup },
     isLoading,
@@ -66,6 +68,8 @@ const GeoMap = () => {
 
   const scale = useMemo(() => {
     if (!zctaLookup) return (d: any) => [0, 0, 0];
+    console.log("selectedColumn", selectedColumn);
+    console.log("zctaLookup", zctaLookup);
     const vals = Object.values(zctaLookup).map((d: any) => +d[selectedColumn]);
     return scaleQuantile().domain(vals).range(COLORS);
   }, [zctaLookup, selectedColumn]);
@@ -128,6 +132,7 @@ const GeoMap = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 setQuery(localQuery);
+                setSelectedColumn("");
               }
             }}
           />
@@ -158,9 +163,19 @@ const GeoMap = () => {
         >
           <div className="rounded-full h-5 w-5 bg-gray-900"></div>
           <button
-            onClick={() => setBaseMap(baseMap !== LIGHT ? LIGHT : SATELLITE)}
+            onClick={() => {
+              if (baseMap === LIGHT) {
+                setBaseMap(SATELLITE);
+              } else if (baseMap === SATELLITE) {
+                setBaseMap(NONE);
+              } else if (baseMap === NONE) {
+                setBaseMap(LIGHT);
+              }
+            }}
           >
-            {baseMap === LIGHT ? "Light Map" : "Satellite Map"}
+            {(baseMap === LIGHT && "Light Map") ||
+              (baseMap === SATELLITE && "Satellite Map") ||
+              (baseMap === NONE && "None")}
           </button>
         </div>
         {/* legend */}
@@ -265,71 +280,93 @@ const GeoMap = () => {
             dragRotate: false,
           }}
           onHover={({ object }: any) => {
-            if (!object && !selectedZcta) {
-              return;
-            }
-            if (!object) {
-              setSelectedZcta("");
-              return;
-            }
-            const { zcta } = object.properties;
-            setSelectedZcta(zcta);
+            // if (!object && !selectedZcta) {
+            //   return;
+            // }
+            // if (!object) {
+            //   setSelectedZcta("");
+            //   return;
+            // }
+            // const { zcta } = object.properties;
+            // setSelectedZcta(zcta);
+          }}
+          onClick={({ object }: any) => {
+            console.log(object);
           }}
           layers={[
-            // zctaLookup &&
-            //   localViewPort.zoom < 15 &&
-            //   new PolygonLayer({
-            //     layerName: "zcta-high",
-            //     data: zctaShapes,
-            //     getPolygon: (d: any) => {
-            //       return [d[1]];
-            //     },
-            //     getFillColor: (d: any) => {
-            //       return [255, 0, 255];
-            //     },
-            //     stroked: true,
-            //     filled: true,
-            //     extruded: false,
-            //     wireframe: false,
-            //     opacity: 0.5,
-            //     visible: localViewPort.zoom > 10,
-            //   }),
-            zctaLookup &&
-              new MVTLayer({
-                layerName: "zcta-low",
-                data: TILE_URL,
-                minZoom: 0,
-                maxZoom: 24,
-                maxRequests: -1,
-                updateTriggers: {
-                  getFillColor: [selectedColumn, selectedZcta, zctaLookup],
-                },
-                pickingRadius: 5,
-                filled: true,
-                extruded: false,
-                wireframe: false,
-                opacity: 0.5,
-                getFillColor: (d: any) => {
-                  if (!zctaLookup) return [0, 0, 0];
-                  try {
-                    const { zcta } = d.properties;
-                    if (zcta === selectedZcta) return [255, 255, 255];
-                    const val = zctaLookup[zcta][selectedColumn];
-                    const color = scale(val);
-                    return color;
-                  } catch (e) {
-                    return [0, 0, 0, 0];
-                  }
-                },
-                pickable: true,
-              }),
+            new GeoJsonLayer({
+              layerName: "usa",
+              data: "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json",
+              getFillColor: COLORS[0],
+              stroked: false,
+            }),
+            new PolygonLayer({
+              layerName: "zcta-high",
+              visible: localViewPort.zoom <= ZOOM_TRANSITION,
+              data: zctaShapes,
+              updateTriggers: {
+                getFillColor: [selectedColumn, selectedZcta, zctaLookup],
+              },
+              getPolygon: (d: any) => {
+                return d.geom;
+              },
+              getFillColor: (d: any) => {
+                if (!zctaLookup) return COLORS[0];
+                try {
+                  const { zcta } = d;
+                  if (zcta === selectedZcta) return [255, 255, 255];
+                  const val = zctaLookup[zcta][selectedColumn];
+                  const color = scale(val);
+                  return color;
+                } catch (e) {
+                  return [0, 0, 0, 0];
+                }
+              },
+              stroked: true,
+              filled: true,
+              pickable: true,
+              extruded: false,
+              wireframe: false,
+              opacity: 1,
+            }),
+            new MVTLayer({
+              layerName: "zcta-low",
+              data: TILE_URL,
+              minZoom: 6,
+              maxZoom: 24,
+              visible: localViewPort.zoom > ZOOM_TRANSITION,
+              maxRequests: -1,
+              updateTriggers: {
+                getFillColor: [selectedColumn, selectedZcta, zctaLookup],
+              },
+              pickingRadius: 5,
+              filled: true,
+              extruded: false,
+              wireframe: false,
+              opacity: 0.5,
+              getFillColor: (d: any) => {
+                if (!zctaLookup) return [0, 0, 0];
+                try {
+                  const { zcta } = d.properties;
+                  if (zcta === selectedZcta) return [255, 255, 255];
+                  const val = zctaLookup[zcta][selectedColumn];
+                  const color = scale(val);
+                  return color;
+                } catch (e) {
+                  return [0, 0, 0, 0];
+                }
+              },
+              pickable: true,
+            }),
+            // simple USA map
           ]}
         >
           <StaticMap
             reuseMaps
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
             attributionControl={false}
-            mapStyle={baseMap}
+            // turn off base map
+            mapStyle={baseMap !== NONE ? baseMap : undefined}
           />
         </DeckGL>
       </div>
