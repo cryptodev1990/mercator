@@ -3,6 +3,7 @@
 """
 This is a ruckus mad-dash demo endpoint for the census API.
 """
+from typing import List, Optional, Union
 from io import BytesIO
 import os
 import re
@@ -11,14 +12,16 @@ import time
 import asyncpg
 import openai
 import pandas as pd
+from pydantic import NonNegativeInt
 import sqlglot
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 
 from api.gateways.conns import Connection
 from api.gateways.openai import get_sql_from_gpt_finetuned, get_sql_from_gpt_prompt
 from api.handlers.sql_utils import guard_against_divide_by_zero, grab_from_select_onwards
+from api.handlers.autocomplete import get_autocomplete
 
 
 openai.api_key = os.environ['OPENAI_KEY']
@@ -101,7 +104,17 @@ async def census(
         presence_penalty=0,
     )
     table = response.choices[0].text.strip()  # type: ignore
-    assert table in TABLES, f'Invalid table: {table}'
+    try:
+        assert table in TABLES, f'Invalid table: {table}'
+    except AssertionError as e:
+        print({
+            "event": "error",
+            "error": "invalid table",
+            "table": table,
+            "ip": ip,
+        })
+        raise HTTPException(
+            status_code=404, detail="Query does not relate to a known data source")
 
     prompt_2 = zcta_prompt_factory.make_prompt(
         query, ddl_line_filter=table, finetune=False)
@@ -116,6 +129,10 @@ async def census(
         "seconds": time.time() - start,
         "ip": ip,
     })
+    print('======')
+    print(query)
+    print(sql)
+    print('======')
     sql = cleaning_pipeline(sql)
     print({
         "event": "cleaned_sql",
@@ -135,16 +152,41 @@ async def census(
     df = pd.DataFrame(records, columns=records[0].keys())
     print(df.head())
     parquet = df.dropna().to_parquet(index=False)
-    return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream")
+    return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
+        "X-Generated-Sql": sql,
+    })
 
 
 def cleaning_pipeline(sql: str) -> str:
     sql = grab_from_select_onwards(' '.join(sql.split('\n')))
     sql = sqlglot.transpile(
-        sql, read='sqlite', write='postgres', pretty=True)[0]
+        sql, read='sqlite', write='postgres')[0]
     # For whatever reason gpt-3 loves multiplying percentages by 100 or 100.0
     if re.match(ONE_HUNDRED_RE, sql):
         sql = re.sub(ONE_HUNDRED_RE, '', sql)
     # GPT-3 also loves to divide by 0
     sql = guard_against_divide_by_zero(sql)
     return sql
+
+
+_autocomplete = get_autocomplete()
+QUERY_MAX_SIZE = 5
+
+
+@router.get(
+    "/census/autocomplete",
+    response_model=List[str],
+    responses={"400": {"description": "Unable to parse query."}},
+)
+async def _autocomplete_endpoint(
+    text: str = Query(..., example="Where is",
+                      description="Incomplete text."),
+    limit: NonNegativeInt = Query(
+        QUERY_MAX_SIZE, description="Maximum number of results to return"),
+) -> List[str]:
+    """Autocomplete endpoint for text search queries"""
+
+    size = limit if limit <= QUERY_MAX_SIZE else QUERY_MAX_SIZE
+    results = _autocomplete.search(text, max_cost=1000, size=size)
+
+    return [j for i in results for j in i]
