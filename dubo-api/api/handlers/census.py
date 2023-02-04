@@ -139,6 +139,7 @@ def cleaning_pipeline(input_sql: str) -> str:
             sql = re.sub(ONE_HUNDRED_RE, '', sql)
         # GPT-3 also loves to divide by 0
         sql = guard_against_divide_by_zero(sql)
+        return sql
     except Exception as e:
         print("cleaning pipeline failed, defaulting to original sql")
         print(e)
