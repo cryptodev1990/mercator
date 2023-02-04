@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import simplur from "simplur";
 import { AgGridReact } from "ag-grid-react";
 import { QueryExecResult } from "sql.js";
+import { MdDownload } from "react-icons/md";
 import Visualizer from "./visualizer";
 
 export const DataTable = ({
@@ -11,6 +12,7 @@ export const DataTable = ({
   rows: object[];
   columns: object[];
 }) => {
+  const gridRef = useRef(null);
   const [rowData, setRowData] = useState<object[] | null>(null);
   const [columnDefs, setColumnDefs] = useState<object[] | null>(null);
 
@@ -24,13 +26,28 @@ export const DataTable = ({
     []
   );
 
+  const onButtonClick = useCallback(() => {
+    // @ts-ignore
+    gridRef?.current?.api.exportDataAsCsv();
+  }, []);
+
   return (
     <div className="mt-6 animate-fadeIn100">
-      <p className="text-lg">
-        Results: {simplur`${rows.length} row[|s] returned`}
-      </p>
+      <div className="flex justify-between">
+        <p className="text-lg">
+          Results: {simplur`${rows.length} row[|s] returned`}
+        </p>
+        <button
+          onClick={onButtonClick}
+          title="Download .csv"
+          className="border hover:border-spBlue text-spBlue font-bold py-1 px-3 transition"
+        >
+          <MdDownload />
+        </button>
+      </div>
       <div className="mt-2 ag-theme-alpine" style={{ height: 300 }}>
         <AgGridReact
+          ref={gridRef}
           defaultColDef={defaultColDef}
           rowData={rowData}
           columnDefs={columnDefs}
