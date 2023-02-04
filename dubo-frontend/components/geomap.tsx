@@ -13,10 +13,11 @@ import useCensus from "../lib/hooks/use-census";
 import Legend from "./legend";
 import { useZctaShapes } from "../lib/hooks/use-zcta-shapes";
 
-const ZOOM_TRANSITION = 7.3;
-const LIGHT = "mapbox://styles/mapbox/light-v9";
+const ZOOM_TRANSITION = 5.2;
+// add no labels
+const LIGHT =
+  "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
 const SATELLITE = "mapbox://styles/mapbox/satellite-v9";
-const NONE = "none";
 const TILE_URL =
   "https://api.mercator.tech/backsplash/zcta/generate_shape_tile/{z}/{x}/{y}";
 
@@ -167,15 +168,12 @@ const GeoMap = () => {
               if (baseMap === LIGHT) {
                 setBaseMap(SATELLITE);
               } else if (baseMap === SATELLITE) {
-                setBaseMap(NONE);
-              } else if (baseMap === NONE) {
                 setBaseMap(LIGHT);
               }
             }}
           >
             {(baseMap === LIGHT && "Light Map") ||
-              (baseMap === SATELLITE && "Satellite Map") ||
-              (baseMap === NONE && "None")}
+              (baseMap === SATELLITE && "Satellite Map")}
           </button>
         </div>
         {/* legend */}
@@ -297,12 +295,14 @@ const GeoMap = () => {
             new GeoJsonLayer({
               layerName: "usa",
               data: "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json",
+              getOffset: [0, 0],
               getFillColor: COLORS[0],
               stroked: false,
             }),
             new PolygonLayer({
               layerName: "zcta-high",
               visible: localViewPort.zoom <= ZOOM_TRANSITION,
+              getOffset: [0, 1],
               data: zctaShapes,
               updateTriggers: {
                 getFillColor: [selectedColumn, selectedZcta, zctaLookup],
@@ -336,6 +336,7 @@ const GeoMap = () => {
               maxZoom: 24,
               visible: localViewPort.zoom > ZOOM_TRANSITION,
               maxRequests: -1,
+              getOffset: [0, 1],
               updateTriggers: {
                 getFillColor: [selectedColumn, selectedZcta, zctaLookup],
               },
@@ -366,7 +367,7 @@ const GeoMap = () => {
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
             attributionControl={false}
             // turn off base map
-            mapStyle={baseMap !== NONE ? baseMap : undefined}
+            mapStyle={baseMap}
           />
         </DeckGL>
       </div>
