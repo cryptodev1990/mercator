@@ -142,7 +142,6 @@ def cleaning_pipeline(sql: str) -> str:
     sql = grab_from_select_onwards(' '.join(sql.split('\n')))
     sql = sqlglot.transpile(
         sql, read='sqlite', write='postgres', pretty=True)[0]
-    sql = guard_against_divide_by_zero(sql)
     # For whatever reason gpt-3 loves multiplying percentages by 100 or 100.0
     if re.match(ONE_HUNDRED_RE, sql):
         sql = re.sub(ONE_HUNDRED_RE, '', sql)
