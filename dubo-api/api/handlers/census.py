@@ -9,21 +9,20 @@ import re
 import time
 
 import asyncpg
-import pandas as pd
 import openai
+import pandas as pd
 import sqlglot
-from sqlglot import select, condition
-import sqlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from api.gateways.conns import Connection
 from api.gateways.openai import get_sql_from_gpt_finetuned, get_sql_from_gpt_prompt
+from api.handlers.sql_utils import guard_against_divide_by_zero, grab_from_select_onwards
+
 
 openai.api_key = os.environ['OPENAI_KEY']
 BUCKET = 'dubo-api-storage'
-
 ONE_HUNDRED_RE = r'\s?[*]\s?100(.0)?'
 
 
@@ -49,7 +48,7 @@ zcta_prompt_factory = Connection.make_conn("acs-zctas")
 
 
 @router.get("/db-health")
-async def db_health(conn = Depends(connect_to_db)):
+async def db_health(conn=Depends(connect_to_db)):
     if conn is None:
         raise NotImplementedError('Database connection not implemented')
     return await conn.fetch('SELECT 1')
@@ -58,9 +57,9 @@ async def db_health(conn = Depends(connect_to_db)):
 # make the route send octet-stream
 @router.get('/census', response_class=StreamingResponse)
 async def census(
-   query: str,
-   request: Request,
-   conn = Depends(connect_to_db),
+    query: str,
+    request: Request,
+    conn=Depends(connect_to_db),
 ):
     ip = request.client.host
     if conn is None:
@@ -104,12 +103,12 @@ async def census(
     table = response.choices[0].text.strip()  # type: ignore
     assert table in TABLES, f'Invalid table: {table}'
 
-    prompt_2 = zcta_prompt_factory.make_prompt(query, ddl_line_filter=table, finetune=False)
+    prompt_2 = zcta_prompt_factory.make_prompt(
+        query, ddl_line_filter=table, finetune=False)
     start = time.time()
     sql = get_sql_from_gpt_prompt(prompt_2)
     if sql is None:
         raise HTTPException(status_code=404, detail="No results found")
-    sql = sqlglot.transpile(sql, read='sqlite', write='postgres', pretty=True)[0]
     print({
         "event": "sql",
         "sql": sql,
@@ -139,39 +138,10 @@ async def census(
     return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream")
 
 
-def guard_against_divide_by_zero(sql: str) -> str:
-    if not '/' in sql:
-        return sql
-    parsed = sqlparse.parse(sql)[0]
-    tokens = (token for token in parsed.flatten() if not token.is_whitespace)
-    add_to_where = []
-    for token in tokens:
-        if token.value == '/':
-            next_token = next(tokens)
-            add_to_where.append(next_token.value)
-    if len(add_to_where) == 0:
-        return sql
-    new_query = sqlglot.parse_one(sql)
-    for i, col in enumerate(add_to_where):
-        if i == 0:
-            new_query = new_query.where(condition(f'{col} != 0'))
-        else:
-            new_query = new_query.and_(condition(f'{col} != 0'))
-    return new_query.sql()
-
-
-def grab_from_select_onwards(sql: str) -> str:
-    """Use a regex to grab the select onwards from a SQL query"""
-    select_re = r'SELECT\s.*'
-
-    match = re.search(select_re, sql, re.IGNORECASE)
-    if match is None:
-        raise ValueError(f'Could not find select in {sql}')
-    return match.group()
-
-
 def cleaning_pipeline(sql: str) -> str:
-    sql = grab_from_select_onwards(sql)
+    sql = grab_from_select_onwards(' '.join(sql.split('\n')))
+    sql = sqlglot.transpile(
+        sql, read='sqlite', write='postgres', pretty=True)[0]
     sql = guard_against_divide_by_zero(sql)
     # For whatever reason gpt-3 loves multiplying percentages by 100 or 100.0
     if re.match(ONE_HUNDRED_RE, sql):
