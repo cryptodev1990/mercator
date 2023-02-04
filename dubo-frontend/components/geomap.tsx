@@ -12,8 +12,11 @@ import { scaleQuantile } from "d3-scale";
 import useCensus from "../lib/hooks/use-census";
 import Legend from "./legend";
 import { useZctaShapes } from "../lib/hooks/use-zcta-shapes";
+import useCensusAutocomplete from "../lib/hooks/use-census-autocomplete";
+import { SearchBar } from "./search-bar";
+import { CloseButton } from "./close-button";
 
-const ZOOM_TRANSITION = 5.2;
+const ZOOM_TRANSITION = 7.1;
 // add no labels
 const LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -55,6 +58,10 @@ const GeoMap = () => {
   } = useCensus({
     query,
   });
+  const { data: autocompleteSuggestions } = useCensusAutocomplete({
+    text: localQuery,
+  });
+  const [fixSelected, setFixSelected] = useState(false);
 
   useEffect(() => {
     if (error) console.error("error", error);
@@ -119,25 +126,15 @@ const GeoMap = () => {
     <div className="h-screen border-black overflow-hidden">
       <div className="w-full h-full relative" ref={deckContainerRef}>
         {/* in the top-left corner, add an input that takes a question */}
-        <div
-          className={clsx(
-            "absolute top-[10%] z-50 mx-auto w-full",
-            "bg-slate-100 rounded-md shadow-md text-slate-900 p-3",
-            "hover:bg-slate-200 "
-          )}
-        >
-          <input
-            className="bg-transparent border-none w-full border-b-red-400"
-            value={localQuery}
-            onChange={(e) => setLocalQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setQuery(localQuery);
-                setSelectedColumn("");
-              }
-            }}
-          />
-        </div>
+        <SearchBar
+          value={localQuery}
+          onChange={(text) => setLocalQuery(text)}
+          onEnter={() => {
+            setQuery(localQuery);
+            setSelectedColumn("");
+          }}
+          autocompleteSuggestions={autocompleteSuggestions?.suggestions ?? []}
+        />
         {/* Big loading spinner in the center of the screen */}
         {isLoading && (
           <div
@@ -182,17 +179,23 @@ const GeoMap = () => {
         )}
         {error && (
           <div className="absolute top-0 left-0 z-50 m-2">
-            <div className="bg-red-500 rounded-md shadow-md text-white">
+            <div className="bg-orange-500 rounded-md shadow-md text-white">
               <div className="flex flex-row justify-center items-center space-x-2 p-2">
                 <div className="rounded-full h-5 w-5 bg-gray-900"></div>
-                <div>
-                  Your query failed. Here are some suggestions:
-                  <ul>
-                    <li>Try a different data set</li>
-                    <li>Your query may time-out if too resource intensive</li>
-                    <li>Because of high query volume, our app may fail</li>
-                  </ul>
-                </div>
+                {/*close button*/}
+                <CloseButton
+                  onClick={() => {
+                    setLocalQuery("");
+                    setQuery("");
+                    setSelectedColumn("");
+                  }}
+                />
+                Your query failed. Here are some suggestions:
+                <ul>
+                  <li>Try a different data set</li>
+                  <li>Your query may time-out if too resource intensive</li>
+                  <li>Because of high query volume, our app may fail</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -278,18 +281,39 @@ const GeoMap = () => {
             dragRotate: false,
           }}
           onHover={({ object }: any) => {
-            // if (!object && !selectedZcta) {
-            //   return;
-            // }
-            // if (!object) {
-            //   setSelectedZcta("");
-            //   return;
-            // }
-            // const { zcta } = object.properties;
-            // setSelectedZcta(zcta);
+            if (fixSelected) {
+              return;
+            }
+
+            if (!object && !selectedZcta) {
+              return;
+            }
+            if (!object) {
+              setSelectedZcta("");
+              return;
+            }
+            const zcta =
+              object?.zcta ||
+              object?.properties.zcta ||
+              object?.properties.ZCTA5CE10;
+            setSelectedZcta(zcta);
           }}
           onClick={({ object }: any) => {
-            console.log(object);
+            if (!object) {
+              setSelectedZcta("");
+              setFixSelected(false);
+            }
+            const zcta =
+              object?.zcta ||
+              object?.properties?.zcta ||
+              object?.properties?.ZCTA5CE10;
+            if (zcta === selectedZcta) {
+              setSelectedZcta("");
+              setFixSelected(false);
+              return;
+            }
+            setSelectedZcta(zcta);
+            setFixSelected(true);
           }}
           layers={[
             new GeoJsonLayer({
