@@ -32,6 +32,7 @@ ONE_HUNDRED_RE = r'\s?[*]\s?100(.0)?'
 # Create an async postgres connection
 async def connect_to_db():
     try:
+        # TODO we need to make this a pool
         return await asyncpg.connect(os.environ['CENSUS_DATABASE_URL'])
     except Exception as e:
         print({
@@ -40,6 +41,18 @@ async def connect_to_db():
         })
         print(e)
         return None
+
+
+async def check_cache(query: str, conn: asyncpg.Connection) -> str:
+    # We have an UNLOGGED table that stores the results of queries
+    # CREATE UNLOGGED TABLE census_queries (query TEXT, approved_sql TEXT);
+    # CREATE INDEX ON census_queries (query);
+    # ALTER TABLE census_queries ADD COLUMN id SERIAL PRIMARY KEY;
+    res = await conn.fetch(
+        'SELECT approved_sql FROM census_queries WHERE query = $1', query.lower())
+    if len(res) > 0:
+        return res[0][0]
+    return None
 
 
 router = APIRouter(
@@ -68,23 +81,89 @@ async def census(
     if conn is None:
         raise NotImplementedError('Database connection not implemented')
 
-    TABLES = [
-        "acs_sex_by_age",
-        "acs_race",
-        "acs_hispanic",
-        "acs_commute_times",
-        "acs_employment_by_industry",
-        "acs_commute_modes",
-        "acs_education_subjects",
-        "acs_housing_year_built",
-        "acs_poverty_status",
-        "acs_ratio_of_income_to_poverty_level",
-        "acs_earners_in_household",
-        "acs_housing",
-        "acs_medicare",
-        "acs_gross_rent_household_income_ratio",
-    ]
+    # Check the cache
+    cached_sql = await check_cache(query, conn)
+    if cached_sql is not None:
+        sql = cached_sql
+        print({
+            "event": "cache_hit",
+            "ip": ip,
+            "sql": sql,
+            "query": query,
+        })
+    else:
+        sql = await _get_census_sql_from_query(query, conn, ip)
+    start = time.time()
+    records = await conn.fetch(sql)
+    print({
+        "event": "fetched_records",
+        "records": len(records),
+        "seconds": time.time() - start,
+        "ip": ip,
+    })
+    if len(records) == 0:
+        raise HTTPException(status_code=404, detail="No results found")
+    df = pd.DataFrame(records, columns=records[0].keys())
+    print(df.head())
+    parquet = df.dropna().to_parquet(index=False)
+    return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
+        # "X-Generated-Sql": sql,
+    })
 
+
+@router.post('/feedback/census')
+async def feedback_census(
+    q: str,
+    sql: str,
+    conn=Depends(connect_to_db),
+):
+    if conn is None:
+        raise NotImplementedError('Database connection not implemented')
+    try:
+        sql = sqlglot.transpile(sql, read='postgres',
+                                write='postgres', pretty=True)[0]
+    except Exception as e:
+        return HTTPException(status_code=400, detail="Invalid SQL")
+    await conn.execute(
+        'INSERT INTO census_queries (query, approved_sql) VALUES ($1, $2)', q.lower(), sql)
+    return {'status': 'ok'}
+
+
+def cleaning_pipeline(input_sql: str) -> str:
+    sql = grab_from_select_onwards(' '.join(input_sql.split('\n')))
+    try:
+        sql = sqlglot.transpile(
+            sql, read='sqlite', write='postgres', pretty=False)[0]
+        # For whatever reason gpt-3 loves multiplying percentages by 100 or 100.0
+        if re.match(ONE_HUNDRED_RE, sql):
+            sql = re.sub(ONE_HUNDRED_RE, '', sql)
+        # GPT-3 also loves to divide by 0
+        sql = guard_against_divide_by_zero(sql)
+    except Exception as e:
+        print("cleaning pipeline failed, defaulting to original sql")
+        print(e)
+    return input_sql
+
+
+TABLES = [
+    "acs_sex_by_age",
+    "acs_race",
+    "acs_hispanic",
+    "acs_commute_times",
+    "acs_employment_by_industry",
+    "acs_commute_modes",
+    "acs_education_subjects",
+    "acs_housing_year_built",
+    "acs_poverty_status",
+    "acs_ratio_of_income_to_poverty_level",
+    "acs_earners_in_household",
+    "acs_housing",
+    "acs_medicare",
+    "acs_gross_rent_household_income_ratio",
+]
+
+
+async def _get_census_sql_from_query(query: str, conn: asyncpg.Connection, ip: str) -> str:
     NEWLINE = '\n'
 
     prompt_1 = f"""
@@ -139,33 +218,6 @@ async def census(
         "sql": sql,
         "ip": ip,
     })
-    start = time.time()
-    records = await conn.fetch(sql)
-    print({
-        "event": "fetched_records",
-        "records": len(records),
-        "seconds": time.time() - start,
-        "ip": ip,
-    })
-    if len(records) == 0:
-        raise HTTPException(status_code=404, detail="No results found")
-    df = pd.DataFrame(records, columns=records[0].keys())
-    print(df.head())
-    parquet = df.dropna().to_parquet(index=False)
-    return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
-        "X-Generated-Sql": sql,
-    })
-
-
-def cleaning_pipeline(sql: str) -> str:
-    sql = grab_from_select_onwards(' '.join(sql.split('\n')))
-    sql = sqlglot.transpile(
-        sql, read='sqlite', write='postgres')[0]
-    # For whatever reason gpt-3 loves multiplying percentages by 100 or 100.0
-    if re.match(ONE_HUNDRED_RE, sql):
-        sql = re.sub(ONE_HUNDRED_RE, '', sql)
-    # GPT-3 also loves to divide by 0
-    sql = guard_against_divide_by_zero(sql)
     return sql
 
 
