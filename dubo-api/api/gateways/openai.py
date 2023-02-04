@@ -8,13 +8,8 @@ import openai
 openai.api_key = os.environ['OPENAI_KEY']
 
 prompt_template = jinja2.Template('''
-    Convert text to {{sql_flavor or 'ANSI'}} SQL.
-    {% if sql_flavor == 'bigquery' %}
+    Convert text to SQL.
 
-    BigQuery SQL uses Postgres-flavored syntax, e.g., `EXTRACT(part FROM date_expression)`
-    GROUP BY and ORDER BY statements should use numbers instead of column names, e.g., `GROUP BY 1, 2`
-
-    {% endif %}
     You have the following DDLs:
 
     ```
