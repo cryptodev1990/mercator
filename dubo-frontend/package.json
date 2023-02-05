@@ -28,6 +28,7 @@
     "ag-grid-community": "^29.0.0",
     "ag-grid-react": "^29.0.0",
     "clsx": "^1.2.1",
+    "d3-format": "^3.1.0",
     "d3-scale": "^4.0.2",
     "deck.gl": "^8.8.23",
     "eslint": "8.31.0",

@@ -7,14 +7,13 @@ import { MVTLayer } from "@deck.gl/geo-layers";
 import { PolygonLayer, GeoJsonLayer } from "@deck.gl/layers";
 import StaticMap from "react-map-gl";
 import clsx from "clsx";
-// @ts-ignore
-import { scaleQuantile } from "d3-scale";
-import useCensus from "../lib/hooks/use-census";
+import useCensus from "../../lib/hooks/census/use-census";
 import Legend from "./legend";
-import { useZctaShapes } from "../lib/hooks/use-zcta-shapes";
-import useCensusAutocomplete from "../lib/hooks/use-census-autocomplete";
-import { SearchBar } from "./search-bar";
-import { CloseButton } from "./close-button";
+import { useZctaShapes } from "../../lib/hooks/use-zcta-shapes";
+import useCensusAutocomplete from "../../lib/hooks/census/use-census-autocomplete";
+import { SearchBar } from "../search-bar";
+import { CloseButton } from "../close-button";
+import { usePalette } from "../../lib/hooks/scales/use-palette";
 
 const ZOOM_TRANSITION = 7.1;
 // add no labels
@@ -23,14 +22,6 @@ const LIGHT =
 const SATELLITE = "mapbox://styles/mapbox/satellite-v9";
 const TILE_URL =
   "https://api.mercator.tech/backsplash/zcta/generate_shape_tile/{z}/{x}/{y}";
-
-const COLORS = [
-  [255, 255, 178],
-  [254, 217, 118],
-  [253, 141, 60],
-  [240, 59, 32],
-  [189, 0, 38],
-];
 
 const INITIAL_QUESTION = "Where do people have gas heating?";
 
@@ -47,7 +38,6 @@ const GeoMap = () => {
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState(INITIAL_QUESTION);
   const [localQuery, setLocalQuery] = useState(query);
-  const [colors, setColors] = useState(COLORS);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
   const { zctaShapes } = useZctaShapes();
@@ -61,6 +51,19 @@ const GeoMap = () => {
   const { data: autocompleteSuggestions } = useCensusAutocomplete({
     text: localQuery,
   });
+
+  const dataVector = useMemo(() => {
+    if (!zctaLookup) return [];
+    const vals = Object.values(zctaLookup).map((d: any) => +d[selectedColumn]);
+    return vals;
+  }, [zctaLookup, selectedColumn]);
+
+  const { colors, breaks, scale, setPaletteName, setScaleType } = usePalette({
+    vec: dataVector,
+  });
+
+  console.log("colors", colors);
+
   const [fixSelected, setFixSelected] = useState(false);
 
   useEffect(() => {
@@ -73,32 +76,6 @@ const GeoMap = () => {
     if (selectedColumn) return;
     setSelectedColumn(header[0]);
   }, [header, selectedColumn]);
-
-  const scale = useMemo(() => {
-    if (!zctaLookup) return (d: any) => [0, 0, 0];
-    console.log("selectedColumn", selectedColumn);
-    console.log("zctaLookup", zctaLookup);
-    const vals = Object.values(zctaLookup).map((d: any) => +d[selectedColumn]);
-    return scaleQuantile().domain(vals).range(COLORS);
-  }, [zctaLookup, selectedColumn]);
-
-  const breaks = useMemo(() => {
-    if (!zctaLookup) return [];
-    const vals = Object.values(zctaLookup).map((d: any) => +d[selectedColumn]);
-    const scale = scaleQuantile().domain(vals).range(COLORS).quantiles();
-    const min = Math.min(...vals);
-    if (min < scale[0]) scale.unshift(min);
-    return scale.map((d: any) => {
-      // if there's a decimal, round to 2 places
-      if (!d) {
-        return d;
-      } else if (d % 1 !== 0) {
-        return d.toFixed(2);
-      } else {
-        return d;
-      }
-    });
-  }, [zctaLookup, selectedColumn]);
 
   const tooltipValue = useMemo(() => {
     if (!zctaLookup) return "";
@@ -175,7 +152,13 @@ const GeoMap = () => {
         </div>
         {/* legend */}
         {header.length > 0 && (
-          <Legend colors={COLORS} text={breaks} title={selectedColumn} />
+          <Legend
+            colors={colors}
+            text={breaks}
+            title={selectedColumn}
+            isRatio={selectedColumn.includes("ratio")}
+            setPaletteName={setPaletteName}
+          />
         )}
         {error && (
           <div className="absolute top-0 left-0 z-50 m-2">
@@ -320,7 +303,7 @@ const GeoMap = () => {
               layerName: "usa",
               data: "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json",
               getOffset: [0, 0],
-              getFillColor: COLORS[0],
+              getFillColor: colors[0],
               stroked: false,
             }),
             new PolygonLayer({
@@ -329,17 +312,21 @@ const GeoMap = () => {
               getOffset: [0, 1],
               data: zctaShapes,
               updateTriggers: {
-                getFillColor: [selectedColumn, selectedZcta, zctaLookup],
+                getFillColor: [
+                  selectedColumn,
+                  selectedZcta,
+                  zctaLookup,
+                  colors,
+                ],
               },
               getPolygon: (d: any) => {
                 return d.geom;
               },
               getFillColor: (d: any) => {
-                if (!zctaLookup) return COLORS[0];
+                if (!zctaLookup) return colors[0];
                 try {
-                  const { zcta } = d;
-                  if (zcta === selectedZcta) return [255, 255, 255];
-                  const val = zctaLookup[zcta][selectedColumn];
+                  if (d.zcta === selectedZcta) return [255, 255, 255];
+                  const val = zctaLookup[d.zcta][selectedColumn];
                   const color = scale(val);
                   return color;
                 } catch (e) {
@@ -362,7 +349,12 @@ const GeoMap = () => {
               maxRequests: -1,
               getOffset: [0, 1],
               updateTriggers: {
-                getFillColor: [selectedColumn, selectedZcta, zctaLookup],
+                getFillColor: [
+                  selectedColumn,
+                  selectedZcta,
+                  zctaLookup,
+                  colors,
+                ],
               },
               pickingRadius: 5,
               filled: true,
