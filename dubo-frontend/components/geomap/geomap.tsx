@@ -156,7 +156,7 @@ const GeoMap = () => {
             colors={colors}
             text={breaks}
             title={selectedColumn}
-            isRatio={selectedColumn.includes("ratio")}
+            isRatio={selectedColumn?.includes("ratio")}
             setPaletteName={setPaletteName}
           />
         )}

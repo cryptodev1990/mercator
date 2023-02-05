@@ -161,6 +161,8 @@ TABLES = [
     "acs_housing",
     "acs_medicare",
     "acs_gross_rent_household_income_ratio",
+    "acs_household_size_by_vehicles_available",
+    "acs_aggregates",
 ]
 
 
