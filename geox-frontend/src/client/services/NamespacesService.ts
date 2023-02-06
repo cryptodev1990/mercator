@@ -131,4 +131,22 @@ export class NamespacesService {
       },
     });
   }
+
+  public static patchNamespaceShapes({
+    namespace_id,
+    requestBody,
+  }: {
+    namespace_id: string;
+    requestBody: Object;
+  }): CancelablePromise<NamespaceResponse> {
+    return __request(OpenAPI, {
+      method: "PATCH",
+      url: "/geofencer/namespaces/{namespace_id}/relationships/shapes",
+      path: {
+        namespace_id,
+      },
+      body: requestBody,
+      mediaType: "application/json",
+    });
+  }
 }

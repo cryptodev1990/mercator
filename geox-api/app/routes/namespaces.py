@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import UUID4  # pylint: disable=no-name-in-module
+from typing import Any, Dict, Generator, List, Optional, cast
 
 from app.core.logging import get_logger
 from app.crud.namespaces import (
@@ -25,6 +26,8 @@ from app.dependencies import (
 )
 from app.schemas import Namespace, NamespaceCreate, NamespaceUpdate, RequestErrorModel
 from app.schemas.namespaces_api import NamespaceResponse
+from sqlalchemy import delete
+from app.db.metadata import shapes as shapes_tbl
 
 # from app.crud.namespaces import *
 
@@ -115,6 +118,27 @@ async def _get_namespaces(
         for nm in namespaces:
             nm.shapes = list(select_shape_metadata(conn, namespace_id=nm.id))
     return namespaces
+
+
+@router.patch(
+    "/geofencer/namespaces/{namespace_id}/relationships/shapes",
+    response_model=NamespaceResponse,
+)
+async def _patch_namespaces_shapes(
+    reqBody: Dict[str, Any],
+    namespace_id: UUID4 = Path(title="Namespace to edit"),
+    user_conn: UserConnection = Depends(get_app_user_connection),
+) -> Namespace:
+    if "data" in reqBody and not reqBody['data']:
+        deleteStmt = delete(shapes_tbl).where(shapes_tbl.c.namespace_id == namespace_id)
+        try:
+            user_conn.connection.execute(deleteStmt)
+            namespace = NamespaceResponse.from_orm(get_namespace(user_conn.connection, namespace_id))
+            return namespace
+        except Exception:
+            raise HTTPException(status_code=500)
+    else:
+        raise HTTPException(status_code=400)
 
 
 # Update

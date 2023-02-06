@@ -21,6 +21,7 @@ import {
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
+import { TruncateButton } from "./truncate-button";
 
 export const NamespaceCard = ({
   namespace,
@@ -129,9 +130,12 @@ export const NamespaceCard = ({
           {sectionShapeMetadata && hovered && (
             <span className="text-sm">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
           )}
-          {!namespace.is_default && hovered && (
-            <DeleteButton namespace={namespace} />
-          )}
+          {hovered &&
+            (namespace.is_default ? (
+              <TruncateButton namespace={namespace} />
+            ) : (
+              <DeleteButton namespace={namespace} />
+            ))}
           <div
             onClick={() => {
               selectionDispatch({ type: "RESET_SELECTION" });
