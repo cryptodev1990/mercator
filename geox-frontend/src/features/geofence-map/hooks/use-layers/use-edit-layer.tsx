@@ -13,14 +13,9 @@ import { useEditFunction } from "./use-edit-function";
 
 export const useEditLayer = () => {
   const { cursorMode } = useCursorMode();
-  const { selectedFeatureCollection } = useSelectedShapes();
 
   const { onEdit } = useEditFunction();
-  const { selectedUuids } = useSelectedShapes();
-
-  if (!selectedFeatureCollection) {
-    return null;
-  }
+  const { selectedShapes } = useSelectedShapes();
 
   // THIS IS NOT MODIFY MODE
   // This supports shape cuts and additions
@@ -28,7 +23,7 @@ export const useEditLayer = () => {
     id: "geojson-core",
     pickable: true,
     // @ts-ignore
-    data: selectedFeatureCollection,
+    data: { type: "FeatureCollection", features: selectedShapes },
     // @ts-ignore
     getFillColor: [250, 128, 114, 150],
     // @ts-ignore
@@ -38,8 +33,8 @@ export const useEditLayer = () => {
     stroked: true,
     filled: true,
     updateTriggers: {
-      getFillColor: [selectedUuids],
-      getLineColor: [selectedUuids],
+      getFillColor: [selectedShapes.length],
+      getLineColor: [selectedShapes.length],
     },
     _subLayerProps: {
       guides: {

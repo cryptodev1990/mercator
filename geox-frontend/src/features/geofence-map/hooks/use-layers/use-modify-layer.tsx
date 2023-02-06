@@ -1,11 +1,13 @@
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { GeoShape } from "client";
+import { addShapesToSelectedShapesAction } from "features/geofence-map/contexts/selection/actions";
 import { useEffect, useState } from "react";
 import { MercatorModifyMode } from "../../../../lib/mercator-modify-mode/MercatorModifyMode";
 import { EditorMode } from "../../cursor-modes";
 import { useCursorMode } from "../use-cursor-mode";
 import { usePutShapeMutation } from "../use-openapi-hooks";
 import { useSelectedShapes } from "../use-selected-shapes";
+import { useSelectedShapesUuids } from "../use-selected-shapes-uuids";
 import { useShapes } from "../use-shapes";
 import { useViewport } from "../use-viewport";
 
@@ -18,29 +20,27 @@ export function useModifyLayer() {
     clearOptimisticShapeUpdates,
   } = useShapes();
   const { cursorMode } = useCursorMode();
-  const { setSelectedShapeUuid, isSelected, selectedFeatureCollection } =
-    useSelectedShapes();
-  const { viewport } = useViewport();
+  const { selectedShapes, dispatch: selectedDispatch } = useSelectedShapes();
 
+  const selectedShapesUuids = useSelectedShapesUuids();
+
+  const { viewport } = useViewport();
   const { mutate: putShapeApi } = usePutShapeMutation();
 
   function getFillColorFunc(datum: any) {
-    if (isSelected(datum?.properties?.__uuid)) {
+    if (selectedShapesUuids.includes(datum?.properties?.__uuid)) {
       return [255, 0, 0, 150];
     }
     return [140, 170, 180];
   }
 
   useEffect(() => {
-    if (selectedFeatureCollection) {
-      setLocalData(selectedFeatureCollection);
+    if (selectedShapes) {
+      setLocalData({ type: "FeatureCollection", features: selectedShapes });
     }
-  }, [selectedFeatureCollection]);
+  }, [selectedShapes]);
 
-  if (
-    selectedFeatureCollection === null ||
-    EditorMode.ModifyMode !== cursorMode
-  ) {
+  if (EditorMode.ModifyMode !== cursorMode) {
     return null;
   }
 
@@ -57,8 +57,8 @@ export function useModifyLayer() {
     pickingRadius: 20,
     pickingDepth: 5,
     updateTriggers: {
-      getFillColor: [selectedFeatureCollection],
-      getLineColor: [selectedFeatureCollection],
+      getFillColor: [selectedShapes],
+      getLineColor: [selectedShapes],
     },
     modeConfig: {
       viewport,
@@ -76,10 +76,9 @@ export function useModifyLayer() {
           uuid: updatedData.features[editContext.featureIndexes[0]].properties
             .__uuid,
         };
-        clearOptimisticShapeUpdates();
         dispatch({
-          type: "SET_OPTIMISTIC_SHAPES",
-          shapes: [newShape],
+          type: "SET_OPTIMISTIC_SHAPE",
+          shape: newShape,
         });
         putShapeApi(newShape);
         return;
@@ -97,7 +96,7 @@ export function useModifyLayer() {
         return;
       } else if (o.object) {
         // Click of a layer should make that layer selected
-        setSelectedShapeUuid((o.object as any).properties.__uuid);
+        selectedDispatch(addShapesToSelectedShapesAction([o.object]));
         setSelectedFeatureIndexes([o.index]);
       }
     },
@@ -132,7 +131,7 @@ export function useModifyLayer() {
         filled: true,
         lineWidthMaxPixels: 1,
         getLineColor: (d: any) => {
-          return isSelected(d?.properties?.__uuid)
+          return selectedShapesUuids.includes(d?.properties?.__uuid)
             ? [0, 0, 0, 255]
             : [0, 0, 0, 100];
         },

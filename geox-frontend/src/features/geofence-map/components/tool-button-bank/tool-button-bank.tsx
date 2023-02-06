@@ -12,6 +12,7 @@ import {
 import { useSelectedShapes } from "../../hooks/use-selected-shapes";
 import { useEffect, useState } from "react";
 import { TbBoxMultiple } from "react-icons/tb";
+import { useSelectedShapesUuids } from "features/geofence-map/hooks/use-selected-shapes-uuids";
 
 interface ToolButtonBankMode {
   name: string;
@@ -25,7 +26,7 @@ interface ToolButtonBankMode {
 
 export const ToolButtonBank = () => {
   const { cursorMode, setCursorMode } = useCursorMode();
-  const { numSelected } = useSelectedShapes();
+  const { selectedShapes } = useSelectedShapes();
   const [pushOut, setPushOut] = useState(false);
 
   const modes: ToolButtonBankMode[] = [
@@ -82,7 +83,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.ModifyMode),
       dataTip: "Edit an existing shape",
       active: cursorMode === EditorMode.ModifyMode,
-      disabled: numSelected !== 1,
+      disabled: selectedShapes.length !== 1,
       key: "mode-alter",
     },
     {
@@ -91,7 +92,7 @@ export const ToolButtonBank = () => {
       onClick: () => setCursorMode(EditorMode.SplitMode),
       dataTip: "Split a selection by drawing through it",
       active: cursorMode === EditorMode.SplitMode,
-      disabled: numSelected !== 1,
+      disabled: selectedShapes.length !== 1,
       key: "mode-split-existing-shape",
     },
   ];

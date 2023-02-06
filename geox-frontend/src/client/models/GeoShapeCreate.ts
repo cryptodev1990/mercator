@@ -5,6 +5,7 @@
 import type { Feature } from "./Feature";
 
 export type GeoShapeCreate = {
+  uuid?: any;
   /**
    * Name of the shape
    */

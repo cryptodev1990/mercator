@@ -9,3 +9,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.hljs {
+  padding: 1em !important;
+  overflow: scroll;
+}
+
+.sanddance-explorer {
+  height: 800px;
+}
+
+.ag-theme-alpine {
+  --ag-secondary-foreground-color: #ffffff;
+
+  --ag-header-background-color: #0070f3;
+  --ag-header-foreground-color: #ffffff;
+
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-height: 100%;
+  --ag-header-column-separator-width: 1px;
+  --ag-header-column-separator-color: #ffffff;
+
+  --ag-header-column-resize-handle-height: 100%;
+
+  --ag-header-cell: {
+    border: solid 1px white;
+  }
+
+  --ag-input-focus-border-color: #679eff;
+
+  --ag-border-radius: 0;
+}

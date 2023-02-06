@@ -1,11 +1,15 @@
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, Request
 import sqlparse
+from api.core.logging import get_logger
 from api.schemas.responses import QueryResponse, ResultsResponse
 from api.rate_limiter import is_request_exempt, limiter
 
 from api.gateways.openai import assemble_prompt, assemble_finetuned_prompt, get_sql_from_gpt_prompt, get_sql_from_gpt_finetuned
 from api.gateways.conns import run_query_against_connection
+
+
+logger = get_logger(__name__)
 
 
 router = APIRouter()
@@ -46,7 +50,6 @@ def read_query(
         raise HTTPException(status_code=422, detail=str(e))
 
     schema = '\n'.join(schemas)
-    print(schema)
     if not finetuned:
         prompt = assemble_prompt(user_query, schema, descriptions)
         sql = get_sql_from_gpt_prompt(prompt)
@@ -54,8 +57,11 @@ def read_query(
         prompt = assemble_finetuned_prompt(user_query, schema)
         sql = get_sql_from_gpt_finetuned(prompt)
 
-    print(prompt)
-    print(sql)
+    logger.info({
+        "user_query": user_query,
+        "prompt": prompt,
+        "sql": sql if sql else "",
+    })
 
     if sql:
         return QueryResponse(query_text=sql)

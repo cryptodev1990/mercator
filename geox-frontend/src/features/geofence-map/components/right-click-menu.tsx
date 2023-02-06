@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { clearSelectedShapesAction } from "../contexts/selection/actions";
 import { EditorMode } from "../cursor-modes";
 import { useCursorMode } from "../hooks/use-cursor-mode";
 import { useGetNamespaces } from "../hooks/use-openapi-hooks";
 import { useSelectedShapes } from "../hooks/use-selected-shapes";
+import { useSelectedShapesUuids } from "../hooks/use-selected-shapes-uuids";
 import { useShapes } from "../hooks/use-shapes";
 import { useUiModals } from "../hooks/use-ui-modals";
 import { UIModalEnum } from "../types";
@@ -20,13 +22,9 @@ export const RightClickMenu = () => {
     mapRef,
     deleteShapes,
   } = useShapes();
-  const {
-    selectedFeatureCollection,
-    numSelected,
-    isSelected,
-    selectedUuids,
-    clearSelectedShapeUuids,
-  } = useSelectedShapes();
+  const { selectedShapes, dispatch: selectionDispatch } = useSelectedShapes();
+
+  const selectedShapesUuids = useSelectedShapesUuids();
 
   function closeMenu() {
     setXPos(null);
@@ -40,7 +38,7 @@ export const RightClickMenu = () => {
   function cleanup() {
     setShapeForPropertyEdit(null);
     clearSelectedFeatureIndexes();
-    clearSelectedShapeUuids();
+    selectionDispatch(clearSelectedShapesAction());
     closeMenu();
     setCursorMode(EditorMode.ViewMode);
   }
@@ -54,16 +52,16 @@ export const RightClickMenu = () => {
   const listenerFunc = (event: MouseEvent) => {
     event.preventDefault();
 
-    if (!selectedUuids.length) {
+    if (!selectedShapes.length) {
       setMenuOptions([
         "Draw",
         editModeOptions.denyOverlap ? "Enable overlap" : "Disable overlap",
       ]);
     }
-    if (selectedUuids.length > 1) {
+    if (selectedShapes.length > 1) {
       setMenuOptions(["Bulk Delete", "Bulk Edit"]);
     }
-    if (selectedUuids.length === 1) {
+    if (selectedShapes.length === 1) {
       setMenuOptions([
         "Edit Metadata",
         "Copy as GeoJSON",
@@ -88,7 +86,7 @@ export const RightClickMenu = () => {
         ref.removeEventListener("contextmenu", listenerFunc, false);
       };
     }
-  }, [mapRef, selectedUuids.length]);
+  }, [mapRef, selectedShapes.length]);
 
   if (!xPos || !yPos) {
     return null;
@@ -100,12 +98,12 @@ export const RightClickMenu = () => {
         setCursorMode(EditorMode.EditMode);
         return;
       case "Edit Metadata":
-        if (numSelected > 1) {
+        if (selectedShapes.length > 1) {
           toast.error("Please select only one shape to edit");
         }
         const selectedShape = allNamespaces
           ?.flatMap((x) => x.shapes ?? [])
-          .find((shape) => isSelected(shape.uuid));
+          .find((shape) => selectedShapesUuids.includes(shape.uuid));
         if (!selectedShape) {
           toast.error("No shape detected");
           return;
@@ -114,16 +112,19 @@ export const RightClickMenu = () => {
         closeMenu();
         return;
       case "Copy as GeoJSON":
-        if (selectedFeatureCollection) {
+        if (selectedShapes.length) {
           navigator.clipboard.writeText(
-            JSON.stringify(selectedFeatureCollection)
+            JSON.stringify({
+              type: "FeatureCollection",
+              features: selectedShapes,
+            })
           );
           toast.success("Copied to clipboard");
         }
         closeMenu();
         return;
       case "Delete (Backspace)":
-        deleteShapes(selectedUuids, {
+        deleteShapes(selectedShapesUuids, {
           onSuccess: () => {
             cleanup();
           },
@@ -143,7 +144,7 @@ export const RightClickMenu = () => {
         openModal(UIModalEnum.BulkEditModal);
         return;
       case "Bulk Delete":
-        deleteShapes(selectedUuids, {
+        deleteShapes(selectedShapesUuids, {
           onSuccess: () => {
             cleanup();
           },

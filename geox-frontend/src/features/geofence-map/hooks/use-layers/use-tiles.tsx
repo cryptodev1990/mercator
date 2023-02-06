@@ -9,6 +9,7 @@ import { useSelectedShapes } from "../use-selected-shapes";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
 import { useGetNamespaces } from "../use-openapi-hooks";
+import { useSelectedShapesUuids } from "../use-selected-shapes-uuids";
 
 const MAX_OPTIMISTIC_FEATURES = 30;
 
@@ -29,7 +30,8 @@ export function useTiles() {
   } = useShapes();
 
   const { cursorMode } = useCursorMode();
-  const { isSelected, selectedUuids } = useSelectedShapes();
+
+  const selectedShapesUuids = useSelectedShapesUuids();
 
   const { data: allNamespaces } = useGetNamespaces();
 
@@ -62,13 +64,13 @@ export function useTiles() {
         getLineColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          selectedUuids,
+          selectedShapesUuids.length,
         ],
         getFillColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
           hoveredUuid,
-          selectedUuids,
+          selectedShapesUuids.length,
         ],
       },
       getLineColor: (d: any) => {
@@ -76,10 +78,14 @@ export function useTiles() {
         if (deletedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
-        if (cursorMode === EditorMode.ModifyMode && isSelected(uuid)) {
+        if (
+          (cursorMode === EditorMode.ModifyMode ||
+            cursorMode === EditorMode.SplitMode) &&
+          selectedShapesUuids.includes(uuid)
+        ) {
           return [0, 0, 0, 0];
         }
-        if (isSelected(uuid)) return [0, 0, 255, 50];
+        if (selectedShapesUuids.includes(uuid)) return [0, 0, 255];
         if (hoveredUuid === uuid) return [255, 125, 0, 150];
         return [0, 0, 0, 150];
       },
@@ -89,11 +95,15 @@ export function useTiles() {
         if (deletedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
-        if (cursorMode === EditorMode.ModifyMode && isSelected(uuid)) {
+        if (
+          (cursorMode === EditorMode.ModifyMode ||
+            cursorMode === EditorMode.SplitMode) &&
+          selectedShapesUuids.includes(uuid)
+        ) {
           return [0, 0, 0, 0];
         }
-        if (isSelected(uuid)) return [0, 0, 255, 50];
-        if (hoveredUuid === uuid) return [255, 125, 0, 150];
+        if (selectedShapesUuids.includes(uuid)) return [0, 0, 255];
+        if (hoveredUuid === uuid) return [0, 0, 255, 50];
         return [173, 216, 230, 255];
       },
       ...commonArgs,
@@ -111,7 +121,11 @@ export function useTiles() {
       },
       getFillColor: (d: any) => {
         const uuid = d?.properties?.__uuid;
-        if (deletedShapeIdSet.has(uuid) || updatedShapeIdSet.has(uuid)) {
+        if (
+          deletedShapeIdSet.has(uuid) ||
+          updatedShapeIdSet.has(uuid) ||
+          selectedShapesUuids.includes(uuid)
+        ) {
           return [0, 0, 0, 0];
         }
         const namespace_id = d?.properties?.__namespace_id;
@@ -130,13 +144,15 @@ export function useTiles() {
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
           hoveredUuid,
-          selectedUuids,
+          visibleNamespaces.length,
         ],
         getFillColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
-          selectedUuids.length,
           tilePropertyChange,
+          hoveredUuid,
+          selectedShapesUuids.length,
+          visibleNamespaces.length,
         ],
         getTileData: [tileUpdateCount],
       },

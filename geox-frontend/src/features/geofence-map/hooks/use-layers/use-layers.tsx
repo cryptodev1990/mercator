@@ -12,17 +12,15 @@ import { useEditLayer } from "./use-edit-layer";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useImageLayer } from "./use-image-layer";
 import { SelectionLayer } from "@nebula.gl/layers";
+import { addShapesToSelectedShapesAction } from "features/geofence-map/contexts/selection/actions";
+import { useSelectedShapesUuids } from "../use-selected-shapes-uuids";
 
 export const useLayers = () => {
-  const { tentativeShapes, setSelectedFeatureIndexes, deletedShapeIds } =
-    useShapes();
+  const { tentativeShapes, deletedShapeIds } = useShapes();
 
-  const {
-    selectedFeatureCollection,
-    selectedShapes,
-    addShapesToSelectedShapes,
-  } = useSelectedShapes();
+  const { selectedShapes, dispatch: selectionDispatch } = useSelectedShapes();
 
+  const selectedShapesUuids = useSelectedShapesUuids();
   const memoizedTentativeShapes = useMemo(
     () =>
       simplify(
@@ -44,7 +42,7 @@ export const useLayers = () => {
 
   return {
     layers: [
-      selectedFeatureCollection &&
+      selectedShapes &&
         [
           EditorMode.LassoDrawMode,
           EditorMode.SplitMode,
@@ -55,41 +53,34 @@ export const useLayers = () => {
       tiles ? tiles[0] : null,
       tiles ? tiles[1] : null,
       // Renders the selected feature
-      selectedFeatureCollection &&
+      selectedShapes &&
         cursorMode === EditorMode.ViewMode &&
         new GeoJsonLayer({
-          id: "geojson-view",
+          id: "selected-shapes",
           pickable: true,
           // @ts-ignore
-          getFillColor: [0, 0, 255, 100],
+          getFillColor: (d: any) => {
+            const uuid = d?.properties?.__uuid;
+            if (selectedShapesUuids.includes(uuid)) return [0, 0, 255];
+            return [0, 0, 255, 100];
+          },
+          updateTriggers: {
+            getLineColor: [selectedShapesUuids.length],
+            getFillColor: [selectedShapesUuids.length],
+          },
           getLineColor: [128, 128, 128, 255],
           lineWidthMinPixels: 1,
           onClick: (info) => {
             const { object } = info;
             if (object) {
               setCursorMode(EditorMode.ModifyMode);
-              setSelectedFeatureIndexes([0]);
             } else {
-              setSelectedFeatureIndexes([]);
             }
           },
           stroked: true,
           filled: true,
           // @ts-ignore
-          data: selectedFeatureCollection,
-        }),
-      selectedShapes &&
-        new GeoJsonLayer({
-          id: "multi-select-geojson-view",
-          pickable: true,
-          // @ts-ignore
-          getFillColor: [0, 0, 255],
-          getLineColor: [128, 128, 128],
-          lineWidthMinPixels: 1,
-          stroked: true,
-          filled: true,
-          // @ts-ignore
-          data: selectedShapes,
+          data: { type: "FeatureCollection", features: selectedShapes },
         }),
       tentativeShapes.length > 0 &&
         new GeoJsonLayer({
@@ -120,7 +111,7 @@ export const useLayers = () => {
               }
             }
             const distinctShapes = _.uniqBy(newObjs, "properties.__uuid");
-            addShapesToSelectedShapes(distinctShapes);
+            selectionDispatch(addShapesToSelectedShapesAction(distinctShapes));
             setCursorMode(EditorMode.ViewMode);
           },
           layerIds: ["gf-mvt", "optimistic-layer"],

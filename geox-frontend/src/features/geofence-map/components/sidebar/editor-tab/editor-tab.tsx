@@ -1,10 +1,15 @@
 import {
   useGetOneShapeByUuid,
+  usePatchShapeMutation,
   usePutShapeMutation,
 } from "../../../hooks/use-openapi-hooks";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
 import JsonEditor from "./json-editor";
+import { useCursorMode } from "features/geofence-map/hooks/use-cursor-mode";
+import { EditorMode } from "features/geofence-map/cursor-modes";
+import { useSelectedShapes } from "features/geofence-map/hooks/use-selected-shapes";
+import { clearSelectedShapesAction } from "features/geofence-map/contexts/selection/actions";
 
 interface IDictionary<T> {
   [index: string]: T;
@@ -13,21 +18,13 @@ interface IDictionary<T> {
 // Feature: Editor for shape properties viewable in the second tab of the sidebar
 export const ShapeEditor = () => {
   // add update shape mutation that only modifies shape metadata
-  const { shapeForPropertyEdit, setShapeForPropertyEdit, dispatch } =
-    useShapes();
-  const { data: oneShape, isLoading: oneShapeIsLoading } = useGetOneShapeByUuid(
-    shapeForPropertyEdit?.uuid || ""
-  );
+  const { shapeForPropertyEdit, setShapeForPropertyEdit } = useShapes();
+  const { dispatch: selectionDispatch } = useSelectedShapes();
 
-  const { mutate: putShapeApi } = usePutShapeMutation();
-
+  const { mutate: patchShapeApi } = usePatchShapeMutation();
+  const { setCursorMode } = useCursorMode();
   const handleSubmit = (formData: IDictionary<string>) => {
-    if (
-      !shapeForPropertyEdit ||
-      !shapeForPropertyEdit.uuid ||
-      !oneShape ||
-      oneShapeIsLoading
-    ) {
+    if (!shapeForPropertyEdit || !shapeForPropertyEdit.uuid) {
       return;
     }
     const shapeUuid = shapeForPropertyEdit.uuid;
@@ -37,15 +34,17 @@ export const ShapeEditor = () => {
       name: properties.name,
       namespace,
       geojson: {
-        ...(oneShape?.geojson as any),
         properties,
       },
       uuid: shapeUuid,
     };
 
-    putShapeApi(newShape, {
+    setCursorMode(EditorMode.ViewMode);
+
+    patchShapeApi(newShape, {
       onSuccess: () => {
         setShapeForPropertyEdit(null);
+        selectionDispatch(clearSelectedShapesAction());
       },
     });
   };

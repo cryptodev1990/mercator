@@ -1,7 +1,7 @@
 import base64
 import json
 import os
-import re
+import sqlglot
 import yaml
 
 from typing import Optional, Union
@@ -10,7 +10,7 @@ from google.cloud import bigquery
 from api.core.logging import get_logger
 from fastapi import HTTPException
 
-from api.gateways.openai import assemble_prompt, get_sql_from_gpt_prompt
+from api.gateways.openai import assemble_finetuned_prompt, assemble_prompt, get_sql_from_gpt_prompt
 from api.schemas.responses import ResultsResponse
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +38,8 @@ class Connection:
         self.conn_id = conn_id
         self.connection_type = kwargs['connection_type']
         self.ddl = kwargs.get('ddl')
+        if self.ddl:
+            self.ddl = clean_ddls(self.ddl)
         self.prompt_addendum = kwargs.get('prompt_addendum')
         self.kwargs = kwargs
         # BigQuery client, if needed
@@ -60,8 +62,9 @@ class Connection:
         conn = Connection(conn_id, **config[conn_id])
         memoized_connections[conn_id] = conn
         return conn
+        
 
-    def make_prompt(self, query: str, ddl_line_filter: Optional[str] = None) -> str:
+    def make_prompt(self, query: str, ddl_line_filter: Optional[str] = None, finetune: bool = False) -> str:
         """Make the prompt for the API"""
         if not self.ddl:
             raise Exception("Prompt requires DDL")
@@ -70,7 +73,10 @@ class Connection:
             # Filter out lines that don't match the filter by a regex match to ddl_line_filter
             # Kind of a hack
             ddl = '\n'.join([x for x in ddl.splitlines() if ' ' + ddl_line_filter + ' ' in x])
-        prompt = assemble_prompt(query, ddl, sql_flavor=self.connection_type, prompt_addendum=self.prompt_addendum)
+        if finetune:
+            prompt = assemble_finetuned_prompt(query, ddl)
+            return prompt
+        prompt = assemble_prompt(query, ddl, prompt_addendum=self.prompt_addendum)
         return prompt
 
 
@@ -98,3 +104,16 @@ def run_query_against_connection(conn_id: str, user_query: str) -> list[dict]:
     results = conn.execute(sql)
     results: list[dict[str, Optional[Union[str,float,int,bool]]]] = [dict(x) for x in results]
     return ResultsResponse(query_text=sql, results=results) # type: ignore
+
+
+def clean_ddls(ddl: str) -> str:
+    """Make the DDLs clean for the prompt"""
+    parsed = sqlglot.parse(ddl)
+    if parsed is None:
+        raise Exception("Invalid DDL")
+    new_ddls = []
+    for x in parsed:
+        if x is None:
+            raise Exception("Invalid DDL")
+        new_ddls.append(x.sql())
+    return '\n'.join(new_ddls)

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import initSqlJs, { Database } from "sql.js";
+import initSqlJs, { Database, QueryExecResult } from "sql.js";
 
 const useDb = () => {
   const [db, setDb] = useState<Database | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<
-    initSqlJs.QueryExecResult[] | undefined
-  >([]);
+  const [results, setResults] = useState<QueryExecResult[] | undefined>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {

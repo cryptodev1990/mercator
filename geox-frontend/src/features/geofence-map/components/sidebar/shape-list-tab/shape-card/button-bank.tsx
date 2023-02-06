@@ -9,6 +9,7 @@ import { useViewport } from "../../../../hooks/use-viewport";
 import simplur from "simplur";
 import Loading from "react-loading";
 import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import { clearSelectedShapesAction } from "features/geofence-map/contexts/selection/actions";
 
 const CancelButton = () => {
   const { setTentativeShapes } = useShapes();
@@ -37,7 +38,7 @@ const SaveButton = ({
   } = useShapes();
 
   const { snapToBounds } = useViewport();
-  const { clearSelectedShapeUuids } = useSelectedShapes();
+  const { dispatch: selectionDispatch } = useSelectedShapes();
   const [locked, setLocked] = useState(false);
 
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -74,7 +75,7 @@ const SaveButton = ({
                 setTentativeShapes([]);
                 // @ts-ignore
                 setVisibleNamespaces([selectedFolder]);
-                clearSelectedShapeUuids();
+                selectionDispatch(clearSelectedShapesAction());
                 setLocked(false);
                 setUploadProgress(100);
                 clearOptimisticShapeUpdates();

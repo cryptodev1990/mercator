@@ -13,8 +13,8 @@ export type Action =
       type: "CLEAR_OPTIMISTIC_SHAPE_UPDATES";
     }
   | {
-      type: "SET_OPTIMISTIC_SHAPES";
-      shapes: GeoShape[];
+      type: "SET_OPTIMISTIC_SHAPE";
+      shape: GeoShape;
     }
   // TODO: all the actions below should be removed
   | {

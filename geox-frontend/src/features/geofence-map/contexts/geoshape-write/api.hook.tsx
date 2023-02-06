@@ -6,7 +6,7 @@ import {
   useBulkAddShapesMutation,
   useBulkDeleteShapesMutation,
 } from "../../hooks/use-openapi-hooks";
-import { Action } from "./action-types";
+import { Action } from "./actions";
 import simplur from "simplur";
 
 export const useApi = (dispatch: Dispatch<Action>) => {

@@ -16,35 +16,32 @@ import { useShapes } from "../../../../hooks/use-shapes";
 import { EditableLabel } from "../../../../../../common/components/editable-label";
 import { DragHandle } from "./drag-handle";
 import { SHAPE_CARD_IMAGE } from "./drag-images";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { UIContext } from "../../../../contexts/ui-context";
 import { usePatchShapeMutation } from "features/geofence-map/hooks/use-openapi-hooks";
+import {
+  addShapesToSelectedShapesAction,
+  clearSelectedShapesAction,
+} from "features/geofence-map/contexts/selection/actions";
+import { useSelectedShapesUuids } from "features/geofence-map/hooks/use-selected-shapes-uuids";
+import { GeofencerService } from "client";
 
-export const ShapeCard = ({
-  shape,
-  onMouseEnter,
-  onMouseLeave,
-  isHovered,
-}: {
-  shape: GeoShapeMetadata;
-  onMouseEnter: (e: React.MouseEvent) => void;
-  onMouseLeave: (e: React.MouseEvent) => void;
-  isHovered: boolean;
-}) => {
-  const { deleteShapes, updateLoading, clearSelectedFeatureIndexes } =
+export const ShapeCard = ({ shape }: { shape: GeoShapeMetadata }) => {
+  const { deleteShapes, updateLoading, clearSelectedFeatureIndexes, dispatch } =
     useShapes();
 
   const { mutate: patchShapeById } = usePatchShapeMutation();
-
+  const [isHovered, setIsHovered] = useState<boolean>(false);
   const { confirmDelete, setHeading } = useContext(UIContext);
 
-  const { isSelected, selectedDataIsLoading, clearSelectedShapeUuids } =
-    useSelectedShapes();
+  const { dispatch: selectionDispatch } = useSelectedShapes();
   const { setCursorMode } = useCursorMode();
   const { snapToBounds } = useViewport();
 
-  const selectionBg = isSelected(shape) ? "text-blue-800" : "text-white";
-  const selectionOpacity = isSelected(shape) ? "opacity-100" : "opacity-50";
+  const selectedShapesUuids = useSelectedShapesUuids();
+
+  const selectionBg = "text-blue-800";
+  const selectionOpacity = "opacity-100";
   const numProperties = Object.keys(shape.properties).filter(
     (x) => !x.startsWith("__")
   ).length;
@@ -52,8 +49,8 @@ export const ShapeCard = ({
     <div
       draggable={false}
       key={shape.uuid}
-      onMouseLeave={onMouseLeave}
-      onMouseEnter={onMouseEnter}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHovered(true)}
       className={`h-13 p-3 max-w-sm snap-start bg-slate-600 border-gray-200 ${selectionBg}`}
     >
       <div className="flex flex-row justify-left items-center">
@@ -64,7 +61,6 @@ export const ShapeCard = ({
         />
         <EditableLabel
           value={shape?.name || "New shape"}
-          disabled={selectedDataIsLoading}
           onChange={(newName) => {
             if (newName !== shape.name) {
               patchShapeById({
@@ -92,7 +88,7 @@ export const ShapeCard = ({
                     const coords = [e.clientX, e.clientY];
                     confirmDelete(coords, () => {
                       deleteShapes([shape.uuid]);
-                      clearSelectedShapeUuids();
+                      selectionDispatch(clearSelectedShapesAction());
                       clearSelectedFeatureIndexes();
                       setCursorMode(EditorMode.ViewMode);
                     });
@@ -108,18 +104,22 @@ export const ShapeCard = ({
               <button
                 className="cx-btn-square hover:bg-green-400 hover:border-green-400 box-border"
                 data-tip="Zoom to"
-                disabled={selectedDataIsLoading}
                 onClick={() => {
-                  snapToBounds({ category: "selected" });
+                  dispatch({ type: "SET_LOADING", value: true });
+                  selectionDispatch(clearSelectedShapesAction());
+
+                  GeofencerService.getShapeByUuid(shape.uuid).then(
+                    (sh: any) => {
+                      selectionDispatch(
+                        addShapesToSelectedShapesAction([sh.geojson])
+                      );
+                      snapToBounds({ category: "selected" });
+                      dispatch({ type: "SET_LOADING", value: false });
+                    }
+                  );
                 }}
               >
-                <TargetIcon
-                  className={
-                    selectedDataIsLoading
-                      ? "fill-gray-400 animate-pulse"
-                      : "fill-white"
-                  }
-                />
+                <TargetIcon className={"fill-gray-400 animate-puls"} />
               </button>
             </>
           )}

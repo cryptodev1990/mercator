@@ -18,7 +18,7 @@ import {
 import { aggressiveLog } from "../../../../common/aggressive-log";
 import { useCursorMode } from "../../hooks/use-cursor-mode";
 import { DeckContext } from "../deck-context";
-import { Action } from "./action-types";
+import { Action } from "./actions";
 import { useApi } from "./api.hook";
 import { reducer, initialState, State } from "./reducer";
 

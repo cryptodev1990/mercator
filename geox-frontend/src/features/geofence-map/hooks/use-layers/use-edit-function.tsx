@@ -16,6 +16,8 @@ import {
   useBulkDeleteShapesMutation,
   useGetNamespaces,
 } from "../use-openapi-hooks";
+import { clearSelectedShapesAction } from "features/geofence-map/contexts/selection/actions";
+import { useSelectedShapesUuids } from "../use-selected-shapes-uuids";
 
 function injectJitterToPolygon(polygon: MultiPolygon | Polygon): MultiPolygon {
   const jitter = 0.0000000001;
@@ -42,11 +44,10 @@ export function useEditFunction() {
   } = useShapes();
 
   const { data: allNamespaces } = useGetNamespaces();
-
   const { mutate: deleteShapesRaw } = useBulkDeleteShapesMutation();
 
-  const { clearSelectedShapeUuids, numSelected, selectedUuids } =
-    useSelectedShapes();
+  const { dispatch: selectionDispatch } = useSelectedShapes();
+  const selectedShapesUuids = useSelectedShapesUuids();
   const { cursorMode, setCursorMode } = useCursorMode();
   const { clearOptimisticShapeUpdates } = useShapes();
   function onEdit({
@@ -67,11 +68,11 @@ export function useEditFunction() {
       const cut = multiPolygon.geometry.coordinates[0];
       const rest = multiPolygon.geometry.coordinates.slice(1);
 
-      if (numSelected > 1 || selectedFeatureIndexes.length > 1) {
+      if (selectedShapesUuids.length > 1 || selectedFeatureIndexes.length > 1) {
         toast.error("Split should not select more than one shape");
         return;
       }
-      const uuid = selectedUuids[0];
+      const uuid = selectedShapesUuids[0];
 
       const shape = allNamespaces
         ?.flatMap((x) => x.shapes ?? [])
@@ -124,7 +125,7 @@ export function useEditFunction() {
               setCursorMode(EditorMode.ViewMode);
               clearOptimisticShapeUpdates();
               clearSelectedFeatureIndexes();
-              clearSelectedShapeUuids();
+              selectionDispatch(clearSelectedShapesAction());
             },
             onError: (error: any) => {
               toast.error(error);

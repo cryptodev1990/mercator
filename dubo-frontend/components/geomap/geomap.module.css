@@ -1,0 +1,6 @@
+/* Make all the inputs red */
+.geomapContainer {
+  height: 100vh;
+  border: 1px solid black;
+  overflow: hidden;
+}

@@ -18,6 +18,7 @@ import { MdDelete } from "react-icons/md";
 import { GeofencerService } from "client";
 import { useShapes } from "features/geofence-map/hooks/use-shapes";
 import { AiOutlinePlus } from "react-icons/ai";
+import { clearSelectedShapesAction } from "features/geofence-map/contexts/selection/actions";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -88,7 +89,7 @@ const defaultColumn: Partial<ColumnDef<Properties>> = {
 
 const BulkEditModal = () => {
   const { modal, closeModal } = useUiModals();
-  const { selectedShapes, clearSelectedShapeUuids } = useSelectedShapes();
+  const { selectedShapes, dispatch: selectionDispatch } = useSelectedShapes();
 
   const [data, setData] = React.useState(() =>
     selectedShapes.map((shape) => shape.properties)
@@ -254,7 +255,7 @@ const BulkEditModal = () => {
                             namespace: shapeProperties.__namespace_id,
                           });
                         }
-                        clearSelectedShapeUuids();
+                        selectionDispatch(clearSelectedShapesAction());
                         setTileUpdateCount(tileUpdateCount + 1);
                         dispatch({ type: "SET_LOADING", value: false });
                       }}
