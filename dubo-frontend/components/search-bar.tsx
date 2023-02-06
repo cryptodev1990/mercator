@@ -51,7 +51,7 @@ export const SearchBar = ({
           turnOffDemo();
         }}
         onBlur={() => {
-          // setIsFocused(false);
+          setIsFocused(false);
         }}
         value={value}
         onChange={(e) => {
@@ -126,8 +126,10 @@ export const SearchBar = ({
       {/* autocomplete suggestions */}
       <div
         className={clsx(
-          "absolute bg-slate-100 rounded-b-md shadow-md italic border-r",
-          shouldDisplay ? "block" : "hidden"
+          "absolute rounded-b-md shadow-md italic border-r",
+          shouldDisplay ? "block" : "hidden",
+          theme.bgColor,
+          theme.fontColor
         )}
         style={{
           width: searchBarRef.current?.offsetWidth,
@@ -137,7 +139,11 @@ export const SearchBar = ({
         {autocompleteSuggestions.map((suggestion, i) => (
           <div
             key={i}
-            className="p-2 cursor-pointer"
+            className={clsx(
+              "p-2 cursor-pointer",
+              theme.bgColor,
+              theme.fontColor
+            )}
             onClick={(e) => {
               onChange(suggestion);
               // @ts-ignore
@@ -147,20 +153,14 @@ export const SearchBar = ({
             {value.length > 5 &&
               suggestion.split(value).map((part, i) => (
                 <>
-                  {i === 0 && (
-                    <span className="text-slate-900 pointer-events-none">
-                      ...
-                    </span>
-                  )}
-                  <span key={i} className="text-slate-900 pointer-events-none">
+                  {i === 0 && <span className="pointer-events-none">...</span>}
+                  <span key={i} className="pointer-events-none">
                     {part}
                   </span>
                 </>
               ))}
             {value.length <= 5 && (
-              <span className="text-slate-900 pointer-events-none">
-                {suggestion}
-              </span>
+              <span className="pointer-events-none">{suggestion}</span>
             )}
           </div>
         ))}
