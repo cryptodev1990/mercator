@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import useCensus from "../../lib/hooks/census/use-census";
-import Legend from "./legend";
+import Legend, { ColumnSelector } from "./legend";
 import useCensusAutocomplete from "../../lib/hooks/census/use-census-autocomplete";
 import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
@@ -97,13 +97,20 @@ const GeoMap = () => {
         </div>
         <LoadingSpinner isLoading={isLoading} />
         {/* legend */}
-        <Legend
-          colors={colors}
-          text={breaks}
-          title={selectedColumn}
-          isRatio={selectedColumn?.includes("ratio")}
-          setPaletteName={setPaletteName}
-        />
+        <div className="absolute bottom-0 left-0 z-50 m-2">
+          <Legend
+            colors={colors}
+            text={breaks}
+            isRatio={selectedColumn?.includes("ratio")}
+            setPaletteName={setPaletteName}
+          >
+            <ColumnSelector
+              columns={header}
+              selectedColumn={selectedColumn}
+              setSelectedColumn={setSelectedColumn}
+            />
+          </Legend>
+        </div>
         {error && (
           <div className="relative top-[50%] flex flex-col mx-auto z-50 bg-orange-500">
             <ErrorBox
@@ -114,31 +121,6 @@ const GeoMap = () => {
                 setSelectedColumn("");
               }}
             />
-          </div>
-        )}
-        {/* column selector */}
-        {header.length > 0 && (
-          <div className="absolute bottom-0 right-0 z-50 m-2">
-            <div className="rounded-md shadow-md">
-              <div className="flex flex-row justify-center items-center space-x-2 p-2">
-                <div className="rounded-full h-5 w-5"></div>
-                <div>
-                  <select
-                    className="bg-transparent border-none"
-                    value={selectedColumn}
-                    onChange={(e) => {
-                      setSelectedColumn(e.target.value);
-                    }}
-                  >
-                    {header.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
           </div>
         )}
         {/* download as csv */}
