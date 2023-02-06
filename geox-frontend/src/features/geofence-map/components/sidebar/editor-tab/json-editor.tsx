@@ -3,6 +3,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { MdDelete as DeleteIcon } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useGetNamespaces } from "features/geofence-map/hooks/use-openapi-hooks";
+import { useShapes } from "features/geofence-map/hooks/use-shapes";
 
 type FormValues = {
   properties: {
@@ -44,6 +45,8 @@ export default function JsonEditor({
     name: "properties",
     control,
   });
+
+  const { dispatch, optimisticShapeUpdates } = useShapes();
 
   const { data: allNamespaces } = useGetNamespaces();
   const defaultNamespace: any = allNamespaces?.find(
@@ -126,6 +129,14 @@ export default function JsonEditor({
           id="countries"
           onChange={(event: any) => {
             setSelectedNamespaceId(event.target.value);
+            const opShape: any = optimisticShapeUpdates.find(
+              (shape) => shape.uuid === uuid
+            );
+
+            dispatch({
+              type: "SET_OPTIMISTIC_SHAPE",
+              shape: { ...opShape, namespace_id: event.target.value },
+            });
           }}
           className="col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >

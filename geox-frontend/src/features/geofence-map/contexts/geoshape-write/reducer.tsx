@@ -117,8 +117,7 @@ export function reducer(state: State, action: Action): State {
         updatedShapeIds,
       };
     }
-    case "ADD_SHAPE_SUCCESS":
-    case "UPDATE_SHAPE_SUCCESS": {
+    case "ADD_SHAPE_SUCCESS": {
       // TODO there are duplicates here, I'm not sure why
       // all these shapes arrive from the server, so they should be GeoShapes
       const osu = [

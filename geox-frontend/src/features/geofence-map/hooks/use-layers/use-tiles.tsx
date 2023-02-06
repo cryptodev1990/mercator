@@ -49,6 +49,8 @@ export function useTiles() {
     return null;
   }
 
+  console.log("optimisticShapeUpdates", optimisticShapeUpdates);
+
   const commonArgs = {
     lineWidthMinPixels: 2,
     pickable: true,
@@ -92,6 +94,16 @@ export function useTiles() {
       getFillColor: (d: any) => {
         // light blue in rgba
         const uuid = d?.properties?.__uuid;
+        const optimisticShape: any = optimisticShapeUpdates.find(
+          (shape) => shape.uuid === uuid
+        );
+        const namespace = allNamespaces?.find(
+          (namespace) => namespace.id === optimisticShape?.namespace_id
+        );
+        if (namespace?.properties?.color) {
+          const color = namespace?.properties?.color;
+          return [color.r, color.g, color.b];
+        }
         if (deletedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
