@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { PALETTES } from "../../lib/hooks/scales/use-palette";
+import { useTheme } from "../../lib/hooks/census/use-theme";
+import clsx from "clsx";
 
 const pctFormat = (num: number) => {
   return `${num * 100}%`;
@@ -19,17 +21,21 @@ const Legend = ({
   setPaletteName?: (name: any) => void;
 }) => {
   const [paletteIdx, setPaletteIdx] = useState(0);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const newPalette = Object.keys(PALETTES)[paletteIdx];
-    console.log("newPalette", newPalette);
     setPaletteName && setPaletteName(newPalette);
   }, [colors, paletteIdx, setPaletteName]);
 
+  if (!title) {
+    return null;
+  }
+
   return (
     <div className="absolute bottom-0 left-0 z-50 m-2">
-      <div className="bg-slate-500 shadow-md text-white p-3">
-        <div className="text-sm text-bold">{title}</div>
+      <div className={clsx("shadow-md p-3", theme.bgColor, theme.fontColor)}>
+        <div className="text-sm font-bold">{title}</div>
         <div className="">
           {colors.map((color, i) => {
             return (

@@ -95,5 +95,13 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
     });
   }, [vec, colors, isRatio, scaleType]);
 
-  return { scale, breaks, colors, setPaletteName, scaleType, setScaleType };
+  return {
+    scale,
+    breaks,
+    colors,
+    setPaletteName,
+    scaleType,
+    setScaleType,
+    isRatio,
+  };
 };

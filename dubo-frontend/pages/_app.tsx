@@ -8,6 +8,13 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "../styles/globals.css";
 
+import { Roboto } from "@next/font/google";
+
+const roboto = Roboto({
+  weight: "400",
+  subsets: ["latin"],
+});
+
 export default function App({ Component, pageProps, router }: AppProps) {
   useEffect(() => {
     const use = async () => {
@@ -26,21 +33,33 @@ export default function App({ Component, pageProps, router }: AppProps) {
     </Head>
   );
 
+  const style = (
+    <style jsx global>
+      {`
+        :root {
+          --roboto-font: ${roboto.style.fontFamily};
+        }
+      `}
+    </style>
+  );
+
   if (router.pathname.startsWith("/demos/census")) {
     return (
-      <>
+      <main>
+        {style}
         {head}
         <Component {...pageProps} />
-      </>
+      </main>
     );
   }
   return (
-    <>
+    <main>
+      {style}
       {head}
       <Navbar />
       <div className="pr-8 pl-8 pt-8 pb-16 min-h-full">
         <Component {...pageProps} />
       </div>
-    </>
+    </main>
   );
 }

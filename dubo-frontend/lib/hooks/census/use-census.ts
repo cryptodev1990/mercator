@@ -54,12 +54,19 @@ const useCensus = ({ query }: { query: string }) => {
     error,
     isValidating,
     isLoading,
-  } = useSWR<any, Error>(getURL({ query }), fetcher, {
-    shouldRetryOnError: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    revalidateOnFocus: false,
-  });
+  } = useSWR<any, Error>(
+    getURL({
+      query,
+    }),
+    fetcher,
+    {
+      shouldRetryOnError: false,
+      isPaused: () => query === undefined,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
     data: {

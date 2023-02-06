@@ -11,7 +11,6 @@ export const useZctaShapes = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("CALLED!");
     if (zctaShapes.length > 0) return;
     setIsLoading(true);
     fetch(ZCTA_PARQUET_URL, {
