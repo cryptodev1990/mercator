@@ -125,7 +125,7 @@ export const DeckMap = ({
           getOffset: [0, 1],
           data: zctaShapes,
           updateTriggers: {
-            getFillColor: [selectedColumn, zctaLookup, colors],
+            getFillColor: [selectedColumn, zctaLookup, colors, scale],
           },
           getPolygon: (d: any) => {
             return d.geom;
@@ -160,7 +160,7 @@ export const DeckMap = ({
           maxRequests: -1,
           getOffset: [0, 1],
           updateTriggers: {
-            getFillColor: [selectedColumn, zctaLookup, colors],
+            getFillColor: [selectedColumn, zctaLookup, colors, scale],
           },
           pickingRadius: 5,
           filled: true,

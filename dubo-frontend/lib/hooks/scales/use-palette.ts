@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 // @ts-ignore
-import { scaleQuantile, scaleQuantize } from "d3-scale";
+import { scaleQuantile, scaleQuantize, scaleLinear } from "d3-scale";
 
 const COLOR_BREWER_ORANGE_RED = [
   [255, 255, 178],
@@ -49,6 +49,14 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
     "quantize"
   );
 
+  const rotateScaleType = () => {
+    if (scaleType === "quantile") {
+      setScaleType("quantize");
+    } else {
+      setScaleType("quantile");
+    }
+  };
+
   const isRatio = useMemo(() => {
     if (!vec) return false;
     return vec.every((d) => (d <= 1 && d >= 0) || d === null);
@@ -77,9 +85,23 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
     const min = Math.min(...vec);
     if (scaleType === "quantize") {
       if (isRatio) {
-        return [0, 0.25, 0.5, 0.75, 1];
+        // return values between 0 and 1 evenly spaced
+        return scaleQuantize().domain([0, 1]).ticks(5);
       }
-      return scaleQuantize().domain(vec).range(colors).ticks();
+      return scaleQuantize()
+        .domain([min, Math.max(...vec)])
+        .range(colors)
+        .ticks(5)
+        .map((d: any) => {
+          // if there's a decimal, round to 2 places
+          if (!d) {
+            return d;
+          } else if (d % 1 !== 0) {
+            return d.toFixed(2);
+          } else {
+            return d;
+          }
+        });
     }
     const newBreaks = scaleQuantile().domain(vec).range(colors).quantiles();
     if (min < newBreaks[0]) newBreaks.unshift(min);
@@ -100,8 +122,7 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
     breaks,
     colors,
     setPaletteName,
-    scaleType,
-    setScaleType,
+    rotateScaleType,
     isRatio,
   };
 };

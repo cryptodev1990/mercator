@@ -47,7 +47,7 @@ const GeoMap = () => {
     return vals;
   }, [zctaLookup, selectedColumn]);
 
-  const { colors, breaks, scale, setPaletteName, setScaleType, isRatio } =
+  const { colors, breaks, scale, setPaletteName, rotateScaleType, isRatio } =
     usePalette({
       vec: dataVector,
     });
@@ -98,18 +98,21 @@ const GeoMap = () => {
         <LoadingSpinner isLoading={isLoading} />
         {/* legend */}
         <div className="absolute bottom-0 left-0 z-50 m-2">
-          <Legend
-            colors={colors}
-            text={breaks}
-            isRatio={selectedColumn?.includes("ratio")}
-            setPaletteName={setPaletteName}
-          >
-            <ColumnSelector
-              columns={header}
-              selectedColumn={selectedColumn}
-              setSelectedColumn={setSelectedColumn}
-            />
-          </Legend>
+          {header.length > 0 && (
+            <Legend
+              colors={colors}
+              text={breaks}
+              isRatio={isRatio}
+              setPaletteName={setPaletteName}
+              onScaleTextClicked={rotateScaleType}
+            >
+              <ColumnSelector
+                columns={header}
+                selectedColumn={selectedColumn}
+                setSelectedColumn={setSelectedColumn}
+              />
+            </Legend>
+          )}
         </div>
         {error && (
           <div className="relative top-[50%] flex flex-col mx-auto z-50 bg-orange-500">
