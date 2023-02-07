@@ -44,8 +44,8 @@ def read_query(
         for s_to_check in [user_query, *schemas, *descriptions]:  # type: ignore
             if not s_to_check:
                 continue
-            assert '```' not in s_to_check, "Reserved tokens in query"
-            assert '"""' not in s_to_check, "Reserved tokens in query"
+            for tok in ['```', '"""']:
+                assert tok not in s_to_check, "Reserved tokens in query"
     except AssertionError as e:
         raise HTTPException(status_code=422, detail=str(e))
 

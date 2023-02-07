@@ -4,6 +4,7 @@
 This is a ruckus mad-dash demo endpoint for the census API.
 """
 from typing import List, Optional, Union
+import base64
 from io import BytesIO
 import os
 import re
@@ -104,10 +105,9 @@ async def census(
     if len(records) == 0:
         raise HTTPException(status_code=404, detail="No results found")
     df = pd.DataFrame(records, columns=records[0].keys())
-    print(df.head())
     parquet = df.dropna().to_parquet(index=False)
     return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
-        # "X-Generated-Sql": sql,
+        "X-Generated-Sql": base64.b64encode(bytes(sql, 'ascii')).decode()
     })
 
 
