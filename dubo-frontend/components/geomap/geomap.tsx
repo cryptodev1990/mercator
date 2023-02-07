@@ -6,7 +6,6 @@ import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
 import { DeckMap } from "./deck-map";
 import { Tooltip } from "./tooltip";
-import { DownloadCSVButton } from "./download-csv-button";
 import { LoadingSpinner } from "./loading-spinner";
 import { ErrorBox } from "./error-box";
 
@@ -16,7 +15,9 @@ import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
 import { TitleBlock } from "./title-block";
 import { nab } from "../../lib/utils";
-import { FoldableBlock } from "./foldable-block";
+import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
+import { SQLBar } from "./sql-bar";
+import { CloseButton } from "../close-button";
 
 const GeoMap = () => {
   const { theme } = useTheme();
@@ -24,8 +25,9 @@ const GeoMap = () => {
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
-  const [hideTitleBlock, setHideTitleBlock] = useState(false);
+  const [zoomThreshold, setZoomThreshold] = useState(false);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
+  const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
 
   const {
     data: { header, lookup: zctaLookup, generatedSql },
@@ -73,7 +75,7 @@ const GeoMap = () => {
             "pointer-events-none"
           )}
         >
-          <TitleBlock hideTitleBlock={hideTitleBlock} />
+          <TitleBlock zoomThreshold={zoomThreshold} />
           <div className="pointer-events-auto">
             <SearchBar
               value={localQuery}
@@ -90,9 +92,22 @@ const GeoMap = () => {
                 autocompleteSuggestions?.suggestions ?? []
               }
             />
-          </div>
-          <div>
-            <FoldableBlock title="Generated SQL" contents={generatedSql} />
+            <div className="flex flex-row w-full">
+              <SQLButtonBank
+                setShowInPlace={setShowInPlace}
+                showInPlace={showInPlace}
+                zoomThreshold={zoomThreshold}
+              />
+              {showInPlace === "generated_sql" && (
+                <SQLBar
+                  generatedSql={generatedSql}
+                  setShowInPlace={setShowInPlace}
+                />
+              )}
+              {showInPlace === "data_catalog" && (
+                <div className="bg-red-500 h-5 w-5"></div>
+              )}
+            </div>
           </div>
         </div>
         <LoadingSpinner isLoading={isLoading} />
@@ -126,8 +141,6 @@ const GeoMap = () => {
             />
           </div>
         )}
-        {/* download as csv */}
-        {header.length > 0 && <DownloadCSVButton />}
         {/* tooltip */}
         {zctaLookup && (
           <Tooltip
@@ -148,9 +161,9 @@ const GeoMap = () => {
         baseMap={theme.baseMap}
         onZoom={(zoom: number) => {
           if (zoom > 4) {
-            setHideTitleBlock(true);
+            setZoomThreshold(true);
           } else {
-            setHideTitleBlock(false);
+            setZoomThreshold(false);
           }
         }}
       />
