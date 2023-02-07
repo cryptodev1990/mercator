@@ -15,11 +15,8 @@ import clsx from "clsx";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
 import { TitleBlock } from "./title-block";
-
-const nab = (arr: string[]) => {
-  // choose random element from array
-  return arr[Math.floor(Math.random() * arr.length)];
-};
+import { nab } from "../../lib/utils";
+import { FoldableBlock } from "./foldable-block";
 
 const GeoMap = () => {
   const { theme } = useTheme();
@@ -31,7 +28,7 @@ const GeoMap = () => {
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
 
   const {
-    data: { header, lookup: zctaLookup },
+    data: { header, lookup: zctaLookup, generatedSql },
     isLoading,
     error,
   } = useCensus({
@@ -93,6 +90,9 @@ const GeoMap = () => {
                 autocompleteSuggestions?.suggestions ?? []
               }
             />
+          </div>
+          <div>
+            <FoldableBlock title="Generated SQL" contents={generatedSql} />
           </div>
         </div>
         <LoadingSpinner isLoading={isLoading} />

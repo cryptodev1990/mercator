@@ -21,7 +21,6 @@ export default async function handler(
   });
   const data = await response.arrayBuffer();
   const data2 = new Uint8Array(data);
-  console.log(data2);
   res.setHeader("Content-Type", "application/wasm");
   res.write(data2);
   res.end();
