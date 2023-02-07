@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import useMousePosition from "../../lib/hooks/use-mouse-position";
 import { useEffect, useRef, useState } from "react";
 
 export type ShowInPlaceOptionsType = "generated_sql" | "data_catalog" | null;

@@ -17,6 +17,7 @@ import { TitleBlock } from "./title-block";
 import { nab } from "../../lib/utils";
 import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
 import { SQLBar } from "./sql-bar";
+import { useRouter } from "next/router";
 
 const GeoMap = () => {
   const { theme } = useTheme();
@@ -27,6 +28,14 @@ const GeoMap = () => {
   const [zoomThreshold, setZoomThreshold] = useState(false);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (showInPlace === "data_catalog") {
+      // navigate to data catalog using router
+      router.push("/demos/census/data-catalog");
+    }
+  }, [showInPlace]);
 
   const {
     data: { header, lookup: zctaLookup, generatedSql },
@@ -102,9 +111,6 @@ const GeoMap = () => {
                   generatedSql={generatedSql}
                   setShowInPlace={setShowInPlace}
                 />
-              )}
-              {showInPlace === "data_catalog" && (
-                <div className="bg-red-500 h-5 w-5"></div>
               )}
             </div>
           </div>
