@@ -107,7 +107,8 @@ async def census(
     df = pd.DataFrame(records, columns=records[0].keys())
     parquet = df.dropna().to_parquet(index=False)
     return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
-        "X-Generated-Sql": base64.b64encode(bytes(sql, 'ascii')).decode()
+        "X-Generated-Sql": base64.b64encode(bytes(sql, 'ascii')).decode(),
+        "Access-Control-Expose-Headers": "X-Generated-Sql"
     })
 
 
