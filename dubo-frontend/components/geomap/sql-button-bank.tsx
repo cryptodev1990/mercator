@@ -32,17 +32,14 @@ const btns = [
   {
     title: "See SQL",
     slug: "generated_sql",
-    onClick: () => {},
   },
   {
     title: "Data catalog",
     slug: "data_catalog",
-    onClick: () => {},
   },
   {
     title: "Download",
     slug: "download",
-    onClick: () => {},
   },
 ];
 

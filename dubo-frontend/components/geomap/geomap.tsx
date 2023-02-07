@@ -17,7 +17,6 @@ import { TitleBlock } from "./title-block";
 import { nab } from "../../lib/utils";
 import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
 import { SQLBar } from "./sql-bar";
-import { CloseButton } from "../close-button";
 
 const GeoMap = () => {
   const { theme } = useTheme();

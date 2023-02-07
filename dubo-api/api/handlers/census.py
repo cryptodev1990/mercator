@@ -105,6 +105,7 @@ async def census(
     if len(records) == 0:
         raise HTTPException(status_code=404, detail="No results found")
     df = pd.DataFrame(records, columns=records[0].keys())
+    sql = sqlglot.transpile(sql, read='postgres', write='postgres', pretty=True)[0]
     parquet = df.dropna().to_parquet(index=False)
     return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
         "X-Generated-Sql": base64.b64encode(bytes(sql, 'ascii')).decode(),
