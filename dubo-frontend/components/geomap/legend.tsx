@@ -164,7 +164,7 @@ const Legend = ({
     setPaletteName && setPaletteName(newPalette);
   }, [colors, paletteIdx, setPaletteName]);
 
-  if (text.length === 0 || !Number.isFinite(text[0])) {
+  if (text.length === 0) {
     return null;
   }
 
@@ -262,7 +262,7 @@ const Legend = ({
           className="w-full mx-auto text-center text-xs cursor-pointer select-none"
         >
           {isRatio && "% "}
-          {scaleType === "quantile" && "(By quantiles)"}
+          {scaleType === "quantile" && "By Quantiles"}
         </div>
       </div>
     </div>
