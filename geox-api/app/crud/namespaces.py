@@ -268,19 +268,8 @@ def update_namespace(
 
     if namespace.is_default and "name" in data:
         raise DefaultNamespaceCannotBeRenamedError(id_)
-    # check that the slug does not exist - ideally the partial index should handle it
-    # but it appears that it does not
-    # slug = slugify_name(namespace.name)
-    # try:
-    #     namespace_with_slug = get_namespace_by_slug(conn, slug)
-    #     raise NamespaceExistsError(
-    #         namespace_with_slug.name,
-    #         namespace_with_slug.slug,
-    #         namespace_with_slug.id,
-    #     )
-    # except NamespaceWithThisSlugDoesNotExistError:
-    #     pass
     values = delete_none(jsonable_encoder(data))
+    values["slug"] = slugify_name(namespace.name)
 
 
     stmt = (

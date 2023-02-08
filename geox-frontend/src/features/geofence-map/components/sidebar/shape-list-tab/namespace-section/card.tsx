@@ -110,9 +110,14 @@ export const NamespaceCard = ({
         <div>
           <ColorPicker namespace={namespace} />
         </div>
-        <div>
+        <div
+          {...(namespace.name.length > 20
+            ? { "data-tip": namespace.name, "data-tip-skew": "right" }
+            : {})}
+          data-tip-skew="right"
+        >
           <EditableLabel
-            className="font-bold text-md mx-1 select-none text-white"
+            className="font-bold text-md mx-1 select-none text-white w-48"
             value={namespace.name}
             onChange={(newName) => {
               if (newName !== namespace.name) {
@@ -128,11 +133,10 @@ export const NamespaceCard = ({
         {mutation.isLoading ? (
           <ReactLoading type="spin" height={"15px"} width={"15px"} />
         ) : null}
-
         <div className="self-center ml-auto z-10 flex space-x-3">
-          {sectionShapeMetadata && hovered && (
+          {/* {sectionShapeMetadata && hovered && (
             <span className="text-sm">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
-          )}
+          )} */}
           {!namespace.is_default && hovered && (
             <DeleteButton namespace={namespace} />
           )}
