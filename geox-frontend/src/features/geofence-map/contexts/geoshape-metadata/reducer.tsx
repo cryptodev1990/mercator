@@ -2,13 +2,13 @@ import { Namespace } from "../../../../client";
 import { Action } from "./action-types";
 
 export interface State {
-  activeNamespaces: Namespace[];
-  visibleNamespaces: Namespace[];
+  activeNamespaceIDs: string[];
+  visibleNamespaceIDs: string[];
 }
 
 export const initialState: State = {
-  activeNamespaces: [],
-  visibleNamespaces: [],
+  activeNamespaceIDs: [],
+  visibleNamespaceIDs: [],
 };
 
 export function geoshapeReducer(state: State, action: Action): State {
@@ -16,13 +16,13 @@ export function geoshapeReducer(state: State, action: Action): State {
     case "SET_ACTIVE_NAMESPACES": {
       return {
         ...state,
-        activeNamespaces: action.namespaces,
+        activeNamespaceIDs: action.namespaces,
       };
     }
     case "SET_VISIBLE_NAMESPACES": {
       return {
         ...state,
-        visibleNamespaces: action.namespaces,
+        visibleNamespaceIDs: action.namespaces,
       };
     }
     default:

@@ -11,7 +11,7 @@ import { useShapes } from "../../../../hooks/use-shapes";
 export const ShapeSearchBar = () => {
   // persist fuse instance
   const fuseRef = useRef<Fuse<GeoShapeMetadata>>(null);
-  const { setActiveNamespaces } = useShapes();
+  const { setActiveNamespaceIDs } = useShapes();
   const { data: namespaces } = useGetNamespaces();
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const { setSearchResults } = useContext(SearchContext);
@@ -55,12 +55,12 @@ export const ShapeSearchBar = () => {
       ? fuseRef.current.search(debouncedSearchTerm)
       : namespaces.flatMap((x) => x.shapes ?? []).map((x) => ({ item: x }));
     if (results.length > 0) {
-      // set new activeNamespaces
+      // set new activeNamespaceIDs
       let namespaceIds = new Set(results.map((x) => x.item.namespace_id));
       const newActives = namespaces.filter((namespace) =>
         namespaceIds.has(namespace.id)
       );
-      setActiveNamespaces(newActives);
+      setActiveNamespaceIDs(newActives.map((x) => x.id));
       setSearchResults(results.map((x) => x.item.uuid));
     } else {
       toast.remove();

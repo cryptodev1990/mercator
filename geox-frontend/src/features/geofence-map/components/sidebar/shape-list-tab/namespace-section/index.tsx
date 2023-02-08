@@ -6,7 +6,7 @@ import { ShapeSearchBar } from "./shape-search-bar";
 import ReactLoading from "react-loading";
 
 export const NamespaceSection = ({ className }: { className: string }) => {
-  const { visibleNamespaces, activeNamespaces, setActiveNamespaces } =
+  const { visibleNamespaceIDs, activeNamespaceIDs, setActiveNamespaceIDs } =
     useShapes();
 
   const { data: namespaces } = useGetNamespaces();
@@ -24,12 +24,8 @@ export const NamespaceSection = ({ className }: { className: string }) => {
         <ShapeSearchBar />
       )}
       {namespaces.map((namespace, i) => {
-        const isVisible = visibleNamespaces
-          .map((x) => x.id)
-          .includes(namespace?.id);
-        const isActive = activeNamespaces
-          .map((n) => n.id)
-          .includes(namespace.id);
+        const isVisible = visibleNamespaceIDs.includes(namespace?.id);
+        const isActive = activeNamespaceIDs.includes(namespace.id);
         return (
           <NamespaceCard
             key={i}
@@ -39,11 +35,13 @@ export const NamespaceSection = ({ className }: { className: string }) => {
             onClickCaret={() => {
               if (isActive) {
                 // remove from active namespaces
-                setActiveNamespaces(
-                  activeNamespaces.filter((n) => n.id !== namespace.id)
+                setActiveNamespaceIDs(
+                  activeNamespaceIDs.filter(
+                    (namespaceID: string) => namespaceID !== namespace.id
+                  )
                 );
               } else {
-                setActiveNamespaces([...activeNamespaces, namespace]);
+                setActiveNamespaceIDs([...activeNamespaceIDs, namespace.id]);
               }
             }}
           />
