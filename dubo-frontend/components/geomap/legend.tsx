@@ -164,6 +164,10 @@ const Legend = ({
     setPaletteName && setPaletteName(newPalette);
   }, [colors, paletteIdx, setPaletteName]);
 
+  if (text.length === 0 || !Number.isFinite(text[0])) {
+    return null;
+  }
+
   return (
     <div
       className={clsx(
