@@ -10,6 +10,26 @@ const pctFormat = (num: number) => {
   return `${num * 100}%`;
 };
 
+const pctFmtSansPct = (num: number) => {
+  return `${num * 100}`;
+};
+
+function abbrevTick(num: number) {
+  // If the number in the 1's position is greater than 0, cut the decimal
+  // return K for the number of thousands
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(0)}K`;
+  }
+  // return M for the number of millions
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(0)}M`;
+  }
+  if (num % 10 > 0) {
+    return `${num.toFixed(0)}`;
+  }
+  return `${num.toFixed(0)}`;
+}
+
 const PaletteButton = ({
   colors,
   setPaletteIdx,
@@ -122,12 +142,14 @@ const Legend = ({
   text,
   isRatio,
   setPaletteName,
+  scaleType,
   onScaleTextClicked,
   children,
 }: {
   colors: number[][];
   text: string[];
   isRatio?: boolean;
+  scaleType: string;
   setPaletteName?: (name: any) => void;
   onScaleTextClicked: any;
   children?: React.ReactNode;
@@ -145,7 +167,7 @@ const Legend = ({
   return (
     <div
       className={clsx(
-        "shadow-md py-5 px-3 flex flex-col justify-start items-center gap-3 rounded group max-w-[200px]",
+        "shadow-md py-5 px-3 flex flex-col justify-start items-center gap-3 rounded group max-w-[13rem]",
         theme.bgColor,
         theme.fontColor
       )}
@@ -206,10 +228,10 @@ const Legend = ({
       {/* Colors */}
       <div>
         {/* paintbrush icon that changes the palette */}
-        <div>
+        <div className="flex flex-row">
           {colors.map((color, i) => {
             return (
-              <div key={i} className="flex flex-row justify-start gap-3">
+              <div key={i} className="text-left">
                 <div
                   className="h-7 w-7 cursor-pointer"
                   onClick={() =>
@@ -221,17 +243,22 @@ const Legend = ({
                     background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
                   }}
                 ></div>
-                {Number.isFinite(+text[i]) && (
-                  <div
-                    onClick={onScaleTextClicked}
-                    className="text-sm w-full overflow-hidden cursor-pointer select-none"
-                  >
-                    {isRatio ? pctFormat(+text[i]) : +text[i]}
-                  </div>
-                )}
+                <div
+                  onClick={onScaleTextClicked}
+                  className="text-sm w-full overflow-hidden cursor-pointer select-none"
+                >
+                  {isRatio ? pctFmtSansPct(+text[i]) : abbrevTick(+text[i])}
+                </div>
               </div>
             );
           })}
+        </div>
+        <div
+          onClick={onScaleTextClicked}
+          className="w-full mx-auto text-center text-xs cursor-pointer select-none"
+        >
+          {isRatio && "% "}
+          {scaleType === "quantile" && "(By quantiles)"}
         </div>
       </div>
     </div>

@@ -54,10 +54,17 @@ const GeoMap = () => {
     return vals;
   }, [zctaLookup, selectedColumn]);
 
-  const { colors, breaks, scale, setPaletteName, rotateScaleType, isRatio } =
-    usePalette({
-      vec: dataVector,
-    });
+  const {
+    colors,
+    breaks,
+    scale,
+    setPaletteName,
+    rotateScaleType,
+    isRatio,
+    scaleType,
+  } = usePalette({
+    vec: dataVector,
+  });
 
   useEffect(() => {
     if (error) console.error("error", error);
@@ -124,6 +131,7 @@ const GeoMap = () => {
               text={breaks}
               isRatio={isRatio}
               setPaletteName={setPaletteName}
+              scaleType={scaleType}
               onScaleTextClicked={rotateScaleType}
             >
               <ColumnSelector

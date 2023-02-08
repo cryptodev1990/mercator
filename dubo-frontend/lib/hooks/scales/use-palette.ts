@@ -123,6 +123,7 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
     colors,
     setPaletteName,
     rotateScaleType,
+    scaleType,
     isRatio,
   };
 };
