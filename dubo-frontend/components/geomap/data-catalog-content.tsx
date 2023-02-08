@@ -1,12 +1,23 @@
 import { useRouter } from "next/router";
-import { CloseButton } from "../close-button";
 import Fuse from "fuse.js";
 import { TitleBlock } from "./title-block";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 
-const DoubleBar = () => <hr className="border-b border-black pb-[1px] mb-5" />;
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "https://dubo-api.mercator.tech";
+
+function cleanDescription(description: string) {
+  // Remove the word "Estimate" from the description and replace "!!" with " " and replace the final ":"
+  return description
+    .replace("Estimate!!", "")
+    .replace("Total:!!", "")
+    .replace(/!!/g, " ")
+    .replace(/:$/, "");
+}
+
+const ENDPOINT = `${BACKEND_URL}/demos/census/variables`;
 
 const censusCategories = {
   "Demographic data": {
@@ -63,12 +74,12 @@ export type MetaCensusRecord = {
 
 const CensusRow = ({ row }: { row: MetaCensusRecord }) => {
   return (
-    <div className="flex flex-row w-full">
-      <div className="flex-1">{row.dubo_name}</div>
-      <div className="flex-1 flex flex-row">
-        <div>{row.label}</div>
-        <div>{row.concept}</div>
+    <div className="flex flex-row w-full py-1">
+      <div className="flex-1 break-all inline-block">{row.dubo_name}</div>
+      <div className="flex-1 break-words inline-block">
+        {cleanDescription(row.label)}
       </div>
+      <div className="flex-1 break-words inline-block">{row.concept}</div>
       <div className="flex-1">
         <a
           href={`${linkToVarInCensus(row.name)}`}
@@ -137,22 +148,26 @@ const CategoryGrid = ({ onClick }: { onClick: (category: string) => void }) => {
   );
 };
 
-export const DataCatalogContent = ({
-  ssrData,
-}: {
-  ssrData: MetaCensusRecord[];
-}) => {
+export const DataCatalogContent = () => {
   const router = useRouter();
   const fuseRef = useRef<Fuse<MetaCensusRecord>>();
   const [searchResults, setSearchResults] = useState<MetaCensusRecord[]>([]);
 
   useEffect(() => {
-    fuseRef.current = new Fuse(ssrData, {
-      keys: ["name", "dubo_name", "label", "concept"],
-    });
-    // prime the results so the search results aren't empty
-    search("_");
-  }, [ssrData]);
+    async function createFuse() {
+      const data = await fetch(ENDPOINT, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json());
+      fuseRef.current = new Fuse(data, {
+        keys: ["name", "dubo_name", "label", "concept"],
+      });
+      // prime the results so the search results aren't empty
+      search("time to work");
+    }
+    createFuse();
+  }, []);
 
   function search(query: string) {
     if (!fuseRef.current) {
@@ -164,7 +179,7 @@ export const DataCatalogContent = ({
   }
 
   return (
-    <div className="relative border animate-fadeIn500 bg-slate-100 w-screen h-screen">
+    <div className="relative border animate-fadeIn500 bg-slate-100 w-screen h-fit">
       <div className="border-b-4 border-black">
         <div className="max-w-5xl mx-auto">
           <TitleBlock zoomThreshold={false} />
@@ -203,6 +218,12 @@ export const DataCatalogContent = ({
                   </Link>
                   .
                 </p>
+                <br />
+                <p className="text-md leading-4">
+                  While you can{"'"}t query these variables directly through
+                  dubo, hopefully this gives you an idea of the kind of
+                  questions you can ask.
+                </p>
                 <div className="flex-none my-auto">
                   <h3>Start typing to search</h3>
                   {/* Search bar */}
@@ -228,10 +249,11 @@ export const DataCatalogContent = ({
             {searchResults.length > 0 && (
               <div
                 key={0}
-                className="flex flex-row bg-blue-500 py-4 p-2 text-slate-100 rounded"
+                className="flex flex-row bg-blue-500 py-4 p-2 text-slate-50 rounded"
               >
                 <div className="flex-1 font-extrabold">Name</div>
                 <div className="flex-1 font-extrabold">Description</div>
+                <div className="flex-1 font-extrabold">Category</div>
                 <div className="flex-1 font-extrabold">Census Source</div>
               </div>
             )}
