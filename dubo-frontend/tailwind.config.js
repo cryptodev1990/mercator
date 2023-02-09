@@ -11,10 +11,18 @@ module.exports = {
   theme: {
     // Add a blue color
     extend: {
+      padding: {
+        "1/3": "33%",
+        "1/2": "50%",
+        "1/4": "25%",
+        "5/12": "41.666667%",
+        "11/24": "45.833333%",
+        full: "100%",
+      },
       fontFamily: {
         primary: ["var(--roboto-font)", ...fontFamily.sans],
         sans: ["var(--roboto-font)", ...fontFamily.sans],
-        serif: ["var(--roboto-zilla)", ...fontFamily.serif],
+        sans2: [fontFamily.sans[1]],
       },
       // that is animation class
       animation: {

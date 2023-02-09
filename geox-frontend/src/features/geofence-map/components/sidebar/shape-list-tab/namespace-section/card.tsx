@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
 import { ColorPicker } from "features/geofence-map/components/color-picker";
+import { TruncateButton } from "./truncate-button";
 
 export const NamespaceCard = ({
   namespace,
@@ -113,16 +114,13 @@ export const NamespaceCard = ({
           <div
             {...(sectionShapeMetadata && namespace.name.length > 14
               ? {
-                  "data-tip":
-                    `namespace.name: ` +
-                    simplur`${sectionShapeMetadata.length} shape[|s]`,
-                  "data-tip-skew": "right",
+                  "data-tip": namespace.name,
                 }
               : {})}
             data-tip-skew="right"
           >
             <EditableLabel
-              className="font-bold text-md mx-1 select-none text-white w-34"
+              className="font-bold text-md mx-1 select-none text-white w-28"
               value={namespace.name}
               onChange={(newName) => {
                 if (newName !== namespace.name) {
@@ -140,7 +138,7 @@ export const NamespaceCard = ({
           ) : null}
         </div>
         <div className="flex items-center">
-          {sectionShapeMetadata && hovered && namespace.name.length <= 14 && (
+          {sectionShapeMetadata && hovered && (
             <span className="text-sm pr-2">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
           )}
           <div className="flex justify-between w-9 items-center">
@@ -164,7 +162,11 @@ export const NamespaceCard = ({
                 {isVisible ? <EyeFillIcon /> : <EyeSlashFillIcon />}
               </span>
             </div>
-            {!namespace.is_default && <DeleteButton namespace={namespace} />}
+            {namespace.is_default ? (
+              <TruncateButton namespace={namespace} />
+            ) : (
+              <DeleteButton namespace={namespace} />
+            )}
           </div>
         </div>
       </div>

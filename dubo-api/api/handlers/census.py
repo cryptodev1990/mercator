@@ -4,6 +4,7 @@
 This is a ruckus mad-dash demo endpoint for the census API.
 """
 from typing import List, Optional, Union
+import base64
 from io import BytesIO
 import os
 import re
@@ -16,7 +17,7 @@ from pydantic import NonNegativeInt
 import sqlglot
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 
 from api.gateways.conns import Connection
 from api.gateways.openai import get_sql_from_gpt_finetuned, get_sql_from_gpt_prompt
@@ -104,10 +105,11 @@ async def census(
     if len(records) == 0:
         raise HTTPException(status_code=404, detail="No results found")
     df = pd.DataFrame(records, columns=records[0].keys())
-    print(df.head())
+    sql = sqlglot.transpile(sql, read='postgres', write='postgres', pretty=True)[0]
     parquet = df.dropna().to_parquet(index=False)
     return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
-        # "X-Generated-Sql": sql,
+        "X-Generated-Sql": base64.b64encode(bytes(sql, 'ascii')).decode(),
+        "Access-Control-Expose-Headers": "X-Generated-Sql"
     })
 
 
@@ -245,3 +247,32 @@ async def _autocomplete_endpoint(
     results = _autocomplete.search(text, max_cost=1000, size=size)
 
     return [j for i in results for j in i]
+
+
+@router.get(
+    "/census/variables",
+    response_model=list[dict],
+    responses={"400": {"description": "Unable to parse query."}},
+)
+async def get_all_variables():
+    try:
+        conn = await connect_to_db()
+        records = await conn.fetch("""
+            SELECT DISTINCT name
+            , dubo_name
+            , label
+            , concept
+            FROM acs_census_vars
+            JOIN analysis_dubo_cleaned
+            ON census_var = name
+            UNION ALL
+            SELECT 'ZCTA' AS name
+            , 'zcta' AS dubo_name
+            , 'Geography' AS label
+            , NULL AS concept;
+            ;
+        """)
+        cols = records[0].keys()
+        return JSONResponse(content=pd.DataFrame(records, columns=cols).to_dict(orient='records'))
+    finally:
+        await conn.close()

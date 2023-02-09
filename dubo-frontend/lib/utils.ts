@@ -88,3 +88,14 @@ function jsTypeToSqliteType(type: string) {
 export const convertZip = (potentialZip: number) => {
   return potentialZip.toString().padStart(5, "0");
 };
+
+export const base64ToString = (base64: string) => {
+  // convert base64 encoded string to string
+  // don't use atob because it doesn't work in node
+  return Buffer.from(base64, "base64").toString("ascii");
+};
+
+export const nab = (arr: string[]) => {
+  // choose random element from array
+  return arr[Math.floor(Math.random() * arr.length)];
+};

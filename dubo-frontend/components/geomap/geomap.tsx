@@ -6,7 +6,6 @@ import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
 import { DeckMap } from "./deck-map";
 import { Tooltip } from "./tooltip";
-import { DownloadCSVButton } from "./download-csv-button";
 import { LoadingSpinner } from "./loading-spinner";
 import { ErrorBox } from "./error-box";
 
@@ -15,11 +14,10 @@ import clsx from "clsx";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
 import { TitleBlock } from "./title-block";
-
-const nab = (arr: string[]) => {
-  // choose random element from array
-  return arr[Math.floor(Math.random() * arr.length)];
-};
+import { nab } from "../../lib/utils";
+import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
+import { SQLBar } from "./sql-bar";
+import { useRouter } from "next/router";
 
 const GeoMap = () => {
   const { theme } = useTheme();
@@ -27,11 +25,20 @@ const GeoMap = () => {
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
-  const [hideTitleBlock, setHideTitleBlock] = useState(false);
+  const [zoomThreshold, setZoomThreshold] = useState(false);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
+  const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (showInPlace === "data_catalog") {
+      // navigate to data catalog using router
+      router.push("/demos/census/data-catalog");
+    }
+  }, [showInPlace]);
 
   const {
-    data: { header, lookup: zctaLookup },
+    data: { header, lookup: zctaLookup, generatedSql },
     isLoading,
     error,
   } = useCensus({
@@ -47,10 +54,17 @@ const GeoMap = () => {
     return vals;
   }, [zctaLookup, selectedColumn]);
 
-  const { colors, breaks, scale, setPaletteName, setScaleType, isRatio } =
-    usePalette({
-      vec: dataVector,
-    });
+  const {
+    colors,
+    breaks,
+    scale,
+    setPaletteName,
+    rotateScaleType,
+    isRatio,
+    scaleType,
+  } = usePalette({
+    vec: dataVector,
+  });
 
   useEffect(() => {
     if (error) console.error("error", error);
@@ -76,7 +90,7 @@ const GeoMap = () => {
             "pointer-events-none"
           )}
         >
-          <TitleBlock hideTitleBlock={hideTitleBlock} />
+          <TitleBlock zoomThreshold={zoomThreshold} />
           <div className="pointer-events-auto">
             <SearchBar
               value={localQuery}
@@ -93,23 +107,40 @@ const GeoMap = () => {
                 autocompleteSuggestions?.suggestions ?? []
               }
             />
+            <div className="flex flex-row w-full">
+              <SQLButtonBank
+                setShowInPlace={setShowInPlace}
+                showInPlace={showInPlace}
+                zoomThreshold={zoomThreshold}
+              />
+              {showInPlace === "generated_sql" && (
+                <SQLBar
+                  generatedSql={generatedSql}
+                  setShowInPlace={setShowInPlace}
+                />
+              )}
+            </div>
           </div>
         </div>
         <LoadingSpinner isLoading={isLoading} />
         {/* legend */}
         <div className="absolute bottom-0 left-0 z-50 m-2">
-          <Legend
-            colors={colors}
-            text={breaks}
-            isRatio={selectedColumn?.includes("ratio")}
-            setPaletteName={setPaletteName}
-          >
-            <ColumnSelector
-              columns={header}
-              selectedColumn={selectedColumn}
-              setSelectedColumn={setSelectedColumn}
-            />
-          </Legend>
+          {header.length > 0 && (
+            <Legend
+              colors={colors}
+              text={breaks}
+              isRatio={isRatio}
+              setPaletteName={setPaletteName}
+              scaleType={scaleType}
+              onScaleTextClicked={rotateScaleType}
+            >
+              <ColumnSelector
+                columns={header}
+                selectedColumn={selectedColumn}
+                setSelectedColumn={setSelectedColumn}
+              />
+            </Legend>
+          )}
         </div>
         {error && (
           <div className="relative top-[50%] flex flex-col mx-auto z-50 bg-orange-500">
@@ -123,8 +154,6 @@ const GeoMap = () => {
             />
           </div>
         )}
-        {/* download as csv */}
-        {header.length > 0 && <DownloadCSVButton />}
         {/* tooltip */}
         {zctaLookup && (
           <Tooltip
@@ -145,9 +174,9 @@ const GeoMap = () => {
         baseMap={theme.baseMap}
         onZoom={(zoom: number) => {
           if (zoom > 4) {
-            setHideTitleBlock(true);
+            setZoomThreshold(true);
           } else {
-            setHideTitleBlock(false);
+            setZoomThreshold(false);
           }
         }}
       />

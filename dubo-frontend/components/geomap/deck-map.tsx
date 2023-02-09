@@ -6,11 +6,29 @@ import StaticMap from "react-map-gl";
 // @ts-ignore
 import DeckGL from "deck.gl";
 import { useEffect, useRef, useState } from "react";
-import { useZctaShapes } from "../../lib/hooks/use-zcta-shapes";
+import { useZctaShapes } from "../../lib/hooks/census/use-zcta-shapes";
 
 const TILE_URL =
   "https://api.mercator.tech/backsplash/zcta/generate_shape_tile/{z}/{x}/{y}";
 const ZOOM_TRANSITION = 7.1;
+
+function genCommonProps(updateTriggersVars: any) {
+  return {
+    updateTriggers: {
+      getFillColor: updateTriggersVars,
+    },
+    stroked: false,
+    transitions: {
+      getFillColor: 500,
+    },
+    filled: true,
+    pickable: true,
+    extruded: false,
+    wireframe: false,
+    opacity: 0.5,
+    autoHighlight: true,
+  };
+}
 
 export const DeckMap = ({
   zctaLookup,
@@ -89,7 +107,6 @@ export const DeckMap = ({
           setSelectedZcta("");
           return;
         }
-        console.log(object);
         const zcta =
           object?.zcta ||
           object?.properties.zcta ||
@@ -121,15 +138,6 @@ export const DeckMap = ({
         new PolygonLayer({
           layerName: "zcta-high",
           visible: localViewPort.zoom <= ZOOM_TRANSITION,
-
-          getOffset: [0, 1],
-          data: zctaShapes,
-          updateTriggers: {
-            getFillColor: [selectedColumn, zctaLookup, colors],
-          },
-          getPolygon: (d: any) => {
-            return d.geom;
-          },
           getFillColor: (d: any) => {
             if (!zctaLookup) return colors[0];
             try {
@@ -140,47 +148,31 @@ export const DeckMap = ({
               return [0, 0, 0, 0];
             }
           },
-          stroked: true,
-          transitions: {
-            getFillColor: 500,
+          getOffset: [0, 1],
+          data: zctaShapes,
+          getPolygon: (d: any) => {
+            return d.geom;
           },
-          filled: true,
-          pickable: true,
-          extruded: false,
-          wireframe: false,
-          opacity: 1,
-          autoHighlight: true,
+          ...genCommonProps([selectedColumn, zctaLookup, colors, scale]),
         }),
         new MVTLayer({
           layerName: "zcta-low",
           data: TILE_URL,
-          minZoom: 6,
-          maxZoom: 24,
           visible: localViewPort.zoom > ZOOM_TRANSITION,
           maxRequests: -1,
           getOffset: [0, 1],
-          updateTriggers: {
-            getFillColor: [selectedColumn, zctaLookup, colors],
-          },
-          pickingRadius: 5,
-          filled: true,
-          extruded: false,
-          wireframe: false,
-          opacity: 0.5,
+          uniqueIdProperty: "zcta",
           getFillColor: (d: any) => {
-            if (!zctaLookup) return [0, 0, 0];
+            if (!zctaLookup) return colors[0];
             try {
-              const { zcta } = d.properties;
-              const val = zctaLookup[zcta][selectedColumn];
+              const val = zctaLookup[d.properties.zcta][selectedColumn];
               const color = scale(val);
               return color;
             } catch (e) {
               return [0, 0, 0, 0];
             }
           },
-          uniqueIdProperty: "zcta",
-          pickable: true,
-          autoHighlight: true,
+          ...genCommonProps([selectedColumn, zctaLookup, colors, scale]),
         }),
         // simple USA map
       ]}
