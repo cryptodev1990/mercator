@@ -32,7 +32,7 @@ const SaveButton = ({
     tentativeShapes,
     setTentativeShapes,
     bulkAddShapes,
-    setVisibleNamespaces,
+    setVisibleNamespaceIDs,
     clearOptimisticShapeUpdates,
     setTileUpdateCount,
   } = useShapes();
@@ -74,7 +74,7 @@ const SaveButton = ({
                 snapToBounds({ category: "tentative" });
                 setTentativeShapes([]);
                 // @ts-ignore
-                setVisibleNamespaces([selectedFolder]);
+                setVisibleNamespaceIDs([selectedFolder]);
                 selectionDispatch(clearSelectedShapesAction());
                 setLocked(false);
                 setUploadProgress(100);
