@@ -33,10 +33,10 @@ format:
 	python -m isort --quiet .
 	python -m black .
 
-test:
+test *args:
 	#!/bin/zsh
 	{{ source_venv }}
-	python -m pytest
+	export $(cat .env | xargs) && python -m pytest {{args}}
 
 # Create and update a new local OSM database
 install:

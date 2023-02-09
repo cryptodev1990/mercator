@@ -40,6 +40,7 @@ async def health():
     logger.info("Health endpoint received request", extra={"endpoint": "health", "num": 123})
     return {"message": "OK"}
 
+
 @app.get("/")
 def read_root():
     return "Have no sphere - Copyright Mercator 2023"

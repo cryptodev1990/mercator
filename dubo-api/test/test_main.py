@@ -1,11 +1,11 @@
 import sqlite3
 import pandas as pd
-import dubo
 from fastapi.testclient import TestClient
 
 from api.main import app
 
 client = TestClient(app)
+
 
 def test_read_root():
     response = client.get("/")
@@ -14,7 +14,8 @@ def test_read_root():
 
 
 def test_read_query():
-    response = client.get("/v1/dubo/query", params={"schemas": ["create TABLE tbl (bar INT);"], "user_query": "What are the total values in bar?"})
+    response = client.get("/v1/dubo/query", params={"schemas": [
+                          "create TABLE tbl (bar INT);"], "user_query": "What are the total values in bar?"})
     assert response.status_code == 200
     assert response.json()["query_text"] == "SELECT SUM(bar) FROM tbl;"
 
@@ -44,8 +45,24 @@ def test_read_query_with_dubo():
     assert c.fetchall() == [(1,)]
 
 
+def test_dubo_post():
+    response = client.post("/v1/dubo/query", json={
+                           "user_query": "How many bars are there that are the coolest?", "schemas": ["create TABLE tbl (id INTEGER, coolest BOOLEAN);"],
+                           "descriptions": ["bar - This is a unique identifier for a bar", "coolest - Indicator for if a bar is cool or not."],
+                           "data_header": ["id", "coolest"],
+                           "data_sample": [[1, True], [2, False]]
+                           })
+    if response.status_code != 200:
+        print(response.json())
+
+    assert response.status_code == 200
+    assert response.json()[
+        "query_text"] == "SELECT COUNT(*) FROM tbl WHERE coolest = True;"
+
+
 def test_read_query_from_connection():
-    response = client.get("/v1/dubo/query/polygon-blocks", params={"user_query": "How much USD of WMATIC was exchanged on December 15, 2020?"})
+    response = client.get("/v1/dubo/query/polygon-blocks", params={
+                          "user_query": "How much USD of WMATIC was exchanged on December 15, 2020?"})
     assert response.status_code == 200
     # Both of these queries are correct
     res = response.json()["results"]
