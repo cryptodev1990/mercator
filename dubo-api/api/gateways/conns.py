@@ -12,6 +12,7 @@ from api.core.logging import get_logger
 from fastapi import HTTPException
 
 from api.gateways.openai import assemble_finetuned_prompt, assemble_prompt, get_sql_from_gpt_prompt
+from api.handlers.handler_utils import sql_response_headers
 from api.schemas.responses import ResultsResponse
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +42,7 @@ class Connection:
         self.connection_type = kwargs['connection_type']
         self.ddl = kwargs.get('ddl')
         if self.ddl:
-            self.ddl = clean_ddls(self.ddl)
+            self.ddl = clean_ddls(self.ddl, sql_flavor=self.connection_type)
         self.prompt_addendum = kwargs.get('prompt_addendum')
         self.kwargs = kwargs
         # BigQuery client, if needed
@@ -84,7 +85,7 @@ class Connection:
         return prompt
 
 
-def run_query_against_connection(conn_id: str, user_query: str) -> list[dict]:
+def run_query_against_connection(conn_id: str, user_query: str) -> ResultsResponse:
     """Run a query against a connection"""
     if conn_id not in config:
         raise HTTPException(status_code=422, detail="Invalid connection ID")
@@ -109,25 +110,22 @@ def run_query_against_connection(conn_id: str, user_query: str) -> list[dict]:
     try:
         results = conn.execute(sql)
     except Exception as e:
+        headers = sql_response_headers(sql)
         raise HTTPException(
-            status_code=400, detail=f"Error executing query: {e}",
-            headers={
-                "X-Generated-Sql": sql,
-                "Access-Control-Expose-Headers": "X-Generated-Sql"
-            })
+            status_code=400, detail=f"Error executing query: {e}", headers=headers)
     results: list[dict[str, Optional[Union[str, float, int, bool]]]] = [
         dict(x) for x in results]
     return ResultsResponse(query_text=sql, results=results)  # type: ignore
 
 
-def clean_ddls(ddl: str) -> str:
+def clean_ddls(ddl: str, sql_flavor='sqlite') -> str:
     """Make the DDLs clean for the prompt"""
-    parsed = sqlglot.parse(ddl)
+    parsed = sqlglot.parse(ddl, read=sql_flavor)
     if parsed is None:
         raise Exception("Invalid DDL")
     new_ddls = []
     for x in parsed:
         if x is None:
             raise Exception("Invalid DDL")
-        new_ddls.append(x.sql())
+        new_ddls.append(x.sql(dialect=sql_flavor, indent=0))
     return '\n'.join(new_ddls)

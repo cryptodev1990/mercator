@@ -3,8 +3,7 @@
 """
 This is a ruckus mad-dash demo endpoint for the census API.
 """
-from typing import List, Optional, Union
-import base64
+from typing import List
 from io import BytesIO
 import os
 import re
@@ -20,7 +19,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse, JSONResponse
 
 from api.gateways.conns import Connection
-from api.gateways.openai import get_sql_from_gpt_finetuned, get_sql_from_gpt_prompt
+from api.gateways.openai import get_sql_from_gpt_prompt
+from api.handlers.handler_utils import sql_response_headers
 from api.handlers.sql_utils import guard_against_divide_by_zero, grab_from_select_onwards
 from api.handlers.autocomplete import get_autocomplete
 
@@ -105,12 +105,11 @@ async def census(
     if len(records) == 0:
         raise HTTPException(status_code=404, detail="No results found")
     df = pd.DataFrame(records, columns=records[0].keys())
-    sql = sqlglot.transpile(sql, read='postgres', write='postgres', pretty=True)[0]
+    sql = sqlglot.transpile(sql, read='postgres',
+                            write='postgres', pretty=True)[0]
     parquet = df.dropna().to_parquet(index=False)
-    return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers={
-        "X-Generated-Sql": base64.b64encode(bytes(sql, 'ascii')).decode(),
-        "Access-Control-Expose-Headers": "X-Generated-Sql"
-    })
+    headers = sql_response_headers(sql)
+    return StreamingResponse(BytesIO(parquet), media_type="application/octet-stream", headers=headers)
 
 
 @router.post('/feedback/census')

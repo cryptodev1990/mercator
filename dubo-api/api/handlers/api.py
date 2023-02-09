@@ -1,7 +1,9 @@
+import base64
 from typing import Dict, List, Optional
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 import sqlparse
 from api.core.logging import get_logger
+from api.handlers.handler_utils import sql_response_headers
 from api.schemas.requests import DuboQuery
 from api.schemas.responses import QueryResponse, ResultsResponse
 from api.rate_limiter import is_request_exempt, limiter
@@ -146,6 +148,7 @@ def read_query(
 def read_query_conn(
     conn_id: str,
     request: Request,
+    response: Response,
     user_query: str = Query(
         default=None, description="The question to answer"),
 ):
@@ -154,6 +157,13 @@ def read_query_conn(
 
     resp = run_query_against_connection(conn_id, user_query)
     if resp:
-        return resp
+        rr = ResultsResponse(
+            query_text=str(resp.query_text),
+            results=resp.results,
+        )
+        headers = sql_response_headers(str(resp.query_text))
+        response.headers['X-Generated-Sql'] = headers['X-Generated-Sql']
+        response.headers["Access-Control-Expose-Headers"] = "X-Generated-Sql"
+        return rr
     raise HTTPException(
         status_code=400, detail="No suitable response for the given query.")
