@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+from requests import head
 import sqlglot
 import yaml
 
@@ -30,7 +31,8 @@ def base64_to_dict(b64: str) -> dict:
     return json.loads(decoded, strict=False)
 
 
-google_creds = base64_to_dict(os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
+google_creds = base64_to_dict(
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS_JSON'])
 
 
 class Connection:
@@ -49,7 +51,8 @@ class Connection:
         """Execute a query against the connection"""
         if self.connection_type == 'bigquery':
             if not self._client:
-                self._client = bigquery.Client.from_service_account_info(google_creds)
+                self._client = bigquery.Client.from_service_account_info(
+                    google_creds)
             qj = self._client.query(query)
             # Get results from query job
             return [x for x in qj.result()]
@@ -62,7 +65,6 @@ class Connection:
         conn = Connection(conn_id, **config[conn_id])
         memoized_connections[conn_id] = conn
         return conn
-        
 
     def make_prompt(self, query: str, ddl_line_filter: Optional[str] = None, finetune: bool = False) -> str:
         """Make the prompt for the API"""
@@ -72,11 +74,13 @@ class Connection:
         if ddl_line_filter is not None:
             # Filter out lines that don't match the filter by a regex match to ddl_line_filter
             # Kind of a hack
-            ddl = '\n'.join([x for x in ddl.splitlines() if ' ' + ddl_line_filter + ' ' in x])
+            ddl = '\n'.join([x for x in ddl.splitlines()
+                            if ' ' + ddl_line_filter + ' ' in x])
         if finetune:
             prompt = assemble_finetuned_prompt(query, ddl)
             return prompt
-        prompt = assemble_prompt(query, ddl, prompt_addendum=self.prompt_addendum)
+        prompt = assemble_prompt(
+            query, ddl, prompt_addendum=self.prompt_addendum)
         return prompt
 
 
@@ -94,16 +98,26 @@ def run_query_against_connection(conn_id: str, user_query: str) -> list[dict]:
     })
     sql = get_sql_from_gpt_prompt(prompt)
     if not sql:
-        raise HTTPException(status_code=400, detail="No suitable response for the given query.")
+        raise HTTPException(
+            status_code=400, detail="No suitable response for the given query.")
     logger.info({
         "event": "sql",
         "conn_id": conn_id,
         "user_query": user_query,
         "sql": sql
     })
-    results = conn.execute(sql)
-    results: list[dict[str, Optional[Union[str,float,int,bool]]]] = [dict(x) for x in results]
-    return ResultsResponse(query_text=sql, results=results) # type: ignore
+    try:
+        results = conn.execute(sql)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, detail=f"Error executing query: {e}",
+            headers={
+                "X-Generated-Sql": sql,
+                "Access-Control-Expose-Headers": "X-Generated-Sql"
+            })
+    results: list[dict[str, Optional[Union[str, float, int, bool]]]] = [
+        dict(x) for x in results]
+    return ResultsResponse(query_text=sql, results=results)  # type: ignore
 
 
 def clean_ddls(ddl: str) -> str:
