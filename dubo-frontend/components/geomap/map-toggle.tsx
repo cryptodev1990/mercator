@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useTheme } from "../../lib/hooks/census/use-theme";
-import { useState } from "react";
 
 export const MapToggle = () => {
   const { theme, toggleTheme, nextTheme } = useTheme();

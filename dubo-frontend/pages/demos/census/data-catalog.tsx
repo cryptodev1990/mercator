@@ -1,7 +1,7 @@
-import { DataCatalogContent } from "../../../components/geomap/data-catalog-content";
+import DataCatalog from "../../../components/data-catalog/data-catalog";
 
 const DataCatalogPage = () => {
-  return <DataCatalogContent />;
+  return <DataCatalog />;
 };
 
 export default DataCatalogPage;

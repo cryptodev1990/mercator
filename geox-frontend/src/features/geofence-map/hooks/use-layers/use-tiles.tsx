@@ -19,7 +19,7 @@ export function useTiles() {
 
   const tileArgs = useTileArgs();
   const {
-    visibleNamespaces,
+    visibleNamespaceIDs,
     deletedShapeIdSet,
     updatedShapeIdSet,
     optimisticShapeUpdates,
@@ -45,7 +45,7 @@ export function useTiles() {
   if (idToken === null) {
     return null;
   }
-  if (visibleNamespaces.length === 0) {
+  if (visibleNamespaceIDs.length === 0) {
     return null;
   }
 
@@ -156,7 +156,7 @@ export function useTiles() {
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
           hoveredUuid,
-          visibleNamespaces.length,
+          visibleNamespaceIDs.length,
         ],
         getFillColor: [
           deletedShapeIdSet.size,
@@ -164,7 +164,7 @@ export function useTiles() {
           tilePropertyChange,
           hoveredUuid,
           selectedShapesUuids.length,
-          visibleNamespaces.length,
+          visibleNamespaceIDs.length,
         ],
         getTileData: [tileUpdateCount],
       },
@@ -176,17 +176,17 @@ export function useTiles() {
 
 const useTileArgs = () => {
   const { idToken } = useIdToken();
-  const { visibleNamespaces, numShapes } = useShapes();
+  const { visibleNamespaceIDs, numShapes } = useShapes();
 
   const getTileUrl = useCallback(() => {
-    if (visibleNamespaces.length === 0) {
+    if (visibleNamespaceIDs.length === 0) {
       return (
         process.env.REACT_APP_BACKEND_URL +
         "/backsplash/generate_shape_tile/{z}/{x}/{y}"
       );
     }
-    const namespacesAsParams = visibleNamespaces.map(
-      (x) => `namespace_ids=${x.id}`
+    const namespacesAsParams = visibleNamespaceIDs.map(
+      (namespaceID: string) => `namespace_ids=${namespaceID}`
     );
     return (
       process.env.REACT_APP_BACKEND_URL +
@@ -194,7 +194,7 @@ const useTileArgs = () => {
         "&"
       )}`
     );
-  }, [visibleNamespaces, numShapes]);
+  }, [visibleNamespaceIDs, numShapes]);
 
   return {
     // @ts-ignore

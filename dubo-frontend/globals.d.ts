@@ -4,3 +4,10 @@ type DataFrame = {
 };
 
 type DatabaseSchema = "polygon-blocks" | "bitcoin-blocks" | "ethereum-blocks";
+
+type MetaCensusRecord = {
+  name: string;
+  dubo_name: string;
+  label: string;
+  concept: string | null;
+};

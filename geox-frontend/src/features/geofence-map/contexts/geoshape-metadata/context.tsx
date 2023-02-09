@@ -18,22 +18,22 @@ import {
 export interface IGeoShapeMetadataContext {
   // API call - get all shape metadata (shape minus geometry)
   // namespaces
-  activeNamespaces: Namespace[];
-  visibleNamespaces: Namespace[];
+  activeNamespaceIDs: string[];
+  visibleNamespaceIDs: string[];
   // API call - num shapes
   numShapes: number | null;
-  setActiveNamespaces: (namespaces: Namespace[]) => void;
-  setVisibleNamespaces: (namespaces: Namespace[]) => void;
+  setActiveNamespaceIDs: (namespaceIDs: string[]) => void;
+  setVisibleNamespaceIDs: (namespaces: string[]) => void;
   // namespace writes
   addNamespace: (namespace: NamespaceCreate) => void;
   removeNamespace: (id: Namespace["id"]) => void;
 }
 
 export const GeoShapeMetadataContext = createContext<IGeoShapeMetadataContext>({
-  activeNamespaces: [],
-  setActiveNamespaces: () => {},
-  visibleNamespaces: [],
-  setVisibleNamespaces: async () => {},
+  activeNamespaceIDs: [],
+  setActiveNamespaceIDs: () => {},
+  visibleNamespaceIDs: [],
+  setVisibleNamespaceIDs: async () => {},
   numShapes: null,
   // namespace writes
   addNamespace: async () => {},
@@ -54,47 +54,43 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
 
   // on the initial load of the data, set the active namespaces to the default namespaces
   useEffect(() => {
-    const lastVisibleNamespaces = localStorage.getItem("lastVisibleNamespaces");
-    if (lastVisibleNamespaces?.length) {
-      const lastVisibleNamespacesParsed = JSON.parse(lastVisibleNamespaces);
+    const lastVisibleNamespaceIDs = localStorage.getItem(
+      "lastVisibleNamespaceIDs"
+    );
+    if (lastVisibleNamespaceIDs?.length) {
+      const lastVisibleNamespaceIDsParsed = JSON.parse(lastVisibleNamespaceIDs);
       // verify current namespaces and new namespaces are not the same
       const matched =
-        lastVisibleNamespacesParsed
-          .map((n: Namespace) => n.id)
-          .sort()
-          .join(",") ===
-        state.visibleNamespaces
-          .map((n: Namespace) => n.id)
-          .sort()
-          .join(",");
+        lastVisibleNamespaceIDsParsed.sort().join(",") ===
+        state.visibleNamespaceIDs.sort().join(",");
 
       if (!matched) {
         dispatch({
           type: "SET_VISIBLE_NAMESPACES",
-          namespaces: lastVisibleNamespacesParsed,
+          namespaces: lastVisibleNamespaceIDsParsed,
         });
       }
     }
   }, [allNamespaces]);
 
   useEffect(() => {
-    if (!state.visibleNamespaces || state.visibleNamespaces.length === 0) {
+    if (!state.visibleNamespaceIDs) {
       return;
     }
     localStorage.setItem(
-      "lastVisibleNamespaces",
-      JSON.stringify(state.visibleNamespaces)
+      "lastVisibleNamespaceIDs",
+      JSON.stringify(state.visibleNamespaceIDs)
     );
-  }, [state.visibleNamespaces]);
+  }, [state.visibleNamespaceIDs]);
 
-  function setActiveNamespaces(namespaces: Namespace[]) {
+  function setActiveNamespaceIDs(namespaces: string[]) {
     dispatch({
       type: "SET_ACTIVE_NAMESPACES",
-      namespaces,
+      namespaces: namespaces,
     });
   }
 
-  function setVisibleNamespaces(namespaces: Namespace[]) {
+  function setVisibleNamespaceIDs(namespaces: string[]) {
     dispatch({
       type: "SET_VISIBLE_NAMESPACES",
       namespaces,
@@ -150,10 +146,10 @@ export const GeoShapeMetadataProvider = ({ children }: { children: any }) => {
   return (
     <GeoShapeMetadataContext.Provider
       value={{
-        activeNamespaces: state.activeNamespaces,
-        visibleNamespaces: state.visibleNamespaces,
-        setActiveNamespaces,
-        setVisibleNamespaces,
+        activeNamespaceIDs: state.activeNamespaceIDs,
+        visibleNamespaceIDs: state.visibleNamespaceIDs,
+        setActiveNamespaceIDs,
+        setVisibleNamespaceIDs,
         numShapes: allNamespaces?.flatMap((x) => x.shapes ?? []).length ?? null,
         addNamespace,
         removeNamespace,

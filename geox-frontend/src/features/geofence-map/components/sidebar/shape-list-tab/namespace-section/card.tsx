@@ -35,7 +35,7 @@ export const NamespaceCard = ({
   shouldOpen: boolean;
   isVisible: boolean;
 }) => {
-  const { visibleNamespaces, setVisibleNamespaces } = useShapes();
+  const { visibleNamespaceIDs, setVisibleNamespaceIDs } = useShapes();
   const { dispatch: selectionDispatch } = useSelectedShapes();
 
   const { mutate: patchShapeById } = usePatchShapeMutation();
@@ -146,11 +146,16 @@ export const NamespaceCard = ({
               onClick={() => {
                 selectionDispatch({ type: "RESET_SELECTION" });
                 if (isVisible) {
-                  setVisibleNamespaces(
-                    visibleNamespaces.filter((x) => x.id !== namespace.id)
+                  setVisibleNamespaceIDs(
+                    visibleNamespaceIDs.filter(
+                      (namespaceID: string) => namespaceID !== namespace.id
+                    )
                   );
                 } else {
-                  setVisibleNamespaces([...visibleNamespaces, namespace]);
+                  setVisibleNamespaceIDs([
+                    ...visibleNamespaceIDs,
+                    namespace.id,
+                  ]);
                 }
               }}
             >
