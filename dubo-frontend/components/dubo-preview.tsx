@@ -10,7 +10,7 @@ import useLoadData from "../lib/hooks/use-load-data";
 import usePrepareData from "../lib/hooks/use-prepare-data";
 import { useRouter } from "next/router";
 import SuggestedQueries from "./suggested-queries";
-import GeneratedSQL from "./generated-sql";
+import SQL from "./sql";
 
 const DuboPreview = () => {
   const [query, setQuery] = useState<string>("");
@@ -195,7 +195,14 @@ const DuboPreview = () => {
             {hasError}
           </p>
         )}
-        {data && <GeneratedSQL query={data.query_text} />}
+        {data && (
+          <div className="mt-6 animate-fadeIn100">
+            <p className="text-lg">Generated SQL:</p>
+            <div className="max-w-5xl mt-2">
+              <SQL query={data.query_text} light={false} />
+            </div>
+          </div>
+        )}
         {!isValidating && !hasError && results && results.length > 0 && (
           <DataTable results={results} showVis={showVis} />
         )}

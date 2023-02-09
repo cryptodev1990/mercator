@@ -58,15 +58,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [nextThemeIdx, setNextThemeIdx] = useState(1);
 
   const toggleTheme = () => {
-    console.log("toggleTheme", themeIdx);
     const newIdx = (themeIdx + 1) % THEMES.length;
     const newTheme = THEMES[newIdx];
     setThemeIdx((idx) => newIdx);
     setTheme(newTheme);
 
-    {
-      /* This really exists just to make the animation in the toggle button work */
-    }
+    /* This really exists just to make the animation in the toggle button work */
     const newNextIdx = (nextThemeIdx + 1) % THEMES.length;
     const newNextTheme = THEMES[newNextIdx];
     setNextThemeIdx((idx) => newNextIdx);
