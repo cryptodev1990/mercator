@@ -6,10 +6,6 @@ import { BiPencil } from "react-icons/bi";
 import { AiOutlineCloseCircle, AiFillCheckCircle } from "react-icons/ai";
 import { BsFillPaletteFill } from "react-icons/bs";
 
-const pctFormat = (num: number) => {
-  return `${num * 100}%`;
-};
-
 const pctFmtSansPct = (num: number) => {
   return `${num * 100}`;
 };

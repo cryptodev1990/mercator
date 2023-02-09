@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { DuboLink } from "../dubo-link";
 import { useEffect, useState } from "react";
 
-export const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {
+const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {
   const [hide, setHide] = useState(false);
   useEffect(() => {
     if (zoomThreshold) {
@@ -29,3 +29,5 @@ export const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {
     </div>
   );
 };
+
+export default TitleBlock;

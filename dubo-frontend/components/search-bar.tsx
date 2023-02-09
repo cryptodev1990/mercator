@@ -152,12 +152,10 @@ export const SearchBar = ({
           >
             {value.length > 5 &&
               suggestion.split(value).map((part, i) => (
-                <>
+                <span key={i}>
                   {i === 0 && <span className="pointer-events-none">...</span>}
-                  <span key={i} className="pointer-events-none">
-                    {part}
-                  </span>
-                </>
+                  <span className="pointer-events-none">{part}</span>
+                </span>
               ))}
             {value.length <= 5 && (
               <span className="pointer-events-none">{suggestion}</span>

@@ -13,7 +13,7 @@ import styles from "./geomap.module.css";
 import clsx from "clsx";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
-import { TitleBlock } from "./title-block";
+import TitleBlock from "./title-block";
 import { nab } from "../../lib/utils";
 import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
 import SQLBar from "./sql-bar";
