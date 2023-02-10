@@ -19,7 +19,7 @@ from app.crud.namespaces import (
     get_namespace_by_slug,
     update_namespace,
 )
-from app.schemas import Namespace
+from app.schemas import Namespace, NamespaceUpdate
 
 
 @pytest.fixture(scope="function")
@@ -98,17 +98,17 @@ def test_update_namespace(conn):
         name="Namespace 1",
     )
     assert namespace.id
+    data = NamespaceUpdate(name="This was changed", properties={"color": {"r": 255, "g": 0, "b": 0}})
     namespace_update = update_namespace(
         conn,
         namespace.id,
-        name="This was changed",
-        properties={"Foo": 1, "Bar": "Hello"},
+        data
     )
     assert isinstance(namespace_update, Namespace)
     assert namespace.id == namespace_update.id
     assert namespace_update.name == "This was changed"
     assert namespace_update.slug == "this-was-changed"
-    assert namespace_update.properties == {"Foo": 1, "Bar": "Hello"}
+    assert namespace_update.properties == {"color": {"r": 255, "g": 0, "b": 0}}
     assert namespace_update.updated_at >= namespace.updated_at
     for a in ["created_at"]:
         assert getattr(namespace, a) == getattr(namespace_update, a)
@@ -130,7 +130,8 @@ def test_update_namespace_when_existing_name(conn):
         name="Namespace 2",
     )
     with pytest.raises(NamespaceExistsError):
-        update_namespace(conn, namespace_1.id, name="Namespace 2")
+        data = NamespaceUpdate(name="Namespace 2")
+        update_namespace(conn, namespace_1.id, data)
 
 
 def test_delete_namespace(conn):
