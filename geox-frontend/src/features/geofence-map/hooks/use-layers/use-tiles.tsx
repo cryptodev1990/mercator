@@ -8,6 +8,7 @@ import { DeckContext } from "../../contexts/deck-context";
 import { useSelectedShapes } from "../use-selected-shapes";
 import { useCursorMode } from "../use-cursor-mode";
 import { EditorMode } from "../../cursor-modes";
+import { useGetNamespaces } from "../use-openapi-hooks";
 import { useSelectedShapesUuids } from "../use-selected-shapes-uuids";
 
 const MAX_OPTIMISTIC_FEATURES = 30;
@@ -25,11 +26,14 @@ export function useTiles() {
     clearOptimisticShapeUpdates,
     tileUpdateCount,
     setTileUpdateCount,
+    tilePropertyChange,
   } = useShapes();
 
   const { cursorMode } = useCursorMode();
 
   const selectedShapesUuids = useSelectedShapesUuids();
+
+  const { data: allNamespaces } = useGetNamespaces();
 
   useEffect(() => {
     if (optimisticShapeUpdates.length > MAX_OPTIMISTIC_FEATURES) {
@@ -44,6 +48,8 @@ export function useTiles() {
   if (visibleNamespaceIDs.length === 0) {
     return null;
   }
+
+  console.log("optimisticShapeUpdates", optimisticShapeUpdates);
 
   const commonArgs = {
     lineWidthMinPixels: 2,
@@ -88,6 +94,16 @@ export function useTiles() {
       getFillColor: (d: any) => {
         // light blue in rgba
         const uuid = d?.properties?.__uuid;
+        const optimisticShape: any = optimisticShapeUpdates.find(
+          (shape) => shape.uuid === uuid
+        );
+        const namespace = allNamespaces?.find(
+          (namespace) => namespace.id === optimisticShape?.namespace_id
+        );
+        if (namespace?.properties?.color) {
+          const color = namespace?.properties?.color;
+          return [color.r, color.g, color.b];
+        }
         if (deletedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
@@ -112,8 +128,8 @@ export function useTiles() {
         if (deletedShapeIdSet.has(uuid) || updatedShapeIdSet.has(uuid)) {
           return [0, 0, 0, 0];
         }
-        if (hoveredUuid === uuid) return [255, 125, 0, 150];
-        return [0, 0, 0, 150];
+        if (hoveredUuid === uuid) return [255, 125, 0];
+        return [0, 0, 0];
       },
       getFillColor: (d: any) => {
         const uuid = d?.properties?.__uuid;
@@ -124,7 +140,16 @@ export function useTiles() {
         ) {
           return [0, 0, 0, 0];
         }
-        return [173, 216, 230, 255];
+        const namespace_id = d?.properties?.__namespace_id;
+        const namespace = allNamespaces?.find(
+          (namespace) => namespace.id === namespace_id
+        );
+        if (namespace?.properties?.color) {
+          const color = namespace?.properties?.color;
+          return [color.r, color.g, color.b];
+        }
+
+        return [173, 216, 230];
       },
       updateTriggers: {
         getLineColor: [
@@ -136,6 +161,7 @@ export function useTiles() {
         getFillColor: [
           deletedShapeIdSet.size,
           updatedShapeIdSet.size,
+          tilePropertyChange,
           hoveredUuid,
           selectedShapesUuids.length,
           visibleNamespaceIDs.length,

@@ -1,8 +1,4 @@
-import {
-  useGetOneShapeByUuid,
-  usePatchShapeMutation,
-  usePutShapeMutation,
-} from "../../../hooks/use-openapi-hooks";
+import { usePatchShapeMutation } from "../../../hooks/use-openapi-hooks";
 import { useShapes } from "../../../hooks/use-shapes";
 import { useMemo } from "react";
 import JsonEditor from "./json-editor";

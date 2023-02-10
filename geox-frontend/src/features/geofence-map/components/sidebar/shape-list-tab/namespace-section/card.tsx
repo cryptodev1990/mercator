@@ -21,6 +21,7 @@ import {
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import ReactLoading from "react-loading";
+import { ColorPicker } from "features/geofence-map/components/color-picker";
 import { TruncateButton } from "./truncate-button";
 
 export const NamespaceCard = ({
@@ -95,64 +96,82 @@ export const NamespaceCard = ({
         patchShapeById({ uuid: data, namespace: namespace.id });
       }}
     >
-      {/* Namespace header */}
-      <div
-        className="flex items-center cursor-pointer px-3"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <button
-          onClick={onClickCaret}
-          className={`transition ${shouldOpen ? "rotate-90" : ""}`}
+      <div className="flex justify-between px-2">
+        <div
+          className="flex items-center cursor-pointer"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
         >
-          <CaretRightIcon />
-        </button>
-        <div>
-          <EditableLabel
-            className="font-bold text-md mx-1 select-none text-white"
-            value={namespace.name}
-            onChange={(newName) => {
-              if (newName !== namespace.name) {
-                mutation.mutate({
-                  id: namespace.id,
-                  name: newName,
-                });
-              }
-            }}
-            disabled={namespace.is_default}
-          />
+          <button
+            onClick={onClickCaret}
+            className={`transition ${shouldOpen ? "rotate-90" : ""}`}
+          >
+            <CaretRightIcon />
+          </button>
+          <div>
+            <ColorPicker namespace={namespace} />
+          </div>
+          <div
+            {...(sectionShapeMetadata && namespace.name.length > 14
+              ? {
+                  "data-tip": namespace.name,
+                }
+              : {})}
+            data-tip-skew="right"
+          >
+            <EditableLabel
+              className="font-bold text-md mx-1 select-none text-white w-28"
+              value={namespace.name}
+              onChange={(newName) => {
+                if (newName !== namespace.name) {
+                  mutation.mutate({
+                    id: namespace.id,
+                    name: newName,
+                  });
+                }
+              }}
+              disabled={namespace.is_default}
+            />
+          </div>
+          {mutation.isLoading ? (
+            <ReactLoading type="spin" height={"15px"} width={"15px"} />
+          ) : null}
         </div>
-        {mutation.isLoading ? (
-          <ReactLoading type="spin" height={"15px"} width={"15px"} />
-        ) : null}
-
-        <div className="self-center ml-auto z-10 flex space-x-3">
+        <div className="flex items-center">
           {sectionShapeMetadata && hovered && (
-            <span className="text-sm">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
+            <span className="text-sm pr-2">{simplur`${sectionShapeMetadata.length} shape[|s]`}</span>
           )}
-          {hovered &&
-            (namespace.is_default ? (
+          <div className="flex justify-between w-9 items-center">
+            <div
+              onClick={() => {
+                selectionDispatch({ type: "RESET_SELECTION" });
+                if (isVisible) {
+                  setVisibleNamespaceIDs(
+                    visibleNamespaceIDs.filter(
+                      (namespaceID: string) => namespaceID !== namespace.id
+                    )
+                  );
+                } else {
+                  setVisibleNamespaceIDs([
+                    ...visibleNamespaceIDs,
+                    namespace.id,
+                  ]);
+                }
+              }}
+            >
+              <span
+                data-tip="Click to show/hide layer"
+                data-tip-skew="right"
+                className="cursor-pointer"
+              >
+                {isVisible ? <EyeFillIcon /> : <EyeSlashFillIcon />}
+              </span>
+            </div>
+            {namespace.is_default ? (
               <TruncateButton namespace={namespace} />
             ) : (
               <DeleteButton namespace={namespace} />
-            ))}
-          <div
-            onClick={() => {
-              selectionDispatch({ type: "RESET_SELECTION" });
-              if (isVisible) {
-                setVisibleNamespaceIDs(
-                  visibleNamespaceIDs.filter(
-                    (namespaceID: string) => namespaceID !== namespace.id
-                  )
-                );
-              } else {
-                setVisibleNamespaceIDs([...visibleNamespaceIDs, namespace.id]);
-              }
-            }}
-          >
-            <span data-tip="Click to show/hide layer" data-tip-skew="right">
-              {isVisible ? <EyeFillIcon /> : <EyeSlashFillIcon />}
-            </span>
+            )}
           </div>
         </div>
       </div>

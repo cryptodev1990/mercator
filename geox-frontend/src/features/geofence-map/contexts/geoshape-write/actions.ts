@@ -35,11 +35,6 @@ export type Action =
       value: boolean;
     }
   | {
-      type: "UPDATE_SHAPE_SUCCESS";
-      updatedShapeIds: string[];
-      updatedShape: GeoShape | null;
-    }
-  | {
       type: "BULK_ADD_SHAPES_LOADING";
       updatedShapes: GeoShapeCreate[];
     }
