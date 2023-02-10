@@ -42,6 +42,8 @@ router = APIRouter()
 @router.post("/dubo/query",
              response_model=QueryResponse,
              responses=COMMON_ERRORS,
+             tags=["dubo"],
+             summary="Convert text to SQL",
              )
 @limiter.limit("100/day", exempt_when=is_request_exempt)
 def read_query_post(
