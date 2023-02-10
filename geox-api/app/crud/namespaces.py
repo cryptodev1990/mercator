@@ -266,11 +266,12 @@ def update_namespace(
     # This will raise values if the namespace does not exist.
     namespace = get_namespace(conn, id_)
 
-    if namespace.is_default and "name" in data:
+    if namespace.is_default and data.name is not None:
         raise DefaultNamespaceCannotBeRenamedError(id_)
-    values = delete_none(jsonable_encoder(data))
-    values["slug"] = slugify_name(namespace.name)
 
+    values = delete_none(jsonable_encoder(data))
+    if data.name is not None:
+        values["slug"] = slugify_name(data.name)
 
     stmt = (
         update(namespaces_tbl).where(namespaces_tbl.c.id == id_).returning(namespaces_tbl)
