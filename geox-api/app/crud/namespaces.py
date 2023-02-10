@@ -271,7 +271,7 @@ def update_namespace(
     if namespace.is_default and "name" in values:
         raise DefaultNamespaceCannotBeRenamedError(id_)
     if "name" in values:
-        values["slug"] = slugify_name(data.name)
+        values["slug"] = slugify_name(values.name)
 
     stmt = (
         update(namespaces_tbl).where(namespaces_tbl.c.id == id_).returning(namespaces_tbl)
