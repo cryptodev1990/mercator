@@ -3,7 +3,7 @@ const DemoInfo = () => {
     <>
       <button
         type="button"
-        className="inline-block px-3 py-2 border border-spBlue text-spBlue font-medium text-md leading-tight hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+        className="inline-block px-3 py-2 border border-spBlue text-spBlue font-medium text-md leading-tight hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
         data-bs-toggle="modal"
         data-bs-target="#disclaimerModal"
       >
@@ -51,7 +51,7 @@ const DemoInfo = () => {
             <div className="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-2 border-t border-gray-200 rounded-b-md">
               <button
                 type="button"
-                className="inline-block px-3 py-2 bg-transparent text-spBlue font-medium text-md leading-tight hover:text-spBlueDark hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 transition duration-150 ease-in-out"
+                className="inline-block px-3 py-2 bg-transparent text-spBlue font-medium text-md leading-tight hover:text-spBlueDark hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
                 data-bs-dismiss="modal"
               >
                 Close
