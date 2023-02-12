@@ -137,6 +137,13 @@
   dependencies:
     "@types/mapbox-gl" "^2.6.3"
 
+"@deck.gl/mapbox@^8.8.24":
+  version "8.8.24"
+  resolved "https://registry.yarnpkg.com/@deck.gl/mapbox/-/mapbox-8.8.24.tgz#9c4cff7341e7b060eb6c4813333dadd387e0c1ae"
+  integrity sha512-yJnt2sNbE7EeNstfh0G6yLz5owNT5GzHZE8JroHljVaoftBzWrh/ERf97akcxevCFXR6TIBoBUzx4Yip23incg==
+  dependencies:
+    "@types/mapbox-gl" "^2.6.3"
+
 "@deck.gl/mesh-layers@8.8.23", "@deck.gl/mesh-layers@^8.8.23":
   version "8.8.23"
   resolved "https://registry.yarnpkg.com/@deck.gl/mesh-layers/-/mesh-layers-8.8.23.tgz#c9a8434fa3323e80da88f1dbb354d4c995b8325c"

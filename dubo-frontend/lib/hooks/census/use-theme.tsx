@@ -6,8 +6,7 @@ import { BiSun } from "react-icons/bi";
 // add no labels
 export const LIGHT = {
   theme: "light",
-  baseMap:
-    "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+  baseMap: "mapbox://styles/mapbox/light-v10",
   icon: <BiSun />,
   fontColor: "text-slate-900",
   secondaryFontColor: "text-slate-100",
@@ -18,7 +17,7 @@ export const LIGHT = {
 
 const EARTH = {
   theme: "earth",
-  baseMap: "mapbox://styles/mapbox/satellite-v9",
+  baseMap: "mapbox://styles/mapbox/satellite-streets-v11",
   icon: <MdOutlineSatellite />,
   fontColor: "text-slate-100",
   secondaryFontColor: "text-slate-100",
@@ -29,8 +28,7 @@ const EARTH = {
 
 const MOON = {
   theme: "moon",
-  baseMap:
-    "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+  baseMap: "mapbox://styles/mapbox/dark-v10",
   icon: <BsFillMoonFill />,
   fontColor: "text-neutral-100",
   bgColor: "bg-neutral-600",
