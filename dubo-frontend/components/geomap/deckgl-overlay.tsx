@@ -23,10 +23,12 @@ export function DeckGLOverlay(
   }, []);
 
   useEffect(() => {
-    if (overlayRef.current) {
+    if (overlayRef?.current !== null && props) {
+      console.log("updating overlay", overlayRef?.current, props);
       // update the overlay anytime the props change
-      overlayRef.current.setProps(props);
+      overlayRef?.current?.setProps(props);
     }
+    // clean up when the component unmounts
   }, [props]);
 
   // return null so that react doesn't try to render anything

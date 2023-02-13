@@ -39,10 +39,12 @@ export const SearchBar = ({
     <div className={clsx(theme.bgColor, "flex flex-row")}>
       {/* search bar input */}
       <input
+        type="text"
         className={clsx(
           "bg-transparent border-none w-full border-b-red-400",
-          "w-full rounded-l-md rounded-r-none mx-auto shadow-md p-3",
-          "pointer-events-auto",
+          "w-full rounded-l-md rounded-r-none mx-auto shadow-md sm:p-3 sm:text-md p-1 text-sm",
+          "pointer-events-auto select-all sm:select-auto",
+          "focus:outline-none",
           isFirstTimeUse && "placeholder:animate-fadeIn500"
         )}
         ref={searchBarRef}
@@ -105,7 +107,7 @@ export const SearchBar = ({
       {/* Random search button */}
       <button
         className={clsx(
-          "hover:animate-moveThroughRainbow2s focus:animate-moveThroughRainbow2s",
+          "hover:animate-moveThroughRainbow2s",
           "shadow-md h-12 w-12 hover:shadow-lg",
           "flex flex-row justify-center items-center space-x-2 p-2",
           "cursor-pointer",
@@ -113,7 +115,11 @@ export const SearchBar = ({
           theme.secondaryFontColor
         )}
         onClick={(e) => {
-          const randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+          let randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+          // query can't equal the query in the search bar
+          while (EXAMPLES[randomIndex] === value) {
+            randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+          }
           onChange(EXAMPLES[randomIndex]);
           onEnter(EXAMPLES[randomIndex]);
         }}

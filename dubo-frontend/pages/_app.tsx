@@ -25,7 +25,15 @@ export default function App({ Component, pageProps, router }: AppProps) {
     <Head>
       <title>dubo Analytics</title>
       <meta name="description" content="Analytics made easy" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta
+        name="viewport"
+        content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"
+      />
+      <meta name="theme-color" content="#000000" />
+      <meta name="og:title" content="dubo Analytics" />
+      <meta name="og:description" content="Analytics made easy" />
+      {/* <meta name="og:image" content="/dubo.png" /> */}
+      <meta name="og:url" content="https://dubo.gg" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
   );

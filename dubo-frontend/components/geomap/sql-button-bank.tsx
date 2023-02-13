@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 export type ShowInPlaceOptionsType = "generated_sql" | "data_catalog" | null;
 
@@ -43,38 +43,20 @@ const btns = [
 ];
 
 export const SQLButtonBank = ({
-  zoomThreshold,
   showInPlace,
   setShowInPlace,
 }: {
-  zoomThreshold: boolean;
   showInPlace: string | null;
   setShowInPlace: (val: ShowInPlaceOptionsType) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [isFolded, setIsFolded] = useState(true);
 
-  useEffect(() => {
-    if (!zoomThreshold) {
-      const timer = setTimeout(() => {
-        setIsFolded(true);
-      }, 490);
-      return () => clearTimeout(timer);
-    }
-    setIsFolded(false);
-  }, [zoomThreshold]);
-
-  if (isFolded || showInPlace) return null;
+  if (showInPlace) {
+    return null;
+  }
 
   return (
-    <div
-      ref={ref}
-      className={clsx(
-        "flex flex-row gap-1 mt-2",
-        !zoomThreshold && "animate-fadeOut500", // slide out
-        zoomThreshold && "animate-fadeIn500" // slide in
-      )}
-    >
+    <div ref={ref} className={clsx("flex flex-row gap-1 mt-2")}>
       {btns.map((btn) => (
         <Btn
           key={btn.title}

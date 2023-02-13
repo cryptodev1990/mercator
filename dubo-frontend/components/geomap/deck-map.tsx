@@ -1,15 +1,15 @@
 // @ts-ignore
 import { MVTLayer } from "@deck.gl/geo-layers";
 // @ts-ignore
-import { PolygonLayer, GeoJsonLayer, ScatterplotLayer } from "@deck.gl/layers";
-import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import { PolygonLayer, GeoJsonLayer } from "@deck.gl/layers";
 
 import { useEffect, useRef, useState } from "react";
 import { useZctaShapes } from "../../lib/hooks/census/use-zcta-shapes";
 import Map, { NavigationControl } from "react-map-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import { MapView } from "@deck.gl/core/typed";
 import { DeckGLOverlay } from "./deckgl-overlay";
+
+import "mapbox-gl/dist/mapbox-gl.css";
 
 const TILE_URL =
   "https://api.mercator.tech/backsplash/zcta/generate_shape_tile/{z}/{x}/{y}";
@@ -96,7 +96,7 @@ export const DeckMap = ({
       style={
         {
           width: "100vw",
-          height: "100vh",
+          height: "100%",
           top: 0,
           left: 0,
           position: "absolute",
@@ -117,7 +117,7 @@ export const DeckMap = ({
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       mapStyle={baseMap}
     >
-      <NavigationControl />
+      <NavigationControl position="bottom-right" />
       <DeckGLOverlay
         mapboxRef={mapRef}
         views={[

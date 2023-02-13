@@ -17,7 +17,7 @@ const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {
   return (
     <div
       className={clsx(
-        "p-2 w-full flex flex-1 justify-start items-center gap-1",
+        "pl-1 sm:pl-0 sm:py-2 w-full flex flex-1 justify-start items-center gap-2",
         zoomThreshold && "animate-slideOut500", // slide out
         !zoomThreshold && "animate-fadeIn500" // slide in
       )}

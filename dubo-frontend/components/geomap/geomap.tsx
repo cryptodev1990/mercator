@@ -85,8 +85,8 @@ const GeoMap = () => {
       <div className="w-full h-full relative" ref={deckContainerRef}>
         <div
           className={clsx(
-            "z-10 w-full p-5 ",
-            "relative max-w-5xl rounded-md mx-auto p-3",
+            "z-10 w-full",
+            "relative max-w-5xl rounded-md mx-auto sm:p-3",
             "pointer-events-none"
           )}
         >
@@ -111,7 +111,6 @@ const GeoMap = () => {
               <SQLButtonBank
                 setShowInPlace={setShowInPlace}
                 showInPlace={showInPlace}
-                zoomThreshold={zoomThreshold}
               />
               {showInPlace === "generated_sql" && (
                 <SQLBar

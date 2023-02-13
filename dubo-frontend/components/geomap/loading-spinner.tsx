@@ -1,6 +1,16 @@
 import clsx from "clsx";
+import { useEffect, useState } from "react";
 
 export const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {
+  const [numEllipses, setNumEllipses] = useState(1);
+
+  // animate the ellipses
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNumEllipses((n: number) => (n + 1) % 4);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [numEllipses]);
   if (!isLoading) return null;
 
   return (
@@ -11,7 +21,9 @@ export const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {
       )}
     >
       <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-      <div className="text-2xl font-bold">Loading data...</div>
+      <div className="text-2xl font-bold bg-gray-600 text-slate-100 px-2 py-1 rounded mt-2 w-32 text-left">
+        Loading{".".repeat(numEllipses)}
+      </div>
     </div>
   );
 };
