@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
-import useDuboResults from "../lib/hooks/use-dubo-results";
+import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";
 import { getUploadData } from "../lib/utils";
 import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
 import DataTable from "./data-table";
@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import SuggestedQueries from "./suggested-queries";
 import SQL from "./sql";
 
-const DuboPreview = () => {
+const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const [query, setQuery] = useState<string>("");
   const [duboQuery, setDuboQuery] = useState("");
   const [selectedData, setSelectedData] = useState<DataNames | null>(
@@ -42,6 +42,7 @@ const DuboPreview = () => {
     loading: dataLoading,
     setLoading: setDataLoading,
     schemas,
+    sample,
   } = useLoadData({
     dfs,
     db,
@@ -53,7 +54,11 @@ const DuboPreview = () => {
     isValidating,
     isLoading,
     mutate: setDuboResults,
-  } = useDuboResults({ query: duboQuery, schemas });
+  } = useDuboResultsWithSchemas({
+    query: duboQuery,
+    schemas,
+    dataSample: includeSample ? sample : undefined,
+  });
 
   const router = useRouter();
   const showVis = router.query?.vis !== undefined;

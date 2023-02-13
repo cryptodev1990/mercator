@@ -35,10 +35,12 @@ const DemoInfo = () => {
             <div className="modal-body relative p-4">
               <p className="leading-5">
                 We value your privacy. Your data content never leaves the
-                browser. We process your data header and a data description but
-                otherwise do not see any data itself. Still, because of resource
-                constraints, we would recommend processing a smaller (less than
-                30MB) data set.
+                browser. By default, we process your data header and a data
+                description but otherwise do not see any data itself. If you
+                decide that you want improved accuracy in your results, you can
+                also choose to include a small data sample when you run a query.
+                Because of resource constraints, we would recommend processing a
+                smaller (less than 30MB) data set.
               </p>
               <br />
               <p className="leading-5">

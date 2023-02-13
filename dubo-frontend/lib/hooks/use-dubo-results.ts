@@ -1,40 +1,32 @@
 import useSWR from "swr";
 import qs from "qs";
-import { QueryExecResult } from "sql.js";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://dubo-api.mercator.tech/v1/dubo/query";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "https://dubo-api.mercator.tech/v1/dubo/query";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const getURL = ({
-  query,
-  schemas,
   databaseSchema,
+  query,
 }: {
+  databaseSchema: DatabaseSchema;
   query: string;
-  schemas?: QueryExecResult[];
-  databaseSchema?: DatabaseSchema;
-}) => {
-  if (!(query.length > 0) || (!schemas && !databaseSchema)) return null;
-
-  const queryParams = qs.stringify({ schemas, user_query: query });
-
-  if (databaseSchema) return `${BASE_URL}/${databaseSchema}?${queryParams}`;
-
-  return `${BASE_URL}?${queryParams}`;
-};
+}) =>
+  query.length > 0
+    ? `${BASE_URL}/${databaseSchema}?${qs.stringify({ user_query: query })}`
+    : null;
 
 const useDuboResults = ({
   query,
-  schemas,
   databaseSchema,
 }: {
   query: string;
-  schemas?: QueryExecResult[];
-  databaseSchema?: DatabaseSchema;
+  databaseSchema: DatabaseSchema;
 }) => {
   const { data, error, isValidating, mutate, isLoading } = useSWR<any, Error>(
-    getURL({ query, schemas, databaseSchema }),
+    getURL({ databaseSchema, query }),
     fetcher,
     {
       shouldRetryOnError: false,

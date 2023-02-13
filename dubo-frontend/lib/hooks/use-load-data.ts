@@ -14,6 +14,7 @@ const useLoadData = ({
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [schemas, setSchemas] = useState<QueryExecResult[] | undefined>([]);
+  const [sample, setSample] = useState<DataSample | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fillDb = async ({ dfs }: { dfs?: DataFrame[] }) => {
@@ -82,6 +83,10 @@ const useLoadData = ({
 
       const rows = db.exec("SELECT * FROM tbl_0 LIMIT 10");
       setResults(rows);
+      setSample({
+        data_header: rows[0].columns,
+        data_sample: rows[0].values.slice(0, 5),
+      });
     }
   };
 
@@ -100,7 +105,7 @@ const useLoadData = ({
       });
   }, [dfs, db]);
 
-  return { error, setError, schemas, loading, setLoading };
+  return { error, setError, schemas, loading, setLoading, sample };
 };
 
 export default useLoadData;

@@ -11,3 +11,8 @@ type MetaCensusRecord = {
   label: string;
   concept: string | null;
 };
+
+type DataSample = {
+  data_header: any[];
+  data_sample: any[][];
+};
