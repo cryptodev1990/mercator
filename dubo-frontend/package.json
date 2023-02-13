@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@apache-arrow/es5-cjs": "^11.0.0",
+    "@codemirror/lang-sql": "^6.4.0",
     "@datadog/browser-rum": "^4.34.0",
     "@deck.gl/core": "^8.8.23",
     "@deck.gl/extensions": "^8.8.23",
@@ -26,6 +27,9 @@
     "@msrvida/sanddance-explorer": "^4.0.8",
     "@next/font": "13.1.1",
     "@supabase/supabase-js": "^2.4.0",
+    "@uiw/codemirror-extensions-events": "^4.19.9",
+    "@uiw/codemirror-theme-github": "^4.19.9",
+    "@uiw/react-codemirror": "^4.19.9",
     "add": "^2.0.6",
     "ag-grid-community": "^29.0.0",
     "ag-grid-react": "^29.0.0",

@@ -56,7 +56,14 @@ const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
             {error.message}
           </p>
         )}
-        {!isValidating && data && <SQL query={data.query_text} light />}
+        {!isValidating && data && (
+          <div className="mt-6 animate-fadeIn100">
+            <p className="text-lg">Generated SQL:</p>
+            <div className="max-w-5xl mt-2">
+              <SQL query={data.query_text} light />
+            </div>
+          </div>
+        )}
         {!isValidating &&
           !error &&
           data?.results &&

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
+import { useRouter } from "next/router";
 import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";
 import { getUploadData } from "../lib/utils";
 import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
@@ -8,9 +9,8 @@ import { CloseButton } from "./close-button";
 import useSQLDb from "../lib/hooks/use-sql-db";
 import useLoadData from "../lib/hooks/use-load-data";
 import usePrepareData from "../lib/hooks/use-prepare-data";
-import { useRouter } from "next/router";
 import SuggestedQueries from "./suggested-queries";
-import SQL from "./sql";
+import SQLEditor from "./sql-editor";
 
 const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const [query, setQuery] = useState<string>("");
@@ -22,10 +22,13 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
 
   const {
     db,
-    error: dbError,
+    exec,
+    loadError,
     loading: dbLoading,
     results,
     setResults,
+    setResultsError,
+    resultsError,
   } = useSQLDb();
   const {
     dfs,
@@ -63,16 +66,17 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const router = useRouter();
   const showVis = router.query?.vis !== undefined;
 
-  const hasError = dataError || prepareError || duboError?.message;
+  const hasError =
+    prepareError || dataError || resultsError || duboError?.message;
 
   useEffect(() => {
     if (data && data.query_text && !isLoading) {
       const duboGeneratedSql = data.query_text;
-      handleSqlQuery(duboGeneratedSql);
+      exec(duboGeneratedSql);
     }
   }, [duboQuery, isLoading]);
 
-  if (dbError) {
+  if (loadError) {
     return (
       <div className="flex flex-col items-center justify-center">
         <h1>Error loading data</h1>
@@ -88,20 +92,6 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
       </div>
     );
   }
-
-  const handleSqlQuery = (sql: string) => {
-    if (!db) {
-      console.error("DB not loaded");
-      return;
-    }
-    const res = db.exec(sql);
-    if (res) {
-      setResults(res);
-    } else {
-      setResults([]);
-    }
-    return res;
-  };
 
   return (
     <div className="max-w-5xl m-auto">
@@ -189,7 +179,7 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
             <p className="text-sm pt-4 pb-2">Some ideas:</p>
             <SuggestedQueries
               queries={DATA_OPTIONS[selectedData].queries}
-              handleSqlQuery={handleSqlQuery}
+              handleSqlQuery={exec}
               setDuboQuery={setDuboQuery}
               setQuery={setQuery}
             />
@@ -201,12 +191,12 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
           </p>
         )}
         {data && (
-          <div className="mt-6 animate-fadeIn100">
-            <p className="text-lg">Generated SQL:</p>
-            <div className="max-w-5xl mt-2">
-              <SQL query={data.query_text} light={false} />
-            </div>
-          </div>
+          <SQLEditor
+            query={data.query_text}
+            exec={exec}
+            setResultsError={setResultsError}
+            resultsError={resultsError}
+          />
         )}
         {!isValidating && !hasError && results && results.length > 0 && (
           <DataTable results={results} showVis={showVis} />

@@ -3,8 +3,9 @@ import initSqlJs, { Database, QueryExecResult } from "sql.js";
 
 const useDb = () => {
   const [db, setDb] = useState<Database | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [results, setResults] = useState<QueryExecResult[] | undefined>([]);
+  const [resultsError, setResultsError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -19,7 +20,7 @@ const useDb = () => {
       })
       .catch((err) => {
         setLoading(false);
-        setError(err);
+        setLoadError(err);
       });
 
     return () => {
@@ -38,17 +39,19 @@ const useDb = () => {
 
       setResults(db.exec(sql));
     } catch (err: any) {
-      setError(err);
+      setResultsError(err.message);
     }
   };
 
   return {
     db,
-    error,
+    loadError,
     exec,
     loading,
     results,
+    resultsError,
     setResults,
+    setResultsError,
   };
 };
 
