@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 const useDatadogRum = () => {
   useEffect(() => {
-    const environment = process.env.VERCEL_ENV || "development";
+    const environment = process.env.NEXT_PUBLIC_VERCEL_ENV || "development";
     const isProduction = environment === "production";
     const applicationId = process.env.NEXT_PUBLIC_DATADOG_APP_ID;
     const clientToken = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN;
@@ -14,7 +14,8 @@ const useDatadogRum = () => {
         clientToken,
         site: "datadoghq.com",
         service: "dubo",
-        version: process.env.VERCEL_GIT_COMMIT_SHA || "local-development",
+        version:
+          process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || "local-development",
         sessionSampleRate: 100,
         sessionReplaySampleRate: 20,
         trackUserInteractions: true,
