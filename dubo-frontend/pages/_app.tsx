@@ -3,6 +3,8 @@ import Head from "next/head";
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import Navbar from "../components/navbar";
+import useDatadogRum from "../lib/hooks/use-datadog-rum";
+import useTailwindElements from "../lib/hooks/use-tailwind-elements";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -16,13 +18,8 @@ const roboto = Roboto({
 });
 
 export default function App({ Component, pageProps, router }: AppProps) {
-  useEffect(() => {
-    const use = async () => {
-      // @ts-ignore `tw-elements` package has no types available
-      (await import("tw-elements")).default;
-    };
-    use();
-  }, []);
+  useTailwindElements();
+  useDatadogRum();
 
   const head = (
     <Head>

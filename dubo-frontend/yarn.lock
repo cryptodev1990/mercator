@@ -25,6 +25,26 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
+"@datadog/browser-core@4.34.0":
+  version "4.34.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.34.0.tgz#fb6510feccfd3b4b32bebad4c6d93dafef8800ea"
+  integrity sha512-15ensaCOfB3hQjoIBca401wP9N817W0zBFp6Pmu2uMLtn+TUiYJqu0AhW4G2w1snCHk2peBzJnfXtZLTl/PX5Q==
+
+"@datadog/browser-rum-core@4.34.0":
+  version "4.34.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum-core/-/browser-rum-core-4.34.0.tgz#2ddd6623423207b8892350b658e8c5cf06ab7e72"
+  integrity sha512-EBlhtK10VEG85Yv7gGIhLwnd8wnh6jGWhvObAYEJf+wr4QDS6oXiVrSSaswJcGUn8Kq4fE9Gvyo4+uT05vLLJA==
+  dependencies:
+    "@datadog/browser-core" "4.34.0"
+
+"@datadog/browser-rum@^4.34.0":
+  version "4.34.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum/-/browser-rum-4.34.0.tgz#d5683146a39c61ea3b5ebf72490aaa174f56d2ce"
+  integrity sha512-nItk5/359i//hIJfRV9al3gwV0dEgHTfjyZLNeWNdyoyc22vhcUjfKEAsUKZ7I7pCYRqflppHgV7sTwLZb7lcA==
+  dependencies:
+    "@datadog/browser-core" "4.34.0"
+    "@datadog/browser-rum-core" "4.34.0"
+
 "@deck.gl/aggregation-layers@8.8.23":
   version "8.8.23"
   resolved "https://registry.yarnpkg.com/@deck.gl/aggregation-layers/-/aggregation-layers-8.8.23.tgz#4f5a5e0eddf70f06e2943c2d4d6adc7752ba32c2"

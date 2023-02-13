@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apache-arrow/es5-cjs": "^11.0.0",
+    "@datadog/browser-rum": "^4.34.0",
     "@deck.gl/core": "^8.8.23",
     "@deck.gl/extensions": "^8.8.23",
     "@deck.gl/geo-layers": "^8.8.23",
