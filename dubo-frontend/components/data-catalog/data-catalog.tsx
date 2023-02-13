@@ -108,22 +108,21 @@ const DataCatalog = () => {
       <div className="border-b-4 border-black">
         <div className="max-w-5xl mx-auto">
           <TitleBlock zoomThreshold={false} />
-          <div className="static float-right">
-            <button onClick={() => router.push("/demos/census")}>{"<<"}</button>
-          </div>
+          <button
+            className="absolute right-[10px] top-[60px] px-2 py-1 border border-spBlue text-spBlue font-medium text-md leading-tight hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
+            onClick={() => router.push("/demos/census")}
+          >
+            Back to Census Demo
+          </button>
         </div>
       </div>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto p-8">
         <div>
-          {/* Exposition */}
           <section>
-            {/* Copy text - header */}
-            <h1 className="text-xl font-bold leading-10 pt-1">Data Catalog</h1>
-            <div className="flex flex-row">
-              {/* Copy text - body */}
-
-              <div id="copy" className="col-span-5 flex flex-col">
-                <p className="text-md leading-4">
+            <h1 className="text-xl font-bold leading-10">Data Catalog</h1>
+            <div className="flex flex-col gap-6 md:flex-row">
+              <div className="flex-1 col-span-5 flex flex-col">
+                <p className="text-md">
                   Below are the variables from the US Census Bureau{"'"}s{" "}
                   <a
                     className="text-blue-500 underline"
@@ -133,25 +132,17 @@ const DataCatalog = () => {
                     2021 5-year American Community Survey (ACS)
                   </a>{" "}
                   made available by dubo. There are 350 variables in total.
-                </p>
-                <br />
-                <p className="text-md leading-4">
                   Requests for other data sets or additional variables can be
                   made via our{" "}
                   <Link href={"/feedback"} className="text-blue-500 underline">
                     feedback form
                   </Link>
-                  .
-                </p>
-                <br />
-                <p className="text-md leading-4">
-                  While you can{"'"}t query these variables directly through
+                  . While you can{"'"}t query these variables directly through
                   dubo, hopefully this gives you an idea of the kind of
                   questions you can ask.
                 </p>
-                <div className="flex-none my-auto">
+                <div className="flex-none my-auto mt-4">
                   <h3>Start typing to search</h3>
-                  {/* Search bar */}
                   <input
                     className="border border-gray-300 rounded-md w-full p-2 text-lg"
                     placeholder="Variable name to search for..."
@@ -162,9 +153,7 @@ const DataCatalog = () => {
                   />
                 </div>
               </div>
-              {/* spacer */}
-              {/* Category grid */}
-              <div className="ml-6">
+              <div className="flex-1">
                 <CategoryGrid onClick={(category) => search(category)} />
               </div>
             </div>

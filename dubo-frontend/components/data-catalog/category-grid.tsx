@@ -36,7 +36,7 @@ const CategoryGrid = ({ onClick }: { onClick: (category: string) => void }) => {
   // A grid of categories
   return (
     <>
-      <div className="grid grid-cols-3 w-[25rem]">
+      <div className="flex flex-wrap gap-1">
         {Object.keys(censusCategories).map((category) => (
           <CensusCategory
             category={category}

@@ -16,18 +16,13 @@ const CensusCategory = ({
     <button
       onClick={onClick}
       className={clsx(
-        "h-32 w-32 text-slate-100 cursor-pointer mb-1 mr-1 rounded-xl",
-        "flex flex-col justify-start items-center overflow-hidden",
+        "h-20 text-slate-100 cursor-pointer rounded-xl",
+        "flex-[0_48%] flex flex-col justify-center items-center overflow-hidden",
         "hover:bg-sky-500",
         color
       )}
     >
-      <div
-        className={clsx(
-          "text-left px-11/24",
-          "text-md font-sans2 leading-none my-auto"
-        )}
-      >
+      <div className={clsx("text-md font-sans2 whitespace-normal")}>
         {category}
       </div>
     </button>
