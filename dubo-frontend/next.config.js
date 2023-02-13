@@ -14,7 +14,11 @@ const securityHeaders = [
   },
 ];
 
-module.exports = {
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+const config = {
   ...nextConfig,
   poweredByHeader: false,
   staticPageGenerationTimeout: 1000,
@@ -36,3 +40,5 @@ module.exports = {
     ];
   },
 };
+
+module.exports = withBundleAnalyzer(config);

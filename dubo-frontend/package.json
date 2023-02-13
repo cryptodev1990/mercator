@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -59,6 +60,7 @@
     "yarn": "^1.22.19"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^13.1.6",
     "@types/node": "18.11.18",
     "@types/qs": "^6.9.7",
     "@types/react": "18.0.26",
