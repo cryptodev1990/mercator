@@ -28,6 +28,7 @@ export const SearchBar = ({
 
   const shouldDisplay = useMemo(() => {
     return (
+      autocompleteSuggestions &&
       autocompleteSuggestions.length > 0 &&
       isFocused &&
       value.length > 0 &&
@@ -141,7 +142,7 @@ export const SearchBar = ({
           top: (searchBarRef.current?.offsetTop ?? 0) + 40,
         }}
       >
-        {autocompleteSuggestions.map((suggestion, i) => (
+        {autocompleteSuggestions?.length > 0 && autocompleteSuggestions.map((suggestion, i) => (
           <button
             key={i}
             className={clsx(

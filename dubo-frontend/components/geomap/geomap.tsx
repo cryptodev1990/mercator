@@ -51,7 +51,7 @@ const GeoMap = () => {
 
   const dataVector = useMemo(() => {
     if (!zctaLookup) return [];
-    const vals = Object.values(zctaLookup).map((d: any) => +d[selectedColumn]);
+    const vals = Object.values(zctaLookup).map((d: any) => Number(d[selectedColumn]));
     return vals;
   }, [zctaLookup, selectedColumn]);
 

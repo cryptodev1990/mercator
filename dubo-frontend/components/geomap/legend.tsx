@@ -7,7 +7,7 @@ import { AiOutlineCloseCircle, AiFillCheckCircle } from "react-icons/ai";
 import { BsFillPaletteFill } from "react-icons/bs";
 
 export const pctFmtSansPct = (num: number, numDecimals = 0) => {
-  return `${(num * 100).toFixed(numDecimals)}`;
+  return `${(Number(num) * 100).toFixed(numDecimals)}`;
 };
 
 export function abbrevTick(num: number) {
