@@ -31,7 +31,6 @@ export function DeckGLOverlay(
 
   useEffect(() => {
     if (overlayRef?.current !== null && props) {
-      console.log("updating overlay", overlayRef?.current, props);
       // update the overlay anytime the props change
       overlayRef?.current?.setProps(props);
     }

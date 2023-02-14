@@ -20,7 +20,7 @@ export const SearchBar = ({
 }) => {
   const { theme } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedSuggestion, setSelectedSuggestion] = useState(0);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const searchBarRef = useRef<HTMLInputElement | null>(null);
 
   const { placeholderExample, turnOffDemo, isFirstTimeUse } =
@@ -35,6 +35,7 @@ export const SearchBar = ({
       autocompleteSuggestions[selectedSuggestion] !== value
     );
   }, [autocompleteSuggestions, value, isFocused, selectedSuggestion]);
+
   return (
     <div className={clsx(theme.bgColor, "flex flex-row")}>
       {/* search bar input */}
@@ -52,38 +53,36 @@ export const SearchBar = ({
           setIsFocused(true);
           turnOffDemo();
         }}
-        onBlur={() => {
-          setIsFocused(false);
-        }}
         value={value}
         onChange={(e) => {
           onChange(e.target.value);
-          setSelectedSuggestion(0);
+          setSelectedSuggestion(-1);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onChange(autocompleteSuggestions[selectedSuggestion]);
+            onEnter();
+            setSelectedSuggestion(-1);
+          }
+          if (e.key === "Tab" && shouldDisplay) {
+            e.preventDefault();
+            onChange(autocompleteSuggestions[selectedSuggestion]);
+            setSelectedSuggestion(-1);
+          }
+          if (e.key === "ArrowDown" && shouldDisplay) {
+            setSelectedSuggestion(
+              (prev) => (prev + 1) % autocompleteSuggestions.length
+            );
+          }
+          if (e.key === "ArrowUp" && shouldDisplay) {
+            setSelectedSuggestion(
+              (prev) => (prev - 1) % autocompleteSuggestions.length
+            );
+          }
         }}
         placeholder={
           isFirstTimeUse ? placeholderExample : "What do you want to know?"
         }
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            onEnter();
-          }
-          if (e.key === "ArrowDown" || e.key === "Tab") {
-            const suggestionIndex =
-              selectedSuggestion + 1 < autocompleteSuggestions.length
-                ? selectedSuggestion + 1
-                : selectedSuggestion;
-            onChange(autocompleteSuggestions[suggestionIndex]);
-            setSelectedSuggestion((s) => suggestionIndex);
-          }
-          if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
-            const suggestionIndex =
-              selectedSuggestion > 0
-                ? selectedSuggestion - 1
-                : selectedSuggestion;
-            onChange(autocompleteSuggestions[suggestionIndex]);
-            setSelectedSuggestion((s) => suggestionIndex);
-          }
-        }}
       />
       {/* search button */}
       <button
@@ -132,7 +131,7 @@ export const SearchBar = ({
       {/* autocomplete suggestions */}
       <div
         className={clsx(
-          "absolute rounded-b-md shadow-md italic border-r",
+          "absolute rounded-b-md shadow-md flex flex-col justify-start align-top text-left w-full max-w-[52rem]",
           shouldDisplay ? "block" : "hidden",
           theme.bgColor,
           theme.fontColor
@@ -143,30 +142,33 @@ export const SearchBar = ({
         }}
       >
         {autocompleteSuggestions.map((suggestion, i) => (
-          <div
+          <button
             key={i}
             className={clsx(
-              "p-2 cursor-pointer",
+              "transition w-full text-left p-2 hover:-translate-y-1",
               theme.bgColor,
-              theme.fontColor
+              theme.fontColor,
+              i === selectedSuggestion && theme.secondaryBgColor,
+              i === selectedSuggestion && theme.secondaryFontColor
             )}
             onClick={(e) => {
               onChange(suggestion);
               // @ts-ignore
               onEnter(suggestion);
+              setIsFocused(false);
             }}
           >
             {value.length > 5 &&
               suggestion.split(value).map((part, i) => (
                 <span key={i}>
-                  {i === 0 && <span className="pointer-events-none">...</span>}
-                  <span className="pointer-events-none">{part}</span>
+                  {i === 0 && <span className="pointer-events-auto">...</span>}
+                  <span className="pointer-events-auto">{part}</span>
                 </span>
               ))}
             {value.length <= 5 && (
-              <span className="pointer-events-none">{suggestion}</span>
+              <span className="pointer-events-auto">{suggestion}</span>
             )}
-          </div>
+          </button>
         ))}
       </div>
     </div>
