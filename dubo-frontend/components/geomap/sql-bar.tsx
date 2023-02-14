@@ -25,7 +25,7 @@ const SQLBar = ({
         <SQL
           query={generatedSql}
           light={theme === "light"}
-          className="!p-5 rounded"
+          className="!p-5 rounded max-w-3xl mx-auto"
         />
       </div>
     </div>

@@ -15,14 +15,17 @@ const SQL = ({
   query: string;
   light: boolean;
   className?: string;
-}) => (
-  <SyntaxHighlighter
-    language="sql"
-    style={light ? stackoverflowLight : stackoverflowDark}
-    className={className}
-  >
-    {format(query)}
-  </SyntaxHighlighter>
-);
+}) => {
+  if (!query) return null;
+  return (
+    <SyntaxHighlighter
+      language="sql"
+      style={light ? stackoverflowLight : stackoverflowDark}
+      className={className}
+    >
+      {format(query)}
+    </SyntaxHighlighter>
+  );
+};
 
 export default SQL;

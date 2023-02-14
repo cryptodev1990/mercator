@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
+import { TrackedText } from "../tracked-text";
 
 export const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {
   const [numEllipses, setNumEllipses] = useState(1);
@@ -21,8 +22,8 @@ export const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {
       )}
     >
       <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-      <div className="text-2xl font-bold bg-gray-600 text-slate-100 px-2 py-1 rounded mt-2 w-32 text-left">
-        Loading{".".repeat(numEllipses)}
+      <div className="text-2xl font-bold px-2 py-1 rounded mt-2 w-32 text-left">
+        <TrackedText text={"Loading" + ".".repeat(numEllipses)} />
       </div>
     </div>
   );

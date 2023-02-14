@@ -20,6 +20,13 @@ export function DeckGLOverlay(
     overlayRef.current = overlay;
     // connect it to the map
     props.mapboxRef.current.addControl(overlayRef.current);
+    // clean up when the component unmounts
+    return () => {
+      if (window.location.pathname === "/demos/census/data-catalog") {
+        props.mapboxRef.current.removeControl(overlayRef.current);
+        // TODO why is the unmount not working?
+      }
+    };
   }, []);
 
   useEffect(() => {

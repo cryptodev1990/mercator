@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { DuboLink } from "../dubo-link";
 import { useEffect, useState } from "react";
+import { TrackedText } from "../tracked-text";
 
 const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {
   const [hide, setHide] = useState(false);
@@ -22,8 +23,8 @@ const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {
         !zoomThreshold && "animate-fadeIn500" // slide in
       )}
     >
-      <h1 className={"text-2xl font-black"}>Census Explorer</h1>
-      <sub className="text-sm">
+      <TrackedText text="Census Explorer" />
+      <sub className="text-sm tracking-tight">
         Powered by <DuboLink />
       </sub>
     </div>

@@ -6,11 +6,11 @@ import { BiPencil } from "react-icons/bi";
 import { AiOutlineCloseCircle, AiFillCheckCircle } from "react-icons/ai";
 import { BsFillPaletteFill } from "react-icons/bs";
 
-const pctFmtSansPct = (num: number) => {
-  return `${num * 100}`;
+export const pctFmtSansPct = (num: number, numDecimals = 0) => {
+  return `${(num * 100).toFixed(numDecimals)}`;
 };
 
-function abbrevTick(num: number) {
+export function abbrevTick(num: number) {
   // If the number in the 1's position is greater than 0, cut the decimal
   // return K for the number of thousands
   if (num >= 1000) {
@@ -25,41 +25,6 @@ function abbrevTick(num: number) {
   }
   return `${num.toFixed(0)}`;
 }
-
-const PaletteButton = ({
-  colors,
-  setPaletteIdx,
-  paletteIdx,
-  theme,
-}: {
-  colors: number[][];
-  setPaletteIdx: (idx: number) => void;
-  paletteIdx: number;
-  theme: any;
-}) => {
-  return (
-    <div className="absolute invisible justify-center items-center gap-3 group-hover:visible">
-      <button
-        onClick={() =>
-          setPaletteIdx((paletteIdx + 1) % Object.values(PALETTES).length)
-        }
-        className={clsx(
-          "w-10 h-10 flex flex-row justify-center items-center rounded border-2 shadow-sm shadow-black",
-          theme.bgColor
-        )}
-      >
-        {/* Place one pan icon slightly behind the other */}
-
-        <BsFillPaletteFill
-          size={20}
-          style={{
-            color: `rgb(${colors[4][0]}, ${colors[4][1]}, ${colors[4][2]})`,
-          }}
-        />
-      </button>
-    </div>
-  );
-};
 
 export const ColumnSelector = ({
   columns,
@@ -141,6 +106,8 @@ const Legend = ({
   scaleType,
   onScaleTextClicked,
   children,
+  label,
+  setLabel,
 }: {
   colors: number[][];
   text: string[];
@@ -149,11 +116,12 @@ const Legend = ({
   setPaletteName?: (name: any) => void;
   onScaleTextClicked: any;
   children?: React.ReactNode;
+  label: string | null;
+  setLabel: (label: string | null) => void;
 }) => {
   const [paletteIdx, setPaletteIdx] = useState(0);
   const { theme } = useTheme();
   const [relabeling, setRelabeling] = useState(false);
-  const [label, setLabel] = useState<string | null>(null);
 
   useEffect(() => {
     const newPalette = Object.keys(PALETTES)[paletteIdx];

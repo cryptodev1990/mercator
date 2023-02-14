@@ -21,9 +21,10 @@ function genCommonProps(updateTriggersVars: any) {
       getFillColor: updateTriggersVars,
     },
     stroked: false,
-    transitions: {
-      getFillColor: 500,
-    },
+    // // NOTE if we transition away from Mapbox-managed deck, we can use this again
+    // transitions: {
+    //   getFillColor: 500,
+    // },
     filled: true,
     pickable: true,
     extruded: false,

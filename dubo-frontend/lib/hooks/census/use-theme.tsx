@@ -15,6 +15,13 @@ export const LIGHT = {
   borderColor: "border-slate-500",
 };
 
+const LIGHT_NO_LABELS = {
+  ...LIGHT,
+  theme: "light_no_labels",
+  baseMap:
+    "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+};
+
 const EARTH = {
   theme: "earth",
   baseMap: "mapbox://styles/mapbox/satellite-streets-v11",
@@ -24,6 +31,12 @@ const EARTH = {
   bgColor: "bg-slate-700",
   secondaryBgColor: "bg-slate-900",
   borderColor: "border-slate-900",
+};
+
+const EARTH_NO_LABELS = {
+  ...EARTH,
+  theme: "earth_no_labels",
+  baseMap: "mapbox://styles/mapbox/satellite-v9",
 };
 
 const MOON = {
@@ -37,22 +50,42 @@ const MOON = {
   borderColor: "border-neutral-700",
 };
 
-type Theme = typeof LIGHT | typeof EARTH | typeof MOON;
+const MOON_NO_LABELS = {
+  ...MOON,
+  theme: "moon_no_labels",
+  baseMap:
+    "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json",
+};
 
-const THEMES = [LIGHT, EARTH, MOON];
+type Theme =
+  | typeof LIGHT
+  | typeof EARTH
+  | typeof MOON
+  | typeof LIGHT_NO_LABELS
+  | typeof EARTH_NO_LABELS
+  | typeof MOON_NO_LABELS;
+
+const THEMES = [
+  LIGHT,
+  EARTH,
+  MOON,
+  LIGHT_NO_LABELS,
+  EARTH_NO_LABELS,
+  MOON_NO_LABELS,
+];
 
 const ThemeContext = createContext({
-  theme: LIGHT,
-  nextTheme: EARTH,
+  theme: EARTH,
+  nextTheme: MOON,
   toggleTheme: () => {},
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(LIGHT);
+  const [theme, setTheme] = useState<Theme>(EARTH);
   const [themeIdx, setThemeIdx] = useState(0);
 
   // let us preview the next theme
-  const [nextTheme, setNextTheme] = useState<Theme>(EARTH);
+  const [nextTheme, setNextTheme] = useState<Theme>(MOON);
   const [nextThemeIdx, setNextThemeIdx] = useState(1);
 
   const toggleTheme = () => {

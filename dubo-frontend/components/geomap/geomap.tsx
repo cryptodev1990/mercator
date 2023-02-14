@@ -26,6 +26,7 @@ const GeoMap = () => {
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
   const [zoomThreshold, setZoomThreshold] = useState(false);
+  const [label, setLabel] = useState<string | null>(null);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
   const router = useRouter();
@@ -133,6 +134,8 @@ const GeoMap = () => {
               setPaletteName={setPaletteName}
               scaleType={scaleType}
               onScaleTextClicked={rotateScaleType}
+              label={label}
+              setLabel={setLabel}
             >
               <ColumnSelector
                 columns={header}
@@ -157,6 +160,8 @@ const GeoMap = () => {
         {/* tooltip */}
         {zctaLookup && (
           <Tooltip
+            isRatio={isRatio}
+            label={label}
             zctaLookup={zctaLookup}
             selectedColumn={selectedColumn}
             selectedZcta={selectedZcta}

@@ -2,15 +2,20 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { useTheme } from "../../lib/hooks/census/use-theme";
 import useMousePosition from "../../lib/hooks/use-mouse-position";
+import { pctFmtSansPct } from "./legend";
 
 export const Tooltip = ({
+  isRatio,
   zctaLookup,
   selectedColumn,
   selectedZcta,
+  label,
 }: {
+  isRatio: boolean;
   zctaLookup: any;
   selectedColumn: any;
   selectedZcta: string;
+  label: string | null;
 }) => {
   const { theme } = useTheme();
   const { x, y } = useMousePosition();
@@ -25,6 +30,10 @@ export const Tooltip = ({
   if (typeof tooltipValue === "undefined" || !selectedZcta) {
     return null;
   }
+
+  const value = isRatio
+    ? pctFmtSansPct(tooltipValue[selectedColumn], 2) + "%"
+    : tooltipValue[selectedColumn];
 
   return (
     <div
@@ -42,7 +51,7 @@ export const Tooltip = ({
         <div>
           <div className="font-bold">ZCTA: {selectedZcta}</div>
           <div className="font-bold">
-            {selectedColumn}: {tooltipValue[selectedColumn]}
+            {label || selectedColumn}: {value}
           </div>
         </div>
       </div>
