@@ -52,11 +52,14 @@ const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
         </div>
 
         {error && (
-          <p className="bg-orange-500 text-white font-mono px-3 mt-3">
+          <p
+            className="bg-red-100 py-3 px-4 mb-4 mt-6 text-sm text-red-700"
+            role="alert"
+          >
             {error.message}
           </p>
         )}
-        {!isValidating && data && (
+        {!isValidating && data?.query_text && (
           <div className="mt-6 animate-fadeIn100">
             <p className="text-lg">Generated SQL:</p>
             <div className="max-w-5xl mt-2">
@@ -75,6 +78,14 @@ const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
                 .map((c) => ({ field: c }))}
             />
           )}
+        {data?.error && (
+          <p
+            className="bg-red-100 py-3 px-5 text-sm text-red-700 mt-6"
+            role="alert"
+          >
+            {data.error}
+          </p>
+        )}
       </div>
     </div>
   );

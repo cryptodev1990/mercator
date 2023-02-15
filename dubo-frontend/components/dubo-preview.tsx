@@ -79,9 +79,12 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
 
   if (loadError) {
     return (
-      <div className="flex flex-col items-center justify-center">
-        <h1>Error loading data</h1>
-      </div>
+      <p
+        className="bg-red-100 py-3 px-4 mb-4 mt-6 text-base text-red-700"
+        role="alert"
+      >
+        Something went wrong loading the database. Reload the page to try again.
+      </p>
     );
   }
 
@@ -178,7 +181,7 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
         </div>
         {!query && !customData && selectedData && (
           <div>
-            <p className="text-sm pt-4 pb-2">Some ideas:</p>
+            <p className="text-md pt-4 pb-2">Some ideas:</p>
             <SuggestedQueries
               queries={DATA_OPTIONS[selectedData].queries}
               handleSqlQuery={exec}
@@ -188,7 +191,10 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
           </div>
         )}
         {hasError && (
-          <p className="bg-orange-500 text-white font-mono px-3 mt-3">
+          <p
+            className="bg-red-100 py-3 px-4 mb-4 mt-6 text-sm text-red-700"
+            role="alert"
+          >
             {hasError}
           </p>
         )}
