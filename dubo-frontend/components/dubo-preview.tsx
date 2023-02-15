@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/router";
 import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";

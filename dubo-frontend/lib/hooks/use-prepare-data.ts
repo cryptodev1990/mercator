@@ -1,7 +1,4 @@
-import { convertZip, sanitizeColumnNames } from "../utils";
-import { JSONLoader, load } from "@loaders.gl/core";
-import { CSVLoader } from "@loaders.gl/csv";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DataNames } from "../demo-data";
 
 const usePrepareData = ({
@@ -11,54 +8,33 @@ const usePrepareData = ({
   selectedData: DataNames | null;
   urlsOrFile: (string | File)[];
 }) => {
+  const workerRef = useRef<Worker>();
   const [dfs, setDfs] = useState<DataFrame[] | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
-  const sanitize = async () => {
-    const newDfs: DataFrame[] = [];
-    for (const path of urlsOrFile) {
-      const df: DataFrame = {
-        columns: [],
-        data: [],
-      };
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("../workers/prepare-data-worker.ts", import.meta.url)
+    );
 
-      try {
-        if (typeof path === "string" || path instanceof File) {
-          df.data = await load(path, [CSVLoader, JSONLoader]);
-          setError(null);
-        } else {
-          setError("Unknown type");
-        }
-      } catch (err: any) {
-        setError(err.message);
+    workerRef.current.onmessage = (
+      event: MessageEvent<{ dfs?: DataFrame[]; error?: Error }>
+    ) => {
+      if (event.data.error) {
+        setError(event.data.error.message);
+      } else {
+        setDfs(event.data.dfs);
+        setError(null);
       }
+    };
 
-      // apply the function to convert any of the data frame records to a string if ZIP is a number
-      df.data = df.data.map((row: any) => {
-        for (const key of Object.keys(row)) {
-          if (
-            ["zcta", "zip", "zip_code"].includes(key) &&
-            typeof row[key] === "number"
-          ) {
-            row[key] = convertZip(row[key]);
-          }
-        }
-        return row;
-      });
-
-      // We assume the header is properly set in the first row
-      df.columns = df.data[0] ? (Object.keys(df.data[0]) as string[]) : [];
-      sanitizeColumnNames(df.columns);
-      newDfs.push(df);
-    }
-
-    return newDfs;
-  };
+    return () => {
+      workerRef?.current?.terminate();
+    };
+  }, []);
 
   useEffect(() => {
-    sanitize()
-      .then((dfs) => setDfs(dfs))
-      .catch((err) => setError(err.message));
+    workerRef?.current?.postMessage(urlsOrFile);
   }, [selectedData]);
 
   return {

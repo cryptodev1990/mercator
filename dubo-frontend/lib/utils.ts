@@ -1,3 +1,6 @@
+import { JSONLoader, load } from "@loaders.gl/core";
+import { CSVLoader } from "@loaders.gl/csv";
+
 export async function getUploadData(): Promise<File | null> {
   const file = await new Promise((resolve) => {
     const input = document.createElement("input");
@@ -98,4 +101,44 @@ export const base64ToString = (base64: string) => {
 export const nab = (arr: string[]) => {
   // choose random element from array
   return arr[Math.floor(Math.random() * arr.length)];
+};
+
+export const sanitize = async (urlsOrFile: (string | File)[]) => {
+  const newDfs: DataFrame[] = [];
+  for (const path of urlsOrFile) {
+    const df: DataFrame = {
+      columns: [],
+      data: [],
+    };
+
+    try {
+      if (typeof path === "string" || path instanceof File) {
+        df.data = await load(path, [CSVLoader, JSONLoader]);
+      } else {
+        throw new Error("Unknown file type");
+      }
+    } catch (err: any) {
+      throw err;
+    }
+
+    // apply the function to convert any of the data frame records to a string if ZIP is a number
+    df.data = df.data.map((row: any) => {
+      for (const key of Object.keys(row)) {
+        if (
+          ["zcta", "zip", "zip_code"].includes(key) &&
+          typeof row[key] === "number"
+        ) {
+          row[key] = convertZip(row[key]);
+        }
+      }
+      return row;
+    });
+
+    // We assume the header is properly set in the first row
+    df.columns = df.data[0] ? (Object.keys(df.data[0]) as string[]) : [];
+    sanitizeColumnNames(df.columns);
+    newDfs.push(df);
+  }
+
+  return newDfs;
 };
