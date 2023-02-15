@@ -21,13 +21,11 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from api.gateways.conns import Connection
 from api.gateways.openai import get_sql_from_gpt_prompt
 from api.handlers.handler_utils import sql_response_headers
-from api.handlers.sql_utils import guard_against_divide_by_zero, grab_from_select_onwards
+from api.handlers.sql_utils.query_cleaning import QueryCleaner
 from api.handlers.autocomplete import get_autocomplete
 
 
 openai.api_key = os.environ['OPENAI_KEY']
-BUCKET = 'dubo-api-storage'
-ONE_HUNDRED_RE = r'\s?[*]\s?100(.0)?'
 
 
 # Create an async postgres connection
@@ -44,7 +42,7 @@ async def connect_to_db():
         return None
 
 
-async def check_cache(query: str, conn: asyncpg.Connection) -> str:
+async def check_cache(query: str, conn: asyncpg.Connection) -> str | None:
     # We have an UNLOGGED table that stores the results of queries
     # CREATE UNLOGGED TABLE census_queries (query TEXT, approved_sql TEXT);
     # CREATE INDEX ON census_queries (query);
@@ -74,26 +72,26 @@ async def db_health(conn=Depends(connect_to_db)):
 # make the route send octet-stream
 @router.get('/census', response_class=StreamingResponse)
 async def census(
-    query: str,
+    user_query: str,
     request: Request,
     conn=Depends(connect_to_db),
 ):
-    ip = request.client.host
+    ip = request.client.host  # type: ignore
     if conn is None:
         raise NotImplementedError('Database connection not implemented')
 
     # Check the cache
-    cached_sql = await check_cache(query, conn)
+    cached_sql = await check_cache(user_query, conn)
     if cached_sql is not None:
         sql = cached_sql
         print({
             "event": "cache_hit",
             "ip": ip,
             "sql": sql,
-            "query": query,
+            "query": user_query,
         })
     else:
-        sql = await _get_census_sql_from_query(query, conn, ip)
+        sql = await _get_census_sql_from_query(user_query, conn, ip)
     start = time.time()
     records = await conn.fetch(sql)
     print({
@@ -131,15 +129,11 @@ async def feedback_census(
 
 
 def cleaning_pipeline(input_sql: str) -> str:
-    sql = grab_from_select_onwards(' '.join(input_sql.split('\n')))
     try:
         sql = sqlglot.transpile(
-            sql, read='sqlite', write='postgres', pretty=False)[0]
-        # For whatever reason gpt-3 loves multiplying percentages by 100 or 100.0
-        if re.match(ONE_HUNDRED_RE, sql):
-            sql = re.sub(ONE_HUNDRED_RE, '', sql)
-        # GPT-3 also loves to divide by 0
-        sql = guard_against_divide_by_zero(sql)
+            input_sql, read='sqlite', write='postgres', pretty=False)[0]
+        sql = QueryCleaner(sql).guard_against_divide_by_zero(
+        ).replace_100_with_1().text()
         return sql
     except Exception as e:
         print("cleaning pipeline failed, defaulting to original sql")
@@ -256,6 +250,8 @@ async def _autocomplete_endpoint(
 async def get_all_variables():
     try:
         conn = await connect_to_db()
+        if conn is None:
+            raise NotImplementedError('Database connection not implemented')
         records = await conn.fetch("""
             SELECT DISTINCT name
             , dubo_name
@@ -274,4 +270,4 @@ async def get_all_variables():
         cols = records[0].keys()
         return JSONResponse(content=pd.DataFrame(records, columns=cols).to_dict(orient='records'))
     finally:
-        await conn.close()
+        await conn.close()  # type: ignore

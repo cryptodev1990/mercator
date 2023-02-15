@@ -1,65 +1,111 @@
+from typing import List, Literal
+import warnings
 import re
 
 import sqlglot
-from sqlglot import select, condition
+from sqlglot import exp
+from sqlglot.expressions import condition
+from sqlglot.optimizer.optimizer import optimize
 
-import sqlparse
+ONE_HUNDRED_RE = r'100(.0)?|100(.00)?'
 
 
-def guard_against_divide_by_zero(sql: str) -> str:
-    if not '/' in sql:
-        return sql
-    parsed = sqlparse.parse(sql)[0]
-    tokens = (token for token in parsed.flatten() if not token.is_whitespace)
-    add_to_where = []
-    for token in tokens:
-        if token.value == '/':
-            next_token = next(tokens)
-            # If the token is a parenthesis, we need to grab all the contents until the closing parenthesis
-            if next_token.value == '(':
-                paren_count = 1
-                paren_contents = []
-                while paren_count > 0:
-                    next_token = next(tokens)
-                    if next_token.value == '(':
-                        paren_count += 1
-                    elif next_token.value == ')':
-                        paren_count -= 1
-                    paren_contents.append(next_token.value)
-                paren_contents = '(' + ' '.join(paren_contents)
-                print(paren_contents)
-                add_to_where.append(paren_contents)
-            # If the token is a CASE statement, we need to grab all the contents until the END
-            elif next_token.value == 'CASE':
-                case_count = 1
-                case_contents = []
-                while case_count > 0:
-                    next_token = next(tokens)
-                    if next_token.value == 'CASE':
-                        case_count += 1
-                    elif next_token.value == 'END':
-                        case_count -= 1
-                    case_contents.append(next_token.value)
-                case_contents = 'CASE ' + ' '.join(case_contents)
-                add_to_where.append(case_contents)
+class QueryCleaner:
+    def __init__(self, sql: str, sql_flavor='sqlite'):
+        self.sql = sql
+        self.sql_flavor = sql_flavor
+        self.parsed = sqlglot.parse_one(sql, read=sql_flavor)
+        self._new_parsed = self.parsed.copy()
+
+    def grab_from_select_onwards(self, sql: str) -> str:
+        """Use a regex to grab the select onwards from a SQL query"""
+        select_re = r'SELECT\s.*'
+
+        match = re.search(select_re, sql, re.IGNORECASE)
+        if match is None:
+            raise ValueError(f'Could not find select in {sql}')
+        return match.group()
+
+    def is_create_statement(self) -> bool:
+        return len([x for x in self.parsed.find_all(exp.Create)]) > 0
+
+    def is_insert_statement(self) -> bool:
+        return len([x for x in self.parsed.find_all(exp.Insert)]) > 0
+
+    def is_update_statement(self) -> bool:
+        return len([x for x in self.parsed.find_all(exp.Update)]) > 0
+
+    def is_delete_statement(self) -> bool:
+        return len([x for x in self.parsed.find_all(exp.Delete)]) > 0
+
+    def is_write_statement(self) -> bool:
+        return len([x for x in self.parsed.find_all(exp.Create, exp.Insert, exp.Update, exp.Delete)]) > 0
+
+    def is_select_statement(self) -> bool:
+        not_write_op = self.is_write_statement() is False
+        return len([x for x in self.parsed.find_all(exp.Select)]) > 0 and not_write_op
+
+    def has_limit(self) -> bool:
+        return len([x for x in self.parsed.find_all(exp.Limit)]) > 0
+
+    def add_limit(self, n=1000) -> 'QueryCleaner':
+        """Return a new SQL query with a limit added"""
+        if self.has_limit():
+            return self
+        self._new_parsed = self._new_parsed.limit(n)
+        return self
+
+    def text(self) -> str:
+        return self._new_parsed.sql(dialect=self.sql_flavor)
+
+    def __eq__(self, other):
+        return self.text() == str(other)
+
+    def __repr__(self):
+        return self.text()
+
+    def is_aggregate(self, sql: str) -> bool:
+        return len([x for x in self.parsed.find_all(exp.AggFunc)]) > 0
+
+    def guard_against_divide_by_zero(self) -> 'QueryCleaner':
+        """Rewrite a SQL query to avoid divide by zero errors
+
+        Only works for WHERE filters and not HAVING filters
+        """
+        division_expressions = [x for x in self._new_parsed.find_all(exp.Div)]
+        if len(division_expressions) == 0:
+            return self
+        rhs_expressions = []
+        for div in division_expressions:
+            rhs_expressions.append(div.right)
+        for col in rhs_expressions:
+            aggs = [x for x in col.find_all(exp.AggFunc)]
+            if len(aggs) > 0:
+                self._new_parsed = self._new_parsed.having(
+                    condition(f'{col} != 0'))
+            # Add a where clause to the query to avoid divide by zero errors
             else:
-                add_to_where.append(next_token.value)
-    if len(add_to_where) == 0:
-        return sql
-    new_query = sqlglot.parse_one(sql)
-    for i, col in enumerate(add_to_where):
-        if i == 0:
-            new_query = new_query.where(condition(f'{col} != 0'))
-        else:
-            new_query = new_query.and_(condition(f'{col} != 0'))
-    return new_query.sql()
+                self._new_parsed = self._new_parsed.where(
+                    condition(f'{col} != 0'))
+        self._new_parsed = self._new_parsed
+        return self
 
+    def reset(self) -> 'QueryCleaner':
+        self._new_parsed = self.parsed.copy()
+        return self
 
-def grab_from_select_onwards(sql: str) -> str:
-    """Use a regex to grab the select onwards from a SQL query"""
-    select_re = r'SELECT\s.*'
+    def replace_literal_in_select_clause(self, regex_match, replace_with: str) -> 'QueryCleaner':
+        def replace_(node):
+            if not isinstance(node, exp.Literal):
+                return node
+            literal_node = node
+            if re.match(regex_match, str(literal_node.this)) and literal_node.find_ancestor(exp.Select, exp.Mul) is not None and literal_node.find_ancestor(exp.Limit, exp.Order, exp.Join) is None:
+                # Set the literal value to the replacement value
+                literal_node.args['this'] = replace_with
+            return literal_node
+        self._new_parsed = self._new_parsed.transform(replace_)
+        return self
 
-    match = re.search(select_re, sql, re.IGNORECASE)
-    if match is None:
-        raise ValueError(f'Could not find select in {sql}')
-    return match.group()
+    def replace_100_with_1(self) -> 'QueryCleaner':
+        """Replace 100 with 1 in the select clause of a query"""
+        return self.replace_literal_in_select_clause(ONE_HUNDRED_RE, '1.0')

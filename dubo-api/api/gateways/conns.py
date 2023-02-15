@@ -13,6 +13,7 @@ from fastapi import HTTPException
 
 from api.gateways.openai import assemble_finetuned_prompt, assemble_prompt, get_sql_from_gpt_prompt
 from api.handlers.handler_utils import sql_response_headers
+from api.handlers.sql_utils.query_cleaning import QueryCleaner
 from api.schemas.responses import ResultsResponse
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -101,11 +102,20 @@ def run_query_against_connection(conn_id: str, user_query: str) -> ResultsRespon
     if not sql:
         raise HTTPException(
             status_code=400, detail="No suitable response for the given query.")
+
+    # Transformation pipeline
+    qc = QueryCleaner(sql, sql_flavor=conn.connection_type).add_limit(
+    ).guard_against_divide_by_zero()
+    if not qc.is_select_statement():
+        raise HTTPException(
+            status_code=400, detail="Your query generated a non-SELECT SQL statement. Only SELECT statements are allowed. Please try again.")
+
     logger.info({
         "event": "sql",
         "conn_id": conn_id,
         "user_query": user_query,
-        "sql": sql
+        "sql": sql,
+        "cleaned_sql": qc.text()
     })
     try:
         results = conn.execute(sql)

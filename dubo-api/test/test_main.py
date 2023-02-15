@@ -1,6 +1,9 @@
+import io
 import sqlite3
 import pandas as pd
 from fastapi.testclient import TestClient
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 from api.main import app
 
@@ -62,9 +65,24 @@ def test_dubo_post():
 
 def test_read_query_from_connection():
     response = client.get("/v1/dubo/query/polygon-blocks", params={
-                          "user_query": "How much USD of WMATIC was exchanged on December 15, 2020?"})
+                          "user_query": "How much USD of WMATIC was exchanged on December 15, 2020? Name the resulting column `transactions`."})
     assert response.status_code == 200
     # Both of these queries are correct
     res = response.json()["results"]
     res = pd.DataFrame(res)['transactions'].tolist()
+
     assert res == [4, 64, 1861, 85755, 308090, 500179, 419088, 620390]
+
+
+def test_census_query():
+    response = client.get("/demos/census", params={
+                          "user_query": "Return each ZIP code in the United States"})
+    assert response.status_code == 200
+    # get the bytes in the FastAPI response
+    bytes = response.content
+    # convert the bytes to a pandas dataframe
+    reader = pa.BufferReader(bytes)
+    table = pq.read_table(reader)
+    df = table.to_pandas()  # This results in a pandas.DataFrame
+    # get the total population
+    assert df.count()[0] == 33774
