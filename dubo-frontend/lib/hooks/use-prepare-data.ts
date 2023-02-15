@@ -14,11 +14,6 @@ const usePrepareData = ({
   const [dfs, setDfs] = useState<DataFrame[] | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
-  const reset = () => {
-    setDfs(undefined);
-    setError(null);
-  };
-
   const sanitize = async () => {
     const newDfs: DataFrame[] = [];
     for (const path of urlsOrFile) {
@@ -67,9 +62,10 @@ const usePrepareData = ({
   }, [selectedData]);
 
   return {
-    error,
-    reset,
     dfs,
+    error,
+    setDfs,
+    setError,
   };
 };
 

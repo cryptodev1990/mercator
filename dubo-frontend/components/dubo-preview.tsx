@@ -33,7 +33,8 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const {
     dfs,
     error: prepareError,
-    reset,
+    setDfs,
+    setError: setPrepareError,
   } = usePrepareData({
     urlsOrFile:
       customData || (selectedData ? DATA_OPTIONS[selectedData].data : []),
@@ -105,7 +106,8 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
                   setSelectedData("Fortune 500");
                   setCustomData(null);
                   setDataError(null);
-                  reset();
+                  setDfs(undefined);
+                  setPrepareError(null);
                 }}
               />
             </h1>
