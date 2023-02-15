@@ -30,6 +30,7 @@ const GeoMap = () => {
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
   const router = useRouter();
+  const [showErrorBox, setShowErrorBox] = useState(false);
 
   useEffect(() => {
     if (showInPlace === "data_catalog") {
@@ -68,7 +69,10 @@ const GeoMap = () => {
   });
 
   useEffect(() => {
-    if (error) console.error("error", error);
+    if (error) {
+      setShowErrorBox(true);
+      console.error("error", error);
+    }
   }, [error]);
 
   useEffect(() => {
@@ -92,8 +96,9 @@ const GeoMap = () => {
           )}
         >
           <TitleBlock zoomThreshold={zoomThreshold} />
-          <div className="pointer-events-auto">
+          <div className="pointer-events-auto mb-3">
             <SearchBar
+              setShowErrorBox={setShowErrorBox}
               value={localQuery}
               onChange={(text) => setLocalQuery(text)}
               onEnter={(newSearchQuery) => {
@@ -122,7 +127,22 @@ const GeoMap = () => {
               )}
             </div>
           </div>
+          {error && (
+            <div className="flex justify-center pointer-events-auto">
+              <ErrorBox
+                showErrorBox={showErrorBox}
+                setShowErrorBox={setShowErrorBox}
+                error={error}
+                onDismiss={() => {
+                  setLocalQuery("");
+                  setQuery("");
+                  setSelectedColumn("");
+                }}
+              />
+            </div>
+          )}
         </div>
+
         <LoadingSpinner isLoading={isLoading} />
         {/* legend */}
         <div className="absolute bottom-0 left-0 z-50 m-2">
@@ -145,18 +165,7 @@ const GeoMap = () => {
             </Legend>
           )}
         </div>
-        {error && (
-          <div className="relative top-[50%] flex flex-col mx-auto z-50 bg-orange-500">
-            <ErrorBox
-              error={error}
-              onDismiss={() => {
-                setLocalQuery("");
-                setQuery("");
-                setSelectedColumn("");
-              }}
-            />
-          </div>
-        )}
+
         {/* tooltip */}
         {zctaLookup && (
           <Tooltip

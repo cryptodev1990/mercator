@@ -35,6 +35,7 @@ module.exports = {
         slideIn500: "slideIn 500ms ease-in",
         moveThroughRainbow2s: "moveThroughRainbow 2s ease-in-out infinite",
         pushUpOnce: "pushUpOnce 3000ms ease-in-out 1",
+        wiggle: 'wiggle 3s ease-in-out'
       },
       // that is actual animation
       keyframes: (theme) => ({
@@ -80,6 +81,15 @@ module.exports = {
           "0%": {
             transform: "translateY(-100%)",
           },
+        },
+        wiggle: {
+          '0%, 7%': { transform: 'rotate(0)' },
+          '15%': { transform: 'rotate(-15deg)' },
+          '20%': { transform: 'rotate(10deg)' },
+          '25%': { transform: 'rotate(-10deg)' },
+          '30%': { transform: 'rotate(6deg)' },
+          '35%': { transform: 'rotate(-4deg)' },
+          '40%, 100%': { transform: 'rotate(0)' },
         },
       }),
       colors: {

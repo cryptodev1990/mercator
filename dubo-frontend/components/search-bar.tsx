@@ -8,11 +8,13 @@ import { FaSearch } from "react-icons/fa";
 import { MapToggle } from "./geomap/map-toggle";
 
 export const SearchBar = ({
+  setShowErrorBox,
   value = "",
   onChange,
   onEnter,
   autocompleteSuggestions = [],
 }: {
+  setShowErrorBox: any,
   value: string;
   onChange: (text: string) => void;
   onEnter: (optionalSubmission?: string) => void;
@@ -95,6 +97,7 @@ export const SearchBar = ({
         )}
         onClick={(e) => {
           onEnter();
+          setShowErrorBox(false);
         }}
       >
         <div className="hover:animate-spin pointer-events-none group-hover:translate-y-[-3px]">
