@@ -5,7 +5,7 @@ from requests import head
 import sqlglot
 import yaml
 
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from google.cloud import bigquery
 from api.core.logging import get_logger
@@ -68,21 +68,25 @@ class Connection:
         memoized_connections[conn_id] = conn
         return conn
 
-    def make_prompt(self, query: str, ddl_line_filter: Optional[str] = None, finetune: bool = False) -> str:
+    def make_prompt(self, query: str, ddl_line_filter: Optional[List[str]] = None, finetune: bool = False) -> str:
         """Make the prompt for the API"""
         if not self.ddl:
             raise Exception("Prompt requires DDL")
-        ddl = self.ddl
+        ddls = [self.ddl]
         if ddl_line_filter is not None:
-            # Filter out lines that don't match the filter by a regex match to ddl_line_filter
+            # Filter out lines that don't match the filter by a match to ddl_line_filter
             # Kind of a hack
-            ddl = '\n'.join([x for x in ddl.splitlines()
-                            if ' ' + ddl_line_filter + ' ' in x])
+            ddls = []
+            for filtered in ddl_line_filter:
+                for potential_ddl in self.ddl.splitlines():
+                    if filtered in potential_ddl:
+                        ddls.append(potential_ddl)
+        ddls = '\n'.join(ddls)
         if finetune:
-            prompt = assemble_finetuned_prompt(query, ddl)
+            prompt = assemble_finetuned_prompt(query, ddls)
             return prompt
         prompt = assemble_prompt(
-            query, ddl, prompt_addendum=self.prompt_addendum)
+            query, ddls, prompt_addendum=self.prompt_addendum)
         return prompt
 
 

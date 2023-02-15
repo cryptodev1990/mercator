@@ -157,7 +157,8 @@ TABLES = [
     "acs_medicare",
     "acs_gross_rent_household_income_ratio",
     "acs_household_size_by_vehicles_available",
-    "acs_aggregates",
+    "acs_internet_access",
+    "acs_educational_attainment"
 ]
 
 
@@ -169,7 +170,17 @@ async def _get_census_sql_from_query(query: str, conn: asyncpg.Connection, ip: s
 
         {NEWLINE.join(TABLES)}
 
-        Which table would best answering the question ```{query}```? Respond with only the table name.
+        Question: `Where do people have more dial-up internet than other kinds?`
+        Answer: `acs_internet_access`
+
+        Question: `Where has the most rich people and people on Medicare?`
+        Answer: `acs_ratio_of_income_to_poverty_level|acs_medicare`
+
+        Question: `Where are the old houses that are heated with coal?`
+        Answer: `acs_housing_year_built|acs_housing`
+
+        Question: `{query}`
+        Answer:
     """
     response = openai.Completion.create(
         engine="text-davinci-003",
@@ -180,9 +191,13 @@ async def _get_census_sql_from_query(query: str, conn: asyncpg.Connection, ip: s
         frequency_penalty=0,
         presence_penalty=0,
     )
-    table = response.choices[0].text.strip()  # type: ignore
+    tables = response.choices[0].text.strip().strip('`').split('|')  # type: ignore
+    print('======')
+    print('Tables selected:', tables)
+    print('======')
     try:
-        assert table in TABLES, f'Invalid table: {table}'
+        for tbl in tables:
+            assert tbl in TABLES, f'Invalid table: {table}'
     except AssertionError as e:
         print({
             "event": "error",
@@ -194,7 +209,7 @@ async def _get_census_sql_from_query(query: str, conn: asyncpg.Connection, ip: s
             status_code=404, detail="Query does not relate to a known data source")
 
     prompt_2 = zcta_prompt_factory.make_prompt(
-        query, ddl_line_filter=table, finetune=False)
+        query, ddl_line_filter=tables, finetune=False)
     start = time.time()
     sql = get_sql_from_gpt_prompt(prompt_2)
     if sql is None:
