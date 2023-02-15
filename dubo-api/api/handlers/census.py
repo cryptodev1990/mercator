@@ -198,12 +198,12 @@ async def _get_census_sql_from_query(query: str, conn: asyncpg.Connection, ip: s
     print('======')
     try:
         for tbl in tables:
-            assert tbl in TABLES, f'Invalid table: {table}'
+            assert tbl in TABLES, f'Invalid table: {tbl}'
     except AssertionError as e:
         print({
             "event": "error",
             "error": "invalid table",
-            "table": table,
+            "table": tables,
             "ip": ip,
         })
         raise HTTPException(
