@@ -72,7 +72,7 @@ async def db_health(conn=Depends(connect_to_db)):
 # make the route send octet-stream
 @router.get('/census', response_class=StreamingResponse)
 async def census(
-    user_query: str,
+    query: str,
     request: Request,
     conn=Depends(connect_to_db),
 ):
@@ -81,17 +81,17 @@ async def census(
         raise NotImplementedError('Database connection not implemented')
 
     # Check the cache
-    cached_sql = await check_cache(user_query, conn)
+    cached_sql = await check_cache(query, conn)
     if cached_sql is not None:
         sql = cached_sql
         print({
             "event": "cache_hit",
             "ip": ip,
             "sql": sql,
-            "query": user_query,
+            "query": query,
         })
     else:
-        sql = await _get_census_sql_from_query(user_query, conn, ip)
+        sql = await _get_census_sql_from_query(query, conn, ip)
     start = time.time()
     records = await conn.fetch(sql)
     print({
