@@ -154,7 +154,6 @@ export const SearchBar = ({
             )}
             onClick={(e) => {
               onChange(suggestion);
-              // @ts-ignore
               onEnter(suggestion);
               setIsFocused(false);
             }}

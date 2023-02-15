@@ -14,7 +14,7 @@ export const DataTable = ({
   rows: object[];
   columns: object[];
 }) => {
-  const gridRef = useRef(null);
+  const gridRef = useRef<AgGridReact | null>(null);
   const [rowData, setRowData] = useState<object[] | null>(null);
   const [columnDefs, setColumnDefs] = useState<object[] | null>(null);
 
@@ -31,7 +31,6 @@ export const DataTable = ({
   const handleCSVExport = useCallback(() => {
     const date = new Date();
 
-    // @ts-ignore
     gridRef?.current?.api.exportDataAsCsv({
       fileName: `${format(date, "yyyy-MM-dd")}_${format(
         date,

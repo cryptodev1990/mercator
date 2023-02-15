@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 // @ts-ignore
-import { scaleQuantile, scaleQuantize, scaleLinear } from "d3-scale";
+import { scaleQuantile, scaleQuantize } from "d3-scale";
 
 const COLOR_BREWER_ORANGE_RED = [
   [255, 255, 178],
