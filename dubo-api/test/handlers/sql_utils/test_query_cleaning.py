@@ -1,3 +1,4 @@
+import pytest
 from fastapi import Query
 from api.handlers.sql_utils.query_cleaning import QueryCleaner
 
@@ -88,3 +89,38 @@ def test_remove_100():
     sql = "SELECT (close_price / open_price) * 100 AS percent FROM tbl LIMIT 100"
     new_sql = QueryCleaner(sql).replace_100_with_1().text()
     assert new_sql == "SELECT (close_price / open_price) * 1.0 AS percent FROM tbl LIMIT 100"
+
+
+def test_remove_groupby_with_no_aggregates():
+    TEST_TABLE = [
+        # ["SELECT * FROM tbl GROUP BY col1, col2", "SELECT * FROM tbl"],
+        ["SELECT col3, SUM(col1), AVG(col2) FROM tbl GROUP BY col3",
+         "SELECT col3, SUM(col1), AVG(col2) FROM tbl GROUP BY col3"],
+        ["SELECT col3, SUM(col1), AVG(col2) FROM tbl GROUP BY col3, col4",
+         "SELECT col3, SUM(col1), AVG(col2) FROM tbl GROUP BY col3, col4"],
+        ["SELECT col3 FROM tbl GROUP BY col3, col4 HAVING SUM(col1) > 0",
+         "SELECT col3 FROM tbl GROUP BY col3, col4 HAVING SUM(col1) > 0"],
+        ["SELECT col3, SUM(col1), AVG(col2) FROM tbl GROUP BY col3, col4 HAVING SUM(col1) > 0 AND AVG(col2) > 0",
+         "SELECT col3, SUM(col1), AVG(col2) FROM tbl GROUP BY col3, col4 HAVING SUM(col1) > 0 AND AVG(col2) > 0"],
+        ["WITH tbl1 AS (SELECT a, b FROM tbl GROUP BY a) SELECT col3, SUM(col1), AVG(col2) FROM tbl CROSS JOIN tbl1 GROUP BY col3, col4 HAVING SUM(col1) > 0 AND AVG(col2) > 0",
+         "WITH tbl1 AS (SELECT a, b FROM tbl) SELECT col3, SUM(col1), AVG(col2) FROM tbl CROSS JOIN tbl1 GROUP BY col3, col4 HAVING SUM(col1) > 0 AND AVG(col2) > 0"],
+    ]
+    for sql, expected_sql in TEST_TABLE:
+        qc = QueryCleaner(sql)
+        new_sql = qc.remove_groupby_if_no_aggregates().text()
+        assert new_sql == expected_sql
+
+
+@pytest.mark.skip(reason="Not implemented yet")
+def test_force_table_alias_on_inner_join():
+    TEST_TABLE = [
+        ["SELECT * FROM tbl1 INNER JOIN tbl2 ON tbl1.col1 = tbl2.col1",
+         "SELECT * FROM tbl1 INNER JOIN tbl2 ON tbl1.col1 = tbl2.col1"],
+        ["SELECT col1, col2 FROM tbl1 INNER JOIN tbl2 ON tbl1.col1 = tbl2.col1 AND tbl1.col2 = tbl2.col2",
+         "SELECT tbl1.col1, tbl1.col2 FROM tbl1 INNER JOIN tbl2 ON tbl1.col1 = tbl2.col1 AND tbl1.col2 = tbl2.col2"],
+    ]
+
+    for sql, expected_sql in TEST_TABLE:
+        qc = QueryCleaner(sql)
+        # new_sql = qc.force_table_alias_on_inner_join().text()
+        # assert new_sql == expected_sql

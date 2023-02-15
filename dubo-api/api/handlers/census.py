@@ -133,7 +133,7 @@ def cleaning_pipeline(input_sql: str) -> str:
         sql = sqlglot.transpile(
             input_sql, read='sqlite', write='postgres', pretty=False)[0]
         sql = QueryCleaner(sql).guard_against_divide_by_zero(
-        ).replace_100_with_1().text()
+        ).replace_100_with_1().remove_groupby_if_no_aggregates().text()
         return sql
     except Exception as e:
         print("cleaning pipeline failed, defaulting to original sql")
@@ -191,7 +191,8 @@ async def _get_census_sql_from_query(query: str, conn: asyncpg.Connection, ip: s
         frequency_penalty=0,
         presence_penalty=0,
     )
-    tables = response.choices[0].text.strip().strip('`').split('|')  # type: ignore
+    tables = response.choices[0].text.strip().strip(
+        '`').split('|')  # type: ignore
     print('======')
     print('Tables selected:', tables)
     print('======')

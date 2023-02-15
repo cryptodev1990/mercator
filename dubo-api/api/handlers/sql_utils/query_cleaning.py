@@ -106,6 +106,33 @@ class QueryCleaner:
         self._new_parsed = self._new_parsed.transform(replace_)
         return self
 
+    def has_aggregates(self) -> bool:
+        """Check if the query has aggregates"""
+        return len([x for x in self._new_parsed.find_all(exp.AggFunc)]) > 0
+
+    def has_groupbys(self) -> bool:
+        """Check if the query has a group by clause"""
+        return len([x for x in self._new_parsed.find_all(exp.Group)]) > 0
+
+    def remove_groupby_if_no_aggregates(self) -> 'QueryCleaner':
+        """Remove the group by clause if there are no aggregates"""
+        def replace_(node):
+            if not isinstance(node, exp.Group):
+                return node
+            group_node = node
+            # If the SELECT clause of the GROUP BY...
+            # ...does not have any aggregates, remove the GROUP BY
+            parent_select = group_node.find_ancestor(exp.Select)
+            if parent_select is not None and parent_select.find(exp.AggFunc) is None:
+                # Set the literal value to the replacement value
+                return None
+            # Otherwise return the node
+            return group_node
+
+        self._new_parsed = self._new_parsed.transform(replace_)
+
+        return self
+
     def replace_100_with_1(self) -> 'QueryCleaner':
         """Replace 100 with 1 in the select clause of a query"""
         return self.replace_literal_in_select_clause(ONE_HUNDRED_RE, '1.0')
