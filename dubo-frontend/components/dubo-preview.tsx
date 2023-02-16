@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/router";
+
 import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";
 import { getUploadData } from "../lib/utils";
 import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
-import DataTable from "./data-table";
-import { CloseButton } from "./close-button";
 import useSQLDb from "../lib/hooks/use-sql-db";
 import useLoadData from "../lib/hooks/use-load-data";
 import usePrepareData from "../lib/hooks/use-prepare-data";
+
+import { CloseButton } from "./close-button";
+import DataTable from "./data-table";
 import SuggestedQueries from "./suggested-queries";
 import SQLEditor from "./sql-editor";
 

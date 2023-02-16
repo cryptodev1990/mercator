@@ -1,7 +1,7 @@
-import { sniff } from "../utils";
-
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { Database, QueryExecResult } from "sql.js";
+
+import { sniff } from "../utils";
 
 const useLoadData = ({
   dfs,

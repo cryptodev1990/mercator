@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
 import Fuse from "fuse.js";
-import TitleBlock from "../geomap/title-block";
 import { useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
-import CategoryGrid from "./category-grid";
 import { AgGridReact } from "ag-grid-react";
+
+import TitleBlock from "../geomap/title-block";
+
+import CategoryGrid from "./category-grid";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "https://dubo-api.mercator.tech";

@@ -1,4 +1,5 @@
-import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import type { MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import { MapboxOverlay } from "@deck.gl/mapbox/typed";
 import { Map } from "mapbox-gl";
 import { useEffect, useRef } from "react";
 

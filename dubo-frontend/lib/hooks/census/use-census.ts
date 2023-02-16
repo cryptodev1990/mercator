@@ -2,6 +2,7 @@ import useSWR from "swr";
 import qs from "qs";
 import { readParquet } from "parquet-wasm";
 import { tableFromIPC } from "@apache-arrow/es5-cjs/ipc/serialization";
+
 import { base64ToString } from "../../utils";
 
 const BASE_URL =

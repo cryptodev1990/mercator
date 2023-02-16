@@ -1,23 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import clsx from "clsx";
+import { useRouter } from "next/router";
+
 import useCensus from "../../lib/hooks/census/use-census";
-import Legend, { ColumnSelector } from "./legend";
 import useCensusAutocomplete from "../../lib/hooks/census/use-census-autocomplete";
 import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
+import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
+import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
+import { nab } from "../../lib/utils";
+
+import Legend, { ColumnSelector } from "./legend";
 import { DeckMap } from "./deck-map";
 import { Tooltip } from "./tooltip";
 import { LoadingSpinner } from "./loading-spinner";
 import { ErrorBox } from "./error-box";
-
 import styles from "./geomap.module.css";
-import clsx from "clsx";
-import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
-import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
 import TitleBlock from "./title-block";
-import { nab } from "../../lib/utils";
 import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
 import SQLBar from "./sql-bar";
-import { useRouter } from "next/router";
+
 
 const GeoMap = () => {
   const { theme } = useTheme();

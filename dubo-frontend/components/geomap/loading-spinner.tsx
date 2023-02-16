@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
+
 import { TrackedText } from "../tracked-text";
 
 export const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {

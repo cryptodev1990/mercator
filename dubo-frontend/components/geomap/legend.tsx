@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { PALETTES } from "../../lib/hooks/scales/use-palette";
-import { useTheme } from "../../lib/hooks/census/use-theme";
 import clsx from "clsx";
 import { BiPencil } from "react-icons/bi";
 import { AiOutlineCloseCircle, AiFillCheckCircle } from "react-icons/ai";
-import { BsFillPaletteFill } from "react-icons/bs";
 
-export const pctFmtSansPct = (num: number, numDecimals = 0) => {
-  return `${(Number(num) * 100).toFixed(numDecimals)}`;
+import { useTheme } from "../../lib/hooks/census/use-theme";
+import { PALETTES } from "../../lib/hooks/scales/use-palette";
+
+export const pctFmtSansPct = (num: number) => {
+  return `${num * 100}`;
 };
 
 export function abbrevTick(num: number) {

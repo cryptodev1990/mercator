@@ -1,5 +1,6 @@
 // TODO - this is a placeholder for the queryable page
 import useSWR from "swr";
+
 import DuboPreview from "../../components/dubo-preview";
 
 // @ts-ignore

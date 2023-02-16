@@ -1,10 +1,11 @@
 import clsx from "clsx";
 import { useMemo, useRef, useState } from "react";
-import { useTheme } from "../lib/hooks/census/use-theme";
-import { useFirstTimeSearch } from "../lib/hooks/census/use-first-time-search";
-import { EXAMPLES } from "../lib/hooks/census/use-first-time-search";
 import { BsDice3 } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
+
+import { useTheme } from "../lib/hooks/census/use-theme";
+import { useFirstTimeSearch , EXAMPLES } from "../lib/hooks/census/use-first-time-search";
+
 import { MapToggle } from "./geomap/map-toggle";
 
 export const SearchBar = ({

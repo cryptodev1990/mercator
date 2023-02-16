@@ -1,4 +1,5 @@
 import useSWR from "swr";
+
 import { getURLWithQueryParams, jsonFetcher } from "../hook-utils";
 
 const URL_PATH = "/demos/census/autocomplete";

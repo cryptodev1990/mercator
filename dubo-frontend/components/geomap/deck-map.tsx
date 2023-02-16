@@ -2,11 +2,12 @@
 import { MVTLayer } from "@deck.gl/geo-layers";
 // @ts-ignore
 import { PolygonLayer, GeoJsonLayer } from "@deck.gl/layers";
-
 import { useEffect, useRef, useState } from "react";
-import { useZctaShapes } from "../../lib/hooks/census/use-zcta-shapes";
 import Map, { NavigationControl } from "react-map-gl";
 import { MapView } from "@deck.gl/core/typed";
+
+import { useZctaShapes } from "../../lib/hooks/census/use-zcta-shapes";
+
 import { DeckGLOverlay } from "./deckgl-overlay";
 
 import "mapbox-gl/dist/mapbox-gl.css";

@@ -1,6 +1,7 @@
 import { CloseButton } from "../close-button";
-import { ShowInPlaceOptionsType } from "./sql-button-bank";
 import SQL from "../sql";
+
+import { ShowInPlaceOptionsType } from "./sql-button-bank";
 
 const SQLBar = ({
   generatedSql,

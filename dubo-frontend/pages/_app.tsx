@@ -1,7 +1,8 @@
 /* global window */
 import Head from "next/head";
-import { useEffect } from "react";
 import type { AppProps } from "next/app";
+import { Roboto } from "@next/font/google";
+
 import Navbar from "../components/navbar";
 import useDatadogRum from "../lib/hooks/use-datadog-rum";
 import useTailwindElements from "../lib/hooks/use-tailwind-elements";
@@ -9,8 +10,6 @@ import useTailwindElements from "../lib/hooks/use-tailwind-elements";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "../styles/globals.css";
-
-import { Roboto } from "@next/font/google";
 
 const roboto = Roboto({
   weight: "400",

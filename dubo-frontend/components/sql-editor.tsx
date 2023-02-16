@@ -2,7 +2,6 @@ import CodeMirror from "@uiw/react-codemirror";
 import { sql } from "@codemirror/lang-sql";
 import * as events from "@uiw/codemirror-extensions-events";
 import { format } from "sql-formatter";
-
 import { githubLight } from "@uiw/codemirror-theme-github";
 import { useState, Dispatch, SetStateAction } from "react";
 

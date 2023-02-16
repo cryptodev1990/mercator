@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import simplur from "simplur";
 import { AgGridReact } from "ag-grid-react";
 import { QueryExecResult } from "sql.js";
-import Visualizer from "./visualizer";
 import { format } from "date-fns";
 import fileDownload from "js-file-download";
+
+import Visualizer from "./visualizer";
 import DownloadDropdown from "./download-dropdown";
 
 export const DataTable = ({

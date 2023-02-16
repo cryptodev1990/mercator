@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import DiscordBar from "./discord-bar";
 
 const Navbar = () => (

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useTheme } from "../../lib/hooks/census/use-theme";
 import clsx from "clsx";
 import { BiCaretDown } from "react-icons/bi";
+
+import { useTheme } from "../../lib/hooks/census/use-theme";
 
 const HideCaret = ({
   setIsFolded,

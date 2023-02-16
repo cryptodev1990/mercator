@@ -1,4 +1,5 @@
 import clsx from "clsx";
+
 import { useTheme } from "../../lib/hooks/census/use-theme";
 
 export const MapToggle = () => {

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { CloseButton } from "../close-button";
 
 const MSG_404 = "Query does not relate to a known data source";
