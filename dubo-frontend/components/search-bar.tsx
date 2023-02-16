@@ -4,7 +4,10 @@ import { BsDice3 } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 
 import { useTheme } from "../lib/hooks/census/use-theme";
-import { useFirstTimeSearch , EXAMPLES } from "../lib/hooks/census/use-first-time-search";
+import {
+  useFirstTimeSearch,
+  EXAMPLES,
+} from "../lib/hooks/census/use-first-time-search";
 
 import { MapToggle } from "./geomap/map-toggle";
 
@@ -15,7 +18,7 @@ export const SearchBar = ({
   onEnter,
   autocompleteSuggestions = [],
 }: {
-  setShowErrorBox: any,
+  setShowErrorBox: any;
   value: string;
   onChange: (text: string) => void;
   onEnter: (optionalSubmission?: string) => void;
@@ -112,7 +115,7 @@ export const SearchBar = ({
       <button
         className={clsx(
           "hover:animate-moveThroughRainbow2s",
-          "shadow-md h-12 w-12 hover:shadow-lg",
+          "shadow-md w-24 h-12 sm:w-12 hover:shadow-lg",
           "flex flex-row justify-center items-center space-x-2 p-2",
           "cursor-pointer",
           theme.secondaryBgColor,
@@ -146,34 +149,37 @@ export const SearchBar = ({
           top: (searchBarRef.current?.offsetTop ?? 0) + 40,
         }}
       >
-        {autocompleteSuggestions?.length > 0 && autocompleteSuggestions.map((suggestion, i) => (
-          <button
-            key={i}
-            className={clsx(
-              "transition w-full text-left p-2 hover:-translate-y-1",
-              theme.bgColor,
-              theme.fontColor,
-              i === selectedSuggestion && theme.secondaryBgColor,
-              i === selectedSuggestion && theme.secondaryFontColor
-            )}
-            onClick={(e) => {
-              onChange(suggestion);
-              onEnter(suggestion);
-              setIsFocused(false);
-            }}
-          >
-            {value.length > 5 &&
-              suggestion.split(value).map((part, i) => (
-                <span key={i}>
-                  {i === 0 && <span className="pointer-events-auto">...</span>}
-                  <span className="pointer-events-auto">{part}</span>
-                </span>
-              ))}
-            {value.length <= 5 && (
-              <span className="pointer-events-auto">{suggestion}</span>
-            )}
-          </button>
-        ))}
+        {autocompleteSuggestions?.length > 0 &&
+          autocompleteSuggestions.map((suggestion, i) => (
+            <button
+              key={i}
+              className={clsx(
+                "transition w-full text-left p-2 hover:-translate-y-1",
+                theme.bgColor,
+                theme.fontColor,
+                i === selectedSuggestion && theme.secondaryBgColor,
+                i === selectedSuggestion && theme.secondaryFontColor
+              )}
+              onClick={(e) => {
+                onChange(suggestion);
+                onEnter(suggestion);
+                setIsFocused(false);
+              }}
+            >
+              {value.length > 5 &&
+                suggestion.split(value).map((part, i) => (
+                  <span key={i}>
+                    {i === 0 && (
+                      <span className="pointer-events-auto">...</span>
+                    )}
+                    <span className="pointer-events-auto">{part}</span>
+                  </span>
+                ))}
+              {value.length <= 5 && (
+                <span className="pointer-events-auto">{suggestion}</span>
+              )}
+            </button>
+          ))}
       </div>
     </div>
   );

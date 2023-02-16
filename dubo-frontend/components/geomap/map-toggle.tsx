@@ -9,7 +9,11 @@ export const MapToggle = () => {
     <button
       onClick={() => toggleTheme()}
       className={clsx(
-        "relative shadow-md h-12 w-12 space-x-2 hover:shadow-lg flex flex-col justify-start items-center cursor-pointer overflow-hidden group"
+        "relative shadow-md h-12 w-12",
+        "space-x-2 hover:shadow-lg",
+        "flex flex-col justify-start items-center",
+        "cursor-pointer overflow-hidden group",
+        "sm:block hidden"
       )}
     >
       <div className="">
