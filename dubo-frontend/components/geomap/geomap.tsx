@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
-import { useRouter } from "next/router";
 
 import useCensus from "../../lib/hooks/census/use-census";
 import useCensusAutocomplete from "../../lib/hooks/census/use-census-autocomplete";
@@ -20,7 +19,6 @@ import TitleBlock from "./title-block";
 import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
 import SQLBar from "./sql-bar";
 
-
 const GeoMap = () => {
   const { theme } = useTheme();
   const [query, setQuery] = useState(nab(EXAMPLES));
@@ -31,13 +29,12 @@ const GeoMap = () => {
   const [label, setLabel] = useState<string | null>(null);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
-  const router = useRouter();
   const [showErrorBox, setShowErrorBox] = useState(false);
 
   useEffect(() => {
     if (showInPlace === "data_catalog") {
       // navigate to data catalog using router
-      router.push("/demos/census/data-catalog");
+      window.open("/demos/census/data-catalog", "_blank");
     }
   }, [showInPlace]);
 
@@ -54,7 +51,9 @@ const GeoMap = () => {
 
   const dataVector = useMemo(() => {
     if (!zctaLookup) return [];
-    const vals = Object.values(zctaLookup).map((d: any) => Number(d[selectedColumn]));
+    const vals = Object.values(zctaLookup).map((d: any) =>
+      Number(d[selectedColumn])
+    );
     return vals;
   }, [zctaLookup, selectedColumn]);
 
