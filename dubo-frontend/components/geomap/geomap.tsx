@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
+import { FaCheck, FaShareAltSquare } from "react-icons/fa";
 
 import useCensus from "../../lib/hooks/census/use-census";
 import useCensusAutocomplete from "../../lib/hooks/census/use-census-autocomplete";
@@ -25,7 +26,7 @@ const GeoMap = () => {
   const [query, setQuery] = useState(
     !window.location.hash ? nab(EXAMPLES) : ""
   );
-  const { urlState } = useUrlState();
+  const { urlState, updateUrlState, copyShareUrl, copySuccess } = useUrlState();
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
@@ -36,6 +37,11 @@ const GeoMap = () => {
   const [showErrorBox, setShowErrorBox] = useState(false);
 
   useEffect(() => {
+    if (query) updateUrlState({ userQuery: query });
+  }, [query]);
+
+  useEffect(() => {
+    // Load from URL hash
     if (urlState && urlState.userQuery) {
       setQuery(urlState.userQuery);
       setLocalQuery(urlState.userQuery);
@@ -43,6 +49,7 @@ const GeoMap = () => {
   }, [urlState]);
 
   useEffect(() => {
+    // Open census data catalog in new tab
     if (showInPlace === "data_catalog") {
       // navigate to data catalog using router
       window.open("/demos/census/data-catalog", "_blank");
@@ -137,6 +144,23 @@ const GeoMap = () => {
                   theme={theme.theme}
                 />
               )}
+              {/*Share button*/}
+              <button
+                className="my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 rounded-md group"
+                onClick={() => {
+                  copyShareUrl();
+                }}
+              >
+                <div className="absolute z-50 flex items-center justify-center w-10 h-10 text-white bg-gray-500 rounded-md">
+                  {copySuccess ? (
+                    <span className="text-xs transition transform duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-hover:scale-100">
+                      Copied!
+                    </span>
+                  ) : (
+                    <FaShareAltSquare />
+                  )}
+                </div>
+              </button>
             </div>
           </div>
           {error && (

@@ -9,6 +9,13 @@ type UrlState = {
   zoom: number | null;
 };
 
+type UrlStateUpdate = {
+  userQuery?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  zoom?: number | null;
+};
+
 function urlToUrlState(url: string) {
   const postHash = url.split("#")[1];
   if (!postHash) {
@@ -40,7 +47,7 @@ export function urlStateToUrl(urlState: UrlState) {
   const viewportState = `${lng},${lat},${zoom}`;
   const realString = `${userQuery}||${viewportState}`;
   const encodedString = stringToBase64(realString);
-  return `#${encodedString}`;
+  return encodedString;
 }
 
 let _urlState = {
@@ -53,6 +60,31 @@ let _urlState = {
 // read the url state
 export function useUrlState() {
   const [error, setError] = useState<Error | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const updateUrlState = (stateToMerge: UrlStateUpdate) => {
+    console.log("updating url state", stateToMerge);
+    _urlState = {
+      ..._urlState,
+      ...stateToMerge,
+    };
+    console.log("new url state", _urlState);
+  };
+
+  useEffect(() => {
+    // after 2 seconds, reset the copy success state
+    if (!copySuccess) return;
+    const timeout = setTimeout(() => {
+      setCopySuccess(false);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, [copySuccess]);
+
+  function copyShareUrl() {
+    const newUrlHash = urlStateToUrl(_urlState);
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(`${currentUrl}#${newUrlHash}`);
+    setCopySuccess(true);
+  }
 
   useEffect(() => {
     const url = window.location.href;
@@ -67,6 +99,9 @@ export function useUrlState() {
 
   return {
     urlState: _urlState,
+    updateUrlState,
+    copyShareUrl,
+    copySuccess,
     error,
   };
 }

@@ -61,7 +61,7 @@ export const DeckMap = ({
   const mapRef = useRef<any>(null);
   const { zctaShapes } = useZctaShapes();
 
-  const { urlState, error: urlStateReadError } = useUrlState();
+  const { urlState, error: urlStateReadError, updateUrlState } = useUrlState();
 
   const [localViewPort, setLocalViewPort] = useState({
     longitude: -98.5795,
@@ -103,7 +103,17 @@ export const DeckMap = ({
 
   return (
     <Map
-      onMove={(evt) => setLocalViewPort(evt.viewState)}
+      onMove={(evt) => {
+        setLocalViewPort(evt.viewState);
+      }}
+      onMoveEnd={(evt) => {
+        const { longitude, latitude, zoom } = evt.viewState;
+        updateUrlState({
+          lng: longitude,
+          lat: latitude,
+          zoom,
+        });
+      }}
       {...localViewPort}
       antialias={true}
       customAttribution={
