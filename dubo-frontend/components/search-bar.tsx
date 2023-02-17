@@ -26,7 +26,7 @@ export const SearchBar = ({
   autocompleteSuggestions?: string[];
 }) => {
   const { theme } = useTheme();
-  const { urlState } = useUrlState();
+  const { currentStateFromUrl } = useUrlState();
   const [isFocused, setIsFocused] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const searchBarRef = useRef<HTMLInputElement | null>(null);
@@ -35,12 +35,13 @@ export const SearchBar = ({
     useFirstTimeSearch();
 
   useEffect(() => {
+    const urlState = currentStateFromUrl();
     if (urlState?.userQuery) {
       onChange(urlState.userQuery);
       onEnter();
       turnOffDemo();
     }
-  }, [urlState]);
+  }, []);
 
   const shouldDisplay = useMemo(() => {
     return (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { base64ToString, stringToBase64 } from "../../utils";
 
@@ -16,10 +16,9 @@ type UrlStateUpdate = {
   zoom?: number | null;
 };
 
-function urlToUrlState(url: string) {
+export function urlToUrlState(url: string) {
   const postHash = url.split("#")[1];
   if (!postHash) {
-    console.warn("No hash in url");
     return {
       userQuery: null,
       lat: null,
@@ -62,12 +61,10 @@ export function useUrlState() {
   const [error, setError] = useState<Error | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const updateUrlState = (stateToMerge: UrlStateUpdate) => {
-    console.log("updating url state", stateToMerge);
     _urlState = {
       ..._urlState,
       ...stateToMerge,
     };
-    console.log("new url state", _urlState);
   };
 
   useEffect(() => {
@@ -82,23 +79,25 @@ export function useUrlState() {
   function copyShareUrl() {
     const newUrlHash = urlStateToUrl(_urlState);
     const currentUrl = window.location.href;
-    navigator.clipboard.writeText(`${currentUrl}#${newUrlHash}`);
+    // remove the hash from the current url
+    const currentUrlWithoutHash = currentUrl.split("#")[0];
+    navigator.clipboard.writeText(`${currentUrlWithoutHash}#${newUrlHash}`);
     setCopySuccess(true);
   }
 
-  useEffect(() => {
+  const currentStateFromUrl = () => {
     const url = window.location.href;
     try {
       const urlState = urlToUrlState(url);
-      _urlState = urlState;
+      return urlState;
     } catch (err: any) {
       console.error(err);
       setError(err);
     }
-  }, []);
+  };
 
   return {
-    urlState: _urlState,
+    currentStateFromUrl,
     updateUrlState,
     copyShareUrl,
     copySuccess,

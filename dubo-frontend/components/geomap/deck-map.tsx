@@ -61,12 +61,13 @@ export const DeckMap = ({
   const mapRef = useRef<any>(null);
   const { zctaShapes } = useZctaShapes();
 
-  const { urlState, error: urlStateReadError, updateUrlState } = useUrlState();
+  const { currentStateFromUrl, updateUrlState } = useUrlState();
+  const [initialized, setInitialized] = useState(false);
 
   const [localViewPort, setLocalViewPort] = useState({
-    longitude: -98.5795,
-    latitude: 39.8283,
-    zoom: 3,
+    longitude: currentStateFromUrl()?.lng ?? -98.5795,
+    latitude: currentStateFromUrl()?.lat ?? 39.8283,
+    zoom: currentStateFromUrl()?.zoom ?? 3,
     bearing: 0,
     pitch: 0,
   });
@@ -86,21 +87,6 @@ export const DeckMap = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (urlState && urlState.lng && urlState.lat && urlState.zoom) {
-      setLocalViewPort({
-        ...localViewPort,
-        longitude: urlState.lng,
-        latitude: urlState.lat,
-        zoom: urlState.zoom,
-      });
-    }
-  }, [urlState]);
-
-  if (window.location.hash.length > 0 && urlState.lat === null) {
-    return null;
-  }
-
   return (
     <Map
       onMove={(evt) => {
@@ -108,6 +94,7 @@ export const DeckMap = ({
       }}
       onMoveEnd={(evt) => {
         const { longitude, latitude, zoom } = evt.viewState;
+        // Keep our URL state synced
         updateUrlState({
           lng: longitude,
           lat: latitude,
@@ -145,6 +132,13 @@ export const DeckMap = ({
             id: "mapbox-view",
           }),
         ]}
+        onWebGLInitialized={() => {
+          // @ts-ignore
+          mapRef.current.getMap().on("load", () => {
+            // @ts-ignore
+            mapRef.current.getMap().resize();
+          });
+        }}
         interleaved={true}
         onHover={({ object }: any) => {
           if (!object && !selectedZcta) {
@@ -180,6 +174,7 @@ export const DeckMap = ({
             id: "usa",
             data: "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json",
             getOffset: [0, 0],
+            visible: zctaLookup ? 1 : 0,
             getFillColor: colors[0],
             stroked: false,
             beforeId: "waterway-label", // Insert before this Mapbox layer

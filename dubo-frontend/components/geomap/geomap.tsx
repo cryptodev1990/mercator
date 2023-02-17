@@ -26,7 +26,8 @@ const GeoMap = () => {
   const [query, setQuery] = useState(
     !window.location.hash ? nab(EXAMPLES) : ""
   );
-  const { urlState, updateUrlState, copyShareUrl, copySuccess } = useUrlState();
+  const { currentStateFromUrl, updateUrlState, copyShareUrl, copySuccess } =
+    useUrlState();
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
@@ -42,11 +43,12 @@ const GeoMap = () => {
 
   useEffect(() => {
     // Load from URL hash
-    if (urlState && urlState.userQuery) {
+    const urlState = currentStateFromUrl();
+    if (urlState?.userQuery) {
       setQuery(urlState.userQuery);
       setLocalQuery(urlState.userQuery);
     }
-  }, [urlState]);
+  }, []);
 
   useEffect(() => {
     // Open census data catalog in new tab

@@ -75,17 +75,17 @@ const THEMES = [
 ];
 
 const ThemeContext = createContext({
-  theme: EARTH,
-  nextTheme: MOON,
+  theme: LIGHT,
+  nextTheme: EARTH,
   toggleTheme: () => {},
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(EARTH);
+  const [theme, setTheme] = useState<Theme>(LIGHT);
   const [themeIdx, setThemeIdx] = useState(0);
 
   // let us preview the next theme
-  const [nextTheme, setNextTheme] = useState<Theme>(MOON);
+  const [nextTheme, setNextTheme] = useState<Theme>(EARTH);
   const [nextThemeIdx, setNextThemeIdx] = useState(1);
 
   const toggleTheme = () => {
