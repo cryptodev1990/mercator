@@ -8,6 +8,7 @@ import { usePalette } from "../../lib/hooks/scales/use-palette";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
 import { nab } from "../../lib/utils";
+import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 
 import Legend, { ColumnSelector } from "./legend";
 import { DeckMap } from "./deck-map";
@@ -21,7 +22,10 @@ import SQLBar from "./sql-bar";
 
 const GeoMap = () => {
   const { theme } = useTheme();
-  const [query, setQuery] = useState(nab(EXAMPLES));
+  const [query, setQuery] = useState(
+    !window.location.hash ? nab(EXAMPLES) : ""
+  );
+  const { urlState } = useUrlState();
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
@@ -30,6 +34,13 @@ const GeoMap = () => {
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
   const [showErrorBox, setShowErrorBox] = useState(false);
+
+  useEffect(() => {
+    if (urlState && urlState.userQuery) {
+      setQuery(urlState.userQuery);
+      setLocalQuery(urlState.userQuery);
+    }
+  }, [urlState]);
 
   useEffect(() => {
     if (showInPlace === "data_catalog") {

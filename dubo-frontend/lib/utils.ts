@@ -98,6 +98,11 @@ export const base64ToString = (base64: string) => {
   return Buffer.from(base64, "base64").toString("ascii");
 };
 
+export const stringToBase64 = (str: string) => {
+  // convert string to base64 encoded string
+  return Buffer.from(str).toString("base64");
+};
+
 export const nab = (arr: string[]) => {
   // choose random element from array
   return arr[Math.floor(Math.random() * arr.length)];

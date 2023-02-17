@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BsDice3 } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 
@@ -8,6 +8,7 @@ import {
   useFirstTimeSearch,
   EXAMPLES,
 } from "../lib/hooks/census/use-first-time-search";
+import { useUrlState } from "../lib/hooks/url-state/use-url-state";
 
 import { MapToggle } from "./geomap/map-toggle";
 
@@ -25,12 +26,21 @@ export const SearchBar = ({
   autocompleteSuggestions?: string[];
 }) => {
   const { theme } = useTheme();
+  const { urlState } = useUrlState();
   const [isFocused, setIsFocused] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const searchBarRef = useRef<HTMLInputElement | null>(null);
 
   const { placeholderExample, turnOffDemo, isFirstTimeUse } =
     useFirstTimeSearch();
+
+  useEffect(() => {
+    if (urlState?.userQuery) {
+      onChange(urlState.userQuery);
+      onEnter();
+      turnOffDemo();
+    }
+  }, [urlState]);
 
   const shouldDisplay = useMemo(() => {
     return (

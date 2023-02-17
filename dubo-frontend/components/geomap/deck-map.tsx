@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import Map, { NavigationControl } from "react-map-gl";
 import { MapView } from "@deck.gl/core/typed";
 
+import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 import { useZctaShapes } from "../../lib/hooks/census/use-zcta-shapes";
 
 import { DeckGLOverlay } from "./deckgl-overlay";
@@ -60,6 +61,8 @@ export const DeckMap = ({
   const mapRef = useRef<any>(null);
   const { zctaShapes } = useZctaShapes();
 
+  const { urlState, error: urlStateReadError } = useUrlState();
+
   const [localViewPort, setLocalViewPort] = useState({
     longitude: -98.5795,
     latitude: 39.8283,
@@ -84,13 +87,24 @@ export const DeckMap = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (localViewPort) {
-      onZoom(localViewPort.zoom);
+    if (urlState && urlState.lng && urlState.lat && urlState.zoom) {
+      setLocalViewPort({
+        ...localViewPort,
+        longitude: urlState.lng,
+        latitude: urlState.lat,
+        zoom: urlState.zoom,
+      });
     }
-  }, [localViewPort]);
+  }, [urlState]);
+
+  if (window.location.hash.length > 0 && urlState.lat === null) {
+    return null;
+  }
 
   return (
     <Map
+      onMove={(evt) => setLocalViewPort(evt.viewState)}
+      {...localViewPort}
       antialias={true}
       customAttribution={
         "Data from <a href='https://www.census.gov/programs-surveys/geography.html'>US Census, </a>  <a href='https://mercator.tech'>processed by Mercator </a>"
@@ -104,17 +118,11 @@ export const DeckMap = ({
           position: "absolute",
         } as any
       }
-      onZoom={(e) => {
-        setLocalViewPort({
-          ...localViewPort,
-          zoom: e.target.getZoom(),
-        });
+      onZoom={(evt) => {
+        setLocalViewPort(evt.viewState);
+        onZoom(evt.viewState.zoom);
       }}
-      initialViewState={
-        {
-          ...localViewPort,
-        } as any
-      }
+      initialViewState={localViewPort}
       ref={mapRef}
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       mapStyle={baseMap}
@@ -159,6 +167,7 @@ export const DeckMap = ({
         layers={[
           new GeoJsonLayer({
             layerName: "usa",
+            id: "usa",
             data: "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json",
             getOffset: [0, 0],
             getFillColor: colors[0],
@@ -167,6 +176,7 @@ export const DeckMap = ({
           }),
           new PolygonLayer({
             layerName: "zcta-high",
+            id: "zcta-high",
             visible: localViewPort.zoom <= ZOOM_TRANSITION,
             getFillColor: (d: any) => {
               if (!zctaLookup) return colors[0];
@@ -187,6 +197,7 @@ export const DeckMap = ({
           }),
           new MVTLayer({
             layerName: "zcta-low",
+            id: "zcta-low",
             data: TILE_URL,
             visible: localViewPort.zoom > ZOOM_TRANSITION,
             maxRequests: -1,
