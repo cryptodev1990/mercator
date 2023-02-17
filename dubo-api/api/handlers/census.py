@@ -159,6 +159,7 @@ TABLES = [
     "acs_household_size_by_vehicles_available",
     "acs_internet_access",
     "acs_educational_attainment"
+    "acs_hh_income",
 ]
 
 
