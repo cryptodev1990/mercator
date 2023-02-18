@@ -1,21 +1,21 @@
+import { Dispatch, SetStateAction } from "react";
+
 import { CloseButton } from "../close-button";
 import SQL from "../sql";
 
-import { ShowInPlaceOptionsType } from "./sql-button-bank";
-
 const SQLBar = ({
   generatedSql,
-  setShowInPlace,
+  setShowSQLQuery,
   theme,
 }: {
   generatedSql: string;
-  setShowInPlace: (arg: ShowInPlaceOptionsType) => void;
+  setShowSQLQuery: Dispatch<SetStateAction<boolean>>;
   theme: string;
 }) => {
   return (
-    <div className="mt-6 relative">
+    <div className="mt-6 relative w-full animate-fadeIn100">
       <div className="absolute top-2 right-2">
-        <CloseButton onClick={() => setShowInPlace(null)} />
+        <CloseButton onClick={() => setShowSQLQuery(false)} />
       </div>
 
       <div
@@ -23,11 +23,7 @@ const SQLBar = ({
         className="font-mono cursor-auto"
         key={theme}
       >
-        <SQL
-          query={generatedSql}
-          light={theme === "light"}
-          className="!p-5 rounded max-w-3xl mx-auto"
-        />
+        <SQL query={generatedSql} light={theme === "light"} className="!p-5" />
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
+import { DataTable } from "../data-table";
+import { CloseButton } from "../close-button";
 import { getRandomElement } from "../../lib/utils";
 import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 
@@ -18,7 +20,7 @@ import { LoadingSpinner } from "./loading-spinner";
 import { ErrorBox } from "./error-box";
 import styles from "./geomap.module.css";
 import TitleBlock from "./title-block";
-import { SQLButtonBank, ShowInPlaceOptionsType } from "./sql-button-bank";
+import Buttons from "./buttons";
 import SQLBar from "./sql-bar";
 
 const GeoMap = () => {
@@ -34,7 +36,8 @@ const GeoMap = () => {
   const [zoomThreshold, setZoomThreshold] = useState(false);
   const [label, setLabel] = useState<string | null>(null);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
-  const [showInPlace, setShowInPlace] = useState<ShowInPlaceOptionsType>(null);
+  const [showSQLQuery, setShowSQLQuery] = useState(false);
+  const [showDataTable, setShowDataTable] = useState(false);
   const [showErrorBox, setShowErrorBox] = useState(false);
 
   useEffect(() => {
@@ -50,14 +53,6 @@ const GeoMap = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Open census data catalog in new tab
-    if (showInPlace === "data_catalog") {
-      // navigate to data catalog using router
-      window.open("/demos/census/data-catalog", "_blank");
-    }
-  }, [showInPlace]);
-
   const {
     data: { header, lookup: zctaLookup, generatedSql },
     isLoading,
@@ -65,9 +60,26 @@ const GeoMap = () => {
   } = useCensus({
     query,
   });
+
   const { data: autocompleteSuggestions } = useCensusAutocomplete({
     text: localQuery,
   });
+
+  const rows = useMemo(
+    () =>
+      zctaLookup && header
+        ? Object.keys(zctaLookup).map((z) => ({
+            zip_code: z,
+            [header[0]]: zctaLookup[z][header[0]],
+          }))
+        : null,
+    [zctaLookup, header]
+  );
+
+  const columns = useMemo(
+    () => (header ? [{ field: "zip_code" }, { field: header[0] }] : null),
+    [header]
+  );
 
   const dataVector = useMemo(() => {
     if (!zctaLookup) return [];
@@ -105,6 +117,7 @@ const GeoMap = () => {
     // At least one column must be selected for the map to render
     setSelectedColumn(header[0]);
   }, [header, selectedColumn]);
+  console.log(theme);
 
   return (
     <div className={clsx(styles.geomapContainer, theme.fontColor)}>
@@ -135,15 +148,28 @@ const GeoMap = () => {
               }
             />
             <div className="flex flex-row w-full">
-              <SQLButtonBank
-                setShowInPlace={setShowInPlace}
-                showInPlace={showInPlace}
-              />
-              {showInPlace === "generated_sql" && (
+              {showSQLQuery && (
                 <SQLBar
                   generatedSql={generatedSql}
-                  setShowInPlace={setShowInPlace}
+                  setShowSQLQuery={setShowSQLQuery}
                   theme={theme.theme}
+                />
+              )}
+              {showDataTable && rows && columns && (
+                <DataTable
+                  rows={rows}
+                  columns={columns}
+                  className={clsx("w-full p-4", theme.bgColor)}
+                  theme={theme}
+                  titleBarChildren={
+                    <CloseButton onClick={() => setShowDataTable(false)} />
+                  }
+                />
+              )}
+              {!showSQLQuery && !showDataTable && (
+                <Buttons
+                  setShowSQLQuery={setShowSQLQuery}
+                  setShowDataTable={setShowDataTable}
                 />
               )}
               {/*Share button*/}

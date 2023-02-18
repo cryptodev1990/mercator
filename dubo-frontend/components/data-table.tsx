@@ -1,9 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import simplur from "simplur";
 import { AgGridReact } from "ag-grid-react";
 import { QueryExecResult } from "sql.js";
 import { format } from "date-fns";
 import fileDownload from "js-file-download";
+import clsx from "clsx";
 
 import Visualizer from "./visualizer";
 import DownloadDropdown from "./download-dropdown";
@@ -11,9 +19,15 @@ import DownloadDropdown from "./download-dropdown";
 export const DataTable = ({
   rows,
   columns,
+  className,
+  theme,
+  titleBarChildren,
 }: {
   rows: object[];
   columns: object[];
+  className?: string;
+  theme?: { theme: string; bgColor: string; secondaryBgColor: string };
+  titleBarChildren?: ReactNode;
 }) => {
   const gridRef = useRef<AgGridReact | null>(null);
   const [rowData, setRowData] = useState<object[] | null>(null);
@@ -52,17 +66,24 @@ export const DataTable = ({
   };
 
   return (
-    <div className="mt-6 animate-fadeIn100">
+    <div className={clsx("mt-6 animate-fadeIn100", className)}>
       <div className="flex justify-between">
         <p className="text-lg">
           Results: {simplur`${rows.length} row[|s] returned`}
         </p>
-        <DownloadDropdown
-          handleCSVExport={handleCSVExport}
-          handleJSONExport={handleJSONExport}
-        />
+        <div className="flex">
+          <DownloadDropdown
+            handleCSVExport={handleCSVExport}
+            handleJSONExport={handleJSONExport}
+            theme={theme}
+          />
+          {titleBarChildren}
+        </div>
       </div>
-      <div className="mt-2 ag-theme-alpine" style={{ height: 300 }}>
+      <div
+        className={clsx("mt-2 ag-theme-alpine", theme?.theme)}
+        style={{ height: 300 }}
+      >
         <AgGridReact
           ref={gridRef}
           defaultColDef={defaultColDef}

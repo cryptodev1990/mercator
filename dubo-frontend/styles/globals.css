@@ -41,6 +41,30 @@
   --ag-border-radius: 0;
 }
 
+.ag-theme-alpine.earth_no_labels {
+  --ag-foreground-color: #ffffff;
+  --ag-background-color: rgb(51 65 85);
+  --ag-odd-row-background-color: rgb(30 41 59);
+}
+
+.ag-theme-alpine.earth {
+  --ag-foreground-color: #ffffff;
+  --ag-background-color: rgb(51 65 85);
+  --ag-odd-row-background-color: rgb(30 41 59);
+}
+
+.ag-theme-alpine.moon_no_labels {
+  --ag-foreground-color: #ffffff;
+  --ag-background-color: rgb(82 82 82);
+  --ag-odd-row-background-color: rgb(64 64 64);
+}
+
+.ag-theme-alpine.moon {
+  --ag-foreground-color: #ffffff;
+  --ag-background-color: rgb(82 82 82);
+  --ag-odd-row-background-color: rgb(64 64 64);
+}
+
 @layer base {
   .font-outline-2 {
     -webkit-text-stroke: 2px rgb(245 245 245 / var(--tw-text-opacity));

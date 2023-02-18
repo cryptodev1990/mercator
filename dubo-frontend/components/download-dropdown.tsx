@@ -35,9 +35,11 @@ const DropdownItem = ({
 const DownloadDropdown = ({
   handleCSVExport,
   handleJSONExport,
+  theme,
 }: {
   handleCSVExport: () => void;
   handleJSONExport: () => void;
+  theme?: { theme: string; bgColor: string; secondaryBgColor: string };
 }) => {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -64,7 +66,12 @@ const DownloadDropdown = ({
       <div>
         <div className="relative" ref={dropdownRef}>
           <button
-            className="border border-spBlue hover:bg-gray-100 focus:bg-gray-100 text-spBlue font-bold py-1.5 px-3 transition flex items-center"
+            className={clsx(
+              "border font-bold py-1.5 px-3 transition flex items-center",
+              (theme && theme?.theme?.startsWith("light")) || !theme
+                ? "border-spBlue text-spBlue hover:bg-gray-100"
+                : `border-spWhite text-white ${theme?.bgColor} hover:${theme?.secondaryBgColor}`
+            )}
             type="button"
             onClick={() => {
               if (!isDropdownOpen) {
