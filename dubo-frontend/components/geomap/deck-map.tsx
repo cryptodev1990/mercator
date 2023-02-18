@@ -47,6 +47,7 @@ export const DeckMap = ({
   scale,
   baseMap,
   onZoom,
+  queryLoading,
 }: {
   zctaLookup: any;
   selectedColumn: string;
@@ -57,6 +58,7 @@ export const DeckMap = ({
   scale: (d: number) => string;
   baseMap: string;
   onZoom: (zoom: number) => void;
+  queryLoading: boolean;
 }) => {
   const mapRef = useRef<any>(null);
   const { zctaShapes } = useZctaShapes();
@@ -182,7 +184,7 @@ export const DeckMap = ({
           new PolygonLayer({
             layerName: "zcta-high",
             id: "zcta-high",
-            visible: localViewPort.zoom <= ZOOM_TRANSITION,
+            visible: localViewPort.zoom <= ZOOM_TRANSITION && !queryLoading,
             getFillColor: (d: any) => {
               if (!zctaLookup) return colors[0];
               try {
@@ -204,7 +206,7 @@ export const DeckMap = ({
             layerName: "zcta-low",
             id: "zcta-low",
             data: TILE_URL,
-            visible: localViewPort.zoom > ZOOM_TRANSITION,
+            visible: localViewPort.zoom > ZOOM_TRANSITION && !queryLoading,
             maxRequests: -1,
             getOffset: [0, 1],
             uniqueIdProperty: "zcta",

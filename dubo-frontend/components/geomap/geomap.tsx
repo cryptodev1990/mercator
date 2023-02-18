@@ -148,7 +148,7 @@ const GeoMap = () => {
               )}
               {/*Share button*/}
               <button
-                className="my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 rounded-md group"
+                className="animation my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 rounded-md group animate-fadeIn500"
                 onClick={() => {
                   copyShareUrl();
                 }}
@@ -216,6 +216,7 @@ const GeoMap = () => {
         )}
       </div>
       <DeckMap
+        queryLoading={isLoading}
         zctaLookup={zctaLookup}
         selectedColumn={selectedColumn}
         selectedZcta={selectedZcta}
