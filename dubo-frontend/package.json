@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
-    "start": "next start",
+    "dev": "next dev",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "test": "jest"
+    "start": "next start",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@apache-arrow/es5-cjs": "^11.0.0",
