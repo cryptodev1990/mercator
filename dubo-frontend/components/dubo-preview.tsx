@@ -3,14 +3,13 @@ import { FaPlay, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/router";
 
 import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";
-import { getUploadData } from "../lib/utils";
+import { getFileFromUpload } from "../lib/utils";
 import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
-import useSQLDb from "../lib/hooks/use-sql-db";
 import useLoadData from "../lib/hooks/use-load-data";
-import usePrepareData from "../lib/hooks/use-prepare-data";
+import useSanitizeData from "../lib/hooks/use-sanitize-data";
 
-import { CloseButton } from "./close-button";
 import DataTable from "./data-table";
+import { CloseButton } from "./close-button";
 import SuggestedQueries from "./suggested-queries";
 import SQLEditor from "./sql-editor";
 
@@ -23,36 +22,28 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const [customData, setCustomData] = useState<File[] | null>(null);
 
   const {
-    db,
-    exec,
-    loadError,
-    loading: dbLoading,
-    results,
-    setResults,
-    setResultsError,
-    resultsError,
-  } = useSQLDb();
-  const {
     dfs,
     error: prepareError,
     setDfs,
     setError: setPrepareError,
-  } = usePrepareData({
+  } = useSanitizeData({
     urlsOrFile:
       customData || (selectedData ? DATA_OPTIONS[selectedData].data : []),
     selectedData,
   });
   const {
+    exec,
     error: dataError,
     setError: setDataError,
     loading: dataLoading,
     setLoading: setDataLoading,
     schemas,
     sample,
+    results,
+    resultsError,
+    setResultsError,
   } = useLoadData({
     dfs,
-    db,
-    setResults,
   });
   const {
     data,
@@ -69,8 +60,7 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const router = useRouter();
   const showVis = router.query?.vis !== undefined;
 
-  const hasError =
-    prepareError || dataError || resultsError || duboError?.message;
+  const hasError = prepareError || resultsError || duboError?.message;
 
   useEffect(() => {
     if (data && data.query_text && !isLoading) {
@@ -79,10 +69,10 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
     }
   }, [duboQuery, isLoading]);
 
-  if (loadError) {
+  if (dataError) {
     return (
       <p
-        className="bg-red-100 py-3 px-4 mb-4 mt-6 text-base text-red-700"
+        className="bg-red-100 py-3 px-4 mb-4 mt-6 text-base text-red-700 animate-fadeIn100"
         role="alert"
       >
         Something went wrong loading the database. Reload the page to try again.
@@ -90,9 +80,9 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
     );
   }
 
-  if (dbLoading || dataLoading) {
+  if (dataLoading) {
     return (
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center animate-fadeIn100">
         <h1>Preparing data...</h1>
         <FaSpinner className="animate-spin h-10 w-10 text-spBlue" />
       </div>
@@ -128,7 +118,7 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
                 setDuboQuery("");
                 setQuery("");
                 if (e.target.value === "custom") {
-                  const f = await getUploadData();
+                  const f = await getFileFromUpload();
                   if (f) {
                     setCustomData([f]);
                     setSelectedData(null);

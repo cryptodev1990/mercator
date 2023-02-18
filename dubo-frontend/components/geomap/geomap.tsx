@@ -8,7 +8,7 @@ import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
-import { nab } from "../../lib/utils";
+import { getRandomElement } from "../../lib/utils";
 import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 
 import Legend, { ColumnSelector } from "./legend";
@@ -24,7 +24,7 @@ import SQLBar from "./sql-bar";
 const GeoMap = () => {
   const { theme } = useTheme();
   const [query, setQuery] = useState(
-    !window.location.hash ? nab(EXAMPLES) : ""
+    !window.location.hash ? getRandomElement(EXAMPLES) : ""
   );
   const { currentStateFromUrl, updateUrlState, copyShareUrl, copySuccess } =
     useUrlState();

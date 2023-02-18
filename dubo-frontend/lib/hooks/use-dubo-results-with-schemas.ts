@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import qs from "qs";
 import { QueryExecResult } from "sql.js";
 
 const BASE_URL =

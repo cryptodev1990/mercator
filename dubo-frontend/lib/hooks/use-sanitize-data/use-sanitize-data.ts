@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 
-import { DataNames } from "../demo-data";
+import { DataNames } from "../../demo-data";
 
-const usePrepareData = ({
+const useSanitizeData = ({
   urlsOrFile,
   selectedData,
 }: {
@@ -15,7 +15,7 @@ const usePrepareData = ({
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("../workers/prepare-data-worker.ts", import.meta.url)
+      new URL("./sanitize-data-worker.ts", import.meta.url)
     );
 
     workerRef.current.onmessage = (
@@ -46,4 +46,4 @@ const usePrepareData = ({
   };
 };
 
-export default usePrepareData;
+export default useSanitizeData;
