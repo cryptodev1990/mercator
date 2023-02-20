@@ -8,15 +8,13 @@ import {
 } from "react";
 import simplur from "simplur";
 import { AgGridReact } from "ag-grid-react";
-import { QueryExecResult } from "sql.js";
 import { format } from "date-fns";
 import fileDownload from "js-file-download";
 import clsx from "clsx";
 
-import Visualizer from "./visualizer";
 import DownloadDropdown from "./download-dropdown";
 
-export const DataTable = ({
+const DataTable = ({
   rows,
   columns,
   className,
@@ -54,7 +52,7 @@ export const DataTable = ({
     });
   }, []);
 
-  const handleJSONExport = () => {
+  const handleJSONExport = useCallback(() => {
     const date = new Date();
 
     fileDownload(
@@ -63,7 +61,7 @@ export const DataTable = ({
       }),
       `${format(date, "yyyy-MM-dd")}_${format(date, "hh.mm.ss")} export.json`
     );
-  };
+  }, [rowData]);
 
   return (
     <div className={clsx("mt-6 animate-fadeIn100", className)}>
@@ -95,32 +93,4 @@ export const DataTable = ({
   );
 };
 
-const DataTableContainer = ({
-  results,
-  showVis,
-}: {
-  results: QueryExecResult[];
-  showVis: boolean;
-}) => {
-  const res = results[0];
-  const { values, columns } = res;
-
-  const rowData = values.map((row) =>
-    columns.reduce((acc, c, index) => ({ ...acc, [c]: row[index] }), {})
-  );
-  const columnDefs = columns.map((c) => ({ field: c }));
-
-  return (
-    <>
-      <DataTable rows={rowData} columns={columnDefs} />
-      {showVis && (
-        <Visualizer
-          header={results[0]?.columns ?? []}
-          data={results[0]?.values ?? []}
-        />
-      )}
-    </>
-  );
-};
-
-export default DataTableContainer;
+export default DataTable;

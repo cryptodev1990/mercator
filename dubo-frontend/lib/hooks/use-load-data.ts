@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { QueryExecResult, SqlValue } from "sql.js";
 
 import { sniff } from "../utils";
@@ -30,7 +30,6 @@ const useLoadData = ({ dfs }: { dfs?: DataFrame[] }) => {
         error?: string;
       }>
     ) => {
-      console.log(event.data.id);
       if (event.data.error) {
         setResults(undefined);
         setResultsError(event.data.error);
@@ -167,13 +166,18 @@ const useLoadData = ({ dfs }: { dfs?: DataFrame[] }) => {
     loadData({ dfs });
   }, [dfs]);
 
-  return {
-    exec: (sql: string) => {
+  const exec = useCallback(
+    (sql: string) => {
       setResults(undefined);
       setResultsError(null);
       setResultsLoading(true);
       workerRef?.current?.postMessage({ id: "exec", action: "exec", sql });
     },
+    [setResults, setResultsError, setResultsLoading, workerRef?.current]
+  );
+
+  return {
+    exec,
     error,
     setError,
     schemas,

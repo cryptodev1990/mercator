@@ -10,6 +10,7 @@ import useSanitizeData from "../lib/hooks/use-sanitize-data";
 
 import DataTable from "./data-table";
 import { CloseButton } from "./close-button";
+import Visualizer from "./visualizer";
 import SuggestedQueries from "./suggested-queries";
 import SQLEditor from "./sql-editor";
 
@@ -20,6 +21,8 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
     "Fortune 500"
   );
   const [customData, setCustomData] = useState<File[] | null>(null);
+  const [rows, setRows] = useState<object[] | null>(null);
+  const [columns, setColumns] = useState<object[] | null>(null);
 
   const {
     dfs,
@@ -68,6 +71,22 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
       exec(duboGeneratedSql);
     }
   }, [duboQuery, isLoading]);
+
+  useEffect(() => {
+    if (results) {
+      const res = results[0];
+      if (res) {
+        const { values, columns } = res;
+
+        setRows(
+          values.map((row) =>
+            columns.reduce((acc, c, index) => ({ ...acc, [c]: row[index] }), {})
+          )
+        );
+        setColumns(columns.map((c) => ({ field: c })));
+      }
+    }
+  }, [results]);
 
   if (dataError) {
     return (
@@ -198,8 +217,18 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
             resultsError={resultsError}
           />
         )}
-        {!isValidating && !hasError && results && results.length > 0 && (
-          <DataTable results={results} showVis={showVis} />
+        {!isValidating && !hasError && (
+          <>
+            {rows && rows.length > 0 && columns && columns?.length > 0 && (
+              <DataTable rows={rows} columns={columns} />
+            )}
+            {results && showVis && (
+              <Visualizer
+                header={results[0]?.columns ?? []}
+                data={results[0]?.values ?? []}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

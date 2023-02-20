@@ -8,7 +8,7 @@ import { SearchBar } from "../search-bar";
 import { usePalette } from "../../lib/hooks/scales/use-palette";
 import { ThemeProvider, useTheme } from "../../lib/hooks/census/use-theme";
 import { EXAMPLES } from "../../lib/hooks/census/use-first-time-search";
-import { DataTable } from "../data-table";
+import DataTable from "../data-table";
 import { CloseButton } from "../close-button";
 import { getRandomElement } from "../../lib/utils";
 import { useUrlState } from "../../lib/hooks/url-state/use-url-state";

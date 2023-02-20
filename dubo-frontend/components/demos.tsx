@@ -3,7 +3,7 @@ import { FaPlay, FaSpinner } from "react-icons/fa";
 
 import useDuboResults from "../lib/hooks/use-dubo-results";
 
-import { DataTable } from "./data-table";
+import DataTable from "./data-table";
 import SQL from "./sql";
 
 const Demos = ({ databaseSchema }: { databaseSchema: DatabaseSchema }) => {
