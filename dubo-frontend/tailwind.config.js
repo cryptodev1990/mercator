@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const { fontFamily } = require("tailwindcss/defaultTheme");
+const iOSHeight = require('@rvxlab/tailwind-plugin-ios-full-height');
 
 module.exports = {
   content: [
@@ -11,6 +12,17 @@ module.exports = {
   theme: {
     // Add a blue color
     extend: {
+      keyframes:{
+       'scale-left-right': {
+        '0%': {width: 'calc(100%-96px)'},
+        '50%':  {width: 'calc(100%-48px)'},
+        '100%': {width: '100%'}
+        },
+      },
+      animation: {
+        'scale-left-right': 'scale-left-right 0.5s'
+      },
+
       padding: {
         "1/3": "33%",
         "1/2": "50%",
@@ -106,5 +118,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tw-elements/dist/plugin")],
+  plugins: [
+    iOSHeight,
+    require("tw-elements/dist/plugin")
+  ],
 };

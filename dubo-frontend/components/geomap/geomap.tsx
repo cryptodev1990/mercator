@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { FaCheck, FaShareAltSquare } from "react-icons/fa";
+import { AiOutlineDoubleRight } from "react-icons/ai";
 
 import useCensus from "../../lib/hooks/census/use-census";
 import useCensusAutocomplete from "../../lib/hooks/census/use-census-autocomplete";
@@ -30,15 +31,39 @@ const GeoMap = () => {
   );
   const { currentStateFromUrl, updateUrlState, copyShareUrl, copySuccess } =
     useUrlState();
+  const [legendShow, setLegendShow] = useState("left-0");
+  const [iconShow, setIconShow] = useState("invisible");
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
   const [zoomThreshold, setZoomThreshold] = useState(false);
-  const [label, setLabel] = useState<string | null>(null);
   const deckContainerRef = useRef<HTMLDivElement | null>(null);
   const [showSQLQuery, setShowSQLQuery] = useState(false);
   const [showDataTable, setShowDataTable] = useState(false);
   const [showErrorBox, setShowErrorBox] = useState(false);
+  const [legendTop, setLegendTop] = useState(0);
+  const [showIconTop, setShowIconTop] = useState(0);
+  const [label, setLabel] = useState<string | null>(null);
+
+  const browserHeight = window.innerHeight;
+
+  useEffect(() => {
+    if (
+      navigator.userAgent.match(/Android/i) ||
+      navigator.userAgent.match(/webOS/i) ||
+      navigator.userAgent.match(/iPhone/i) ||
+      navigator.userAgent.match(/iPad/i) ||
+      navigator.userAgent.match(/iPod/i) ||
+      navigator.userAgent.match(/BlackBerry/i) ||
+      navigator.userAgent.match(/Windows Phone/i)
+    ) {
+      setLegendTop(browserHeight - 160);
+      setShowIconTop(browserHeight - 160);
+    } else {
+      setLegendTop(browserHeight - 160);
+      setShowIconTop(browserHeight - 160);
+    }
+  }, []);
 
   useEffect(() => {
     if (query) updateUrlState({ userQuery: query });
@@ -52,6 +77,11 @@ const GeoMap = () => {
       setLocalQuery(urlState.userQuery);
     }
   }, []);
+
+  const handleIconShowClick = () => {
+    setIconShow("invisible");
+    setLegendShow("translate-x-0");
+  };
 
   const {
     data: { header, lookup: zctaLookup, generatedSql },
@@ -121,11 +151,11 @@ const GeoMap = () => {
 
   return (
     <div className={clsx(styles.geomapContainer, theme.fontColor)}>
-      <div className="w-full h-full relative" ref={deckContainerRef}>
+      <div className="w-full relative h-full" ref={deckContainerRef}>
         <div
           className={clsx(
-            "z-10 w-full",
-            "relative max-w-5xl rounded-md mx-auto sm:p-3",
+            "z-10 w-full sm:p-5 p-2",
+            "relative max-w-5xl rounded-md mx-auto p-3",
             "pointer-events-none"
           )}
         >
@@ -174,7 +204,7 @@ const GeoMap = () => {
               )}
               {/*Share button*/}
               <button
-                className="animation my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 rounded-md group animate-fadeIn500"
+                className="animation my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 rounded-md group animate-fadeIn500 shadow-md"
                 onClick={() => {
                   copyShareUrl();
                 }}
@@ -194,8 +224,6 @@ const GeoMap = () => {
           {error && (
             <div className="flex justify-center pointer-events-auto">
               <ErrorBox
-                showErrorBox={showErrorBox}
-                setShowErrorBox={setShowErrorBox}
                 error={error}
                 onDismiss={() => {
                   setLocalQuery("");
@@ -209,35 +237,50 @@ const GeoMap = () => {
 
         <LoadingSpinner isLoading={isLoading} />
         {/* legend */}
-        <div className="absolute bottom-0 left-0 z-50 m-2">
+        <div
+          className={clsx(
+            `absolute z-50 m-2 transition duration-700`,
+            legendShow
+          )}
+          style={{ top: `${legendTop}px` }}
+        >
           {header.length > 0 && (
             <Legend
+              setIconShow={setIconShow}
+              setLegendShow={setLegendShow}
               colors={colors}
               text={breaks}
               isRatio={isRatio}
               setPaletteName={setPaletteName}
               scaleType={scaleType}
               onScaleTextClicked={rotateScaleType}
+              header={header}
+              selectedColumn={selectedColumn}
+              setSelectedColumn={setSelectedColumn}
               label={label}
               setLabel={setLabel}
-            >
-              <ColumnSelector
-                columns={header}
-                selectedColumn={selectedColumn}
-                setSelectedColumn={setSelectedColumn}
-              />
-            </Legend>
+            ></Legend>
           )}
         </div>
-
+        {/* IconShow */}
+        <div
+          className={clsx(
+            "absolute left-0 m-2 z-50 hover:cursor-pointer",
+            iconShow
+          )}
+          style={{ top: `${showIconTop}px` }}
+          onClick={handleIconShowClick}
+        >
+          <AiOutlineDoubleRight />
+        </div>
         {/* tooltip */}
         {zctaLookup && (
           <Tooltip
-            isRatio={isRatio}
-            label={label}
+            isRatio={true}
             zctaLookup={zctaLookup}
             selectedColumn={selectedColumn}
             selectedZcta={selectedZcta}
+            label={selectedColumn}
           />
         )}
       </div>

@@ -1,17 +1,18 @@
 // @ts-ignore
-import { MVTLayer } from "@deck.gl/geo-layers";
-// @ts-ignore
 import { PolygonLayer, GeoJsonLayer } from "@deck.gl/layers";
+// @ts-ignore
+import { MVTLayer } from "@deck.gl/geo-layers";
+
 import { useEffect, useRef, useState } from "react";
 import Map, { NavigationControl } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { MapView } from "@deck.gl/core/typed";
 
 import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 import { useZctaShapes } from "../../lib/hooks/census/use-zcta-shapes";
+import { coalesce } from "../../lib/utils";
 
 import { DeckGLOverlay } from "./deckgl-overlay";
-
-import "mapbox-gl/dist/mapbox-gl.css";
 
 const TILE_URL =
   "https://api.mercator.tech/backsplash/zcta/generate_shape_tile/{z}/{x}/{y}";
@@ -23,10 +24,9 @@ function genCommonProps(updateTriggersVars: any) {
       getFillColor: updateTriggersVars,
     },
     stroked: false,
-    // // NOTE if we transition away from Mapbox-managed deck, we can use this again
-    // transitions: {
-    //   getFillColor: 500,
-    // },
+    transitions: {
+      getFillColor: 500,
+    },
     filled: true,
     pickable: true,
     extruded: false,
@@ -64,15 +64,16 @@ export const DeckMap = ({
   const { zctaShapes } = useZctaShapes();
 
   const { currentStateFromUrl, updateUrlState } = useUrlState();
-  const [initialized, setInitialized] = useState(false);
 
   const [localViewPort, setLocalViewPort] = useState({
-    longitude: currentStateFromUrl()?.lng ?? -98.5795,
-    latitude: currentStateFromUrl()?.lat ?? 39.8283,
-    zoom: currentStateFromUrl()?.zoom ?? 3,
+    longitude: coalesce(currentStateFromUrl()?.lng, -98.5795),
+    latitude: coalesce(currentStateFromUrl()?.lat, 39.8283),
+    zoom: coalesce(currentStateFromUrl()?.zoom, 3),
     bearing: 0,
     pitch: 0,
   });
+
+  const navigationControlTop = window.innerHeight - 150;
 
   useEffect(() => {
     // on resize, update the viewport
@@ -111,7 +112,7 @@ export const DeckMap = ({
       style={
         {
           width: "100vw",
-          height: "100%",
+          height: "100vh",
           top: 0,
           left: 0,
           position: "absolute",
@@ -126,7 +127,13 @@ export const DeckMap = ({
       mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       mapStyle={baseMap}
     >
-      <NavigationControl position="bottom-right" />
+      <NavigationControl
+        style={{
+          top: `${navigationControlTop}px`,
+          position: "absolute",
+          right: "0px",
+        }}
+      />
       <DeckGLOverlay
         mapboxRef={mapRef}
         views={[

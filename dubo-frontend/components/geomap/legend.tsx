@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+import {
+  AiOutlineCloseCircle,
+  AiFillCheckCircle,
+  AiOutlineDoubleLeft,
+} from "react-icons/ai";
 import { BiPencil } from "react-icons/bi";
-import { AiOutlineCloseCircle, AiFillCheckCircle } from "react-icons/ai";
 
-import { useTheme } from "../../lib/hooks/census/use-theme";
 import { PALETTES } from "../../lib/hooks/scales/use-palette";
+import { useTheme } from "../../lib/hooks/census/use-theme";
 
 export const pctFmtSansPct = (num: number) => {
   return `${num * 100}`;
 };
 
-export function abbrevTick(num: number) {
+function abbrevTick(num: number) {
   // If the number in the 1's position is greater than 0, cut the decimal
   // return K for the number of thousands
   if (num >= 1000) {
@@ -43,16 +47,13 @@ export const ColumnSelector = ({
   }, [columns[0]]);
 
   return (
-    <div className="max-w-[14rem] flex flex-row">
+    <div className="max-w-[14rem] flex flex-row cursor-pointer">
       <select
+        title="density"
+        name="colorSelect"
         // change default caret
         ref={selectRef}
-        style={{
-          appearance: "none",
-          WebkitAppearance: "none",
-          MozAppearance: "none",
-        }}
-        className="bg-transparent border-none w-full border-red-400"
+        className="bg-transparent border-none w-full border-red-400 text-ellipsis cursor-pointer"
         value={selectedColumn}
         onFocus={() => setInteracted(true)}
         onChange={(e) => {
@@ -67,6 +68,8 @@ export const ColumnSelector = ({
       </select>
       {/* circle containing the number of columns */}
       <button
+        title="focusButton"
+        type="button"
         onClick={() => {
           if (selectRef.current) {
             selectRef.current.focus();
@@ -75,7 +78,7 @@ export const ColumnSelector = ({
       >
         <svg
           className={clsx(
-            "w-5 h-5",
+            "w-5 h-5 translate-x-2 translate-y-[0.66rem]",
             !interacted && columns.length !== 1 ? "visible" : "invisible"
           )}
           viewBox="0 0 24 24"
@@ -99,29 +102,42 @@ export const ColumnSelector = ({
 };
 
 const Legend = ({
+  setIconShow,
+  setLegendShow,
   colors,
   text,
   isRatio,
   setPaletteName,
   scaleType,
   onScaleTextClicked,
-  children,
+  header,
+  selectedColumn,
+  setSelectedColumn,
   label,
   setLabel,
 }: {
+  setIconShow: (iconShow: string) => void;
+  setLegendShow: (legendShow: string) => void;
   colors: number[][];
   text: string[];
   isRatio?: boolean;
   scaleType: string;
   setPaletteName?: (name: any) => void;
   onScaleTextClicked: any;
-  children?: React.ReactNode;
+  header: string[];
+  selectedColumn: string;
+  setSelectedColumn: (column: string) => void;
   label: string | null;
   setLabel: (label: string | null) => void;
 }) => {
   const [paletteIdx, setPaletteIdx] = useState(0);
   const { theme } = useTheme();
   const [relabeling, setRelabeling] = useState(false);
+
+  const handleIconHideClick = () => {
+    setIconShow("visible");
+    setLegendShow("hidden");
+  };
 
   useEffect(() => {
     const newPalette = Object.keys(PALETTES)[paletteIdx];
@@ -135,11 +151,21 @@ const Legend = ({
   return (
     <div
       className={clsx(
-        "shadow-md py-5 px-3 flex flex-col justify-start items-center gap-3 rounded group max-w-[13rem]",
+        "shadow-md py-5 px-3 flex flex-col justify-start items-center gap-3 rounded group max-w-[13rem] relative",
         theme.bgColor,
         theme.fontColor
       )}
     >
+      <div
+        className={clsx(
+          "absolute right-0 top-0 m-2 cursor-pointer h-5 w-5",
+          theme.bgColor,
+          theme.fontColor
+        )}
+        onClick={handleIconHideClick}
+      >
+        <AiOutlineDoubleLeft />
+      </div>
       <div className="flex flex-row-reverse justify-between w-full">
         {relabeling ? (
           <div className="flex flex-row gap-3 w-full">
@@ -157,11 +183,13 @@ const Legend = ({
               className={clsx(
                 "px-2 text-center",
                 theme.secondaryBgColor,
-                theme.fontColor
+                theme.secondaryFontColor
               )}
               placeholder="A title for this legend"
             />
             <button
+              title="AiFilCheckCircle"
+              type="button"
               onClick={() => {
                 setRelabeling(false);
               }}
@@ -172,11 +200,15 @@ const Legend = ({
         ) : (
           <>
             {label ? (
-              <span className="text-md text-ellipsis overflow-x-clip">
+              <span className="text-md text-ellipsis overflow-x-clip text-center">
                 {label}
               </span>
             ) : (
-              children
+              <ColumnSelector
+                columns={header}
+                selectedColumn={selectedColumn}
+                setSelectedColumn={setSelectedColumn}
+              />
             )}
             <button
               className="group-hover:visible group-hover:animate-fadeIn100 invisible w-5 h-5"
@@ -210,7 +242,7 @@ const Legend = ({
                   style={{
                     background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
                   }}
-                ></div>
+                />
                 <div
                   onClick={onScaleTextClicked}
                   className="text-sm w-full overflow-hidden cursor-pointer select-none"

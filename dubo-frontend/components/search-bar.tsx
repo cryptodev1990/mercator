@@ -55,13 +55,19 @@ export const SearchBar = ({
   }, [autocompleteSuggestions, value, isFocused, selectedSuggestion]);
 
   return (
-    <div className={clsx(theme.bgColor, "flex flex-row")}>
+    <div
+      className={clsx(
+        theme.bgColor,
+        "rounded-md relative flex flex-row justify-between"
+      )}
+    >
       {/* search bar input */}
       <input
         type="text"
         className={clsx(
-          "bg-transparent border-none w-full border-b-red-400",
-          "w-full rounded-l-md rounded-r-none mx-auto shadow-md sm:p-3 sm:text-md p-1 text-sm",
+          theme.bgColor,
+          "relative bg-transparent border-none h-12 z-10 ease-in duration-300 flex-1",
+          "shadow-md sm:p-3 p-1 sm:text-lg text-xs w-10/12",
           "pointer-events-auto select-all sm:select-auto",
           "focus:outline-none",
           isFirstTimeUse && "placeholder:animate-fadeIn500"
@@ -102,63 +108,63 @@ export const SearchBar = ({
           isFirstTimeUse ? placeholderExample : "What do you want to know?"
         }
       />
-      {/* search button */}
-      <button
-        className={clsx(
-          "rounded-r-sm shadow-md hover:shadow-lg w-24 h-12",
-          "flex flex-row justify-center items-center space-x-2 p-2 group",
-          "cursor-pointer bg-spBlue",
-          theme.secondaryFontColor
-        )}
-        onClick={(e) => {
-          onEnter();
-          setShowErrorBox(false);
-        }}
-      >
-        <div className="hover:animate-spin pointer-events-none group-hover:translate-y-[-3px]">
-          <FaSearch />
-        </div>
-      </button>
+      <div className="flex">
+        {/* search button */}
+        <button
+          className={clsx(
+            "rounded-r-sm shadow-md hover:shadow-lg sm:w-24 w-12 h-12",
+            "flex flex-row justify-center items-center space-x-2 p-2 group",
+            "cursor-pointer bg-spBlue",
+            theme.secondaryFontColor
+          )}
+          onClick={(e) => {
+            onEnter();
+            setShowErrorBox(false);
+          }}
+        >
+          <div className="hover:animate-spin pointer-events-none group-hover:translate-y-[-3px]">
+            <FaSearch />
+          </div>
+        </button>
 
-      {/* style toggle */}
-      <MapToggle />
-      {/* Random search button */}
-      <button
-        className={clsx(
-          "hover:animate-moveThroughRainbow2s",
-          "shadow-md w-24 h-12 sm:w-12 hover:shadow-lg",
-          "flex flex-row justify-center items-center space-x-2 p-2",
-          "cursor-pointer",
-          theme.secondaryBgColor,
-          theme.secondaryFontColor
-        )}
-        onClick={(e) => {
-          let randomIndex = Math.floor(Math.random() * EXAMPLES.length);
-          // query can't equal the query in the search bar
-          while (EXAMPLES[randomIndex] === value) {
-            randomIndex = Math.floor(Math.random() * EXAMPLES.length);
-          }
-          onChange(EXAMPLES[randomIndex]);
-          onEnter(EXAMPLES[randomIndex]);
-        }}
-      >
-        <div className="hover:animate-spin pointer-events-none">
-          <BsDice3 />
+        {/* style toggle */}
+        <div className="hidden sm:block">
+          <MapToggle />
         </div>
-      </button>
+        {/* Random search button */}
+        <button
+          className={clsx(
+            "hover:animate-moveThroughRainbow2s group-focus:hidden",
+            "shadow-md h-12 w-12 hover:shadow-lg",
+            "flex flex-row justify-center items-center space-x-2 p-2 rounded-r-md",
+            "cursor-pointer",
+            theme.secondaryBgColor,
+            theme.secondaryFontColor
+          )}
+          onClick={(e) => {
+            let randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+            // query can't equal the query in the search bar
+            while (EXAMPLES[randomIndex] === value) {
+              randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+            }
+            onChange(EXAMPLES[randomIndex]);
+            onEnter(EXAMPLES[randomIndex]);
+          }}
+        >
+          <div className="hover:animate-spin pointer-events-none">
+            <BsDice3 />
+          </div>
+        </button>
+      </div>
 
       {/* autocomplete suggestions */}
       <div
         className={clsx(
-          "absolute rounded-b-md shadow-md flex flex-col justify-start align-top text-left w-full max-w-[52rem]",
-          shouldDisplay ? "block" : "hidden",
+          "absolute rounded-b-md shadow-md italic border-r ease-in duration-300 translate-y-12",
+          shouldDisplay ? "block w-[calc(100%_-_12rem)]" : "hidden",
           theme.bgColor,
           theme.fontColor
         )}
-        style={{
-          width: searchBarRef.current?.offsetWidth,
-          top: (searchBarRef.current?.offsetTop ?? 0) + 40,
-        }}
       >
         {autocompleteSuggestions?.length > 0 &&
           autocompleteSuggestions.map((suggestion, i) => (

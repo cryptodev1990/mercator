@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "util";
+
 export async function getFileFromUpload(): Promise<File | null> {
   const file = await new Promise((resolve) => {
     const input = document.createElement("input");
@@ -85,4 +87,16 @@ export const stringToBase64 = (str: string) => {
 export const getRandomElement = (arr: string[]) => {
   // choose random element from array
   return arr[Math.floor(Math.random() * arr.length)];
+};
+
+export const coalesce = (val: any, defaultVal: any) => {
+  if (
+    typeof val === "undefined" ||
+    val === null ||
+    val === "" ||
+    !Number.isFinite(val)
+  ) {
+    return defaultVal;
+  }
+  return val;
 };
