@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { CloseButton } from "../close-button";
+import CloseButton from "../close-button";
 import SQL from "../sql";
 
 const SQLBar = ({

@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 import { FaPlay, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/router";
 
-import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";
-import { DATA_OPTIONS } from "../lib/demo-data";
-import useLoadData from "../lib/hooks/use-load-data";
-import useSanitizeData from "../lib/hooks/use-sanitize-data";
+import useDuboResultsWithSchemas from "../../lib/hooks/use-dubo-results-with-schemas";
+import { DATA_OPTIONS } from "../../lib/demo-data";
+import useLoadData from "../../lib/hooks/use-load-data";
+import useSanitizeData from "../../lib/hooks/use-sanitize-data";
+import DataTable from "../data-table";
 
-import DataTable from "./data-table";
 import Visualizer from "./visualizer";
 import SuggestedQueries from "./suggested-queries";
 import SQLEditor from "./sql-editor";
 
-const DuboPreview = ({
+const Demo = ({
   includeSample,
   urlsOrFile,
   selectedData,
@@ -194,4 +194,4 @@ const DuboPreview = ({
   );
 };
 
-export default DuboPreview;
+export default Demo;

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
-import { TrackedText } from "../tracked-text";
+import TrackedText from "../tracked-text";
 
 export const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {
   const [numEllipses, setNumEllipses] = useState(1);

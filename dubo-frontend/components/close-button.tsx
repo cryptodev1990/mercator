@@ -9,4 +9,4 @@ const CloseButton = ({ onClick }: { onClick: () => void }) => (
   </button>
 );
 
-export { CloseButton };
+export default CloseButton;

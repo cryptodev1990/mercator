@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import clsx from "clsx";
 
 import DemoInfo from "../components/demo-info";
-import DuboPreview from "../components/dubo-preview";
+import Demo from "../components/demo";
 import DataSetModal from "../components/data-set-modal";
 import { DATA_OPTIONS } from "../lib/demo-data";
 
@@ -90,7 +90,7 @@ const DemoPage = () => {
         </div>
       </div>
       {urlsOrFile && (
-        <DuboPreview
+        <Demo
           includeSample={includeSample}
           urlsOrFile={urlsOrFile}
           selectedData={selectedData}

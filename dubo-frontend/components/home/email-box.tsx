@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { MdEmail } from "react-icons/md";
 import { FaSpinner } from "react-icons/fa";
 
-import supabase from "../lib/supabase-client";
+import supabase from "../../lib/supabase-client";
 
 const EmailBox = ({ autoFocus }: { autoFocus?: boolean }): JSX.Element => {
   const [status, setStatus] = useState("clean");

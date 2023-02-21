@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
-import { TrackedText } from "../tracked-text";
+import TrackedText from "../tracked-text";
 import { DuboLink } from "../dubo-link";
 
 const TitleBlock = ({ zoomThreshold }: { zoomThreshold: boolean }) => {

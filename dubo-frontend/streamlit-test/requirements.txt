@@ -1,3 +1,0 @@
-dubo
-streamlit
-pandas

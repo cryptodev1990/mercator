@@ -3,16 +3,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BsDice3 } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 
-import { useTheme } from "../lib/hooks/census/use-theme";
+import { useTheme } from "../../lib/hooks/census/use-theme";
 import {
   useFirstTimeSearch,
   EXAMPLES,
-} from "../lib/hooks/census/use-first-time-search";
-import { useUrlState } from "../lib/hooks/url-state/use-url-state";
+} from "../../lib/hooks/census/use-first-time-search";
+import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 
-import { MapToggle } from "./geomap/map-toggle";
+import { MapToggle } from "./map-toggle";
 
-export const SearchBar = ({
+const SearchBar = ({
   setShowErrorBox,
   value = "",
   onChange,
@@ -201,3 +201,5 @@ export const SearchBar = ({
     </div>
   );
 };
+
+export default SearchBar;

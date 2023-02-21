@@ -2,9 +2,7 @@ const DemoInfo = () => (
   <>
     <button
       type="button"
-      className={
-        "inline-block px-3 py-2 border border-spBlue text-spBlue font-medium text-md leading-tight hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
-      }
+      className="inline-block px-3 py-2 border border-spBlue text-spBlue font-medium text-md leading-tight hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
       data-bs-toggle="modal"
       data-bs-target="#disclaimerModal"
     >
