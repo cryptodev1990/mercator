@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTheme } from "../../lib/hooks/census/use-theme";
 import useMousePosition from "../../lib/hooks/use-mouse-position";
 
-import { pctFmtSansPct } from "./legend";
+import { formatPercentage } from "./legend";
 
 export const Tooltip = ({
   isRatio,
@@ -34,7 +34,7 @@ export const Tooltip = ({
   }
 
   const value = isRatio
-    ? pctFmtSansPct(tooltipValue[selectedColumn]) + "%"
+    ? formatPercentage(tooltipValue[selectedColumn]) + "%"
     : tooltipValue[selectedColumn];
 
   return (

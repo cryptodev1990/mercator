@@ -147,7 +147,6 @@ const GeoMap = () => {
     // At least one column must be selected for the map to render
     setSelectedColumn(header[0]);
   }, [header, selectedColumn]);
-  console.log(theme);
 
   return (
     <div className={clsx(styles.geomapContainer, theme.fontColor)}>

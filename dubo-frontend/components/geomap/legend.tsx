@@ -10,8 +10,8 @@ import { BiPencil } from "react-icons/bi";
 import { PALETTES } from "../../lib/hooks/scales/use-palette";
 import { useTheme } from "../../lib/hooks/census/use-theme";
 
-export const pctFmtSansPct = (num: number) => {
-  return `${num * 100}`;
+export const formatPercentage = (num: number) => {
+  return (num * 100).toFixed(1);
 };
 
 function abbrevTick(num: number) {
@@ -229,29 +229,27 @@ const Legend = ({
       <div>
         {/* paintbrush icon that changes the palette */}
         <div className="flex flex-row">
-          {colors.map((color, i) => {
-            return (
-              <div key={i} className="text-left">
-                <div
-                  className="h-7 w-7 cursor-pointer"
-                  onClick={() =>
-                    setPaletteIdx(
-                      (paletteIdx + 1) % Object.values(PALETTES).length
-                    )
-                  }
-                  style={{
-                    background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                  }}
-                />
-                <div
-                  onClick={onScaleTextClicked}
-                  className="text-sm w-full overflow-hidden cursor-pointer select-none"
-                >
-                  {isRatio ? pctFmtSansPct(+text[i]) : abbrevTick(+text[i])}
-                </div>
+          {colors.map((color, i) => (
+            <div key={i} className="text-left">
+              <div
+                className="h-7 w-7 cursor-pointer"
+                onClick={() =>
+                  setPaletteIdx(
+                    (paletteIdx + 1) % Object.values(PALETTES).length
+                  )
+                }
+                style={{
+                  background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                }}
+              ></div>
+              <div
+                onClick={onScaleTextClicked}
+                className="text-sm w-full overflow-hidden cursor-pointer select-none"
+              >
+                {isRatio ? +formatPercentage(+text[i]) : abbrevTick(+text[i])}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
         <div
           onClick={onScaleTextClicked}
