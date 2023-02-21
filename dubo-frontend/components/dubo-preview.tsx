@@ -3,43 +3,41 @@ import { FaPlay, FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/router";
 
 import useDuboResultsWithSchemas from "../lib/hooks/use-dubo-results-with-schemas";
-import { getFileFromUpload } from "../lib/utils";
-import { DATA_OPTIONS, DataNames } from "../lib/demo-data";
+import { DATA_OPTIONS } from "../lib/demo-data";
 import useLoadData from "../lib/hooks/use-load-data";
 import useSanitizeData from "../lib/hooks/use-sanitize-data";
 
 import DataTable from "./data-table";
-import { CloseButton } from "./close-button";
 import Visualizer from "./visualizer";
 import SuggestedQueries from "./suggested-queries";
 import SQLEditor from "./sql-editor";
 
-const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
-  const [query, setQuery] = useState<string>("");
+const DuboPreview = ({
+  includeSample,
+  urlsOrFile,
+  selectedData,
+}: {
+  selectedData: SampleDataKey | null;
+  includeSample: boolean;
+  urlsOrFile: (string | File)[] | null;
+}) => {
+  const [query, setQuery] = useState("");
   const [duboQuery, setDuboQuery] = useState("");
-  const [selectedData, setSelectedData] = useState<DataNames | null>(
-    "Fortune 500"
-  );
-  const [customData, setCustomData] = useState<File[] | null>(null);
   const [rows, setRows] = useState<object[] | null>(null);
   const [columns, setColumns] = useState<object[] | null>(null);
 
-  const {
-    dfs,
-    error: prepareError,
-    setDfs,
-    setError: setPrepareError,
-  } = useSanitizeData({
-    urlsOrFile:
-      customData || (selectedData ? DATA_OPTIONS[selectedData].data : []),
-    selectedData,
+  useEffect(() => {
+    setQuery("");
+    setDuboQuery("");
+  }, [urlsOrFile]);
+
+  const { dfs, error: prepareError } = useSanitizeData({
+    urlsOrFile,
   });
   const {
     exec,
     error: dataError,
-    setError: setDataError,
     loading: dataLoading,
-    setLoading: setDataLoading,
     schemas,
     sample,
     results,
@@ -53,7 +51,6 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
     error: duboError,
     isValidating,
     isLoading,
-    mutate: setDuboResults,
   } = useDuboResultsWithSchemas({
     query: duboQuery,
     schemas,
@@ -63,7 +60,7 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   const router = useRouter();
   const showVis = router.query?.vis !== undefined;
 
-  const hasError = prepareError || resultsError || duboError?.message;
+  const hasError = resultsError || duboError?.message;
 
   useEffect(() => {
     if (data && data.query_text && !isLoading) {
@@ -91,7 +88,7 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
   if (dataError) {
     return (
       <p
-        className="bg-red-100 py-3 px-4 mb-4 mt-6 text-base text-red-700 animate-fadeIn100"
+        className="max-w-5xl m-auto bg-red-100 py-3 px-4 mb-4 mt-6 text-base text-red-700 animate-fadeIn100"
         role="alert"
       >
         Something went wrong loading the database. Reload the page to try again.
@@ -99,67 +96,29 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
     );
   }
 
+  if (prepareError) {
+    return (
+      <p
+        className="max-w-5xl m-auto bg-red-100 py-3 px-4 mb-4 mt-6 text-base text-red-700 animate-fadeIn100"
+        role="alert"
+      >
+        {prepareError}
+      </p>
+    );
+  }
+
   if (dataLoading) {
     return (
-      <div className="flex flex-col items-center justify-center animate-fadeIn100">
-        <h1>Preparing data...</h1>
+      <div className="flex flex-col items-center justify-center animate-fadeIn100 min-h-[300px]">
+        <h6 className="text-lg leading-tight mb-4">Preparing data...</h6>
         <FaSpinner className="animate-spin h-10 w-10 text-spBlue" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl m-auto">
+    <div className="max-w-5xl m-auto animate-fadeIn100">
       <div className="flex flex-col">
-        {customData && (
-          <div className="flex flex-col gap-2">
-            <h1 className="text-lg">
-              Custom data{" "}
-              <CloseButton
-                onClick={() => {
-                  setSelectedData("Fortune 500");
-                  setCustomData(null);
-                  setDataError(null);
-                  setDfs(undefined);
-                  setPrepareError(null);
-                }}
-              />
-            </h1>
-            <div className="flex flex-col gap-2"></div>
-          </div>
-        )}
-        {!customData && (
-          <>
-            <select
-              className="border w-full placeholder:gray-500 text-lg"
-              onChange={async (e) => {
-                setDuboResults(null);
-                setDuboQuery("");
-                setQuery("");
-                if (e.target.value === "custom") {
-                  const f = await getFileFromUpload();
-                  if (f) {
-                    setCustomData([f]);
-                    setSelectedData(null);
-                  }
-                } else {
-                  setDataLoading(true);
-                  setSelectedData(e.target.value as any);
-                }
-              }}
-              value={typeof selectedData === "string" ? selectedData : "Custom"}
-            >
-              {Object.keys(DATA_OPTIONS).map((key) => (
-                <option key={key} value={key}>
-                  {key}
-                </option>
-              ))}
-              <option key={"custom"} value={"custom"}>
-                Upload your own data
-              </option>
-            </select>
-          </>
-        )}
         <div className="flex flex-row">
           <input
             value={query}
@@ -190,9 +149,9 @@ const DuboPreview = ({ includeSample }: { includeSample: boolean }) => {
             {isValidating && <FaSpinner className="animate-spin h-4 w-4" />}
           </button>
         </div>
-        {!query && !customData && selectedData && (
+        {!query && selectedData && (
           <div>
-            <p className="text-md pt-4 pb-2">Some ideas:</p>
+            <p className="text-lg pt-4 pb-2">Some ideas:</p>
             <SuggestedQueries
               queries={DATA_OPTIONS[selectedData].queries}
               handleSqlQuery={exec}

@@ -14,6 +14,12 @@ const useLoadData = ({ dfs }: { dfs?: DataFrame[] }) => {
   const [resultsLoading, setResultsLoading] = useState<boolean>(false);
   const [resultsError, setResultsError] = useState<string | null>(null);
 
+  const reset = useCallback(() => {
+    setResults(undefined);
+    setResultsError(null);
+    setResultsLoading(true);
+  }, []);
+
   useEffect(() => {
     workerRef.current = new Worker(
       new URL(
@@ -163,6 +169,8 @@ const useLoadData = ({ dfs }: { dfs?: DataFrame[] }) => {
   };
 
   useEffect(() => {
+    setLoading(true);
+    reset();
     loadData({ dfs });
   }, [dfs]);
 

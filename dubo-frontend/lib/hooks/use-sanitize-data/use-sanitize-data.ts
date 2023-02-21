@@ -1,13 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 
-import { DataNames } from "../../demo-data";
-
 const useSanitizeData = ({
   urlsOrFile,
-  selectedData,
 }: {
-  selectedData: DataNames | null;
-  urlsOrFile: (string | File)[];
+  urlsOrFile: (string | File)[] | null;
 }) => {
   const workerRef = useRef<Worker>();
   const [dfs, setDfs] = useState<DataFrame[] | undefined>(undefined);
@@ -23,10 +19,16 @@ const useSanitizeData = ({
     ) => {
       if (event.data.error) {
         setError(event.data.error.message);
+        setDfs(undefined);
       } else {
         setDfs(event.data.dfs);
         setError(null);
       }
+    };
+
+    workerRef.current.onerror = (event: ErrorEvent) => {
+      setError(event.message);
+      setDfs(undefined);
     };
 
     return () => {
@@ -35,8 +37,10 @@ const useSanitizeData = ({
   }, []);
 
   useEffect(() => {
+    setDfs(undefined);
+    setError(null);
     workerRef?.current?.postMessage(urlsOrFile);
-  }, [selectedData]);
+  }, [urlsOrFile]);
 
   return {
     dfs,
