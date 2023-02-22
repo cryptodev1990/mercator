@@ -44,8 +44,17 @@ const GeoMap = () => {
   const [legendTop, setLegendTop] = useState(0);
   const [showIconTop, setShowIconTop] = useState(0);
   const [label, setLabel] = useState<string | null>(null);
+  const [browserHeight, setBrowserHeight] = useState(window.innerHeight);
 
-  const browserHeight = window.innerHeight;
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setBrowserHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.addEventListener("resize", handleWindowResize);
+    };
+  });
 
   useEffect(() => {
     if (
@@ -63,7 +72,7 @@ const GeoMap = () => {
       setLegendTop(browserHeight - 160);
       setShowIconTop(browserHeight - 160);
     }
-  }, []);
+  }, [browserHeight]);
 
   useEffect(() => {
     if (query) updateUrlState({ userQuery: query });
