@@ -136,7 +136,7 @@ const Legend = ({
 
   const handleIconHideClick = () => {
     setIconShow("visible");
-    setLegendShow("hidden");
+    setLegendShow("-translate-x-56");
   };
 
   useEffect(() => {
