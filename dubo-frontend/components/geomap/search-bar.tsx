@@ -58,7 +58,7 @@ const SearchBar = ({
     <div
       className={clsx(
         theme.bgColor,
-        "rounded-md relative flex flex-row justify-between"
+        "rounded-md relative h-12"
       )}
     >
       {/* search bar input */}
@@ -66,10 +66,11 @@ const SearchBar = ({
         type="text"
         className={clsx(
           theme.bgColor,
-          "relative bg-transparent border-none h-12 z-10 ease-in duration-300 flex-1",
-          "shadow-md sm:p-3 p-1 sm:text-lg text-xs w-10/12",
+          "absolute border-none h-12 z-10 ease-in duration-300",
+          "shadow-md sm:p-3 p-1 sm:text-lg text-xs",
           "pointer-events-auto select-all sm:select-auto",
           "focus:outline-none",
+          "sm:w-[calc(100%-192px)] w-[calc(100%-96px)] focus:w-full sm:focus:w-[calc(100%-192px)]",
           isFirstTimeUse && "placeholder:animate-fadeIn500"
         )}
         ref={searchBarRef}
@@ -108,56 +109,59 @@ const SearchBar = ({
           isFirstTimeUse ? placeholderExample : "What do you want to know?"
         }
       />
-      <div className="flex">
-        {/* search button */}
-        <button
-          className={clsx(
-            "rounded-r-sm shadow-md hover:shadow-lg sm:w-24 w-12 h-12",
-            "flex flex-row justify-center items-center space-x-2 p-2 group",
-            "cursor-pointer bg-spBlue",
-            theme.secondaryFontColor
-          )}
-          onClick={(e) => {
-            onEnter();
-            setShowErrorBox(false);
-          }}
-        >
-          <div className="hover:animate-spin pointer-events-none group-hover:translate-y-[-3px]">
-            <FaSearch />
-          </div>
-        </button>
+      <div className="absolute right-0 top-0">
+        <div className="flex">
+          {/* search button */}
+          <button
+            className={clsx(
+              "rounded-r-sm shadow-md hover:shadow-lg sm:w-24 w-12 h-12",
+              "flex flex-row justify-center items-center space-x-2 p-2 group",
+              "cursor-pointer bg-spBlue",
+              theme.secondaryFontColor
+            )}
+            onClick={(e) => {
+              onEnter();
+              setShowErrorBox(false);
+            }}
+          >
+            <div className="hover:animate-spin pointer-events-none group-hover:translate-y-[-3px]">
+              <FaSearch />
+            </div>
+          </button>
 
-        {/* style toggle */}
-        <div className="hidden sm:block">
-          <MapToggle />
+          {/* style toggle */}
+          <div className="sm:block">
+            <MapToggle />
+          </div>
+          {/* Random search button */}
+          <button
+            className={clsx(
+              "hover:animate-moveThroughRainbow2s group-focus:hidden",
+              "shadow-md h-12 sm:w-12 w-6 hover:shadow-lg",
+              "flex flex-row justify-center items-center space-x-2 p-2 rounded-r-md",
+              "cursor-pointer",
+              theme.secondaryBgColor,
+              theme.secondaryFontColor
+            )}
+            onClick={(e) => {
+              let randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+              // query can't equal the query in the search bar
+              while (EXAMPLES[randomIndex] === value) {
+                randomIndex = Math.floor(Math.random() * EXAMPLES.length);
+              }
+              onChange(EXAMPLES[randomIndex]);
+              onEnter(EXAMPLES[randomIndex]);
+            }}
+          >
+            <div className="hover:animate-spin pointer-events-none">
+              <BsDice3 />
+            </div>
+          </button>
         </div>
-        {/* Random search button */}
-        <button
-          className={clsx(
-            "hover:animate-moveThroughRainbow2s group-focus:hidden",
-            "shadow-md h-12 w-12 hover:shadow-lg",
-            "flex flex-row justify-center items-center space-x-2 p-2 rounded-r-md",
-            "cursor-pointer",
-            theme.secondaryBgColor,
-            theme.secondaryFontColor
-          )}
-          onClick={(e) => {
-            let randomIndex = Math.floor(Math.random() * EXAMPLES.length);
-            // query can't equal the query in the search bar
-            while (EXAMPLES[randomIndex] === value) {
-              randomIndex = Math.floor(Math.random() * EXAMPLES.length);
-            }
-            onChange(EXAMPLES[randomIndex]);
-            onEnter(EXAMPLES[randomIndex]);
-          }}
-        >
-          <div className="hover:animate-spin pointer-events-none">
-            <BsDice3 />
-          </div>
-        </button>
       </div>
+      
 
-      {/* autocomplete suggestions */}
+      {/* autocomplete suggestions
       <div
         className={clsx(
           "absolute rounded-b-md shadow-md italic border-r ease-in duration-300 translate-y-12",
@@ -197,7 +201,7 @@ const SearchBar = ({
               )}
             </button>
           ))}
-      </div>
+      </div> */}
     </div>
   );
 };

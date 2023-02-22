@@ -163,7 +163,7 @@ const GeoMap = () => {
         <div
           className={clsx(
             "z-10 w-full sm:p-5 p-2",
-            "relative max-w-5xl rounded-md mx-auto p-3",
+            "relative max-w-5xl rounded-md mx-auto",
             "pointer-events-none"
           )}
         >
