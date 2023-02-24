@@ -9,6 +9,7 @@ import {
   EXAMPLES,
 } from "../../lib/hooks/census/use-first-time-search";
 import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
+import Icon from "../../Icon";
 
 import { MapToggle } from "./map-toggle";
 
@@ -41,7 +42,7 @@ const SearchBar = ({
       onEnter();
       turnOffDemo();
     }
-  }, []);
+  }, [currentStateFromUrl, onChange, onEnter, turnOffDemo]);
 
   const shouldDisplay = useMemo(() => {
     return (
@@ -124,9 +125,11 @@ const SearchBar = ({
               setShowErrorBox(false);
             }}
           >
-            <div className="hover:animate-spin pointer-events-none group-hover:translate-y-[-3px]">
-              <FaSearch />
-            </div>
+            {(
+              <div className="hover:animate-spin pointer-events-none group-active:translate-y-[2px]">
+                <FaSearch />
+              </div>
+            )}
           </button>
 
           {/* style toggle */}
@@ -136,9 +139,9 @@ const SearchBar = ({
           {/* Random search button */}
           <button
             className={clsx(
-              "hover:animate-moveThroughRainbow2s group-focus:hidden",
+              "hover:animate-moveThroughRainbow2s group-focus:hidden group-active:translate-y-[2px]",
               "shadow-md h-12 sm:w-12 w-6 hover:shadow-lg",
-              "flex flex-row justify-center items-center space-x-2 p-2 rounded-r-md",
+              "flex flex-row justify-center items-center space-x-2 p-2",
               "cursor-pointer",
               theme.secondaryBgColor,
               theme.secondaryFontColor
@@ -153,9 +156,11 @@ const SearchBar = ({
               onEnter(EXAMPLES[randomIndex]);
             }}
           >
-            <div className="hover:animate-spin pointer-events-none">
-              <BsDice3 />
-            </div>
+            {(
+              <div className="hover:animate-spin pointer-events-none">
+                <Icon icon="Dice" />
+              </div>
+            )}
           </button>
         </div>
       </div>

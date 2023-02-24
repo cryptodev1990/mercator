@@ -11,6 +11,8 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "../styles/globals.css";
 
+import "../style.css";
+
 const roboto = Roboto({
   weight: "400",
   subsets: ["latin"],

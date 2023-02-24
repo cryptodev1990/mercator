@@ -49,12 +49,13 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
     "quantize"
   );
 
-  const rotateScaleType = () => {
-    if (scaleType === "quantile") {
-      setScaleType("quantize");
-    } else {
-      setScaleType("quantile");
-    }
+  const rotateScaleType = (key?: "quantile" | "quantile") => {
+    // if (scaleType === "quantile") {
+    //   setScaleType("quantize");
+    // } else {
+    //   setScaleType("quantile");
+    // }
+    if (key) setScaleType(key);
   };
 
   const isRatio = useMemo(() => {
@@ -63,6 +64,7 @@ export const usePalette = ({ vec }: { vec: number[] }) => {
   }, [vec]);
 
   const colors = useMemo(() => {
+    console.log(paletteName);
     return PALETTES[paletteName];
   }, [paletteName]);
 

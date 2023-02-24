@@ -14,7 +14,8 @@ import { getRandomElement } from "../../lib/utils";
 import { useUrlState } from "../../lib/hooks/url-state/use-url-state";
 
 import SearchBar from "./search-bar";
-import Legend, { ColumnSelector } from "./legend";
+import Legend from "./legend";
+import LegendPanel from "./legend-panel";
 import { DeckMap } from "./deck-map";
 import { Tooltip } from "./tooltip";
 import { LoadingSpinner } from "./loading-spinner";
@@ -32,7 +33,9 @@ const GeoMap = () => {
   const { currentStateFromUrl, updateUrlState, copyShareUrl, copySuccess } =
     useUrlState();
   const [legendShow, setLegendShow] = useState("left-0");
+  const [legendPanelShow, setLegendPanelShow] = useState("left-0");
   const [iconShow, setIconShow] = useState("invisible");
+  const [legendPanelIconShow, setLegendPanelIconShow] = useState("invisible");
   const [localQuery, setLocalQuery] = useState(query);
   const [selectedZcta, setSelectedZcta] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
@@ -76,7 +79,7 @@ const GeoMap = () => {
 
   useEffect(() => {
     if (query) updateUrlState({ userQuery: query });
-  }, [query]);
+  }, [query, updateUrlState]);
 
   useEffect(() => {
     // Load from URL hash
@@ -85,11 +88,16 @@ const GeoMap = () => {
       setQuery(urlState.userQuery);
       setLocalQuery(urlState.userQuery);
     }
-  }, []);
+  }, [currentStateFromUrl]);
 
   const handleIconShowClick = () => {
     setIconShow("invisible");
     setLegendShow("translate-x-0");
+  };
+
+  const handleLegendPanelIconShowClick = () => {
+    setLegendPanelIconShow("invisible");
+    setLegendPanelShow("translate-x-0");
   };
 
   const {
@@ -155,78 +163,81 @@ const GeoMap = () => {
     // Line of code is un-intuitively important
     // At least one column must be selected for the map to render
     setSelectedColumn(header[0]);
-  }, [header, selectedColumn]);
+  }, [header, isLoading, selectedColumn]);
 
   return (
     <div className={clsx(styles.geomapContainer, theme.fontColor)}>
       <div className="w-full relative h-full" ref={deckContainerRef}>
         <div
           className={clsx(
-            "z-10 w-full sm:p-5 p-2",
-            "relative max-w-5xl rounded-md mx-auto",
+            "z-10 w-full",
+            "relative mx-auto",
             "pointer-events-none"
           )}
         >
-          <TitleBlock zoomThreshold={zoomThreshold} />
-          <div className="pointer-events-auto mb-3">
-            <SearchBar
-              setShowErrorBox={setShowErrorBox}
-              value={localQuery}
-              onChange={(text) => setLocalQuery(text)}
-              onEnter={(newSearchQuery) => {
-                if (newSearchQuery) {
-                  setQuery(newSearchQuery);
-                } else {
-                  setQuery(localQuery);
-                }
-                setSelectedColumn("");
-              }}
-              autocompleteSuggestions={
-                autocompleteSuggestions?.suggestions ?? []
-              }
-            />
-            <div className="flex flex-row w-full">
-              {showSQLQuery && (
-                <SQLBar
-                  generatedSql={generatedSql}
-                  setShowSQLQuery={setShowSQLQuery}
-                  theme={theme.theme}
-                />
-              )}
-              {showDataTable && rows && columns && (
-                <DataTable
-                  rows={rows}
-                  columns={columns}
-                  className={clsx("w-full p-4", theme.bgColor)}
-                  theme={theme}
-                  titleBarChildren={
-                    <CloseButton onClick={() => setShowDataTable(false)} />
+          <div className="m-auto w-full pt-5 md:w-7/12">
+            <TitleBlock zoomThreshold={zoomThreshold} />
+            <div className="pointer-events-auto mb-3">
+              <SearchBar
+                setShowErrorBox={setShowErrorBox}
+                value={localQuery}
+                onChange={(text) => setLocalQuery(text)}
+                onEnter={(newSearchQuery) => {
+                  if (newSearchQuery) {
+                    setQuery(newSearchQuery);
+                  } else {
+                    setQuery(localQuery);
                   }
-                />
-              )}
-              {!showSQLQuery && !showDataTable && (
-                <Buttons
-                  setShowSQLQuery={setShowSQLQuery}
-                  setShowDataTable={setShowDataTable}
-                />
-              )}
-              {/*Share button*/}
-              <button
-                className="animation my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 rounded-md group animate-fadeIn500 shadow-md"
-                onClick={() => {
-                  copyShareUrl();
+                  setSelectedColumn("");
                 }}
-              >
-                <div className="absolute z-50 flex items-center justify-center w-10 h-10 text-white bg-gray-500 rounded-md">
-                  {copySuccess ? (
-                    <span className="text-xs transition transform duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-hover:scale-100">
-                      Copied!
-                    </span>
-                  ) : (
-                    <FaShareAltSquare />
-                  )}
-                </div>
-              </button>
+                autocompleteSuggestions={
+                  autocompleteSuggestions?.suggestions ?? []
+                }
+              />
+              <div className="flex flex-row w-full px-2
+              ">
+                {showSQLQuery && (
+                  <SQLBar
+                    generatedSql={generatedSql}
+                    setShowSQLQuery={setShowSQLQuery}
+                    theme={theme.theme}
+                  />
+                )}
+                {showDataTable && rows && columns && (
+                  <DataTable
+                    rows={rows}
+                    columns={columns}
+                    className={clsx("w-full p-4", theme.bgColor)}
+                    theme={theme}
+                    titleBarChildren={
+                      <CloseButton onClick={() => setShowDataTable(false)} />
+                    }
+                  />
+                )}
+                {!showSQLQuery && !showDataTable && (
+                  <Buttons
+                    setShowSQLQuery={setShowSQLQuery}
+                    setShowDataTable={setShowDataTable}
+                  />
+                )}
+                {/*Share button*/}
+                <button
+                  className="animation my-1 flex items-center justify-center w-10 h-10 ml-auto text-white bg-gray-500 group animate-fadeIn500 shadow-md"
+                  onClick={() => {
+                    copyShareUrl();
+                  }}
+                >
+                  <div className="absolute z-50 flex items-center justify-center w-10 h-10 text-white bg-gray-500">
+                    {copySuccess ? (
+                      <span className="text-xs transition transform duration-300 ease-in-out opacity-0 group-hover:opacity-100 group-hover:scale-100">
+                        Copied!
+                      </span>
+                    ) : (
+                      <FaShareAltSquare />
+                    )}
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
           {error && (
@@ -244,14 +255,30 @@ const GeoMap = () => {
         </div>
 
         <LoadingSpinner isLoading={isLoading} />
-        {/* legend */}
+        {/* legendPanel */}
         <div
           className={clsx(
-            `absolute z-50 m-2 transition duration-700`,
-            legendShow
+            `absolute top-12 pl-7 py-2 flex flex-col gap-2 z-50 mt-1 transition duration-700 scroll w-1`,
+            legendPanelShow
           )}
-          style={{ top: `${legendTop}px` }}
+          style={{ height: "calc(100vh - 5rem)", }}
         >
+          <LegendPanel 
+            setIconShow={setIconShow}
+            setLegendShow={setLegendShow}
+            colors={colors}
+            text={breaks}
+            isRatio={isRatio}
+            setPaletteName={setPaletteName}
+            scaleType={scaleType}
+            onScaleTextClicked={rotateScaleType}
+            header={header}
+            selectedColumn={selectedColumn}
+            setSelectedColumn={setSelectedColumn}
+            label={label}
+            setLabel={setLabel}
+          />
+
           {header.length > 0 && (
             <Legend
               setIconShow={setIconShow}
@@ -267,11 +294,47 @@ const GeoMap = () => {
               setSelectedColumn={setSelectedColumn}
               label={label}
               setLabel={setLabel}
-            ></Legend>
+            />
           )}
         </div>
+        {/* <div
+          className={clsx(
+            "absolute left-0 m-2 z-50 hover:cursor-pointer",
+            legendPanelIconShow
+          )}
+          onClick={handleLegendPanelIconShowClick}
+        >
+          <AiOutlineDoubleRight />
+        </div> */}
+
+        {/* legend */}
+        {/* <div
+          className={clsx(
+            `absolute z-40 m-2 transition duration-700`,
+            legendShow
+          )}
+          style={{ top: `${legendTop}px` }}
+        > */}
+          {/* {header.length > 0 && (
+            <Legend
+              setIconShow={setIconShow}
+              setLegendShow={setLegendShow}
+              colors={colors}
+              text={breaks}
+              isRatio={isRatio}
+              setPaletteName={setPaletteName}
+              scaleType={scaleType}
+              onScaleTextClicked={rotateScaleType}
+              header={header}
+              selectedColumn={selectedColumn}
+              setSelectedColumn={setSelectedColumn}
+              label={label}
+              setLabel={setLabel}
+            />
+          )} */}
+        {/* </div> */}
         {/* IconShow */}
-        <div
+        {/* <div
           className={clsx(
             "absolute left-0 m-2 z-50 hover:cursor-pointer",
             iconShow
@@ -280,7 +343,7 @@ const GeoMap = () => {
           onClick={handleIconShowClick}
         >
           <AiOutlineDoubleRight />
-        </div>
+        </div> */}
         {/* tooltip */}
         {zctaLookup && (
           <Tooltip

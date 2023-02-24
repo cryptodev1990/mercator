@@ -9,12 +9,13 @@ import { BiPencil } from "react-icons/bi";
 
 import { PALETTES } from "../../lib/hooks/scales/use-palette";
 import { useTheme } from "../../lib/hooks/census/use-theme";
+import Icon from "../../Icon";
 
 export const formatPercentage = (num: number) => {
   return (num * 100).toFixed(1);
 };
 
-function abbrevTick(num: number) {
+export function abbrevTick(num: number) {
   // If the number in the 1's position is greater than 0, cut the decimal
   // return K for the number of thousands
   if (num >= 1000) {
@@ -133,130 +134,139 @@ const Legend = ({
   const [paletteIdx, setPaletteIdx] = useState(0);
   const { theme } = useTheme();
   const [relabeling, setRelabeling] = useState(false);
+  const [slide, setSlide] = useState<boolean>(false);
 
-  const handleIconHideClick = () => {
-    setIconShow("visible");
-    setLegendShow("-translate-x-56");
-  };
+  // const handleIconHideClick = () => {
+  //   setIconShow("visible");
+  //   setLegendShow("-translate-x-56");
+  // };
 
-  useEffect(() => {
-    const newPalette = Object.keys(PALETTES)[paletteIdx];
-    setPaletteName && setPaletteName(newPalette);
-  }, [colors, paletteIdx, setPaletteName]);
+  // useEffect(() => {
+  //   const newPalette = Object.keys(PALETTES)[paletteIdx];
+  //   setPaletteName && setPaletteName(newPalette);
+  // }, [colors, paletteIdx, setPaletteName]);
 
   if (text.length === 0) {
     return null;
   }
 
   return (
-    <div
-      className={clsx(
-        "shadow-md py-5 px-3 flex flex-col justify-start items-center gap-3 rounded group max-w-[13rem] relative",
-        theme.bgColor,
-        theme.fontColor
-      )}
-    >
-      <div
+
+    <div className={`relative w-[17rem] transition-transform duration-100 ${slide ? `-translate-x-72` : ``}`}>
+      <label 
         className={clsx(
-          "absolute right-0 top-0 m-2 cursor-pointer h-5 w-5",
+          "absolute top-0 -right-1 translate-x-full cursor-pointer p-2 panel-combo",
           theme.bgColor,
           theme.fontColor
         )}
-        onClick={handleIconHideClick}
+        onClick={() => setSlide(!slide)}
+        htmlFor="for-setting"
       >
-        <AiOutlineDoubleLeft />
-      </div>
-      <div className="flex flex-row-reverse justify-between w-full">
-        {relabeling ? (
-          <div className="flex flex-row gap-3 w-full">
-            <input
-              autoFocus
-              onBlur={(e) => setRelabeling(false)}
-              type="text"
-              onSubmit={(e) => setRelabeling(false)}
-              onChange={(e) => setLabel(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setRelabeling(false);
-                }
-              }}
-              className={clsx(
-                "px-2 text-center",
-                theme.secondaryBgColor,
-                theme.secondaryFontColor
-              )}
-              placeholder="A title for this legend"
-            />
-            <button
-              title="AiFilCheckCircle"
-              type="button"
-              onClick={() => {
-                setRelabeling(false);
-              }}
-            >
-              <AiFillCheckCircle size={20} />
-            </button>
-          </div>
-        ) : (
-          <>
-            {label ? (
-              <span className="text-md text-ellipsis overflow-x-clip text-center">
-                {label}
-              </span>
-            ) : (
-              <ColumnSelector
-                columns={header}
-                selectedColumn={selectedColumn}
-                setSelectedColumn={setSelectedColumn}
-              />
-            )}
-            <button
-              className="group-hover:visible group-hover:animate-fadeIn100 invisible w-5 h-5"
-              onClick={() => {
-                if (label) {
-                  setLabel(null);
-                } else {
-                  setRelabeling(true);
-                }
-              }}
-            >
-              {label ? <AiOutlineCloseCircle /> : <BiPencil />}
-            </button>
-          </>
+        {slide ? (<Icon icon="CircleRight" width="1.1rem" height="1.1rem" />) : (<Icon icon="CircleLeft" width="1.1rem" height="1.1rem" />)}
+      </label>
+      <div
+        className={clsx(
+          "shadow-md py-5 px-5 flex flex-col justify-start group h-full text-center",
+          theme.bgColor,
+          theme.fontColor
         )}
-      </div>
-      {/* Colors */}
-      <div>
-        {/* paintbrush icon that changes the palette */}
-        <div className="flex flex-row">
-          {colors.map((color, i) => (
-            <div key={i} className="text-left">
-              <div
-                className="h-7 w-7 cursor-pointer"
-                onClick={() =>
-                  setPaletteIdx(
-                    (paletteIdx + 1) % Object.values(PALETTES).length
-                  )
-                }
-                style={{
-                  background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+      >
+        {/* <div className="flex flex-row-reverse justify-between w-full">
+          {relabeling ? (
+            <div className="flex flex-row gap-3 w-full">
+              <input
+                autoFocus
+                onBlur={(e) => setRelabeling(false)}
+                type="text"
+                onSubmit={(e) => setRelabeling(false)}
+                onChange={(e) => setLabel(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setRelabeling(false);
+                  }
                 }}
-              ></div>
-              <div
-                onClick={onScaleTextClicked}
-                className="text-sm w-full overflow-hidden cursor-pointer select-none"
+                className={clsx(
+                  "px-2 text-center",
+                  theme.secondaryBgColor,
+                  theme.secondaryFontColor
+                )}
+                placeholder="A title for this legend"
+              />
+              <button
+                title="AiFilCheckCircle"
+                type="button"
+                onClick={() => {
+                  setRelabeling(false);
+                }}
               >
-                {isRatio ? +formatPercentage(+text[i]) : abbrevTick(+text[i])}
-              </div>
+                <AiFillCheckCircle size={20} />
+              </button>
             </div>
-          ))}
-        </div>
-        <div
-          onClick={onScaleTextClicked}
-          className="w-full mx-auto text-center text-xs cursor-pointer select-none"
-        >
-          {isRatio && "% "}
-          {scaleType === "quantile" && "By Quantiles"}
+          ) : (
+            <>
+              {label ? (
+                <span className="text-md text-ellipsis overflow-x-clip text-center">
+                  {label}
+                </span>
+              ) : (
+                <ColumnSelector
+                  columns={header}
+                  selectedColumn={selectedColumn}
+                  setSelectedColumn={setSelectedColumn}
+                />
+              )}
+              <button
+                className="group-hover:visible group-hover:animate-fadeIn100 invisible w-5 h-5"
+                onClick={() => {
+                  if (label) {
+                    setLabel(null);
+                  } else {
+                    setRelabeling(true);
+                  }
+                }}
+              >
+                {label ? <AiOutlineCloseCircle /> : <BiPencil />}
+              </button>
+            </>
+          )}
+        </div> */}
+        {/* Colors */}
+        
+        <div className="mb-1">
+          <span>{selectedColumn}</span>
+          </div>
+        <div>
+          {/* paintbrush icon that changes the palette */}
+          <div className="flex flex-row justify-center">
+            {colors.map((color, i) => (
+              <div key={i} className="text-left">
+                <div
+                  className="h-7 w-7 cursor-pointer"
+                  // onClick={() =>
+                  //   setPaletteIdx(
+                  //     (paletteIdx + 1) % Object.values(PALETTES).length
+                  //   )
+                  // }
+                  style={{
+                    background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                  }}
+                ></div>
+                <div
+                  // onClick={onScaleTextClicked}
+                  className="text-sm w-full overflow-hidden cursor-pointer select-none"
+                >
+                  {isRatio ? +formatPercentage(+text[i]) : abbrevTick(+text[i])}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div
+            // onClick={onScaleTextClicked}
+            className="w-full mx-auto text-center text-xs cursor-pointer select-none"
+          >
+            {isRatio && "% "}
+            {scaleType === "quantile" && "By Quantiles"}
+          </div>
         </div>
       </div>
     </div>

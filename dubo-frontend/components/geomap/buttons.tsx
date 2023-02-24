@@ -13,8 +13,8 @@ const Button = ({
   return (
     <button
       className={clsx(
-        "flex flex-row justify-center items-center flex-1 w-[5rem] h-10 text-sm leading-none",
-        "rounded-lg p-1 pointer-events-auto cursor-pointer",
+        "flex flex-row justify-center items-center flex-1 h-10 py-2 px-3 whitespace-nowrap text-sm leading-none",
+        "p-1 pointer-events-auto cursor-pointer",
         "transition duration-300 ease-in-out bg-spBlue text-slate-100",
         className
       )}

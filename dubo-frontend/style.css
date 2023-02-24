@@ -1,0 +1,43 @@
+@font-face {
+  font-family: Iceberg;
+  src: url(./public/font/iecberg/Iceberg-Regular.ttf);
+}
+
+body {
+  font-family: Iceberg;
+}
+
+.border-1 {
+  border-width: 1px;
+}
+
+input {
+  outline: none;
+}
+
+input[type=radio]
+input[type=checkbox]
+ {
+  margin: 0;
+}
+
+.scroll::-webkit-scrollbar {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+
+.scroll::-webkit-scrollbar-track {
+  background: #ddd;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-top: 0.5rem solid #ddd;
+  border-bottom: 0.5rem solid #ddd;
+  /* border-radius: 5px; */
+}
+
+.scroll::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
